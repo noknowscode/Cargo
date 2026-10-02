@@ -53,6 +53,9 @@ public sealed partial class OverviewViewModel : ObservableObject
     /// <summary>The operator on shift, for the masthead's ID card.</summary>
     public DutyOperator Operator => PortData.Operator;
 
+    /// <summary>The greeting addresses the operator on duty by first name: "Elin."</summary>
+    public string GreetingName => $"{Operator.Name.Split(' ')[0]}.";
+
     public string OperatorSince => $"{Operator.Role} · in {Operator.ClockedInText}";
 
     public string OperatorUntil => $"until {Operator.ShiftEndText}";

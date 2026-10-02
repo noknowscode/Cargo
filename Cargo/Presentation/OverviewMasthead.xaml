@@ -26,7 +26,7 @@
 
     <StackPanel VerticalAlignment="Center" Spacing="8">
       <TextBlock Style="{StaticResource GreetingText}">
-        <Run Text="Good evening, " /><Run Text="Operations." Foreground="{StaticResource AccentDarkInvariantBrush}" />
+        <Run Text="Good evening, " /><Run Text="{x:Bind ViewModel.GreetingName}" Foreground="{StaticResource AccentDarkInvariantBrush}" />
       </TextBlock>
       <TextBlock Text="{x:Bind ViewModel.Subtitle, Mode=OneWay}" Style="{StaticResource DateLineText}" />
     </StackPanel>
