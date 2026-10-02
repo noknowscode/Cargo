@@ -11,31 +11,10 @@
              AutomationProperties.Name="Harbour map. Arrow keys orbit, plus and minus zoom, zero resets.">
 
   <UserControl.Resources>
-    <!-- A vessel's data tag: the name and one status line, expanding to the key facts when selected -->
-    <!-- The facts card opens above the chip, so it never covers the vessel it describes -->
+    <!-- A vessel's data tag: the name and one status line. A selected vessel's facts open in the docked card
+         (FactsCard), not on the tag: stacked above the chip they pushed it down over the ship it named -->
     <DataTemplate x:Key="HarbourTagTemplate" x:DataType="harbour:HarbourTag">
       <StackPanel Spacing="4">
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Visibility="{x:Bind Expanded, Mode=OneWay}" CornerRadius="8" Padding="12,10" MinWidth="220">
-          <StackPanel Spacing="10">
-            <ItemsControl ItemsSource="{x:Bind Facts}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <controls:TwoColumnPanel ColumnSpacing="16" RowSpacing="8" />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="presentation:Fact">
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{x:Bind Key}" Style="{StaticResource CaptionText}" />
-                    <TextBlock Text="{x:Bind Value}" Style="{StaticResource BodyStrongSmallText}" />
-                  </StackPanel>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <Button Style="{StaticResource GhostButton}" Command="{x:Bind Open}" CommandParameter="{x:Bind Id}"
-                    Content="Open vessel profile →" HorizontalAlignment="Stretch" />
-          </StackPanel>
-        </utu:CardContentControl>
 
         <Button Style="{StaticResource BareButton}" Command="{x:Bind Toggle}" CommandParameter="{x:Bind Id}"
                 controls:HoverLink.Command="{x:Bind Hover}" controls:HoverLink.Key="{x:Bind Id}"
@@ -95,6 +74,41 @@
     <Border x:Name="SceneHost" Background="Transparent" />
 
     <Canvas x:Name="TagLayer" />
+
+    <!-- The selected vessel's facts, docked bottom-right above the HUD: the camera centres the vessel, so the
+         card never covers it. Fades and rises in (Reveal); short frames (the mini band, a section's strip) skip it -->
+    <utu:CardContentControl x:Name="FactsCard" Style="{StaticResource PanelCard}" CornerRadius="8" Padding="14,12" Width="280"
+                            HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                            Margin="{utu:Responsive Narrowest='0,0,16,64', Narrow='0,0,40,72'}"
+                            Visibility="Collapsed" Opacity="0"
+                            controls:Reveal.IsOn="{x:Bind HasSelectedTag, Mode=OneWay}" controls:Reveal.Hides="True" controls:Reveal.Rise="6">
+      <utu:CardContentControl.RenderTransform>
+        <TranslateTransform />
+      </utu:CardContentControl.RenderTransform>
+      <StackPanel Spacing="12">
+        <StackPanel Spacing="2">
+          <TextBlock Text="{x:Bind SelectedTag.Name, Mode=OneWay}" Style="{StaticResource TitleText}" />
+          <TextBlock Text="{x:Bind SelectedLine, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap" />
+        </StackPanel>
+        <ItemsControl ItemsSource="{x:Bind SelectedTag.Facts, Mode=OneWay}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <controls:TwoColumnPanel ColumnSpacing="16" RowSpacing="8" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="presentation:Fact">
+              <StackPanel Spacing="2">
+                <TextBlock Text="{x:Bind Key}" Style="{StaticResource CaptionText}" />
+                <TextBlock Text="{x:Bind Value}" Style="{StaticResource BodyStrongSmallText}" />
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Button Style="{StaticResource GhostButton}" Command="{x:Bind SelectedTag.Open, Mode=OneWay}"
+                CommandParameter="{x:Bind SelectedTag.Id, Mode=OneWay}" Content="Open vessel profile →" HorizontalAlignment="Stretch" />
+      </StackPanel>
+    </utu:CardContentControl>
 
     <!-- Screen-reader summary (HarbourView.UpdateSummary): present to automation, invisible on screen -->
     <TextBlock x:Name="Summary" Opacity="0" IsHitTestVisible="False" Width="1" Height="1"

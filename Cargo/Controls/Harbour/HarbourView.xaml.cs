@@ -46,8 +46,6 @@ public sealed partial class HarbourTag : ObservableObject
     [ObservableProperty]
     private Thickness _edgeThickness;
 
-    [ObservableProperty]
-    private Visibility _expanded = Visibility.Collapsed;
 }
 
 /// <summary>
@@ -542,8 +540,39 @@ public sealed partial class HarbourView : UserControl
     }
 
     /// <summary>Tag chrome only: selected takes a 2 px ink edge, a linked hover a 1 px one.</summary>
+    public static readonly DependencyProperty SelectedTagProperty = DependencyProperty.Register(
+        nameof(SelectedTag), typeof(HarbourTag), typeof(HarbourView), new PropertyMetadata(null));
+
+    /// <summary>The vessel the docked facts card describes; kept while the card fades out so it never blanks.</summary>
+    public HarbourTag? SelectedTag
+    {
+        get => (HarbourTag?)GetValue(SelectedTagProperty);
+        private set => SetValue(SelectedTagProperty, value);
+    }
+
+    public static readonly DependencyProperty SelectedLineProperty = DependencyProperty.Register(
+        nameof(SelectedLine), typeof(string), typeof(HarbourView), new PropertyMetadata(string.Empty));
+
+    /// <summary>The status line the selected vessel's tag is showing (its pending line while a decision waits).</summary>
+    public string SelectedLine
+    {
+        get => (string)GetValue(SelectedLineProperty);
+        private set => SetValue(SelectedLineProperty, value);
+    }
+
+    public static readonly DependencyProperty HasSelectedTagProperty = DependencyProperty.Register(
+        nameof(HasSelectedTag), typeof(bool), typeof(HarbourView), new PropertyMetadata(false));
+
+    /// <summary>Whether the facts card is up: a vessel is selected and the frame has room for it.</summary>
+    public bool HasSelectedTag
+    {
+        get => (bool)GetValue(HasSelectedTagProperty);
+        private set => SetValue(HasSelectedTagProperty, value);
+    }
+
     private void PaintTags()
     {
+        HarbourTag? shown = null;
         foreach (var (tag, _) in _tags)
         {
             // The arrival still waiting on a berth decision wears the dark tag; confirmed, it is a light one
@@ -555,8 +584,19 @@ public sealed partial class HarbourView : UserControl
             // The float shadow is the resting edge; selected takes a 2 px ink edge, a linked hover a 1 px one
             tag.Edge = selected || lit ? Tokens.Brush("InkInvariantBrush") : Tokens.Transparent;
             tag.EdgeThickness = new Thickness(selected ? 2 : 1);
-            tag.Expanded = selected && !Tight ? Visibility.Visible : Visibility.Collapsed;
+            if (selected && !Tight)
+            {
+                shown = tag;
+                SelectedLine = needs ? tag.PendingSub : tag.Sub;
+            }
         }
+
+        if (shown is not null)
+        {
+            SelectedTag = shown;
+        }
+
+        HasSelectedTag = shown is not null;
     }
 
     // ── Screen readers ─────────────────────────────────────────────────────────
