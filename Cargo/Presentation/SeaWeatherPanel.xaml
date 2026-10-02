@@ -55,7 +55,7 @@
       </Grid>
 
       <Grid Margin="0,14,0,0">
-        <TextBlock Text="Tide · Westhaven Sound" Style="{StaticResource CaptionText}" />
+        <TextBlock Text="Tide · Port of Montreal" Style="{StaticResource CaptionText}" />
         <TextBlock Text="HW 23:10 · +2.1 m" Style="{StaticResource CaptionText}" HorizontalAlignment="Right" />
       </Grid>
       <controls:TideChart Height="78" Margin="0,6,0,0" />

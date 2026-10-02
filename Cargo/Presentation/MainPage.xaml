@@ -36,7 +36,7 @@
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
 
-      <TextBlock Text="Westhaven" Style="{StaticResource WordmarkText}" VerticalAlignment="Center" />
+      <TextBlock Text="Montreal Port Authority" Style="{StaticResource WordmarkText}" VerticalAlignment="Center" />
 
       <!-- Sections: text tabs; a section with something waiting on you carries an alert dot -->
       <ItemsControl Grid.Column="1" ItemsSource="{x:Bind ViewModel.NavItems, Mode=OneWay}" VerticalAlignment="Stretch">

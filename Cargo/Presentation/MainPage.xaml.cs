@@ -42,6 +42,7 @@ public sealed partial class MainPage : Page
         // The harbour reaches up behind the masthead by its natural height (not while it folds)
         MastheadFrame.SizeChanged += (_, _) =>
         {
+            // xaml-lint: allow responsive - measures the overlay's height for the harbour's reach; no size class or threshold
             if (double.IsNaN(MastheadFrame.Height) && MastheadFrame.ActualHeight > 0)
             {
                 Harbour.OverlayHeight = MastheadFrame.ActualHeight;

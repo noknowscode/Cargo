@@ -270,7 +270,7 @@
         <StackPanel Spacing="6">
           <Grid>
             <TextBlock Text="CMAU 918204 4" Style="{StaticResource TypeMonoMedium18}" />
-            <TextBlock Text="40 FT HC · CMA CGM · Westhaven → Le Havre · Lane 2"
+            <TextBlock Text="40 FT HC · CMA CGM · Montreal → Le Havre · Lane 2"
                        Style="{StaticResource SubtitleText}"
                        HorizontalAlignment="Right" VerticalAlignment="Center" />
           </Grid>

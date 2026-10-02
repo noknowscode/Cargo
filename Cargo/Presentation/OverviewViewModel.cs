@@ -36,7 +36,7 @@ public sealed partial class OverviewViewModel : ObservableObject
     [ObservableProperty]
     private TimelineViewModel? _timeline;
 
-    public string Subtitle => $"{PortData.Today} · Westhaven · the harbour as it is right now.";
+    public string Subtitle => $"{PortData.Today} · Montreal Port Authority · the harbour as it is right now.";
 
     /// <summary>The shift log, with the entries an open decision is about marked.</summary>
     [ObservableProperty]

@@ -25,7 +25,7 @@
         <TextBlock Text="Fleet &amp; waterways" Style="{StaticResource PageTitleText}" />
         <StackPanel Orientation="Horizontal" Spacing="7">
           <Ellipse Width="6" Height="6" Fill="{StaticResource AlertInvariantBrush}" VerticalAlignment="Center" />
-          <TextBlock Text="Live AIS · Westhaven Sound to the Alder River · 120 km" Style="{StaticResource PageSubtitleText}" />
+          <TextBlock Text="Live AIS · Port of Montreal to the Alder River · 120 km" Style="{StaticResource PageSubtitleText}" />
         </StackPanel>
       </StackPanel>
 

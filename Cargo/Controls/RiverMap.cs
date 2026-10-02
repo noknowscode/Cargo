@@ -136,7 +136,7 @@ public sealed partial class RiverMap : SceneHost
         DrawFleet();
 
         Scene.Place(Draw.Text("ALDER BASIN · KM 120", 40, 26, 11, Tokens.Brush("TextMutedInvariantBrush")));
-        Scene.Place(Draw.Label("WESTHAVEN · KM 0", 1400, 26, 11, Tokens.Brush("TextMutedInvariantBrush"),
+        Scene.Place(Draw.Label("MONTREAL · KM 0", 1400, 26, 11, Tokens.Brush("TextMutedInvariantBrush"),
             alignment: TextAlignment.Right, width: 200));
     }
 
