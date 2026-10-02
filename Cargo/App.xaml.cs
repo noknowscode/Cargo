@@ -73,7 +73,16 @@ public partial class App : Application
 
         // The dashboard is authored for a wide desk; give it room rather than opening
         // at the platform default and clipping the harbour.
-        MainWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1680, Height = 1020 });
+        var size = new Windows.Graphics.SizeInt32 { Width = 1680, Height = 1020 };
+#if DEBUG
+        // Layout verification opens at a given size (CARGO_WINDOW=390x844), one launch per size
+        if (Environment.GetEnvironmentVariable("CARGO_WINDOW")?.Split('x') is [var w, var h]
+            && int.TryParse(w, out var width) && int.TryParse(h, out var height))
+        {
+            size = new Windows.Graphics.SizeInt32 { Width = width, Height = height };
+        }
+#endif
+        MainWindow.AppWindow.Resize(size);
 
         // Open straight on the section the store starts in (Overview, unless a DEBUG hook says otherwise)
         Host = await builder.NavigateAsync<Shell>(initialNavigate: (services, navigator) =>

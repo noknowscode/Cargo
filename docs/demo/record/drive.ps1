@@ -21,11 +21,11 @@ function Get-CargoWindow {
     (Get-Process Cargo -ErrorAction Stop | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1).MainWindowHandle
 }
 
-$script:H = [IntPtr]::Zero
+$script:Hwnd = [IntPtr]::Zero
 $script:Origin = $null
 
 function Use-Window([IntPtr]$h) {
-    $script:H = $h
+    $script:Hwnd = $h
     $p = New-Object U+POINT
     [U]::ClientToScreen($h, [ref]$p) | Out-Null
     $script:Origin = $p
@@ -33,7 +33,7 @@ function Use-Window([IntPtr]$h) {
 
 function Get-ClientRect {
     $r = New-Object U+RECT
-    [U]::GetClientRect($script:H, [ref]$r) | Out-Null
+    [U]::GetClientRect($script:Hwnd, [ref]$r) | Out-Null
     [pscustomobject]@{ X = $script:Origin.X; Y = $script:Origin.Y; W = $r.R; H = $r.B }
 }
 

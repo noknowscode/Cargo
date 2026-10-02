@@ -7,7 +7,6 @@
 
   <Page.Resources>
     <!-- Status and detail sit side by side from 1040 px and stack below it -->
-    <utu:ResponsiveLayout x:Key="BerthsBreakpoints" Narrowest="0" Narrow="0" Normal="1040" Wide="100000" Widest="100000" />
   </Page.Resources>
 
   <!-- The decision waiting on you, what every berth holds, then the plan and the vessel you are working -->
@@ -21,7 +20,7 @@
 
     <!-- Below the breakpoint the needs-you bar takes its own full-width row under the title -->
     <Grid Style="{StaticResource Masthead}"
-          RowSpacing="{utu:Responsive Layout={StaticResource BerthsBreakpoints}, Narrow=16, Normal=0}">
+          RowSpacing="{utu:Responsive Narrowest=16, Normal=0}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
@@ -55,20 +54,20 @@
       </StackPanel>
 
       <local:NeedsYouBar VerticalAlignment="Bottom"
-                         Grid.Row="{utu:Responsive Layout={StaticResource BerthsBreakpoints}, Narrow=1, Normal=0}"
-                         Grid.Column="{utu:Responsive Layout={StaticResource BerthsBreakpoints}, Narrow=0, Normal=1}"
-                         Grid.ColumnSpan="{utu:Responsive Layout={StaticResource BerthsBreakpoints}, Narrow=2, Normal=1}"
-                         Width="{utu:Responsive Layout={StaticResource BerthsBreakpoints}, Narrow=NaN, Normal=600}"
+                         Grid.Row="{utu:Responsive Narrowest=1, Normal=0}"
+                         Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
+                         Grid.ColumnSpan="{utu:Responsive Narrowest=2, Normal=1}"
+                         Width="{utu:Responsive Narrowest=NaN, Normal=600}"
                          DataContext="{x:Bind ViewModel.NeedsYou, Mode=OneWay}" />
     </Grid>
 
     <!-- ── Berth status · Selected vessel ───────────────────────── -->
     <Grid Grid.Row="1"
-          ColumnSpacing="{utu:Responsive Layout={StaticResource BerthsBreakpoints}, Narrow=0, Normal=24}"
-          RowSpacing="{utu:Responsive Layout={StaticResource BerthsBreakpoints}, Narrow=28, Normal=0}">
+          ColumnSpacing="{utu:Responsive Narrowest=0, Normal=24}"
+          RowSpacing="{utu:Responsive Narrowest=28, Normal=0}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="1.55*" />
-        <ColumnDefinition Width="{utu:Responsive Layout={StaticResource BerthsBreakpoints}, Narrow='0', Normal='1*'}" />
+        <ColumnDefinition Width="{utu:Responsive Narrowest='0', Normal='1*'}" />
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -136,8 +135,8 @@
         </StackPanel>
       </Border>
 
-      <Border Grid.Row="{utu:Responsive Layout={StaticResource BerthsBreakpoints}, Narrow=1, Normal=0}"
-              Grid.Column="{utu:Responsive Layout={StaticResource BerthsBreakpoints}, Narrow=0, Normal=1}"
+      <Border Grid.Row="{utu:Responsive Narrowest=1, Normal=0}"
+              Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
               Style="{StaticResource SectionRule}"
               AutomationProperties.LiveSetting="Polite"
               AutomationProperties.Name="{x:Bind ViewModel.Detail.Name, Mode=OneWay}">

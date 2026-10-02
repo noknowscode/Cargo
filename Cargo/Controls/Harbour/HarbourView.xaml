@@ -105,7 +105,7 @@
 
     <!-- Camera: the current preset, opening the four presets upward; a drag or zoom clears the check -->
     <utu:ShadowContainer Background="{StaticResource SurfaceInvariantBrush}" Visibility="{x:Bind HudVisibility, Mode=OneWay}"
-                         HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="40,0,0,16">
+                         HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="{utu:Responsive Narrowest='16,0,0,12', Narrow='40,0,0,16'}">
       <utu:ShadowContainer.Shadows>
         <utu:ShadowCollection>
           <utu:Shadow Spread="1" BlurRadius="0" Color="{StaticResource InkColor}" Opacity="0.08" />
@@ -133,7 +133,7 @@
       </Button>
     </utu:ShadowContainer>
 
-    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,40,16"
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="{utu:Responsive Narrowest='0,0,16,12', Narrow='0,0,40,16'}"
                 Visibility="{x:Bind HudVisibility, Mode=OneWay}">
       <!-- Key: what each mark on the map means -->
       <utu:ShadowContainer Background="{StaticResource SurfaceInvariantBrush}">
@@ -175,8 +175,9 @@
         </Button>
       </utu:ShadowContainer>
 
-      <!-- Scale, north, zoom: one float, cells split by hairlines -->
-      <utu:ShadowContainer Background="{StaticResource SurfaceInvariantBrush}">
+      <!-- Scale, north, zoom: one float, cells split by hairlines. Phones pinch instead, and the row has no
+           room for it beside the camera menu -->
+      <utu:ShadowContainer Background="{StaticResource SurfaceInvariantBrush}" Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}">
         <utu:ShadowContainer.Shadows>
           <utu:ShadowCollection>
             <utu:Shadow Spread="1" BlurRadius="0" Color="{StaticResource InkColor}" Opacity="0.08" />
