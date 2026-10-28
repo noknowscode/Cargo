@@ -17,6 +17,13 @@ sits under the same harbour stage: full height on Overview, a 210 px strip every
 
 ## Running it
 
+The tide lane uses the Liveline chart control from [noknowscode/uno-lab](https://github.com/noknowscode/uno-lab).
+Clone it next to this repository first:
+
+```
+git clone https://github.com/noknowscode/uno-lab ../uno-lab
+```
+
 ```
 dotnet build Cargo/Cargo.csproj -f net10.0-desktop
 dotnet run   --project Cargo/Cargo.csproj -f net10.0-desktop
