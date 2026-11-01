@@ -817,10 +817,17 @@ public sealed partial class HarbourView : UserControl
         }
 
         _introPlayed = true;
-        if (!_scene.Animate || Environment.GetEnvironmentVariable("CARGO_HARBOUR_VIEW") is { Length: > 0 })
+        if (!_scene.Animate)
         {
             return;
         }
+#if DEBUG
+        // A verification run that asked for a preset (ApplyStartView) photographs it without the swing.
+        if (Environment.GetEnvironmentVariable("CARGO_HARBOUR_VIEW") is { Length: > 0 })
+        {
+            return;
+        }
+#endif
 
         var target = _scene.Camera.Pose;
         _scene.Camera.Apply(target with { Yaw = target.Yaw - 40 * Math.PI / 180 });
