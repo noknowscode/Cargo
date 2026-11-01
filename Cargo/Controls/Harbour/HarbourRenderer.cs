@@ -30,7 +30,10 @@ public sealed class HarbourRenderer : IDisposable
     private readonly SKPaint _text = new() { IsAntialias = true };
     private readonly SKPaint _layerBlur = new();
     private readonly SKPaint _mask = new() { BlendMode = SKBlendMode.DstIn };
-    private readonly SKPath _path = new();
+    // SkiaSharp 4 builds paths in a builder: every Trace* fills _pb, then CommitPath() swaps the finished
+    // path into _path, which the draw calls read. One builder for the renderer, never one per frame.
+    private readonly SKPathBuilder _pb = new();
+    private SKPath _path = new();
     private readonly SKFont _chartFont = new() { Size = 10, Subpixel = true };
     private readonly SKFont _paintFont = new() { Size = 7, Subpixel = true, Embolden = true };
     private readonly Dictionary<int, SKMaskFilter> _maskFilters = new();
@@ -124,7 +127,8 @@ public sealed class HarbourRenderer : IDisposable
 
         if (_baked is not null && _bakedKey == key)
         {
-            canvas.DrawImage(_baked, bounds);
+            // Baked at device pixels, so it lands 1:1: nearest sampling, as the pre-SkiaSharp 4 overload did.
+            canvas.DrawImage(_baked, bounds, SKSamplingOptions.Default);
         }
         else
         {
@@ -466,7 +470,7 @@ public sealed class HarbourRenderer : IDisposable
 
     private void Route(SKCanvas canvas, P2 from, P2 control, P2 to, SKColor color, float width, float phase = 0)
     {
-        _path.Reset();
+        _pb.Reset();
         for (var i = 0; i <= 28; i++)
         {
             var t = i / 28.0;
@@ -475,14 +479,15 @@ public sealed class HarbourRenderer : IDisposable
                 u * u * from.Y + 2 * u * t * control.Y + t * t * to.Y, .05);
             if (i == 0)
             {
-                _path.MoveTo(q.X, q.Y);
+                _pb.MoveTo(q.X, q.Y);
             }
             else
             {
-                _path.LineTo(q.X, q.Y);
+                _pb.LineTo(q.X, q.Y);
             }
         }
 
+        CommitPath();
         _stroke.Color = color;
         _stroke.StrokeWidth = width;
         _stroke.PathEffect = phase == 0 ? _dashRoute : CreepDash(phase);
@@ -744,14 +749,15 @@ public sealed class HarbourRenderer : IDisposable
             return;
         }
 
-        _path.Reset();
-        _path.MoveTo(hull[0].X, hull[0].Y);
+        _pb.Reset();
+        _pb.MoveTo(hull[0].X, hull[0].Y);
         for (var i = 1; i < hull.Length; i++)
         {
-            _path.LineTo(hull[i].X, hull[i].Y);
+            _pb.LineTo(hull[i].X, hull[i].Y);
         }
 
-        _path.Close();
+        _pb.Close();
+        CommitPath();
         _stroke.Color = color;
         _stroke.StrokeWidth = width;
         canvas.DrawPath(_path, _stroke);
@@ -870,59 +876,69 @@ public sealed class HarbourRenderer : IDisposable
 
     // ── Paths ──────────────────────────────────────────────────────────────────
 
+    private void CommitPath()
+    {
+        _path.Dispose();
+        _path = _pb.Detach();
+    }
+
     private void TracePolygon(IReadOnlyList<V3> points)
     {
-        _path.Reset();
+        _pb.Reset();
         for (var i = 0; i < points.Count; i++)
         {
             var q = _camera.Project(points[i]);
             if (i == 0)
             {
-                _path.MoveTo(q.X, q.Y);
+                _pb.MoveTo(q.X, q.Y);
             }
             else
             {
-                _path.LineTo(q.X, q.Y);
+                _pb.LineTo(q.X, q.Y);
             }
         }
 
-        _path.Close();
+        _pb.Close();
+        CommitPath();
     }
 
     private void TraceGround(IReadOnlyList<P2> poly, double z)
     {
-        _path.Reset();
+        _pb.Reset();
         for (var i = 0; i < poly.Count; i++)
         {
             var q = _camera.Project(poly[i].X, poly[i].Y, z);
             if (i == 0)
             {
-                _path.MoveTo(q.X, q.Y);
+                _pb.MoveTo(q.X, q.Y);
             }
             else
             {
-                _path.LineTo(q.X, q.Y);
+                _pb.LineTo(q.X, q.Y);
             }
         }
 
-        _path.Close();
+        _pb.Close();
+        CommitPath();
     }
 
     private void TraceLine(IReadOnlyList<P2> points, double z)
     {
-        _path.Reset();
+        _pb.Reset();
         for (var i = 0; i < points.Count; i++)
         {
             var q = _camera.Project(points[i].X, points[i].Y, z);
             if (i == 0)
             {
-                _path.MoveTo(q.X, q.Y);
+                _pb.MoveTo(q.X, q.Y);
             }
             else
             {
-                _path.LineTo(q.X, q.Y);
+                _pb.LineTo(q.X, q.Y);
             }
         }
+
+        CommitPath();
     }
 
     private void Shadows(SKCanvas canvas, List<P2[]> polygons, double z, double blurWorld, double alpha)
@@ -932,7 +948,7 @@ public sealed class HarbourRenderer : IDisposable
             return;
         }
 
-        _path.Reset();
+        _pb.Reset();
         foreach (var poly in polygons)
         {
             for (var i = 0; i < poly.Length; i++)
@@ -940,17 +956,18 @@ public sealed class HarbourRenderer : IDisposable
                 var q = _camera.Project(poly[i].X, poly[i].Y, z);
                 if (i == 0)
                 {
-                    _path.MoveTo(q.X, q.Y);
+                    _pb.MoveTo(q.X, q.Y);
                 }
                 else
                 {
-                    _path.LineTo(q.X, q.Y);
+                    _pb.LineTo(q.X, q.Y);
                 }
             }
 
-            _path.Close();
+            _pb.Close();
         }
 
+        CommitPath();
         var sigmaKey = (int)Math.Round(Math.Max(.5, blurWorld * _camera.Scale / 2) * 4);
         if (!_maskFilters.TryGetValue(sigmaKey, out var filter))
         {
@@ -1007,6 +1024,7 @@ public sealed class HarbourRenderer : IDisposable
         _layerBlur.Dispose();
         _mask.Dispose();
         _path.Dispose();
+        _pb.Dispose();
         _chartFont.Dispose();
         _paintFont.Dispose();
         _dashRoute.Dispose();

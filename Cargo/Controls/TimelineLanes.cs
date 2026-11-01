@@ -28,8 +28,7 @@ public sealed partial class TimelineLanes : SKCanvasElement
     private readonly SKFont _label = new(SKTypeface.Default, 12);
     private readonly SKFont _mono = new(SKTypeface.Default, 12);
     private readonly SKFont _monoStrong = new(SKTypeface.Default, 13);
-    private readonly SKPath _path = new();
-    private readonly SKPath _area = new();
+    private readonly SKPathBuilder _pb = new();
 
     // Palette, resolved once from Themes/Tokens.xaml (the canvas has no XAML to bind)
     private readonly SKColor _ink = Sk("InkColor"), _muted = Sk("TextMutedColor"), _surface = Sk("SurfaceColor"),
@@ -243,23 +242,24 @@ public sealed partial class TimelineLanes : SKCanvasElement
         canvas.DrawLine(PlotLeft, Y(100), nowX, Y(100), _stroke);
         Text(canvas, "100 / h", PlotLeft + 4, Y(100) - 5, _mono, _muted);
 
+        // The line, then the same line closed down to zero for the area under it
         Smooth(frame.Moves.Select(m => new SKPoint(x(m.Hour), Y(m.Value))).ToArray());
-        _area.Reset();
-        _area.AddPath(_path);
-        _area.LineTo(nowX, Y(0));
-        _area.LineTo(x(frame.Moves[0].Hour), Y(0));
-        _area.Close();
+        using var line = _pb.Snapshot();
+        _pb.LineTo(nowX, Y(0));
+        _pb.LineTo(x(frame.Moves[0].Hour), Y(0));
+        _pb.Close();
+        using (var area = _pb.Detach())
         using (var shader = SKShader.CreateLinearGradient(new SKPoint(0, MovesTop), new SKPoint(0, Y(0)),
                    new[] { Alpha(_accent, .2), Alpha(_accent, 0) }, null, SKShaderTileMode.Clamp))
         {
             _fill.Shader = shader;
-            canvas.DrawPath(_area, _fill);
+            canvas.DrawPath(area, _fill);
             _fill.Shader = null;
         }
 
         _stroke.StrokeWidth = 2;
         _stroke.Color = _accent;
-        canvas.DrawPath(_path, _stroke);
+        canvas.DrawPath(line, _stroke);
 
         // The peak, hollow, with its value
         var (peakHour, peakValue) = frame.MovesPeak;
@@ -289,21 +289,28 @@ public sealed partial class TimelineLanes : SKCanvasElement
 
         // The band between in and out, in water at 16%
         Smooth(outPoints);
-        _area.Reset();
-        _area.AddPath(_path);
-        Smooth(inPoints.Reverse().ToArray());
-        _area.AddPath(_path, SKPathAddMode.Extend);
-        _area.Close();
-        _fill.Color = Alpha(_water, .16);
-        canvas.DrawPath(_area, _fill);
+        Smooth(inPoints.Reverse().ToArray(), extend: true);
+        _pb.Close();
+        using (var band = _pb.Detach())
+        {
+            _fill.Color = Alpha(_water, .16);
+            canvas.DrawPath(band, _fill);
+        }
 
         _stroke.StrokeWidth = 2;
         Smooth(inPoints);
-        _stroke.Color = _navy;
-        canvas.DrawPath(_path, _stroke);
+        using (var inLine = _pb.Detach())
+        {
+            _stroke.Color = _navy;
+            canvas.DrawPath(inLine, _stroke);
+        }
+
         Smooth(outPoints);
-        _stroke.Color = _water;
-        canvas.DrawPath(_path, _stroke);
+        using (var outLine = _pb.Detach())
+        {
+            _stroke.Color = _water;
+            canvas.DrawPath(outLine, _stroke);
+        }
 
         var now = frame.Cargo[^1];
         var outAbove = now.Out >= now.In;
@@ -364,21 +371,31 @@ public sealed partial class TimelineLanes : SKCanvasElement
         canvas.DrawText(text, x, y, SKTextAlign.Left, font, _fill);
     }
 
-    /// <summary>A smooth line through the points into <see cref="_path"/> (cubic, control points 30% out).</summary>
-    private void Smooth(IReadOnlyList<SKPoint> points)
+    /// <summary>
+    /// Adds a smooth line through the points to <see cref="_pb"/> (cubic, control points 30% out). With
+    /// <paramref name="extend"/>, a straight segment joins it to the open contour instead of starting a new one.
+    /// </summary>
+    private void Smooth(IReadOnlyList<SKPoint> points, bool extend = false)
     {
-        _path.Reset();
         if (points.Count == 0)
         {
             return;
         }
 
-        _path.MoveTo(points[0]);
+        if (extend)
+        {
+            _pb.LineTo(points[0]);
+        }
+        else
+        {
+            _pb.MoveTo(points[0]);
+        }
+
         for (var i = 1; i < points.Count; i++)
         {
             var (a, b) = (points[i - 1], points[i]);
             var dx = (b.X - a.X) * .3f;
-            _path.CubicTo(a.X + dx, a.Y, b.X - dx, b.Y, b.X, b.Y);
+            _pb.CubicTo(a.X + dx, a.Y, b.X - dx, b.Y, b.X, b.Y);
         }
     }
 }
