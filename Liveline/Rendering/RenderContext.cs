@@ -28,6 +28,8 @@ internal sealed class RenderContext : IDisposable
         Style = SKPaintStyle.Stroke,
         StrokeJoin = SKStrokeJoin.Round
     };
+    // SkiaSharp 4 builds paths in a builder; one for the chart, reset by Detach after each path.
+    public readonly SKPathBuilder Path = new();
     public readonly SKFont LabelFont = new(DefaultTypeface, 11f);
     public readonly SKFont BadgeFont = new(DefaultBoldTypeface, 12f);
     public readonly SKFont MessageFont = new(DefaultTypeface, 14f);
@@ -59,6 +61,7 @@ internal sealed class RenderContext : IDisposable
         Stroke.Dispose();
         ThinStroke.Dispose();
         Halo.Dispose();
+        Path.Dispose();
         LabelFont.Dispose();
         BadgeFont.Dispose();
         MessageFont.Dispose();

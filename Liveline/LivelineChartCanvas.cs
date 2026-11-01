@@ -259,8 +259,8 @@ public class LivelineChartCanvas : SKCanvasElement
         float waveHeight = 4f + breathAmplitude * 12f;
         byte alpha = (byte)(80 + breathAmplitude * 120);
 
-        using var path = new SKPath();
-        path.MoveTo(left, centerY);
+        var pb = _rc.Path;
+        pb.MoveTo(left, centerY);
 
         for (int i = 1; i < BreathingPointCount; i++)
         {
@@ -273,13 +273,14 @@ public class LivelineChartCanvas : SKCanvasElement
             float prevY = centerY + (float)Math.Sin(_breathPhase * 2.0 + prevT * Math.PI * 2.0) * waveHeight;
             float cpOffset = (x - prevX) * 0.3f;
 
-            path.CubicTo(prevX + cpOffset, prevY, x - cpOffset, y, x, y);
+            pb.CubicTo(prevX + cpOffset, prevY, x - cpOffset, y, x, y);
         }
 
-        using var fillPath = new SKPath(path);
-        fillPath.LineTo(right, bottom);
-        fillPath.LineTo(left, bottom);
-        fillPath.Close();
+        using var path = pb.Snapshot();
+        pb.LineTo(right, bottom);
+        pb.LineTo(left, bottom);
+        pb.Close();
+        using var fillPath = pb.Detach();
 
         using var gradient = SKShader.CreateLinearGradient(
             new SKPoint(0, centerY - waveHeight),

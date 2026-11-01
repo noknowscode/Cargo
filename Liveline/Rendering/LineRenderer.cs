@@ -26,10 +26,10 @@ internal static class LineRenderer
         int count = yValues.Length;
         float invRange = (float)(1.0 / range);
 
-        using var path = new SKPath();
+        var pb = rc.Path;
         float firstX = rc.X(0, count, left, chartWidth);
         float firstY = (float)(bottom - (yValues[0] - minY) / range * chartHeight);
-        path.MoveTo(firstX, firstY);
+        pb.MoveTo(firstX, firstY);
 
         float prevX = firstX, prevY = firstY;
         for (int i = 1; i < count; i++)
@@ -38,18 +38,20 @@ internal static class LineRenderer
             float y = bottom - ((float)yValues[i] - (float)minY) * invRange * chartHeight;
             float cpOffset = (x - prevX) * 0.3f;
 
-            path.CubicTo(prevX + cpOffset, prevY, x - cpOffset, y, x, y);
+            pb.CubicTo(prevX + cpOffset, prevY, x - cpOffset, y, x, y);
             prevX = x;
             prevY = y;
         }
 
+        // The line, then the same line closed down to the baseline for the fill.
+        using var path = pb.Snapshot();
+        pb.LineTo(prevX, bottom);
+        pb.LineTo(firstX, bottom);
+        pb.Close();
+        using var fillPath = pb.Detach();
+
         if (showFill)
         {
-            using var fillPath = new SKPath(path);
-            fillPath.LineTo(prevX, bottom);
-            fillPath.LineTo(firstX, bottom);
-            fillPath.Close();
-
             using var gradient = SKShader.CreateLinearGradient(
                 new SKPoint(0, top),
                 new SKPoint(0, bottom),
