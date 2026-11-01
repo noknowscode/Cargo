@@ -1,6 +1,6 @@
 <Project Sdk="Uno.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-windows10.0.19041;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
     <!-- Follows Cargo's single-head override (see Cargo.csproj), so a single-head build restores only that head here too. -->
     <TargetFrameworks Condition="'$(CargoTargetFrameworks)' != ''">$(CargoTargetFrameworks)</TargetFrameworks>
     <UnoSingleProject>true</UnoSingleProject>
@@ -14,5 +14,10 @@
     <UnoFeatures>
       Skia;
     </UnoFeatures>
+  </PropertyGroup>
+
+  <!-- WinAppSDK: Uno 7's WinUI libraries need WinRT.Runtime 2.3.1 (CS1705 with the 19041 default); see Cargo.csproj. -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <WindowsSdkPackageVersion>10.0.19041.87</WindowsSdkPackageVersion>
   </PropertyGroup>
 </Project>
