@@ -39,19 +39,24 @@ public sealed partial class GridPaper : UserControl
         SizeChanged += (_, e) => Rebuild(e.NewSize.Width, e.NewSize.Height);
     }
 
+    // One open figure per line. LineGeometry would read better, but Uno reports its points as not
+    // implemented on Android, iOS and WebAssembly (Uno0001); PathGeometry is implemented on every head.
     private void Rebuild(double width, double height)
     {
-        var grid = new GeometryGroup();
+        var grid = new PathGeometry();
         for (var x = Pitch; x < width; x += Pitch)
         {
-            grid.Children.Add(new LineGeometry { StartPoint = new(x, 0), EndPoint = new(x, height) });
+            grid.Figures.Add(Line(new(x, 0), new(x, height)));
         }
 
         for (var y = Pitch; y < height; y += Pitch)
         {
-            grid.Children.Add(new LineGeometry { StartPoint = new(0, y), EndPoint = new(width, y) });
+            grid.Figures.Add(Line(new(0, y), new(width, y)));
         }
 
         _lines.Data = grid;
     }
+
+    private static PathFigure Line(Windows.Foundation.Point from, Windows.Foundation.Point to) =>
+        new() { StartPoint = from, Segments = { new LineSegment { Point = to } } };
 }
