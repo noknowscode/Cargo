@@ -71,8 +71,10 @@ public partial class App : Application
 #endif
         MainWindow.SetWindowIcon();
 
+#if __DESKTOP__ || WINDOWS
         // The dashboard is authored for a wide desk; give it room rather than opening
-        // at the platform default and clipping the harbour.
+        // at the platform default and clipping the harbour. Only a desktop window can be
+        // sized: Android and iOS are full screen and the browser owns the WebAssembly page.
         var size = new Windows.Graphics.SizeInt32 { Width = 1680, Height = 1020 };
 #if DEBUG
         // Layout verification opens at a given size (CARGO_WINDOW=390x844), one launch per size
@@ -83,6 +85,7 @@ public partial class App : Application
         }
 #endif
         MainWindow.AppWindow.Resize(size);
+#endif
 
         // Open straight on the section the store starts in (Overview, unless a DEBUG hook says otherwise)
         Host = await builder.NavigateAsync<Shell>(initialNavigate: (services, navigator) =>

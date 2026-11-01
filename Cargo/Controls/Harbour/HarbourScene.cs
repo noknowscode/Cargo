@@ -83,7 +83,10 @@ public sealed class HarbourScene : SKCanvasElement
         surface.PointerReleased += OnPointerReleased;
         surface.PointerCanceled += OnPointerReleased;
         surface.PointerExited += OnPointerExited;
+#if !ANDROID && !IOS
+        // A mouse wheel exists only where there is a mouse; touch heads zoom with the pinch below.
         surface.PointerWheelChanged += OnPointerWheelChanged;
+#endif
     }
 
     /// <summary>Raised on the UI thread whenever the camera moves, so overlays can follow.</summary>
@@ -385,6 +388,8 @@ public sealed class HarbourScene : SKCanvasElement
         SetHover(null, null);
     }
 
+#if !ANDROID && !IOS
+    // MouseWheelDelta is not implemented on Android and iOS (Uno0001)
     private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
     {
         var delta = e.GetCurrentPoint(_surface).Properties.MouseWheelDelta;
@@ -394,6 +399,7 @@ public sealed class HarbourScene : SKCanvasElement
         Moved();
         e.Handled = true;
     }
+#endif
 
     private void Hover(Point point)
     {
