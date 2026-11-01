@@ -41,6 +41,9 @@ public sealed partial class TimelineLanes : SKCanvasElement
     public TimelineLanes()
     {
         Height = DesignHeight;
+        // Uno 7: SKCanvasElement is a Grid, and a Grid without a background is not hit-testable,
+        // so the dot hover would fall through to whatever lies behind the lanes
+        Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
         PointerMoved += OnPointerMoved;
         PointerExited += OnPointerExited;
         LoadFonts();
