@@ -28,6 +28,10 @@ public partial class App : Application
         }
     }
 
+    // UseNavigation and NavigateAsync resolve views and view models by reflection. WebAssembly is the head
+    // that trims app code, and Platforms/WebAssembly/LinkerConfig.xml roots the whole Cargo assembly there.
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code",
+        Justification = "The view and view-model types navigation reflects over live in the Cargo assembly, which LinkerConfig.xml roots.")]
     private async Task LaunchAsync(LaunchActivatedEventArgs args)
     {
         // The store owns the shift clock (a DispatcherTimer), so it is built here on the UI
