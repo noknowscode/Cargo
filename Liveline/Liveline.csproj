@@ -1,0 +1,15 @@
+<Project Sdk="Uno.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+    <UnoSingleProject>true</UnoSingleProject>
+    <OutputType>Library</OutputType>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Liveline</RootNamespace>
+
+    <UnoFeatures>
+      SkiaRenderer;
+    </UnoFeatures>
+  </PropertyGroup>
+</Project>
