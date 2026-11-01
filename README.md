@@ -18,16 +18,23 @@ sits under the same harbour stage: full height on Overview, a 210 px strip every
 ## Running it
 
 ```
-dotnet build Cargo/Cargo.csproj -f net10.0-desktop
-dotnet run   --project Cargo/Cargo.csproj -f net10.0-desktop
+dotnet build Cargo/Cargo.csproj -f net10.0-desktop -p:CargoTargetFrameworks=net10.0-desktop
+dotnet run   --project Cargo/Cargo.csproj -f net10.0-desktop -p:CargoTargetFrameworks=net10.0-desktop
 ```
 
-Verified building for `net10.0-desktop`, `net10.0-browserwasm` and `net10.0-android`.
-iOS is in the target list but needs a paired Mac to build.
+`CargoTargetFrameworks` narrows the build to one head, so a machine without the Android, iOS or
+wasm-tools workloads can still restore it; leave it out to restore every head.
+
+Five heads: `net10.0-desktop` (Skia on Windows, macOS and Linux), `net10.0-windows10.0.19041`
+(WinAppSDK, x64 or ARM64), `net10.0-browserwasm`, `net10.0-android` and `net10.0-ios`. Desktop,
+WebAssembly and Android build with 0 warnings on Linux; the Windows and iOS heads build on their own
+OS, in CI (`.github/workflows/ci.yml`). Warnings fail the build (`Directory.Build.props`).
 
 ## Architecture
 
-- **Uno.Sdk 6.7.30** (stable), single project, Skia renderer, `SimpleTheme` + Uno Toolkit.
+- **Uno.Sdk 7.0.0-dev.115** (Uno 7 dev build, SkiaSharp 4), single project, Skia renderer,
+  `SimpleTheme` + Uno Toolkit. Hot Design and the App MCP are off in Debug while this dev SDK's
+  clients still reference `Uno.UI.Lottie` (see `Cargo.csproj`).
 - **MVVM (`CommunityToolkit.Mvvm`)**, not MVUX. Every figure in this app is an in-memory
   constant; there is no async or reactive data flow for feeds to model. What the app
   actually has is a lot of imperative selection state — which berth is hovered, which bay
@@ -123,7 +130,7 @@ headless run can photograph them:
 
 | Variable | Effect |
 |---|---|
-| `APP_NO_HOTDESIGN=1` | Skips `UseStudio()`, which otherwise blocks window creation with no DevServer |
+| `APP_NO_HOTDESIGN=1` | Skips `UseStudio()`, which otherwise blocks window creation with no DevServer (compiled out anyway while `NO_UNO_STUDIO` is defined) |
 | `CARGO_START_SECTION` | Opens straight onto a section (`overview`, `berths`, `cargo`, `fleet`, `security`) |
 | `CARGO_SECURITY_TAB` | `zones`, `access` or `inspection` |
 | `CARGO_DOCK_SELECT` | Vessel id to preselect in the docking planner |

@@ -80,7 +80,8 @@ Answered 2026-09-30 (the user accepted the defaults):
   - `Segmented` behaviour for Chart/Table and the layer switcher: reuse the camera-pill technique
     (Berths step 5: Storyboard, `EaseSmooth`, re-target mid-slide). Generalise `HarbourView`'s
     `MovePill` into a small reusable helper only because three controls now need it.
-- **Liveline (external, `C:\Users\Platform006\Uno-Builds-net10\Liveline`, branch `liveline-window`):**
+- **Liveline (external, `C:\Users\Platform006\Uno-Builds-net10\Liveline`, branch `liveline-window`;
+  since 2026-11-01 a copy lives in this repository under `Liveline/`, on Uno.Sdk 7):**
   - Bump Uno.Sdk 6.5.36 → **6.7.30** (Cargo's pin, latest stable verified 2026-09-30); add
     `net10.0-android;net10.0-ios` (Cargo targets them; today Liveline is desktop + wasm only).
   - New properties: `WindowStart`/`WindowEnd` (x by time, not by index); `Forecast`
@@ -225,5 +226,5 @@ Answered 2026-09-30 (the user accepted the defaults):
 - **Tide "now" marker:** the design places it at Nordic Star's arrival (21:40, "1.8 m as Nordic Star
   arrives"). Pin it to the next arrival, or to NOW?
 - **Liveline upstream:** push the `liveline-window` branch and open a PR to Uno-Builds-net10, or keep
-  it local until Cargo ships?
+  it local until Cargo ships? (Resolved 2026-11-01: Liveline is vendored into this repository.)
 - **Pending uno-audit commit** (7 files): commit before step 1?
