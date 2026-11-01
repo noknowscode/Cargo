@@ -17,13 +17,6 @@ sits under the same harbour stage: full height on Overview, a 210 px strip every
 
 ## Running it
 
-The tide lane uses the Liveline chart control from [noknowscode/uno-lab](https://github.com/noknowscode/uno-lab).
-Clone it next to this repository first:
-
-```
-git clone https://github.com/noknowscode/uno-lab ../uno-lab
-```
-
 ```
 dotnet build Cargo/Cargo.csproj -f net10.0-desktop
 dotnet run   --project Cargo/Cargo.csproj -f net10.0-desktop
@@ -74,6 +67,9 @@ iOS is in the target list but needs a paired Mac to build.
   that cannot take the ship lights red.
 - `Controls/VesselProfile.cs` — the bay grid is laid over the hull render, positioned from
   the deck rect measured inside the sprite, and each bay column is its own hit target.
+- `Liveline/` — the tide lane's chart control, a copy of Liveline from
+  [noknowscode/uno-lab](https://github.com/noknowscode/uno-lab) (taken at `1289007`) kept in this
+  repository so it builds on its own. Changes made here are not synced back.
 - `Presentation/MainPage.xaml.cs` realizes one section pane per idle turn after the window
   shows, so all five exist about 1.5 s after launch (30 to 370 ms each). A jump before that
   realizes its pane on demand, because paying a section's construction cost on the click is
