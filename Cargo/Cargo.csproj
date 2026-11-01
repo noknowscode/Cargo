@@ -1,6 +1,11 @@
 <Project Sdk="Uno.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+    <!--
+      App-only override for single-head builds (CI, RID-specific publish): -p:CargoTargetFrameworks=net10.0-desktop.
+      Liveline follows it, so a single-head build restores no other head (and needs no other workload).
+    -->
+    <TargetFrameworks Condition="'$(CargoTargetFrameworks)' != ''">$(CargoTargetFrameworks)</TargetFrameworks>
 
     <OutputType>Exe</OutputType>
     <UnoSingleProject>true</UnoSingleProject>
@@ -31,6 +36,14 @@
       Mvvm;
       SkiaRenderer;
     </UnoFeatures>
+    <!--
+      Uno.Sdk 7.0.0-dev.115 bundles Hot Design 2.0.0-dev.31 and App MCP 2.0.0-dev.18, whose clients still reference
+      Uno.UI.Lottie, an assembly Uno 7 no longer ships: every Debug launch crashes in GlobalStaticResources. Both stay off
+      (Debug only; Release never had them) until a dev build drops the reference. Delete these three lines then.
+    -->
+    <UnoDisableHotDesign>true</UnoDisableHotDesign>
+    <UnoDisableMCPSupport>true</UnoDisableMCPSupport>
+    <DefineConstants>$(DefineConstants);NO_UNO_STUDIO</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

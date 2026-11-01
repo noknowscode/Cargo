@@ -61,7 +61,7 @@ public partial class App : Application
 
         MainWindow = builder.Window;
 
-#if DEBUG
+#if DEBUG && !NO_UNO_STUDIO
         // Hot Design blocks window creation when no DevServer is reachable, so headless
         // verification runs opt out with APP_NO_HOTDESIGN=1.
         if (Environment.GetEnvironmentVariable("APP_NO_HOTDESIGN") != "1")

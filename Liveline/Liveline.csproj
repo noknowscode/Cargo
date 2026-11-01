@@ -1,6 +1,8 @@
 <Project Sdk="Uno.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+    <!-- Follows Cargo's single-head override (see Cargo.csproj), so a single-head build restores only that head here too. -->
+    <TargetFrameworks Condition="'$(CargoTargetFrameworks)' != ''">$(CargoTargetFrameworks)</TargetFrameworks>
     <UnoSingleProject>true</UnoSingleProject>
     <OutputType>Library</OutputType>
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
@@ -8,8 +10,9 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Liveline</RootNamespace>
 
+    <!-- Uno 7: the renderer is the app's choice; a library that draws on SKCanvasElement names Skia (UNOB0030). -->
     <UnoFeatures>
-      SkiaRenderer;
+      Skia;
     </UnoFeatures>
   </PropertyGroup>
 </Project>
