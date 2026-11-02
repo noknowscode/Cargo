@@ -128,12 +128,13 @@ public sealed partial class ActivityViewModel : ObservableObject
 
     private string Ago(string time)
     {
-        if (!TimeSpan.TryParse(time, out var at))
+        var at = PortState.ClockHours(time);
+        if (double.IsNaN(at))
         {
             return string.Empty;
         }
 
-        var minutes = (int)Math.Round((_state.NowHours - at.TotalHours) * 60);
+        var minutes = (int)Math.Round((_state.NowHours - at) * 60);
         return minutes < 1 ? "just now" : minutes < 60 ? $"{minutes} min ago" : $"{minutes / 60} h {minutes % 60} min ago";
     }
 

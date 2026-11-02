@@ -598,8 +598,8 @@ public sealed partial class PortState : ObservableObject
                     d.When = due < 0 ? $"{-due} min late" : $"in {due} min";
                     break;
                 case DecisionKind.DriverCheck:
-                    var since = PortData.Vehicles.First(v => v.Authorization == "Awaiting driver ID").Entry;
-                    var waiting = TimeSpan.TryParse(since, out var t) ? (int)Math.Round((NowHours - t.TotalHours) * 60) : 0;
+                    var since = ClockHours(PortData.Vehicles.First(v => v.Authorization == "Awaiting driver ID").Entry);
+                    var waiting = double.IsNaN(since) ? 0 : (int)Math.Round((NowHours - since) * 60);
                     d.IsLate = true;
                     d.When = $"waiting {Math.Max(0, waiting)} min";
                     break;

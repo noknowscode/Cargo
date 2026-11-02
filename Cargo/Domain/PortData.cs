@@ -37,6 +37,10 @@ public static class PortData
 
     // ── Vessels in port ───────────────────────────────────────────────────────
 
+    // The vessels' statuses and status lines are the design's picture of 20:58 and stay as they are: the clock runs
+    // (countdowns, the yard, the tide, the shift's figures), but the demo does not play the evening out, so Baltic
+    // Crown still reads "Departing 21:30" after 21:30 while her countdowns read "Due" and "now".
+
     public static readonly IReadOnlyList<Vessel> Vessels = new[]
     {
         new Vessel("aurora", "Avren Aurora", "Avren", "9839272", VesselStatus.Docked, "Docked · Berth 04 · discharging",

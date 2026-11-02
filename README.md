@@ -152,6 +152,17 @@ seconds and a tractor 1180 px in twenty-two, so the step is a few pixels and the
 the same, while the scene behind it is re-composited half as often. The harbour has its own
 frame timer (30 fps moving, 15 fps at rest), stopped on `Unloaded` the same way.
 
+**The evening does not play out.** The clock starts at the design's 20:58 and runs: countdowns,
+the yard, the tide and the shift's figures follow it. The vessels' statuses and status lines are
+the design's picture of 20:58 and stay put, so after 21:30 Baltic Crown still reads "Departing
+21:30" while her countdowns read "Due" and "now". Playing the schedule forward (departures
+leaving their berths, Nordic Star docking) would be new behaviour, not a fix.
+
+**Culture.** Screens format numbers in the machine's culture (a French machine reads "14,2 m
+draft"); the data's own times ("Thu 02:30") are read with the invariant culture through one
+reader, `PortState.ClockHours`. Cargo.Tests runs in en-US whatever the machine's culture is
+(`Cargo.Tests/Culture.cs`), and `CultureTests` checks both rules.
+
 ## Verification
 
 `tools/Capture-Window.ps1` captures the window with `PrintWindow` (occlusion-proof, with a
