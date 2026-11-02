@@ -6,6 +6,8 @@
              xmlns:utu="using:Uno.Toolkit.UI"
              xmlns:shapes="using:Microsoft.UI.Xaml.Shapes">
 
+  <!-- The vessel you are working. From 1280 the design's three columns (vessels, profile and operations, voyage);
+       1000-1279 the voyage drops under the other two; below 1000 one column, the vessels two or three to a row -->
   <Grid Style="{StaticResource SectionFrame}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
@@ -18,22 +20,28 @@
       <TextBlock Text="{x:Bind ViewModel.Eyebrow, Mode=OneWay}" Style="{StaticResource CaptionText}" />
     </StackPanel>
 
-    <Grid Grid.Row="1" ColumnSpacing="16">
+    <Grid Grid.Row="1">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="240" />
-        <ColumnDefinition Width="*" MinWidth="560" />
-        <ColumnDefinition Width="290" />
+        <ColumnDefinition Width="{utu:Responsive Narrowest=0, Normal=240}" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="{utu:Responsive Narrowest=0, Wide=290}" />
       </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
       <!-- ── Vessels in port ────────────────────────────────────── -->
-      <StackPanel Spacing="10">
-        <ItemsControl ItemsSource="{x:Bind ViewModel.Vessels, Mode=OneWay}">
+      <StackPanel Spacing="10" Grid.ColumnSpan="{utu:Responsive Narrowest=3, Normal=1}">
+        <ItemsControl ItemsSource="{x:Bind ViewModel.Vessels, Mode=OneWay}" IsTabStop="False">
           <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate><StackPanel Spacing="10" /></ItemsPanelTemplate>
+            <ItemsPanelTemplate><controls:TileGridPanel MinTileWidth="220" Gap="10" /></ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="local:VesselRow">
-              <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Id}">
+              <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Id}"
+                      AutomationProperties.Name="{x:Bind Name}">
                 <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind Border}" BorderThickness="1.5" Padding="14">
                   <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
@@ -43,7 +51,7 @@
                     <StackPanel Spacing="5">
                       <StackPanel Orientation="Horizontal" Spacing="8">
                         <Ellipse Width="7" Height="7" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
-                        <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" />
+                        <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" TextTrimming="CharacterEllipsis" />
                       </StackPanel>
                       <TextBlock Text="{x:Bind Line1}" Style="{StaticResource CaptionText}" Margin="15,0,0,0"
                                  TextTrimming="CharacterEllipsis" />
@@ -61,31 +69,47 @@
 
         <Button Style="{StaticResource GhostButton}" Command="{x:Bind ViewModel.State.OpenDockingCommand}"
                 Background="{ThemeResource SurfaceBrush}" CornerRadius="12" Padding="16,12"
+                MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
           <Grid>
             <TextBlock Text="View all in Docking" Style="{StaticResource TypeMedium13}" />
-            <TextBlock Text="↗" Foreground="{ThemeResource TextMutedBrush}" HorizontalAlignment="Right" />
+            <TextBlock Text="↗" Foreground="{ThemeResource TextMutedBrush}" HorizontalAlignment="Right"
+                       AutomationProperties.AccessibilityView="Raw" />
           </Grid>
         </Button>
       </StackPanel>
 
       <!-- ── Profile and operations ─────────────────────────────── -->
-      <StackPanel Grid.Column="1" Spacing="16">
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="22,18,22,14">
-          <Grid>
+      <StackPanel Spacing="16"
+                  Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
+                  Grid.ColumnSpan="{utu:Responsive Narrowest=3, Normal=2, Wide=1}"
+                  Margin="{utu:Responsive Narrowest='0,16,0,0', Normal='16,0,0,0'}">
+        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest='16,16,16,14', Narrow='22,18,22,14'}">
+          <StackPanel Spacing="14">
             <StackPanel Spacing="4">
+              <!-- The selected bay's line sits beside the title from 1280, under it below -->
               <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <StackPanel Spacing="4">
                   <TextBlock Text="Side profile" Style="{StaticResource CardTitleText}" />
-                  <TextBlock Text="{x:Bind ViewModel.ProfileHint, Mode=OneWay}" Style="{StaticResource CaptionText}" />
+                  <TextBlock Text="{x:Bind ViewModel.ProfileHint, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
                 </StackPanel>
                 <TextBlock Text="{x:Bind ViewModel.BayLabel, Mode=OneWay}" Style="{StaticResource BodyStrongSmallText}"
-                           Foreground="{ThemeResource AccentBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" />
+                           Foreground="{ThemeResource AccentBrush}" VerticalAlignment="Top" TextWrapping="Wrap"
+                           Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
+                           Margin="{utu:Responsive Narrowest='0,6,0,0', Wide='16,0,0,0'}" />
               </Grid>
               <ContentControl x:Name="ProfileHost" HorizontalContentAlignment="Stretch" Margin="0,4,0,0" />
-              <ItemsControl ItemsSource="{x:Bind ViewModel.CargoLegend, Mode=OneWay}" Margin="0,10,0,2">
+              <ItemsControl ItemsSource="{x:Bind ViewModel.CargoLegend, Mode=OneWay}" Margin="0,10,0,2" IsTabStop="False">
                 <ItemsControl.ItemsPanel>
-                  <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="18" /></ItemsPanelTemplate>
+                  <ItemsPanelTemplate><controls:FlowPanel Spacing="18" RowSpacing="6" /></ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                   <DataTemplate x:DataType="local:LegendItem">
@@ -99,11 +123,12 @@
               </ItemsControl>
             </StackPanel>
 
-            <!-- Key figures, floated over the empty water at the bow -->
-            <ItemsControl ItemsSource="{x:Bind ViewModel.MiniCards, Mode=OneWay}" Width="250"
-                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,52,0,0">
+            <!-- Key figures under the profile, four across where they fit. The design floated them over the water at
+                 the bow, but up to the page's 1520 cap that water is narrower than the cards and they covered the
+                 first bays (clickable columns) -->
+            <ItemsControl ItemsSource="{x:Bind ViewModel.MiniCards, Mode=OneWay}" IsTabStop="False">
               <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate><controls:TwoColumnPanel ColumnSpacing="8" RowSpacing="8" /></ItemsPanelTemplate>
+                <ItemsPanelTemplate><controls:TileGridPanel MinTileWidth="128" Gap="8" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:MiniCard">
@@ -124,14 +149,19 @@
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
-          </Grid>
+          </StackPanel>
         </utu:CardContentControl>
 
-        <Grid ColumnSpacing="16">
+        <!-- Operations and composition side by side from 600 px, stacked on a phone -->
+        <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Narrow=16}" RowSpacing="{utu:Responsive Narrowest=16, Narrow=0}">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="{utu:Responsive Narrowest=0, Narrow=*}" />
           </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
 
           <utu:CardContentControl Style="{StaticResource PanelCard}">
             <StackPanel Spacing="10">
@@ -154,7 +184,7 @@
                 <StackPanel Spacing="8">
                   <Grid>
                     <TextBlock Text="Unloading" Style="{StaticResource BodyStrongText}" />
-                    <TextBlock Text="{x:Bind ViewModel.UnloadLive, Mode=OneWay}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource SeaGreenBrush}" HorizontalAlignment="Right" />
+                    <TextBlock Text="{x:Bind ViewModel.UnloadLive, Mode=OneWay}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource SeaGreenInkBrush}" HorizontalAlignment="Right" />
                   </Grid>
                   <controls:TickBar Height="14" LitToken="SeaGreenInvariantBrush" Percent="{x:Bind ViewModel.UnloadPercent, Mode=OneWay}" />
                 </StackPanel>
@@ -171,7 +201,8 @@
             </StackPanel>
           </utu:CardContentControl>
 
-          <utu:CardContentControl Style="{StaticResource PanelCard}" Grid.Column="1">
+          <utu:CardContentControl Style="{StaticResource PanelCard}"
+                                  Grid.Row="{utu:Responsive Narrowest=1, Narrow=0}" Grid.Column="{utu:Responsive Narrowest=0, Narrow=1}">
             <StackPanel Spacing="14">
               <TextBlock Text="Cargo composition" Style="{StaticResource PanelTitleText}" />
               <controls:CompositionBar Height="14" Slices="{x:Bind ViewModel.CompositionSlices, Mode=OneWay}" />
@@ -212,7 +243,10 @@
       </StackPanel>
 
       <!-- ── Voyage ─────────────────────────────────────────────── -->
-      <utu:CardContentControl Style="{StaticResource PanelCard}" Grid.Column="2" Padding="22,20">
+      <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest='16,16', Narrow='22,20'}"
+                              Grid.Row="{utu:Responsive Narrowest=2, Normal=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=2}"
+                              Grid.ColumnSpan="{utu:Responsive Narrowest=3, Wide=1}"
+                              Margin="{utu:Responsive Narrowest='0,16,0,0', Wide='16,0,0,0'}">
         <StackPanel Spacing="16">
           <Grid>
             <TextBlock Text="Voyage" Style="{StaticResource TitleText}" VerticalAlignment="Center" />
@@ -265,36 +299,47 @@
           </StackPanel>
 
           <Button Style="{StaticResource GhostButton}" Command="{x:Bind ViewModel.State.OpenDockingCommand}"
+                  MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Content="Open in Docking →" HorizontalAlignment="Stretch" Margin="0,4,0,0" />
         </StackPanel>
       </utu:CardContentControl>
     </Grid>
 
     <!-- ── Bay detail ───────────────────────────────────────────── -->
-    <utu:CardContentControl Style="{StaticResource PanelCard}" Grid.Row="2" Padding="22,18">
+    <!-- Four parts in a row from 1280, two by two from 600, one under another on a phone -->
+    <utu:CardContentControl Style="{StaticResource PanelCard}" Grid.Row="2" Padding="{utu:Responsive Narrowest='16,16', Narrow='22,18'}">
       <StackPanel Spacing="12">
-        <StackPanel Orientation="Horizontal" Spacing="14">
+        <controls:FlowPanel Spacing="14" RowSpacing="2">
           <TextBlock Text="{x:Bind ViewModel.BayHeading, Mode=OneWay}" Style="{StaticResource TypeStrong18}" />
           <TextBlock Text="{x:Bind ViewModel.BayTotal, Mode=OneWay}" Style="{StaticResource BodyText}"
                      Foreground="{ThemeResource AccentBrush}" VerticalAlignment="Bottom" Margin="0,0,0,2" />
           <TextBlock Text="{x:Bind ViewModel.BayRemaining, Mode=OneWay}" Style="{StaticResource SubtitleText}"
                      VerticalAlignment="Bottom" Margin="0,0,0,2" />
-        </StackPanel>
+        </controls:FlowPanel>
 
-        <Grid ColumnSpacing="16">
+        <Grid ColumnSpacing="16" RowSpacing="{utu:Responsive Narrowest=16, Wide=0}">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1.2*" />
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1.1*" />
           </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
 
           <!-- xaml-lint: allow card - clips the scene -->
-          <Border CornerRadius="12" Background="{ThemeResource SurfaceBrush}">
+          <Border CornerRadius="12" Background="{ThemeResource SurfaceBrush}"
+                  Grid.ColumnSpan="{utu:Responsive Narrowest=4, Narrow=2, Wide=1}">
             <controls:BayScene Bay="{x:Bind ViewModel.Bay, Mode=OneWay}" />
           </Border>
 
-          <StackPanel Grid.Column="1" Spacing="14" Padding="4,6">
+          <StackPanel Spacing="14" Padding="4,6"
+                      Grid.Row="{utu:Responsive Narrowest=1, Narrow=0}" Grid.Column="{utu:Responsive Narrowest=0, Narrow=2, Wide=1}"
+                      Grid.ColumnSpan="{utu:Responsive Narrowest=4, Narrow=2, Wide=1}">
             <TextBlock Text="{x:Bind ViewModel.BayOpsHeading, Mode=OneWay}" Style="{StaticResource BodyStrongLargeText}" />
             <Grid ColumnSpacing="16">
               <Grid.ColumnDefinitions>
@@ -305,8 +350,8 @@
               <Image Source="ms-appx:///Assets/Sprites/crane-rtg-1.png" Width="56" Height="70"
                      Stretch="Uniform" VerticalAlignment="Top" />
               <StackPanel Grid.Column="1" Spacing="4">
-                <TextBlock Text="Unloaded" Style="{StaticResource CaptionText}" Foreground="{ThemeResource SeaGreenBrush}" />
-                <TextBlock Text="{x:Bind ViewModel.BayUnloaded, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource SeaGreenBrush}" />
+                <TextBlock Text="Unloaded" Style="{StaticResource CaptionText}" Foreground="{ThemeResource SeaGreenInkBrush}" />
+                <TextBlock Text="{x:Bind ViewModel.BayUnloaded, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource SeaGreenInkBrush}" />
               </StackPanel>
               <StackPanel Grid.Column="2" Spacing="4">
                 <TextBlock Text="Remaining" Style="{StaticResource CaptionText}" />
@@ -320,7 +365,9 @@
             </StackPanel>
           </StackPanel>
 
-          <StackPanel Grid.Column="2" Spacing="12" Padding="4,6">
+          <StackPanel Spacing="12" Padding="4,6"
+                      Grid.Row="{utu:Responsive Narrowest=2, Narrow=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=2}"
+                      Grid.ColumnSpan="{utu:Responsive Narrowest=4, Narrow=2, Wide=1}">
             <TextBlock Text="{x:Bind ViewModel.BayCompositionHeading, Mode=OneWay}" Style="{StaticResource BodyStrongLargeText}" />
             <Grid ColumnSpacing="12">
               <Grid.ColumnDefinitions>
@@ -349,8 +396,11 @@
             </Grid>
           </StackPanel>
 
-          <Grid Grid.Column="3" ColumnSpacing="14" Padding="18,6,4,6"
-                BorderBrush="{ThemeResource HairlineBrush}" BorderThickness="1,0,0,0">
+          <Grid ColumnSpacing="14" BorderBrush="{ThemeResource HairlineBrush}"
+                Grid.Row="{utu:Responsive Narrowest=3, Narrow=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Narrow=2, Wide=3}"
+                Grid.ColumnSpan="{utu:Responsive Narrowest=4, Narrow=2, Wide=1}"
+                BorderThickness="{utu:Responsive Narrowest='0,1,0,0', Narrow='1,0,0,0'}"
+                Padding="{utu:Responsive Narrowest='4,16,4,6', Narrow='18,6,4,6'}">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="110" />
               <ColumnDefinition Width="*" />

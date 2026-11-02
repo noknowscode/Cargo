@@ -5,12 +5,10 @@
              xmlns:utu="using:Uno.Toolkit.UI"
              xmlns:controls="using:Cargo.Controls">
 
-  <Page.Resources>
-    <!-- Status and detail sit side by side from 1040 px and stack below it -->
-  </Page.Resources>
-
-  <!-- The decision waiting on you, what every berth holds, then the plan and the vessel you are working -->
-  <Grid Style="{StaticResource PageFrame}">
+  <!-- The decision waiting on you, what every berth holds, then the plan and the vessel you are working.
+       Status and detail sit side by side from 1000 px and stack below it; the needs-you bar sits beside the title
+       from 1280 and under it below -->
+  <Grid Style="{StaticResource PageFrame}" Padding="{utu:Responsive Narrowest={StaticResource PagePaddingPhone}, Narrow={StaticResource PagePaddingTablet}, Normal={StaticResource PagePadding}}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
@@ -20,7 +18,7 @@
 
     <!-- Below the breakpoint the needs-you bar takes its own full-width row under the title -->
     <Grid Style="{StaticResource Masthead}"
-          RowSpacing="{utu:Responsive Narrowest=16, Normal=0}">
+          RowSpacing="{utu:Responsive Narrowest=16, Wide=0}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
@@ -33,7 +31,7 @@
       <StackPanel VerticalAlignment="Bottom" Spacing="8">
         <TextBlock Text="Berths" Style="{StaticResource PageTitleText}" />
         <TextBlock Text="North Quay · 8 berths · alongside depth 12.0 to 16.0 m" Style="{StaticResource PageSubtitleText}" />
-        <StackPanel Orientation="Horizontal" Spacing="26" Margin="0,6,0,0">
+        <controls:FlowPanel Spacing="26" RowSpacing="4" Margin="0,6,0,0">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <TextBlock Text="{x:Bind ViewModel.Alongside, Mode=OneWay}" Style="{StaticResource MetricText}" />
             <TextBlock Text="alongside" Style="{StaticResource MetricLabelText}" />
@@ -50,14 +48,14 @@
             <TextBlock Text="{x:Bind ViewModel.Conflicts, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{x:Bind ViewModel.ConflictInk, Mode=OneWay}" />
             <TextBlock Text="conflicts in 36 h" Style="{StaticResource MetricLabelText}" />
           </StackPanel>
-        </StackPanel>
+        </controls:FlowPanel>
       </StackPanel>
 
       <local:NeedsYouBar VerticalAlignment="Bottom"
-                         Grid.Row="{utu:Responsive Narrowest=1, Normal=0}"
-                         Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
-                         Grid.ColumnSpan="{utu:Responsive Narrowest=2, Normal=1}"
-                         Width="{utu:Responsive Narrowest=NaN, Normal=600}"
+                         Grid.Row="{utu:Responsive Narrowest=1, Wide=0}"
+                         Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
+                         Grid.ColumnSpan="{utu:Responsive Narrowest=2, Wide=1}"
+                         Width="{utu:Responsive Narrowest=NaN, Wide=560}"
                          DataContext="{x:Bind ViewModel.NeedsYou, Mode=OneWay}" />
     </Grid>
 
@@ -185,7 +183,8 @@
           </ItemsRepeater>
           </StackPanel>
 
-          <Button Content="Show on map" Style="{StaticResource GhostButton}" MinHeight="40" HorizontalAlignment="Left"
+          <Button Content="Show on map" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
+                  MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}"
                   Command="{x:Bind ViewModel.Detail.ShowOnMapCommand, Mode=OneWay}" />
         </StackPanel>
       </Border>

@@ -142,9 +142,9 @@ public sealed partial class VesselProfile : SceneHost
             Scene.Place(Draw.Rule(lineX, deckTop - 16, lineX, deckBottom + 2,
                 Tokens.Brush("SeaGreenBrush"), 1.5, dash: Draw.Dash(4, 4)));
             Scene.Place(Draw.Text("Discharged", lineX - 70, deckTop - 48, 12,
-                Tokens.Brush("SeaGreenBrush"), "BodyFont", TextAlignment.Center, 140));
+                Tokens.Brush("SeaGreenInkBrush"), "BodyFont", TextAlignment.Center, 140));
             Scene.Place(Draw.Text($"{vessel.UnloadPercent}%", lineX - 70, deckTop - 36, 18,
-                Tokens.Brush("SeaGreenBrush"), "BodyStrongFont", TextAlignment.Center, 140));
+                Tokens.Brush("SeaGreenInkBrush"), "BodyStrongFont", TextAlignment.Center, 140));
         }
     }
 

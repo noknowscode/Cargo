@@ -116,7 +116,7 @@ public sealed partial class NeedsYouViewModel : ObservableObject
 
         Ground = done ? Tokens.Brush("SurfaceBrush") : Tokens.Brush("AlertBrush", .05);
         Edge = done ? Tokens.Brush("HairlineStrongBrush") : Tokens.Brush("InkBrush", 0);
-        MetaForeground = _error is not null && !done ? Tokens.Brush("AlertBrush") : Tokens.Brush("TextMutedBrush");
+        MetaForeground = _error is not null && !done ? Tokens.Brush("AlertInkBrush") : Tokens.Brush("TextMutedBrush");
         NeedsMark = done ? Visibility.Collapsed : Visibility.Visible;
         DoneMark = done ? Visibility.Visible : Visibility.Collapsed;
         ReviewVisibility = Subject is null ? Visibility.Collapsed : Visibility.Visible;
