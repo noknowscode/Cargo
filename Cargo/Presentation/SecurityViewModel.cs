@@ -20,6 +20,9 @@ public sealed class PersonCard
     public required Brush Avatar { get; init; }
     public required Brush Border { get; init; }
     public required ICommand Select { get; init; }
+
+    /// <summary>The card for a screen reader: who, their role, and whether their zones are the ones on the map.</summary>
+    public required string AccessibleName { get; init; }
 }
 
 public sealed class VehicleCard
@@ -35,6 +38,9 @@ public sealed class PageTab
     public required string Route { get; init; }
     public required Brush Background { get; init; }
     public required Brush Foreground { get; init; }
+
+    /// <summary>The tab for a screen reader, with "current" on the one shown (the strip shows it by its raised ground).</summary>
+    public required string AccessibleName { get; init; }
 }
 
 /// <summary>
@@ -121,6 +127,48 @@ public sealed partial class SecurityViewModel : ObservableObject
     [RelayCommand]
     private void SelectPerson(int index) => State.SelectedPerson = index;
 
+    // The inspection sheet's two actions. Each is logged with the time and then stands done: the button disables
+    // and says what happened (an inspection is assigned or a re-weigh requested once)
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AssignInspectorCommand))]
+    private bool _inspectorAssigned;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RequestReweighCommand))]
+    private bool _reweighRequested;
+
+    public string AssignLabel => InspectorAssigned ? "Inspector assigned" : "Assign inspector";
+
+    public string ReweighLabel => ReweighRequested ? "Re-weigh requested" : "Request re-weigh";
+
+    partial void OnInspectorAssignedChanged(bool value) => OnPropertyChanged(nameof(AssignLabel));
+
+    partial void OnReweighRequestedChanged(bool value) => OnPropertyChanged(nameof(ReweighLabel));
+
+    [RelayCommand(CanExecute = nameof(CanAssignInspector))]
+    private void AssignInspector()
+    {
+        InspectorAssigned = true;
+        Log("→", "Inspector assigned: Priya Nair (customs), lane 2, for the 21:15 inspection");
+    }
+
+    private bool CanAssignInspector() => !InspectorAssigned;
+
+    [RelayCommand(CanExecute = nameof(CanRequestReweigh))]
+    private void RequestReweigh()
+    {
+        ReweighRequested = true;
+        Log("→", "Re-weigh requested on weighbridge 1 · driver of TRK 3391 notified");
+    }
+
+    private bool CanRequestReweigh() => !ReweighRequested;
+
+    private void Log(string mark, string text) =>
+        InspectionLog = InspectionLog
+            .Append(new CheckRow { Mark = mark, Label = text, Time = PortState.Format(State.NowHours % 24), Tone = Tokens.Brush("AccentBrush") })
+            .ToList();
+
     private void OnRouteChanged(RouteChangedEventArgs e)
     {
         if (MainViewModel.RouteSegments(e) is not ["security", var tab, ..] || TabDefinitions.All(t => t.Id != tab))
@@ -162,7 +210,8 @@ public sealed partial class SecurityViewModel : ObservableObject
                 Label = label,
                 Route = $"./{id}",
                 Background = current ? Tokens.Brush("SurfaceBrush") : Tokens.Transparent,
-                Foreground = current ? Tokens.Brush("InkBrush") : Tokens.Brush("TextMutedBrush")
+                Foreground = current ? Tokens.Brush("InkBrush") : Tokens.Brush("TextMutedBrush"),
+                AccessibleName = current ? $"{label}, current tab" : label
             });
         }
     }
@@ -182,7 +231,8 @@ public sealed partial class SecurityViewModel : ObservableObject
                 Initials = string.Concat(person.Name.Split(' ').Select(part => part[0])),
                 Avatar = Tokens.Brush(person.AvatarToken),
                 Border = State.SelectedPerson == i ? Tokens.Brush("InkBrush") : Tokens.Brush("HairlineBrush"),
-                Select = SelectPersonCommand
+                Select = SelectPersonCommand,
+                AccessibleName = $"{person.Name}, {person.Role}" + (State.SelectedPerson == i ? ", zones shown" : string.Empty)
             });
         }
 
@@ -209,7 +259,7 @@ public sealed partial class SecurityViewModel : ObservableObject
         {
             ("✓", "Seal verified", "AccentBrush"),
             ("✓", "Manifest matched", "AccentBrush"),
-            ("⚠", "Weight variance +1.8 t · manual inspection required", "OrangeBrush")
+            ("⚠", "Weight variance +1.8 t · manual inspection required", "OrangeInkBrush")
         }.Select(entry => new CheckRow
         {
             Mark = entry.Item1,
@@ -222,8 +272,9 @@ public sealed partial class SecurityViewModel : ObservableObject
             .Select(r => new RecordRow { Label = r.Label, Count = r.Count, Tone = Tokens.Brush(r.Tone) })
             .ToList();
 
+        // The marks are text: a status colour that is too light for text takes its ink variant
         InspectionLog = PortData.InspectionLog
-            .Select(l => new CheckRow { Mark = l.Mark, Label = l.Text, Time = l.Time, Tone = Tokens.Brush(l.Tone) })
+            .Select(l => new CheckRow { Mark = l.Mark, Label = l.Text, Time = l.Time, Tone = Tokens.Brush(l.Tone == "OrangeColor" ? "OrangeInkBrush" : l.Tone) })
             .ToList();
 
         Vehicles = PortData.Vehicles.Select(v => new VehicleCard
