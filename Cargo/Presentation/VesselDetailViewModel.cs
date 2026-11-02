@@ -66,7 +66,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
 
         (Big, BigSub) = vessel.Status switch
         {
-            "Arriving" => (BerthFacts.MinutesTo(_state, BerthFacts.Hours(vessel.Eta)), $"ETA {BerthFacts.Clock(vessel.Eta)}"),
+            "Arriving" => (BerthFacts.MinutesTo(_state, PortState.ClockHours(vessel.Eta)), $"ETA {BerthFacts.Clock(vessel.Eta)}"),
             "At anchor" => ("Unassigned", $"arrival window {BerthFacts.Clock(vessel.Eta)}"),
             "Departing" => (BerthFacts.Clock(vessel.Etd), "departure"),
             _ when vessel.UnloadPercent is > 0 and < 100 => ($"{vessel.UnloadPercent}%", $"discharged · departs {BerthFacts.Clock(vessel.Etd)}"),

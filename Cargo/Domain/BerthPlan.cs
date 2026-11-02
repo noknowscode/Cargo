@@ -150,6 +150,10 @@ public sealed class BerthPlan
             .FirstOrDefault(o => Overlaps(window, PortData.Schedule[o.Id]));
     }
 
+    /// <summary>The numbers of the berths that can take the vessel now (<see cref="Fits"/>): open, deep enough, free for her window.</summary>
+    public IReadOnlyList<string> BerthsThatFit(Vessel vessel) =>
+        Enumerable.Range(0, PortData.Berths.Count).Where(i => Fits(vessel, i)).Select(i => PortData.Berths[i].Number).ToArray();
+
     /// <summary>What the plan says when a move is refused, or null when the berth fits.</summary>
     public string? Refusal(Vessel vessel, int berthIndex)
     {

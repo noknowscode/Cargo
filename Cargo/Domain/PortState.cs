@@ -1,3 +1,4 @@
+using System.Globalization;
 
 namespace Cargo.Domain;
 
@@ -118,17 +119,24 @@ public sealed partial class PortState : ObservableObject
     }
 
     /// <summary>
-    /// A schedule time on the app clock: "Today 21:40" is 21.67, the next day's "Thu 02:30" is 26.5,
-    /// the previous day's "Tue 23:05" is -0.92. NaN when it cannot be read.
+    /// A stamp from the data on the app clock, in hours from the demo's Wednesday midnight: "Today 21:40" is 21.67,
+    /// "Thu 02:30" 26.5, "Fri 10:00" 58, "Tue 23:05" -0.92, and a bare "21:40" is today. NaN when it cannot be read.
+    /// The one reader of the data's times: the berth schedule (<see cref="PortData.Schedule"/>), the countdowns, the
+    /// harbour tags and the shift timeline all go through it.
     /// </summary>
     public static double ClockHours(string when)
     {
-        if (when.Length < 5 || !TimeSpan.TryParse(when[^5..], out var t))
+        var parts = when.Split(' ');
+        int? day = parts.Length switch
         {
-            return double.NaN;
-        }
+            1 => 0,
+            2 => parts[0] switch { "Tue" => -1, "Today" or "Wed" => 0, "Thu" => 1, "Fri" => 2, _ => null },
+            _ => null
+        };
 
-        return t.TotalHours + (when.StartsWith("Today") ? 0 : when.StartsWith("Tue") ? -24 : 24);
+        return day is { } d && TimeSpan.TryParseExact(parts[^1], @"hh\:mm", CultureInfo.InvariantCulture, out var time)
+            ? d * 24 + time.TotalHours
+            : double.NaN;
     }
 
     public static string Format(double hours)
@@ -153,21 +161,19 @@ public sealed partial class PortState : ObservableObject
         return $"{s / 3600:D2}:{s % 3600 / 60:D2}:{s % 60:D2}";
     }
 
-    /// <summary>"in 12:04" / "in 2 h 15 min" / "now".</summary>
-    public string Countdown(double targetHour)
-    {
-        var delta = targetHour - NowHours;
-        if (delta <= 0)
-        {
-            return "now";
-        }
+    /// <summary>
+    /// Whole minutes from now to <paramref name="targetHour"/>, rounded up so a countdown turns over on the minute
+    /// (and a target exactly 42 minutes away reads 42, not 43); zero or less once it is due.
+    /// </summary>
+    public int MinutesUntil(double targetHour) => (int)Math.Ceiling((targetHour - NowHours) * 60 - 1e-9);
 
-        var minutes = (int)Math.Floor(delta * 60);
-        var seconds = (int)Math.Floor(delta * 3600) % 60;
-        return minutes >= 60
-            ? $"in {minutes / 60} h {minutes % 60} min"
-            : $"in {minutes}:{seconds:D2}";
-    }
+    /// <summary>The countdown the harbour tags and Next 6 h show: "in 42 min", "in 3 h 02", "now" once due.</summary>
+    public string Countdown(double targetHour) => MinutesUntil(targetHour) switch
+    {
+        <= 0 => "now",
+        < 60 and var minutes => $"in {minutes} min",
+        var minutes => $"in {minutes / 60} h {minutes % 60:D2}"
+    };
 
     // ── Navigation ────────────────────────────────────────────────────────────
 
@@ -449,6 +455,9 @@ public sealed partial class PortState : ObservableObject
     public IReadOnlyList<(string Berth, string A, string B)> Conflicts() => _plan.Conflicts();
 
     public bool Fits(Vessel vessel, int berthIndex) => _plan.Fits(vessel, berthIndex);
+
+    /// <summary>The berths that can take the vessel now, by the plan's rules (<see cref="BerthPlan.BerthsThatFit"/>).</summary>
+    public IReadOnlyList<string> BerthsThatFit(Vessel vessel) => _plan.BerthsThatFit(vessel);
 
     /// <summary>Returns the message to show in the map hint strip.</summary>
     public string? Assign(string vesselId, int berthIndex)

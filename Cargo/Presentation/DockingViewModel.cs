@@ -185,7 +185,7 @@ public sealed partial class DockingViewModel : ObservableObject
             // What was here earlier today (outlined, muted: the past), and any planned closure
             if (PortData.BerthHistory.TryGetValue(berth.Number, out var history))
             {
-                foreach (var segment in history.Where(s => s.Kind is "prev" or "restricted"))
+                foreach (var segment in history)
                 {
                     var past = segment.Kind == "prev";
                     segments.Add(new ProportionalPanel.Segment(

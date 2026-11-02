@@ -110,11 +110,15 @@ public class ShiftTimelineTests
     [TestCase("Today 21:40", 21 + 40 / 60d)]
     [TestCase("Thu 02:30", 26.5)]
     [TestCase("Tue 23:05", 23 + 5 / 60d - 24)]
+    [TestCase("Fri 10:00", 58, TestName = "Friday is two days on (it used to read as Thursday, 34)")]
+    [TestCase("21:40", 21 + 40 / 60d, TestName = "A bare time is today")]
     public void Schedule_times_read_onto_the_app_clock(string when, double hours) =>
         Assert.That(PortState.ClockHours(when), Is.EqualTo(hours).Within(1e-9));
 
     [TestCase("")]
     [TestCase("soon")]
+    [TestCase("Sun 10:00", TestName = "A day outside the demo's week is unreadable, not tomorrow")]
+    [TestCase("Today 9:40")]
     public void An_unreadable_schedule_time_is_NaN(string when) =>
         Assert.That(PortState.ClockHours(when), Is.NaN);
 

@@ -526,12 +526,6 @@ public sealed partial class HarbourView : UserControl
     private static string Clock(string when) => when[^5..];
 
     /// <summary>"in 41 min", "in 1 h 55": minutes only, so the dark tag changes once a minute.</summary>
-    private static string Until(double hours)
-    {
-        var minutes = (int)Math.Ceiling(hours * 60);
-        return minutes <= 0 ? "now" : minutes < 60 ? $"in {minutes} min" : $"in {minutes / 60} h {minutes % 60:D2}";
-    }
-
     private void TickTags()
     {
         if (_state is null)
@@ -541,7 +535,7 @@ public sealed partial class HarbourView : UserControl
 
         foreach (var (tag, _) in _tags)
         {
-            tag.Countdown = Until(tag.EtaHours - _state.NowHours);
+            tag.Countdown = _state.Countdown(tag.EtaHours);
         }
     }
 

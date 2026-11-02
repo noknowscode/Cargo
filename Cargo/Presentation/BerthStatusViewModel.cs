@@ -146,7 +146,7 @@ public sealed partial class BerthStatusViewModel : ObservableObject
         row.Plate = "A";
         row.StateLabel = "AT ANCHOR";
         row.Name = vessel.Name;
-        row.Meta = BerthFacts.FitsLine(vessel);
+        row.Meta = BerthFacts.FitsLine(_state, vessel);
         row.When = BerthFacts.Clock(vessel.Eta);
         row.AccessibleName = $"Anchorage, {vessel.Name}, at anchor, arrival window {row.When}, {row.Meta}";
         row.Kind = RowKind.Vessel;
@@ -212,31 +212,12 @@ internal enum RowKind { Vessel, Needs, Free, Restricted }
 /// <summary>The wording the status list, the vessel detail and the needs-you bar share.</summary>
 internal static class BerthFacts
 {
-    /// <summary>"Today 21:40" → 21.67; "Thu 02:30" → 26.5 (the day after the demo's Wednesday).</summary>
-    public static double Hours(string stamp)
-    {
-        var parts = stamp.Split(' ');
-        var hm = parts[^1].Split(':');
-        var hours = int.Parse(hm[0]) + int.Parse(hm[1]) / 60d;
-        var dayOffset = parts.Length < 2 ? 0 : parts[0] switch
-        {
-            "Tue" => -24,
-            "Thu" => 24,
-            "Fri" => 48,
-            _ => 0
-        };
-        return hours + dayOffset;
-    }
-
     /// <summary>"Today 21:40" → "21:40"; other days keep their name.</summary>
     public static string Clock(string stamp) => stamp.Replace("Today ", string.Empty);
 
     /// <summary>Whole minutes to go, rounded up so the figure changes on the minute: "42 min", then "Due".</summary>
-    public static string MinutesTo(PortState state, double hour)
-    {
-        var minutes = (int)Math.Ceiling((hour - state.NowHours) * 60 - 1e-9);
-        return minutes > 0 ? $"{minutes} min" : "Due";
-    }
+    public static string MinutesTo(PortState state, double hour) =>
+        state.MinutesUntil(hour) is > 0 and var minutes ? $"{minutes} min" : "Due";
 
     public static string State(PortState state, Vessel vessel) => vessel.Status switch
     {
@@ -250,7 +231,7 @@ internal static class BerthFacts
     /// <summary>The time a row leads with: the arrival countdown, else when the vessel sails.</summary>
     public static string When(PortState state, Vessel vessel) => vessel.Status switch
     {
-        "Arriving" => MinutesTo(state, Hours(vessel.Eta)),
+        "Arriving" => MinutesTo(state, PortState.ClockHours(vessel.Eta)),
         "At anchor" => Clock(vessel.Eta),
         _ => Clock(vessel.Etd)
     };
@@ -267,10 +248,12 @@ internal static class BerthFacts
             ? segments.FirstOrDefault(s => s.Kind == "restricted")?.Label ?? "Closed"
             : "Closed";
 
-    /// <summary>"Unassigned · fits berths 01, 04, 06": the berths whose depth clears the draft.</summary>
-    public static string FitsLine(Vessel vessel)
-    {
-        var fits = PortData.Berths.Where(b => b.State != "restricted" && b.Depth >= vessel.Draft).Select(b => b.Number).ToList();
-        return fits.Count == 0 ? "Unassigned · no berth deep enough" : $"Unassigned · fits berths {string.Join(", ", fits)}";
-    }
+    /// <summary>
+    /// "Unassigned · fits berths 01, 05, 06": the berths the plan would give her, by the same rules as a drag, the
+    /// Move to berth list and the optimiser (open, deep enough, free for her window).
+    /// </summary>
+    public static string FitsLine(PortState state, Vessel vessel) =>
+        state.BerthsThatFit(vessel) is { Count: > 0 } fits
+            ? $"Unassigned · fits berths {string.Join(", ", fits)}"
+            : "Unassigned · no berth free for her draft and window";
 }

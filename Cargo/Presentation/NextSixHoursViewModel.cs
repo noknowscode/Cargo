@@ -68,7 +68,8 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
     {
         var now = _state.NowHours;
         var inWindow = _events.Where(e => e.Hour >= now - Back && e.Hour <= now + Ahead).ToArray();
-        var membership = string.Join("|", inWindow.Select(e => $"{e.Id}{e.Arrival}{e.Hour <= now}"));
+        // A row says which berth she arrives at, so an assignment changes the rows as much as the clock does
+        var membership = string.Join("|", inWindow.Select(e => $"{e.Id}{e.Arrival}{e.Hour <= now}{_state.BerthOf(e.Id)}"));
         if (membership != _membership)
         {
             _membership = membership;
@@ -84,7 +85,7 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
 
         foreach (var row in Past.Concat(Upcoming))
         {
-            Tick(row, now);
+            Tick(row);
         }
 
         var count = inWindow.Length;
@@ -95,7 +96,7 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
     private NextSixRow Row(TimelineEvent e)
     {
         var vessel = PortData.Vessels.FirstOrDefault(v => v.Id == e.Id);
-        var berth = vessel?.HomeBerth;
+        var berth = vessel is null ? null : _state.BerthOf(vessel.Id);
         var sub = e.Arrival
             ? $"Arrives {(e.Hour >= 24 ? "Thu" : berth is null ? "today" : $"Berth {berth}")}"
               + (berth is null ? " · no berth yet" : string.Empty)
@@ -116,15 +117,12 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
         };
     }
 
-    private static void Tick(NextSixRow row, double now)
+    private void Tick(NextSixRow row)
     {
-        var minutes = (int)Math.Ceiling((row.Hour - now) * 60);
-        row.Happened = row.Hour <= now;
+        row.Happened = row.Hour <= _state.NowHours;
         row.Departing = row.Happened && !row.Arrival;
-        row.Countdown = row.Happened
-            ? (row.Arrival ? "arrived" : "departing")
-            : minutes < 60 ? $"in {minutes} min" : $"in {minutes / 60} h {minutes % 60:D2}";
-        row.CountdownInk = Tokens.Brush(minutes < 60 ? "InkBrush" : "TextMutedBrush");
+        row.Countdown = row.Happened ? (row.Arrival ? "arrived" : "departing") : _state.Countdown(row.Hour);
+        row.CountdownInk = Tokens.Brush(_state.MinutesUntil(row.Hour) < 60 ? "InkBrush" : "TextMutedBrush");
         row.DotFill = Tokens.Brush(row.Happened ? "NavyBrush" : "SurfaceBrush");
         row.DotRing = Tokens.Brush(row.Happened ? "SurfaceBrush" : "NavyBrush");
         row.DotRingWidth = row.Happened ? 2 : 1.6;

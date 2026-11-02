@@ -116,28 +116,26 @@ public static class PortData
         new BerthDef("08", "available", null, 13.0)
     };
 
-    /// <summary>Occupation window per vessel, in hours from midnight (may run past 24).</summary>
+    /// <summary>
+    /// Occupation window per vessel, in hours on the app clock (may run past 24): from her ETA to her ETD, read
+    /// through <see cref="PortState.ClockHours"/>, so the plan, the conflict check and the berth list agree with the
+    /// times every panel shows.
+    /// </summary>
     public static readonly IReadOnlyDictionary<string, (double Start, double End)> Schedule =
-        new Dictionary<string, (double, double)>
-        {
-            ["kaida"] = (-1, 23.5),
-            ["aurora"] = (14.2, 30.2),
-            ["baltic"] = (-8, 21.5),
-            ["nordic"] = (21.7, 42),
-            ["levant"] = (26.5, 58)
-        };
+        Vessels.ToDictionary(v => v.Id, v => (PortState.ClockHours(v.Eta), PortState.ClockHours(v.Etd)));
 
-    /// <summary>Earlier and planned occupancy drawn behind the live blocks on the 36 h timeline.</summary>
+    /// <summary>
+    /// What else the 36 h timeline draws behind the vessels' own windows: the berths' earlier calls today ("prev")
+    /// and planned closures ("restricted").
+    /// </summary>
     public static readonly IReadOnlyDictionary<string, IReadOnlyList<TimelineSegment>> BerthHistory =
         new Dictionary<string, IReadOnlyList<TimelineSegment>>
         {
-            ["01"] = new[] { new TimelineSegment("Kaida Maru", 0, 23.5, "occupied") },
             ["02"] = new[] { new TimelineSegment("Sirius Bay", 3, 9.5, "prev"), new TimelineSegment("Elbe Trader", 13, 17, "prev") },
             ["03"] = new[] { new TimelineSegment("Fender repair", 6, 24, "restricted") },
-            ["04"] = new[] { new TimelineSegment("Ocean Vela", 0, 5, "prev"), new TimelineSegment("Avren Aurora", 14.2, 30, "occupied") },
+            ["04"] = new[] { new TimelineSegment("Ocean Vela", 0, 5, "prev") },
             ["05"] = new[] { new TimelineSegment("Aran Wind", 8, 15.5, "prev") },
-            ["06"] = new[] { new TimelineSegment("Baltic Crown", 0, 21.5, "occupied"), new TimelineSegment("Levant Express", 22.5, 32, "up") },
-            ["07"] = new[] { new TimelineSegment("Corsair Lyra", 2, 10, "prev"), new TimelineSegment("Nordic Star", 21.7, 36, "reserved") },
+            ["07"] = new[] { new TimelineSegment("Corsair Lyra", 2, 10, "prev") },
             ["08"] = new[] { new TimelineSegment("Meridian Sky", 4, 12, "prev") }
         };
 
