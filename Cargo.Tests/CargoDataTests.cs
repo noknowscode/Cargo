@@ -140,4 +140,18 @@ public class CargoDataTests
         Assert.That(BayView.Step(aurora, 0, -1), Is.Zero);
         Assert.That(BayView.Step(aurora, 13, 1), Is.EqualTo(13));
     }
+
+    [Test]
+    public void Every_IMO_number_is_invented_and_carries_a_valid_check_digit()
+    {
+        foreach (var vessel in PortData.Vessels)
+        {
+            var digits = vessel.Imo.Select(c => c - '0').ToArray();
+            var check = digits.Take(6).Select((d, i) => d * (7 - i)).Sum() % 10;
+
+            Assert.That(digits, Has.Length.EqualTo(7), vessel.Name);
+            Assert.That(digits[6], Is.EqualTo(check), $"{vessel.Name}: IMO {vessel.Imo} check digit");
+            Assert.That(vessel.Imo, Does.StartWith("1"), $"{vessel.Name}: ships' own numbers start at 5 million");
+        }
+    }
 }

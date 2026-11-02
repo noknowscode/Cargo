@@ -37,13 +37,16 @@ public static class PortData
 
     // ── Vessels in port ───────────────────────────────────────────────────────
 
+    // IMO numbers are invented: a made-up series (1000007 to 1000045) with valid check digits, below the 5 million and
+    // up that ships' own numbers carry; the design's were 96-98 million numbers, which could be real ships'. The
+    // Aurora's is painted on her stern in aurora-side.png.
     // The vessels' statuses and status lines are the design's picture of 20:58 and stay as they are: the clock runs
     // (countdowns, the yard, the tide, the shift's figures), but the demo does not play the evening out, so Baltic
     // Crown still reads "Departing 21:30" after 21:30 while her countdowns read "Due" and "now".
 
     public static readonly IReadOnlyList<Vessel> Vessels = new[]
     {
-        new Vessel("aurora", "Avren Aurora", "Avren", "9839272", VesselStatus.Docked, "Docked · Berth 04 · discharging",
+        new Vessel("aurora", "Avren Aurora", "Avren", "1000007", VesselStatus.Docked, "Docked · Berth 04 · discharging",
             "NavyColor", "04", "Today 14:10", "Thu 06:10", 366, 14.8, 1248, "Cleared",
             "Antwerp → Westhaven → New York", 62, 18, new CargoMix(58, 14, 6, 4, 18), 14,
             "4 cranes working · est. completion 03:40. Loading begins once bays 01–06 are clear.",
@@ -55,7 +58,7 @@ public static class PortData
                 new ClearanceCheck("✓", "Dangerous goods plan", "13:50", "NavyColor")
             }),
 
-        new Vessel("nordic", "Nordic Star", "Ferrand-Lowe", "9776171", VesselStatus.Arriving, "Arriving in 42 min · assigned Berth 07",
+        new Vessel("nordic", "Nordic Star", "Ferrand-Lowe", "1000019", VesselStatus.Arriving, "Arriving in 42 min · assigned Berth 07",
             "AccentColor", "07", "Today 21:40", "Thu 18:00", 299, 12.9, 816, "Pending",
             "Gothenburg → Westhaven → Halifax", 0, 0, new CargoMix(64, 20, 2, 2, 12), 11,
             "Pilot boarded 20:35 · 2 tugs assigned. Discharge starts ~22:30 after mooring.",
@@ -67,7 +70,7 @@ public static class PortData
                 new ClearanceCheck("○", "Dangerous goods plan", "on arrival", "TextFaintColor")
             }),
 
-        new Vessel("kaida", "Kaida Maru", "Tomoe", "9741401", VesselStatus.Docked, "Docked · Berth 01 · loading",
+        new Vessel("kaida", "Kaida Maru", "Tomoe", "1000021", VesselStatus.Docked, "Docked · Berth 01 · loading",
             "NavyColor", "01", "Tue 23:05", "Today 23:30", 334, 13.6, 1092, "Cleared",
             "Westhaven → Singapore → Busan", 100, 74, new CargoMix(70, 8, 3, 5, 14), 13,
             "Discharge complete 09:12. Loading 74% · 3 cranes · sailing 23:30 with the tide.",
@@ -79,7 +82,7 @@ public static class PortData
                 new ClearanceCheck("✓", "Dangerous goods plan", "Tue 22:33", "NavyColor")
             }),
 
-        new Vessel("baltic", "Baltic Crown", "Ravnby", "9632179", VesselStatus.Departing, "Departing 21:30 · Berth 06",
+        new Vessel("baltic", "Baltic Crown", "Ravnby", "1000033", VesselStatus.Departing, "Departing 21:30 · Berth 06",
             "NavyColor", "06", "Tue 16:20", "Today 21:30", 294, 12.1, 640, "Cleared",
             "Westhaven → Rotterdam", 100, 100, new CargoMix(52, 10, 4, 2, 32), 10,
             "Cargo complete · lashing certified 20:15. Pilot due 21:10, tugs standing by.",
@@ -91,7 +94,7 @@ public static class PortData
                 new ClearanceCheck("✓", "Departure clearance", "20:40", "NavyColor")
             }),
 
-        new Vessel("levant", "Levant Express", "Morvane", "9705523", VesselStatus.AtAnchor, "At anchor · Outer roads",
+        new Vessel("levant", "Levant Express", "Morvane", "1000045", VesselStatus.AtAnchor, "At anchor · Outer roads",
             "TextFaintColor", null, "Thu 02:30", "Fri 10:00", 347, 14.2, 1310, "Pending",
             "Piraeus → Westhaven → Toronto", 0, 0, new CargoMix(60, 12, 8, 6, 14), 13,
             "Waiting for Berth 06 to clear after Baltic Crown departs. Assign a berth in Docking.",
