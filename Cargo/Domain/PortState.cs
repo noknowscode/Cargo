@@ -71,6 +71,13 @@ public sealed partial class PortState : ObservableObject
     public event EventHandler? HoverChanged;
 
     /// <summary>
+    /// Raised when the plan scrubber moves. It steps every quarter hour while it is dragged, and only the berth plan
+    /// and its map show the plan hour, so it stays off <see cref="StructureChanged"/>: on that signal a scrub
+    /// re-recorded the harbour and rebuilt the vessel profile and every Berths panel at each step.
+    /// </summary>
+    public event EventHandler? PlanHourChanged;
+
+    /// <summary>
     /// Raised when the yard works a stack. It fires on its own every few seconds whether or
     /// not anyone is looking at the yard, so it stays off <see cref="StructureChanged"/>:
     /// one slot changing height is no reason to rebuild the harbour and every other screen.
@@ -722,7 +729,7 @@ public sealed partial class PortState : ObservableObject
     [ObservableProperty]
     public partial double? PlanHour { get; set; }
 
-    partial void OnPlanHourChanged(double? value) => NotifyStructureChanged();
+    partial void OnPlanHourChanged(double? value) => PlanHourChanged?.Invoke(this, EventArgs.Empty);
 
     public double EffectivePlanHour => PlanHour ?? NowHours;
 

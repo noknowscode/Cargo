@@ -23,6 +23,9 @@ public sealed partial class BerthMap : SceneHost
     private int _paintedHover = -2;
     private string? _lastHint;
 
+    // How many of the scene's children are the ground (land, apron, quay, swell, anchorage), which never changes
+    private int _groundCount;
+
     private string? _dragId;
     private Point _dragPoint;
     private Point _dragOffset;
@@ -39,7 +42,8 @@ public sealed partial class BerthMap : SceneHost
         PointerExited += (_, _) => CompleteDrop();
 
         Build();
-        this.RebuildWhenVisible(state, Build);
+        this.RebuildWhenVisible(state, BuildLive);
+        this.RebuildOnPlanHour(state, BuildLive);
         this.RebuildOnTheme(Build);
     }
 
@@ -71,15 +75,31 @@ public sealed partial class BerthMap : SceneHost
 
     // ── Drawing ───────────────────────────────────────────────────────────────
 
+    /// <summary>The whole map: the ground once (and again on a theme change), then the berths and vessels.</summary>
     private void Build()
     {
         Scene.Children.Clear();
+        DrawGround();
+        _groundCount = Scene.Children.Count;
+        BuildLive();
+    }
+
+    /// <summary>
+    /// The berths and the vessels, which an assignment, the selection and the plan hour change. The ground under
+    /// them (about 150 of the map's 190 shapes) stays.
+    /// </summary>
+    private void BuildLive()
+    {
+        while (Scene.Children.Count > _groundCount)
+        {
+            Scene.Children.RemoveAt(Scene.Children.Count - 1);
+        }
+
         _hulls.Clear();
 
         var planHour = _state.EffectivePlanHour;
         var conflicts = _state.Conflicts();
 
-        DrawGround();
         DrawBerths(planHour, conflicts);
         DrawVessels(planHour);
         _paintedHover = -2;
@@ -418,7 +438,7 @@ public sealed partial class BerthMap : SceneHost
         // otherwise the hull goes back to where it came from.
         if (!assigned)
         {
-            Build();
+            BuildLive();
         }
     }
 }

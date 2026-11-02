@@ -14,6 +14,10 @@ internal static class Live
     public static void TickWhenVisible(this FrameworkElement element, PortState state, Action refresh) =>
         Subscribe(element, refresh, handler => state.Ticked += handler);
 
+    /// <summary>For the plan scrubber, which only the berth plan and its map follow.</summary>
+    public static void RebuildOnPlanHour(this FrameworkElement element, PortState state, Action rebuild) =>
+        Subscribe(element, rebuild, handler => state.PlanHourChanged += handler);
+
     /// <summary>For the yard's own live moves, which only the yard map cares about.</summary>
     public static void RebuildOnYardMove(this FrameworkElement element, PortState state, Action rebuild) =>
         Subscribe(element, rebuild, handler => state.YardChanged += handler);

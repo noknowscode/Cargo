@@ -41,6 +41,7 @@ public sealed partial class DockingView : UserControl
             map.HintChanged += (_, message) => vm.Hint = message;
             MapHost.Content = map;
             this.RebuildWhenVisible(vm.State, vm.Refresh);
+            this.RebuildOnPlanHour(vm.State, vm.Scrubbed);
             this.TickWhenVisible(vm.State, vm.Tick);
 
             // Below 1000 px the vessel's panel follows the timeline: bring it on screen when a hull is picked

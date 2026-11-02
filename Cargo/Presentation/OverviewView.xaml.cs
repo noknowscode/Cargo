@@ -1,14 +1,31 @@
+using Cargo.Controls;
+
 namespace Cargo.Presentation;
 
 public sealed partial class OverviewView : Page
 {
+    private bool _attached;
+
     public OverviewView()
     {
         InitializeComponent();
-        DataContextChanged += (_, _) => Bindings.Update();
+        DataContextChanged += (_, _) => Attach();
     }
 
     public OverviewViewModel? ViewModel => DataContext as OverviewViewModel;
+
+    // xaml-lint: allow codebehind - the clock reaches the page's charts only while Overview is on screen (Live), like
+    // every other section; the page stays alive once visited
+    private void Attach()
+    {
+        if (!_attached && ViewModel is { } vm)
+        {
+            _attached = true;
+            this.TickWhenVisible(vm.State, vm.Refresh);
+        }
+
+        Bindings.Update();
+    }
 
     /// <summary>Where the first section (Today at North Quay) starts, in the coordinates of <paramref name="content"/>.</summary>
     public double FirstSectionTop(UIElement content) =>

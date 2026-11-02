@@ -46,12 +46,15 @@ which never starts the Uno runtime, and runs in CI's `test` job.
   constant; there is no async or reactive data flow for feeds to model. What the app
   actually has is a lot of imperative selection state — which berth is hovered, which bay
   is open, where a dragged hull currently is — which is what MVVM is good at.
-  `Domain/PortState.cs` is the single observable store, and it raises four separate signals
+  `Domain/PortState.cs` is the single observable store, and it raises five separate signals
   so that work is proportional to what actually changed: `StructureChanged` for selections
-  and assignments, `Ticked` for the clock, `HoverChanged` for the pointer, and `YardChanged`
+  and assignments, `PlanHourChanged` for the berth plan's scrubber (only the plan and its map
+  follow it), `Ticked` for the clock, `HoverChanged` for the pointer, and `YardChanged`
   for the yard's own live moves. Hover and yard moves fire orders of magnitude more often
   than anything else and are handled as repaints of the affected element, not rebuilds — a
-  berth hover used to tear down and rebuild the entire harbour.
+  berth hover used to tear down and rebuild the entire harbour, and a scrub of the plan
+  re-recorded it at every quarter-hour step. The store runs on an `IClock` (a
+  `DispatcherTimer` in the app, a manual clock in the tests).
 - **Navigation** is Uno Navigation. The route tree (`App.xaml.cs` `RegisterRoutes`) is
   Shell > Main > one view-less route per section, and Security's tabs nest under `security`.
   `MainPage` declares the sections as `x:Load` panes in its Visibility region; the header

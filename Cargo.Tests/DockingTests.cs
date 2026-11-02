@@ -80,13 +80,34 @@ public class DockingTests
         Assert.That(plan.ConflictText, Is.EqualTo("No conflicts in the next 36 h"));
 
         state.PlanHour = 30;
-        plan.Refresh();
+        plan.Scrubbed();
         Assert.That(plan.IsLive, Is.False);
         Assert.That(plan.PlanLabel, Is.EqualTo("Thu 06:00"));
 
         plan.NowCommand.Execute(null);
-        plan.Refresh();
+        plan.Scrubbed();
         Assert.That(plan.IsLive, Is.True);
+    }
+
+    [Test]
+    public void Scrubbing_moves_the_line_across_the_same_rows_and_rebuilds_nothing_else()
+    {
+        var (state, _, plan) = Planning("nordic");
+        var rows = plan.PlanRows.ToArray();
+        var structure = 0;
+        var scrubbed = 0;
+        state.StructureChanged += (_, _) => structure++;
+        state.PlanHourChanged += (_, _) => scrubbed++;
+
+        state.PlanHour = 18;
+        plan.Scrubbed(); // the page does this on PlanHourChanged
+
+        Assert.That(scrubbed, Is.EqualTo(1));
+        Assert.That(structure, Is.Zero, "a scrub is not a structure change: the harbour and the other panels stay");
+        Assert.That(plan.PlanRows, Is.EqualTo(rows));
+        Assert.That(rows.Select(r => r.NowFraction), Has.All.EqualTo(0.5));
+        Assert.That(plan.PlanLabel, Is.EqualTo("18:00"));
+        Assert.That(plan.Scrub, Is.EqualTo(18));
     }
 
     [Test]

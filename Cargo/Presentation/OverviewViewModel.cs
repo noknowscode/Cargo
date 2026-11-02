@@ -18,7 +18,6 @@ public sealed partial class OverviewViewModel : ObservableObject
             NextSix = new NextSixHoursViewModel(state, Timeline.Events);
             Activity = new ActivityViewModel(state);
             Refresh();
-            state.Ticked += (_, _) => Refresh();
             state.PropertyChanged += (_, e) =>
             {
                 if (e.PropertyName == nameof(PortState.NeedsYouCount))
@@ -71,7 +70,8 @@ public sealed partial class OverviewViewModel : ObservableObject
     [ObservableProperty]
     public partial double ShiftProgress { get; set; }
 
-    private void Refresh()
+    /// <summary>The charts' now markers, the timeline and Next 6 h; the page runs this each tick while it is shown.</summary>
+    public void Refresh()
     {
         NowHours = State.NowHours;
         ShiftProgress = Math.Clamp((NowHours - Operator.ClockedIn) / (Operator.ShiftEnd - Operator.ClockedIn), 0, 1);

@@ -195,7 +195,7 @@
                                Foreground="{ThemeResource TextMutedBrush}" VerticalAlignment="Center" />
                     <!-- xaml-lint: allow card - the track of a timeline bar, not a card -->
                     <Border Grid.Column="1" Height="26" CornerRadius="7" Background="{ThemeResource SurfaceSunkBrush}">
-                      <controls:ProportionalPanel Segments="{x:Bind Segments}" NowFraction="{x:Bind NowFraction}" />
+                      <controls:ProportionalPanel Segments="{x:Bind Segments}" NowFraction="{x:Bind NowFraction, Mode=OneWay}" />
                     </Border>
                   </Grid>
                 </DataTemplate>

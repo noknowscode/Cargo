@@ -427,8 +427,9 @@ public sealed partial class HarbourView : UserControl
             }
         }
 
+        // The still scene is not re-recorded here: it records itself when what it draws changes (camera, size,
+        // layer, theme); selection and hover draw live over it
         RefreshTags();
-        _scene?.RefreshStill();
     }
 
     /// <summary>

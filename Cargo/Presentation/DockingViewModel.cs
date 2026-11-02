@@ -2,14 +2,16 @@ using Cargo.Controls;
 
 namespace Cargo.Presentation;
 
-public sealed class PlanRow
+public sealed partial class PlanRow : ObservableObject
 {
     public required string Berth { get; init; }
 
     /// <summary>The row in words for a screen reader: the berth and who holds it when.</summary>
     public required string AccessibleName { get; init; }
     public required IReadOnlyList<ProportionalPanel.Segment> Segments { get; init; }
-    public required double NowFraction { get; init; }
+
+    /// <summary>Where the plan hour's line crosses the row (a fraction of the 36 h); the scrubber moves it in place.</summary>
+    [ObservableProperty] public partial double NowFraction { get; set; }
 }
 
 /// <summary>
@@ -32,8 +34,8 @@ public sealed partial class BerthChoice : ObservableObject
 
 /// <summary>
 /// The berth plan: the timeline, the scrubber over the next 36 hours, conflicts, and the
-/// selected vessel's panel. <see cref="Refresh"/> follows structural changes; <see cref="Tick"/>
-/// follows the clock. Created by <see cref="BerthsViewModel"/> on the UI thread.
+/// selected vessel's panel. <see cref="Refresh"/> follows structural changes, <see cref="Scrubbed"/>
+/// the scrubber and <see cref="Tick"/> the clock. Created by <see cref="BerthsViewModel"/> on the UI thread.
 /// </summary>
 public sealed partial class DockingViewModel : ObservableObject
 {
@@ -149,12 +151,6 @@ public sealed partial class DockingViewModel : ObservableObject
 
     public void Refresh()
     {
-        var planHour = State.EffectivePlanHour;
-        PlanLabel = (planHour >= 24 ? "Thu " : string.Empty) + PortState.Format(planHour % 24);
-        OnPropertyChanged(nameof(Scrub));
-
-        IsLive = State.PlanHour is null;
-
         var conflicts = State.Conflicts();
         ConflictText = conflicts.Count == 0
             ? "No conflicts in the next 36 h"
@@ -164,6 +160,7 @@ public sealed partial class DockingViewModel : ObservableObject
 
         BuildTimeline(conflicts);
         BuildSelection();
+        Scrubbed();
 
         if (string.IsNullOrEmpty(Hint))
         {
@@ -171,10 +168,27 @@ public sealed partial class DockingViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// The scrubber moved (or Now was pressed): only the plan hour's label, the Now button and the line across the
+    /// timeline rows follow it, so the rows are kept and their line moves in place.
+    /// </summary>
+    public void Scrubbed()
+    {
+        var planHour = State.EffectivePlanHour;
+        PlanLabel = (planHour >= 24 ? "Thu " : string.Empty) + PortState.Format(planHour % 24);
+        OnPropertyChanged(nameof(Scrub));
+        IsLive = State.PlanHour is null;
+
+        var nowFraction = Math.Clamp(planHour / PlanHours, 0, 1);
+        foreach (var row in PlanRows)
+        {
+            row.NowFraction = nowFraction;
+        }
+    }
+
     private void BuildTimeline(IReadOnlyList<(string Berth, string A, string B)> conflicts)
     {
         var now = State.NowHours;
-        var nowFraction = Math.Clamp(State.EffectivePlanHour / PlanHours, 0, 1);
 
         PlanRows.Clear();
         foreach (var berth in PortData.Berths)
@@ -230,8 +244,7 @@ public sealed partial class DockingViewModel : ObservableObject
             {
                 Berth = berth.Number,
                 AccessibleName = spoken.Count == 0 ? $"Berth {berth.Number}: free" : $"Berth {berth.Number}: {string.Join(", ", spoken)}",
-                Segments = segments,
-                NowFraction = nowFraction
+                Segments = segments
             });
         }
     }
