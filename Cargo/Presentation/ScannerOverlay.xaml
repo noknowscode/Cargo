@@ -8,8 +8,8 @@
 
   <!-- A floating panel over the dimmed page, not a full-window takeover: the section you came from
        stays visible around it. At most 1320 x 820, 48 px from the window edges from 1000 px (24 below).
-       Below 1000 the scan result moves under the stage and scrolls on its own; on a phone the panel fills
-       the window, as a sheet would. -->
+       Below 1000 the scan result moves under the stage and scrolls on its own (200 px, so the stage keeps the
+       height for the box) and the stage's insets tighten; on a phone the panel fills the window, as a sheet would. -->
   <!-- Modal to the keyboard: focus moves to Close when it opens, Tab cycles inside it, Escape closes it -->
   <Grid Background="{StaticResource PageDimInvariantBrush}" TabFocusNavigation="Cycle" KeyDown="OnKeyDown">
   <Grid Background="{StaticResource InkDeepInvariantBrush}" MaxWidth="1320" MaxHeight="820"
@@ -41,7 +41,7 @@
       <controls:GridPaper Grid.RowSpan="3" Opacity="0.5" />
       <controls:ContainerScanner x:Name="Scanner3D" Grid.Row="1" />
 
-      <Grid Padding="{utu:Responsive Narrowest='16,16', Narrow='28,24'}" ColumnSpacing="20">
+      <Grid Padding="{utu:Responsive Narrowest='16,16', Normal='28,24'}" ColumnSpacing="20">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
@@ -65,7 +65,7 @@
 
       <!-- The view presets, X-ray and zoom: the keyboard's way to turn and size the box the pointer drags. They wrap
            onto a second line when the stage is narrow -->
-      <Grid Grid.Row="2" Padding="{utu:Responsive Narrowest='16,0,16,16', Narrow='28,0,20,24'}" ColumnSpacing="20" RowSpacing="8">
+      <Grid Grid.Row="2" Padding="{utu:Responsive Narrowest='16,0,16,16', Normal='28,0,20,24'}" ColumnSpacing="20" RowSpacing="8">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
@@ -141,11 +141,11 @@
     <ScrollViewer Background="{StaticResource InkDeepInvariantBrush}" VerticalScrollBarVisibility="Auto"
                   Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                   Grid.RowSpan="{utu:Responsive Narrowest=1, Normal=2}"
-                  Width="{utu:Responsive Narrowest=NaN, Normal=360}" MaxHeight="{utu:Responsive Narrowest=200, Narrow=280, Normal=820}"
+                  Width="{utu:Responsive Narrowest=NaN, Normal=360}" MaxHeight="{utu:Responsive Narrowest=200, Normal=820}"
                   BorderBrush="{StaticResource HairlineOnDarkBrush}" BorderThickness="{utu:Responsive Narrowest='0,1,0,0', Normal='0'}">
       <!-- The inset is on the content, not the ScrollViewer: with a set width Uno let the content run under a
            ScrollViewer's right padding -->
-      <StackPanel Spacing="18" Padding="{utu:Responsive Narrowest='16,18', Narrow='24,26'}">
+      <StackPanel Spacing="18" Padding="{utu:Responsive Narrowest='16,18', Normal='24,26'}">
         <StackPanel Spacing="8">
           <TextBlock Text="SCAN RESULT" Style="{StaticResource TypeMonoMedium11}"
                      Foreground="{StaticResource AccentBrightInvariantBrush}" />
