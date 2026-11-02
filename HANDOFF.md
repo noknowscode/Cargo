@@ -1,6 +1,28 @@
 # HANDOFF — Cargo: production readiness, Phase B2 (responsive, states, accessibility, evidence)
 Updated: 2026-11-02
 
+## After B2: the WinAppSDK head, fictional carriers (branch `feat/production-readiness`)
+- **WinAppSDK build** (CI run 41499042343 failed there only; fixed from its log, Windows itself not run here):
+  - 239 MVVMTK0045: every `[ObservableProperty]` field is a partial property now (`[ObservableProperty] public
+    partial T Name { get; set; }`, CommunityToolkit.Mvvm 8.4.2 from the Uno.Sdk, C# 14 `field`). PortState's DEBUG
+    start hooks wrote backing fields to skip the change hooks; they are property initializers now (an initializer
+    sets the field without the setter), through `PortState.Hook`, which returns null in Release. Check on Linux:
+    build the desktop head with `-p:_MvvmToolkitIsUsingWindowsRuntimePack=true -p:CsWinRTAotOptimizerEnabled=true`,
+    which switches the toolkit's WinRT analyzers on (478 MVVMTK0045 lines before, 0 after).
+  - CS9035 / CS8852 in WinUI's `XamlTypeInfo.g.cs`: `HarbourTag` takes its values through a constructor (no
+    `required`); Liveline's `LivelinePoint`/`LivelineMarker` properties are settable instead of init-only.
+  - CsWinRT1032: the free-berth facts are an array, not a collection expression typed `IReadOnlyList<Fact>`. The
+    other collection expressions in Cargo and Liveline are empty or target arrays.
+  - Re-read the WinUI trap list: no `{Binding}` anywhere (bool to Visibility goes through `x:Bind`), font URIs carry
+    `#Family`, Uno-only C# is behind `#if __DESKTOP__`, CI's XAML passes reported nothing.
+- **Fictional carriers** (owner decision): MSC -> Avren, Hapag-Lloyd -> Ferrand-Lowe, ONE -> Tomoe, Maersk -> Ravnby,
+  CMA CGM -> Morvane, COSCO -> Lanhai; lessors Textainer -> Stackwell, Seaco -> Saltco, GE Seaco -> Ridgebox,
+  Triton -> Nereid; MSC Aurora -> Avren Aurora. Owner codes AVRU RVBU FLWU MRVU TMOU SKWU LNHU SLTU RDBU NRDU (check
+  digits recomputed, valid ISO 6346), seal prefixes to match, livery tokens renamed (`HullAvrenColor`, ...).
+- **Artwork:** `aurora-side.png` (was `msc-side.png`) letters "AVREN AURORA" at the bow and "AVREN" midships, below
+  the side profile's bay chips; `ship-side.png`, the hull every other vessel shares, had "MSC AURORA" too and now
+  carries no name; `aurora-plan.png` (was `msc-plan.png`) is only renamed. Canvas sizes and alpha unchanged.
+
 ## Phase B2 (branch `feat/production-readiness`)
 - **Size classes** (owner decision 6): App.xaml's `DefaultResponsiveLayout` (Narrowest 0, Narrow 600, Normal 1000,
   Wide 1280, Widest 1600), used by every `{utu:Responsive}`; the comment says why the Toolkit defaults do not fit.
@@ -34,8 +56,8 @@ Updated: 2026-11-02
 - **Westhaven, not Montreal.** The title, publisher, description, wordmark, Overview subtitle, quay sign, river map,
   routes, river boats and staff badges named the real Montreal Port Authority (and a CBSA badge); all now the
   fictional Westhaven (owner decision 4). The application id was already `com.westhaven.cargo`. Settings now live
-  under the new publisher folder, so a saved reduced-motion choice starts over once. Carrier names (MSC, Maersk,
-  CMA CGM, Hapag-Lloyd, ONE, COSCO, ...) stay: open question below.
+  under the new publisher folder, so a saved reduced-motion choice starts over once. Carrier names stayed in B1
+  (renamed after B2, above).
 - **Cargo.Tests** (NUnit, 54 tests) on the app's plain `net10.0` build: berth rules and optimiser (`Domain/BerthPlan.cs`),
   timeline maths (`Domain/ShiftTimeline.cs`), container filters (`PortData.ContainersFor`), bay views, harbour
   geometry. The pure parts moved out of `PortState`, `TimelineViewModel` and `ContainersViewModel` unchanged in
@@ -81,6 +103,15 @@ it 110 px via negative margins), the duty ID card sits level (entrance is fade +
 dead-code pass removed 47 usings, 7 members, 12 motion tokens, a font and 10 unused sprites.
 
 ## Last verified state
+- 2026-11-02 (Linux, after B2): Release, 0 warnings / 0 errors for `net10.0-desktop`, `net10.0-android` and
+  `net10.0-browserwasm`; `Cargo.Tests` 89/89 pass. Desktop with the toolkit's WinRT analyzers forced on (see above):
+  0 MVVMTK0045. Debug desktop under Xvfb, 1440x900: Overview (tags, timeline, tide lane, needs-you, activity) in
+  Light and Dark; Berths in Dark: picked berth 02 (the facts array) and Kaida Maru, then Baltic Crown in the vessel
+  band (unnamed generic hull) and Avren Aurora's side profile in Light (name clear of the bay chips), berth plan and
+  timeline; Cargo: picking MRVU 918204 1 opens the scanner with the new seal; Security zones, Inspection (Assign
+  inspector logs and stands done) and Access; Light switched to Dark from the account flyout. Not run: the
+  WinAppSDK head (CI only; it has never passed CI yet, so the steps after compiling are unexercised), iOS,
+  WebAssembly and Android at runtime.
 - 2026-11-02 (Linux, B2): Release, 0 warnings / 0 errors for `net10.0-desktop`, `net10.0-android` and
   `net10.0-browserwasm`; `Cargo.Tests` 89/89 pass (35 new: berth checks and refusals, the optimiser's report,
   `LayoutMath`, `YardGrid`). Evidence: Debug desktop under Xvfb, one launch per view and theme live-resized through
@@ -135,10 +166,12 @@ Read, not applied: none.
 5. Queued from before: `GLCanvasElement` harbour trial (uno-build-options), MainPage gold-standard pass.
 
 ## Open questions
-- **Real carriers in the data** (owner): MSC, Maersk, CMA CGM, Hapag-Lloyd, ONE, COSCO, Textainer, Seaco, GE Seaco,
-  Triton name the vessels' and containers' operators, the ISO owner codes (MSCU, MAEU, ...) and the hull liveries,
-  and the design's `msc-side`/`msc-plan` renders paint "MSC" and "MSC AURORA" on the hull. Renaming them needs new
-  artwork, so B1 left them (the port authority was the impersonation risk).
+- **Images that still show the old carrier names:** the B2 evidence sheets (`docs/evidence/b2-*.jpg`, thumbnails of
+  the app before the rename) and the design's own export, `docs/design/overview-timeline/overview-timeline.png`
+  ("MSC Aurora", "CMAU", "MAEU", "CSQU", "COSCO"). Re-shoot the evidence and retouch or drop the export?
+- **IMO numbers** (9839272, 9776171, 9741401, 9632179, 9705523; the first is painted on the Aurora's stern) are valid
+  IMO numbers from the design and were not checked against real ships. The invented owner codes (AVRU, ...) were not
+  checked against the BIC register either (no network access to it here).
 - Dark keeps the design's rendered sprites (hulls, containers, cranes, buoys) as they are: daylight renders on a
   night ground. They read fine; a night set would need new artwork.
 - On a dark launch the X11 window is white until Uno's first frame (measured under Xvfb, 2026-11-02: about 1.5 s of

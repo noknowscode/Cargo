@@ -124,6 +124,12 @@ map, the yard tractor, the security zone plan and the chart furniture.
 
 ## Deviations from the design, and why
 
+**Carriers.** The design's vessels and containers belong to real shipping lines and lessors.
+Westhaven's are invented (Avren, Ferrand-Lowe, Tomoe, Ravnby, Morvane, Lanhai; Stackwell,
+Saltco, Ridgebox, Nereid), with owner codes and seals to match, and the Aurora's side render
+carries her invented name, relettered on the design's artwork. The side render the rest of the
+fleet shares carries no name.
+
 **Fonts.** The design specifies Instrument Sans / IBM Plex Mono / Bricolage Grotesque.
 Plex Mono and Bricolage were available locally; Instrument Sans was not, and the sandbox
 blocks the font download. **Archivo** stands in for it — same neo-grotesque lineage, and the
