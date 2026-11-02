@@ -693,7 +693,7 @@ public sealed partial class PortState : ObservableObject
     partial void OnContainerFilterChanged(string value) => NotifyStructureChanged();
 
     [ObservableProperty]
-    public partial string SelectedContainerId { get; set; } = "MSCU4821937";
+    public partial string SelectedContainerId { get; set; } = "AVRU4821934";
 
     partial void OnSelectedContainerIdChanged(string value) => NotifyStructureChanged();
 

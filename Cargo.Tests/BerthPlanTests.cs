@@ -5,7 +5,7 @@ namespace Cargo.Tests;
 
 /// <summary>
 /// The berth rules behind drag-to-assign, Confirm berth and the optimiser. The starting data: Kaida Maru on 01,
-/// MSC Aurora on 04 (14:10 to Thu 06:10), Baltic Crown on 06, Nordic Star reserved on 07, Levant Express at anchor
+/// Avren Aurora on 04 (14:10 to Thu 06:10), Baltic Crown on 06, Nordic Star reserved on 07, Levant Express at anchor
 /// with no berth (Thu 02:30 onwards, 14.2 m draft); 03 is restricted.
 /// </summary>
 public class BerthPlanTests
@@ -25,7 +25,7 @@ public class BerthPlanTests
 
     [TestCase("03", false, TestName = "Restricted berth 03 takes nobody")]
     [TestCase("02", false, TestName = "Berth 02 (13.0 m) is too shallow for a 14.2 m draft")]
-    [TestCase("04", false, TestName = "Berth 04 is taken through MSC Aurora's window")]
+    [TestCase("04", false, TestName = "Berth 04 is taken through Avren Aurora's window")]
     [TestCase("05", true, TestName = "Berth 05 (14.6 m) is deep enough and free")]
     [TestCase("01", true, TestName = "Berth 01 frees at 23:30, before Levant arrives")]
     public void Fits_checks_restriction_depth_and_overlap(string berth, bool fits)
@@ -53,7 +53,7 @@ public class BerthPlanTests
     {
         var plan = new BerthPlan();
 
-        // Nordic Star (21:40 to Thu 18:00) against MSC Aurora on 04 until Thu 06:10
+        // Nordic Star (21:40 to Thu 18:00) against Avren Aurora on 04 until Thu 06:10
         Assert.That(plan.TryAssign("nordic", Index("04")), Is.False);
         Assert.That(plan.BerthOf("nordic"), Is.EqualTo("07"));
         Assert.That(plan.IsAssigned("nordic"), Is.False);
@@ -77,7 +77,7 @@ public class BerthPlanTests
     {
         var plan = new BerthPlan(new Dictionary<string, string> { ["levant"] = "04" });
 
-        Assert.That(plan.Conflicts(), Is.EqualTo(new[] { ("04", "MSC Aurora", "Levant Express") }));
+        Assert.That(plan.Conflicts(), Is.EqualTo(new[] { ("04", "Avren Aurora", "Levant Express") }));
     }
 
     [Test]
@@ -146,7 +146,7 @@ public class BerthPlanTests
 
         Assert.That(plan.Refusal(PortData.Vessel("nordic"), Index("03")), Is.EqualTo("Berth 03 is restricted and takes no vessel."));
         Assert.That(plan.Refusal(levant, Index("02")), Is.EqualTo("Berth 02 is too shallow for Levant Express (14.2 m draft · 13 m depth)."));
-        Assert.That(plan.Refusal(levant, Index("04")), Is.EqualTo("Berth 04 is taken by MSC Aurora during Levant Express's window."));
+        Assert.That(plan.Refusal(levant, Index("04")), Is.EqualTo("Berth 04 is taken by Avren Aurora during Levant Express's window."));
         Assert.That(plan.Refusal(levant, Index("05")), Is.Null);
     }
 

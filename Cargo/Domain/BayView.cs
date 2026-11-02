@@ -74,12 +74,12 @@ public sealed class BayView
         var featured = first ?? CargoClass.Empty;
         var prefix = vessel.Operator switch
         {
-            "MSC" => "MSCU",
-            "Hapag-Lloyd" => "HLCU",
-            "ONE" => "ONEU",
-            "Maersk" => "MAEU",
-            "CMA CGM" => "CMAU",
-            _ => "TGHU"
+            "Avren" => "AVRU",
+            "Ferrand-Lowe" => "FLWU",
+            "Tomoe" => "TMOU",
+            "Ravnby" => "RVBU",
+            "Morvane" => "MRVU",
+            _ => "SKWU"
         };
 
         var seed = bay * 17 + vessel.Length;

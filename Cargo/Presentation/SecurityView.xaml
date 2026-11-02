@@ -115,7 +115,7 @@
         <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="20,18">
           <StackPanel Spacing="8">
             <Grid>
-              <TextBlock Text="MSCU 482193 7" Style="{StaticResource TypeMonoMedium14}" />
+              <TextBlock Text="AVRU 482193 4" Style="{StaticResource TypeMonoMedium14}" />
               <!-- xaml-lint: allow card - a status pill, not a card; half-height radius (99 draws an oval on Skia) -->
               <Border Background="{ThemeResource SurfaceSunkBrush}" CornerRadius="10" Padding="8,3"
                       HorizontalAlignment="Right">
@@ -147,7 +147,7 @@
         <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="20,18" BorderBrush="{ThemeResource OrangeBrush}">
           <StackPanel Spacing="8">
             <Grid>
-              <TextBlock Text="CMAU 918204 4" Style="{StaticResource TypeMonoMedium14}" />
+              <TextBlock Text="MRVU 918204 1" Style="{StaticResource TypeMonoMedium14}" />
               <!-- xaml-lint: allow card - a status pill, not a card; half-height radius (99 draws an oval on Skia) -->
               <Border Background="{ThemeResource SurfaceSunkBrush}" CornerRadius="10" Padding="8,3"
                       HorizontalAlignment="Right">
@@ -324,8 +324,8 @@
               <RowDefinition Height="Auto" />
               <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock Text="CMAU 918204 4" Style="{StaticResource TypeMonoMedium18}" />
-            <TextBlock Text="40 FT HC · CMA CGM · Westhaven → Le Havre · Lane 2"
+            <TextBlock Text="MRVU 918204 1" Style="{StaticResource TypeMonoMedium18}" />
+            <TextBlock Text="40 FT HC · Morvane · Westhaven → Le Havre · Lane 2"
                        Style="{StaticResource SubtitleText}" VerticalAlignment="Center" TextWrapping="Wrap"
                        Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" HorizontalAlignment="{utu:Responsive Narrowest=Left, Wide=Right}"
                        Margin="{utu:Responsive Narrowest='0,4,0,0', Wide='0'}" />

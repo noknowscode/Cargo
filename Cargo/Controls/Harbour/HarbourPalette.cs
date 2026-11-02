@@ -68,11 +68,11 @@ public sealed class HarbourPalette
     /// <summary>Hull and funnel livery by operator.</summary>
     public (SKColor Hull, SKColor Funnel) Livery(string @operator) => @operator switch
     {
-        "MSC" => (this["HullMscColor"], this["FunnelMscColor"]),
-        "ONE" => (this["HullOneColor"], this["FunnelOneColor"]),
-        "Maersk" => (this["HullMaerskColor"], this["FunnelMaerskColor"]),
-        "Hapag-Lloyd" => (this["HullHapagColor"], this["FunnelHapagColor"]),
-        _ => (this["HullCmaColor"], this["FunnelCmaColor"])
+        "Avren" => (this["HullAvrenColor"], this["FunnelAvrenColor"]),
+        "Tomoe" => (this["HullTomoeColor"], this["FunnelTomoeColor"]),
+        "Ravnby" => (this["HullRavnbyColor"], this["FunnelRavnbyColor"]),
+        "Ferrand-Lowe" => (this["HullFerrandColor"], this["FunnelFerrandColor"]),
+        _ => (this["HullMorvaneColor"], this["FunnelMorvaneColor"])
     };
 
     private static readonly (string Key, double Weight)[] Liveries =

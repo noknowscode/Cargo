@@ -324,7 +324,7 @@ public sealed class HarbourWorld
             Vessels.Add(BuildShip(vessel, x, y, heading, length, beam, aboard, seed += 4));
         }
 
-        // Quay cranes on the working ships: MSC Aurora discharging on four, Kaida Maru loading on three.
+        // Quay cranes on the working ships: Avren Aurora discharging on four, Kaida Maru loading on three.
         foreach (var shape in Vessels)
         {
             var v = PortData.Vessel(shape.Id);

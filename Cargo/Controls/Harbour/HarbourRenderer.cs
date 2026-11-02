@@ -572,7 +572,7 @@ public sealed class HarbourRenderer : IDisposable
         canvas.DrawCircle(hold.X, hold.Y, (float)Math.Max(6, 9 * _camera.Scale), _fill);
         _fill.Color = _pal["AlertColor"];
         canvas.DrawCircle(hold.X, hold.Y, (float)Math.Max(2.5, 3 * _camera.Scale), _fill);
-        GroundText(canvas, "HOLD · CMAU 918204 4", 375, -108, HarbourWorld.QuayZ + .03, _pal["AlertInkColor"], 3.2f);
+        GroundText(canvas, "HOLD · MRVU 918204 1", 375, -108, HarbourWorld.QuayZ + .03, _pal["AlertInkColor"], 3.2f);
     }
 
     // ── Objects ────────────────────────────────────────────────────────────────

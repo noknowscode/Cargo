@@ -409,16 +409,16 @@
   <Color x:Key="LiveryOxideColor">#FF8E5E55</Color>
 
   <!-- Operator hull and funnel colours -->
-  <Color x:Key="HullMscColor">#FF2F3A48</Color>
-  <Color x:Key="FunnelMscColor">#FFD9C084</Color>
-  <Color x:Key="HullOneColor">#FF5E4458</Color>
-  <Color x:Key="FunnelOneColor">#FFA0708F</Color>
-  <Color x:Key="HullMaerskColor">#FF53708A</Color>
-  <Color x:Key="FunnelMaerskColor">#FFD8DADB</Color>
-  <Color x:Key="HullHapagColor">#FF3B4A5C</Color>
-  <Color x:Key="FunnelHapagColor">#FFC98A4E</Color>
-  <Color x:Key="HullCmaColor">#FF34455E</Color>
-  <Color x:Key="FunnelCmaColor">#FF8FB3CF</Color>
+  <Color x:Key="HullAvrenColor">#FF2F3A48</Color>
+  <Color x:Key="FunnelAvrenColor">#FFD9C084</Color>
+  <Color x:Key="HullTomoeColor">#FF5E4458</Color>
+  <Color x:Key="FunnelTomoeColor">#FFA0708F</Color>
+  <Color x:Key="HullRavnbyColor">#FF53708A</Color>
+  <Color x:Key="FunnelRavnbyColor">#FFD8DADB</Color>
+  <Color x:Key="HullFerrandColor">#FF3B4A5C</Color>
+  <Color x:Key="FunnelFerrandColor">#FFC98A4E</Color>
+  <Color x:Key="HullMorvaneColor">#FF34455E</Color>
+  <Color x:Key="FunnelMorvaneColor">#FF8FB3CF</Color>
 
   <!-- X-ray / scanner: the dark radial well behind the 3D box, the same in both themes -->
   <Color x:Key="ScanStageInnerColor">#FF132A2B</Color>

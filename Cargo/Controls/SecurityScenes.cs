@@ -205,14 +205,14 @@ public sealed partial class InspectionDiagram : SceneHost
 
         // Markings sit on the long side face of the box, where a real one carries them
         Scene.Place(Draw.Rect(340, 266, 152, 22, Tokens.Brush("SurfaceBrush", 0.92), 4));
-        Scene.Place(Draw.Text("CMAU 918204 4", 349, 269, 13, Tokens.Brush("InkBrush"), "MonoMediumFont"));
+        Scene.Place(Draw.Text("MRVU 918204 1", 349, 269, 13, Tokens.Brush("InkBrush"), "MonoMediumFont"));
         Scene.Place(Draw.Text("MAX GROSS 32,500 KG · TARE 3,940 KG", 349, 293, 10.5,
             Tokens.Brush("DeckWhiteColor", 0.85)));
 
         // Seal callout
         Scene.Place(Draw.Dot(212, 318, 5, Tokens.Brush("CargoOversizeInvariantBrush"), Tokens.Brush("SurfaceBrush"), 2));
         Scene.Place(Draw.Rule(207, 318, 150, 340, Tokens.Brush("AmberDeepBrush"), 1.2));
-        Scene.Place(Draw.Text("Seal CGM-77201-A", 0, 332, 10.5, Tokens.Brush("TextMutedBrush"),
+        Scene.Place(Draw.Text("Seal MRV-77201-A", 0, 332, 10.5, Tokens.Brush("TextMutedBrush"),
             "MonoFont", TextAlignment.Right, 146));
 
         // The variance itself

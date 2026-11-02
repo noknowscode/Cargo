@@ -61,7 +61,7 @@ Answered 2026-09-30 (the user accepted the defaults):
   - `Decisions`: `ObservableCollection<Decision>` (Id, Kind {InspectionHold, GateId, LateOrders,
     BerthConfirm}, Title, Sub, LateText, ActionLabel, IsPrimary, Command, VesselId?). Rebuilt on
     structure change, *mutated in place* on tick (late minutes). `NeedsYouCount`.
-    Sources: inspection hold from `PortData.Containers`/security hold data ("CMAU 918204 4", due
+    Sources: inspection hold from `PortData.Containers`/security hold data ("MRVU 918204 1", due
     21:15); gate ID check from `PortData.Activity`/Vehicles (TRK 8834, since 20:41); late orders from
     `RiverFleet.SlipMinutes > 0` (2); berth confirm from `PendingDecision` (step 2).
   - `SectionNeedsYou(sectionId)` for the nav dots (Cargo: late orders; Security: hold + gate ID;

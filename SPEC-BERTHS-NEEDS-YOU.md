@@ -130,7 +130,7 @@ no screen-reader path).
   region or VSM states (no code-behind toggling; CODEBEHIND lint).
 - **Layout:** the panel's height is fixed at the space the stage leaves (the stage is capped at 58% of the window
   height), so Overview fits one screen with no vertical scroll at 1680 x 1020, and a mode change never moves the
-  page. Header: what it shows ("MSC Aurora · Berth 04") and a clear button when a selection drives it.
+  page. Header: what it shows ("Avren Aurora · Berth 04") and a clear button when a selection drives it.
 - **Motion:** content cross-fades 200 ms and rises 6 px (`EaseSmooth`); reduced motion switches instantly. Hover
   changes the panel after a 300 ms dwell and a click changes it at once, so crossing the quay does not flicker.
 - **Page below:** the remaining Overview charts move to their sections (Container volume and Cargo flow to
