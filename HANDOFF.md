@@ -1,5 +1,36 @@
-# HANDOFF — Cargo: production readiness, Phase B2 (responsive, states, accessibility, evidence)
+# HANDOFF — Cargo: production readiness, code review round 2 fixed
 Updated: 2026-11-02
+
+## Code review round 2 (branch `feat/production-readiness`, from 1531097)
+The review: uno-lab `docs/production-readiness/CODE-REVIEW-ROUND2-2026-11-02.md` (one High, six Medium, three Low).
+- **High, the needs-you state after a drag:** every berth change (assign, release, optimise, confirm, undo) ends in
+  `PortState.OnPlanChanged`, which rebuilds the queue and raises `PendingDecision`/`NeedsDecision` when the waiting
+  arrival or her berth changed. `Confirm` confirms only the berth that is waiting; the bar drops a confirm whose berth
+  moved in flight; a refused confirm from the queue says why on its row (`Decision.Refusal`).
+- **Testability:** `PortState(IClock clock, BerthPlan? plan = null)`; the app passes `DispatcherClock`, the tests a
+  `ManualClock`. `NeedsYouViewModel` and `DockingViewModel` hold states (pending/done/refused/busy, IsLive,
+  HasConflicts, Fits, sprite names); `NeedsYouBar`/`DockingView` map them to brushes with x:Bind functions;
+  `ProportionalPanel.Segment` takes palette keys; the plan's legend is static XAML.
+- **Rebuilds:** `PortState.PlanHourChanged` for the scrubber (only the plan and its map follow it); the harbour no
+  longer re-records its still on a structure change (the still is keyed on camera, size, layer and theme); the berth
+  map builds its ground once; Overview ticks through `Live.TickWhenVisible`. A 145-step scrub: 24-26 s wall and 123-125
+  still recordings before, 9.5 s and none after (commit 1e30e9a has the numbers).
+- **Keyboard:** Move to berth rows update in place (focus survives the minute and an assignment); the side profile
+  takes focus and the arrows open bays (`BayView.Open/Step`); the scene hosts are no longer invisible tab stops.
+- **One source each:** `PortState.ClockHours` is the one reader of the data's times (invariant culture, a day table:
+  "Fri 10:00" is 58, an unknown day NaN); `PortData.Schedule` is read from ETA/ETD; the anchorage row's "fits berths"
+  is `BerthPlan.BerthsThatFit`; one countdown (`PortState.MinutesUntil`/`Countdown`); Next 6 h reads berths from the plan.
+- **Domain:** the yard's slots are `YardGrid.Slots` and the store works them (the map only draws); `VesselStatus` and
+  `BerthState` enums replace 24 string comparisons.
+- **Culture:** display follows the machine's culture; Cargo.Tests pins en-US (`Culture.cs`); `CultureTests`. The
+  demo freezes the vessels' statuses at 20:58 (README, PortData).
+- **Tokens:** `Themes/Layout.xaml` (spacing scale, insets, radii, recurring sizes; radii, page paddings and
+  TouchTarget moved there from Tokens.xaml). 1,114 numeric layout literals before, 507 after (zeros, circles and pills,
+  column widths, art). Odd gaps snapped up a step (1-2 px moves).
+- **Images:** `docs/evidence/b2-*.jpg` re-shot from this build; the design export relettered (Avren, MRVU, RVBU,
+  LNHU, Lanhai) and Main.dc.html's `msc` keys are `aurora`; IMO numbers invented (1000007-1000045, valid check
+  digits), the Aurora's stern relettered.
+- Tests: 89 to 125.
 
 ## After B2: the WinAppSDK head, fictional carriers (branch `feat/production-readiness`)
 - **WinAppSDK build** (CI run 41499042343 failed there only; fixed from its log, Windows itself not run here):
@@ -103,6 +134,14 @@ it 110 px via negative margins), the duty ID card sits level (entrance is fade +
 dead-code pass removed 47 usings, 7 members, 12 motion tokens, a font and 10 unused sprites.
 
 ## Last verified state
+- 2026-11-02 (Linux, review round 2): Release, 0 warnings / 0 errors for `net10.0-desktop`, `net10.0-android` and
+  `net10.0-browserwasm`; `Cargo.Tests` 125/125 (Debug and Release); desktop with the toolkit's WinRT analyzers on: 0
+  MVVMTK0045. CI green on 13596fc and 222e1fa, WinAppSDK included. Debug desktop under Xvfb: the review's repro
+  (drag Nordic Star 07 to 08: bar, queue, count, Berths dot and harbour marker all clear); Move to berth by keyboard
+  across a clock minute and an assignment (focus stays); bays by keyboard in Dark (Tab, Right, End); a 145-step scrub
+  timed before and after; Overview's figures move with the clock; all twelve evidence views in Light and Dark at the
+  B2 widths, before/after token comparison at 1280 and 390. Not run: WinAppSDK/iOS (CI only), WebAssembly and
+  Android at runtime, a screen reader.
 - 2026-11-02 (Linux, after B2): Release, 0 warnings / 0 errors for `net10.0-desktop`, `net10.0-android` and
   `net10.0-browserwasm`; `Cargo.Tests` 89/89 pass. Desktop with the toolkit's WinRT analyzers forced on (see above):
   0 MVVMTK0045. Debug desktop under Xvfb, 1440x900: Overview (tags, timeline, tide lane, needs-you, activity) in
@@ -166,12 +205,15 @@ Read, not applied: none.
 5. Queued from before: `GLCanvasElement` harbour trial (uno-build-options), MainPage gold-standard pass.
 
 ## Open questions
-- **Images that still show the old carrier names:** the B2 evidence sheets (`docs/evidence/b2-*.jpg`, thumbnails of
-  the app before the rename) and the design's own export, `docs/design/overview-timeline/overview-timeline.png`
-  ("MSC Aurora", "CMAU", "MAEU", "CSQU", "COSCO"). Re-shoot the evidence and retouch or drop the export?
-- **IMO numbers** (9839272, 9776171, 9741401, 9632179, 9705523; the first is painted on the Aurora's stern) are valid
-  IMO numbers from the design and were not checked against real ships. The invented owner codes (AVRU, ...) were not
-  checked against the BIC register either (no network access to it here).
+- **Black frames after a live resize under Xvfb:** Waterways scrolled resized to 599 px (from 600 or from 360) stays
+  black, through mouse moves and 1 px nudges, while 601 and a launch at 599 render; seen once each on Overview
+  scrolled and Security access at 999. Also on 1531097, so not new; not diagnosed (an exception in a canvas at that
+  size, or the X11 host). The evidence took those frames from a launch at their width.
+- **The harbour shows the data's berths:** the 3D world, its tags ("B07 · arriving") and the Overview's ship
+  positions come from `PortData`, not from drags or the optimiser (Berths, the plan, the queue and Next 6 h follow
+  the plan). Moving ships in the 3D scene would be new behaviour.
+- **IMO numbers** are invented now; the invented owner codes (AVRU, ...) were still not checked against the BIC
+  register (no network access to it here).
 - Dark keeps the design's rendered sprites (hulls, containers, cranes, buoys) as they are: daylight renders on a
   night ground. They read fine; a night set would need new artwork.
 - On a dark launch the X11 window is white until Uno's first frame (measured under Xvfb, 2026-11-02: about 1.5 s of

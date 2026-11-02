@@ -32,10 +32,14 @@ WebAssembly and Android build with 0 warnings on Linux; the Windows and iOS head
 OS, in CI (`.github/workflows/ci.yml`). Warnings fail the build (`Directory.Build.props`).
 
 `Cargo.Tests` (NUnit) covers the logic with no UI in it: the berth rules, the reasons a berth refuses a
-vessel and the optimiser's report (`Domain/BerthPlan.cs`), the timeline maths (`Domain/ShiftTimeline.cs`),
-the container filters, bay views, the yard map's keyboard steps (`Domain/YardGrid.cs`), the wrap and tile
-arithmetic of the responsive panels (`Controls/LayoutMath.cs`) and the harbour's geometry helpers. It references the app's plain `net10.0` build,
-which never starts the Uno runtime, and runs in CI's `test` job.
+vessel and the optimiser's report (`Domain/BerthPlan.cs`), the store on a manual clock (`PortState`: the
+needs-you queue after every berth change, Confirm and Undo, countdowns, the yard), the needs-you bar's state
+machine and the berth plan's model (`NeedsYouViewModel`, `DockingViewModel`: Move to berth, scrubbing), the
+schedule and the one clock reader, the timeline maths (`Domain/ShiftTimeline.cs`), the container filters, bay
+views and their keyboard steps, the yard's slots and keyboard steps (`Domain/YardGrid.cs`), the wrap and tile
+arithmetic of the responsive panels (`Controls/LayoutMath.cs`), the harbour's geometry helpers and the
+culture rules. It references the app's plain `net10.0` build, which never starts the Uno runtime, so the models
+it drives hold states, not brushes (the views map them to the theme), and it runs in CI's `test` job.
 
 ## Architecture
 
@@ -67,8 +71,10 @@ which never starts the Uno runtime, and runs in CI's `test` job.
   the width it is given and the page never scrolls sideways; below 1000 every control is a 44 px target.
   `Controls/FlowPanel.cs` wraps figures, legends, chips and button rows; `TileGridPanel` takes responsive
   column widths.
-- **Design tokens** live in `Themes/Tokens.xaml`; `Domain/Tokens.cs` resolves them for code
-  so no colour literal appears outside that one file.
+- **Design tokens** live in `Themes/Tokens.xaml` (colour, type) and `Themes/Layout.xaml` (the spacing
+  scale, insets, radii and the sizes that recur); `Domain/Tokens.cs` resolves colours for code so no
+  colour literal appears outside that one file. Pages take gaps, insets and radii from Layout.xaml; the
+  literals left are zeros, circles and pills (half their height) and one-off sizes that place art.
 - **Themes.** Light is the design's palette; Dark is the same desk at night (a blue-black
   page, cool off-white ink, the three blues re-spaced, status inks re-picked, every text colour
   at 4.5:1 or better). Every themed colour and brush sits in Light and Dark theme dictionaries
