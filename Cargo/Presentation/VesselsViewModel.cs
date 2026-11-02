@@ -168,7 +168,7 @@ public sealed partial class VesselsViewModel : ObservableObject
     {
         if (parts.Length < 3)
         {
-            return vessel.Status == "At anchor" ? "Waiting for Berth 06" : string.Empty;
+            return vessel.Status == VesselStatus.AtAnchor ? "Waiting for Berth 06" : string.Empty;
         }
 
         var tail = parts[2];

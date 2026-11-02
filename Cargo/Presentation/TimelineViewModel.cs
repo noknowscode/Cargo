@@ -149,7 +149,7 @@ public sealed partial class TimelineViewModel : ObservableObject
 
         // Vessels: done, the one departing, the rest to come
         var done = Events.Count(e => e.Hour <= now);
-        var departing = PortData.Vessels.Count(v => v.Status == "Departing");
+        var departing = PortData.Vessels.Count(v => v.Status == VesselStatus.Departing);
         VesselsValue = $"{done} of {Events.Count} done";
         VesselsSub = $"{departing} departing · {Events.Count - done - departing} to come";
 

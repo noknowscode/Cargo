@@ -68,6 +68,45 @@ public sealed record CargoMix(int Standard, int Reefer, int Hazard, int Oversize
     }
 }
 
+/// <summary>Where a vessel is in her call. Alongside (docked or departing) she keeps her berth; the rest can be moved.</summary>
+public enum VesselStatus
+{
+    Docked,
+    Arriving,
+    Departing,
+    AtAnchor
+}
+
+/// <summary>What a berth is doing when the shift starts.</summary>
+public enum BerthState
+{
+    Available,
+    Occupied,
+    Reserved,
+    Restricted
+}
+
+public static class StatusLabels
+{
+    /// <summary>"At anchor": the status as the screens write it.</summary>
+    public static string Label(this VesselStatus status) => status switch
+    {
+        VesselStatus.Docked => "Docked",
+        VesselStatus.Arriving => "Arriving",
+        VesselStatus.Departing => "Departing",
+        _ => "At anchor"
+    };
+
+    /// <summary>"Restricted": the berth state as the map writes it.</summary>
+    public static string Label(this BerthState state) => state switch
+    {
+        BerthState.Occupied => "Occupied",
+        BerthState.Reserved => "Reserved",
+        BerthState.Restricted => "Restricted",
+        _ => "Available"
+    };
+}
+
 public sealed record ClearanceCheck(string Mark, string Label, string Time, string Tone);
 
 public sealed partial record Vessel(
@@ -75,7 +114,7 @@ public sealed partial record Vessel(
     string Name,
     string Operator,
     string Imo,
-    string Status,
+    VesselStatus Status,
     string StatusLine,
     string AccentToken,
     string? HomeBerth,
@@ -93,7 +132,7 @@ public sealed partial record Vessel(
     string OpsNote,
     IReadOnlyList<ClearanceCheck> Checks);
 
-public sealed record BerthDef(string Number, string State, string? Occupant, double Depth);
+public sealed record BerthDef(string Number, BerthState State, string? Occupant, double Depth);
 
 public sealed record TimelineSegment(string Label, double Start, double End, string Kind);
 

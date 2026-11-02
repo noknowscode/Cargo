@@ -66,9 +66,9 @@ public sealed partial class VesselDetailViewModel : ObservableObject
 
         (Big, BigSub) = vessel.Status switch
         {
-            "Arriving" => (BerthFacts.MinutesTo(_state, PortState.ClockHours(vessel.Eta)), $"ETA {BerthFacts.Clock(vessel.Eta)}"),
-            "At anchor" => ("Unassigned", $"arrival window {BerthFacts.Clock(vessel.Eta)}"),
-            "Departing" => (BerthFacts.Clock(vessel.Etd), "departure"),
+            VesselStatus.Arriving => (BerthFacts.MinutesTo(_state, PortState.ClockHours(vessel.Eta)), $"ETA {BerthFacts.Clock(vessel.Eta)}"),
+            VesselStatus.AtAnchor => ("Unassigned", $"arrival window {BerthFacts.Clock(vessel.Eta)}"),
+            VesselStatus.Departing => (BerthFacts.Clock(vessel.Etd), "departure"),
             _ when vessel.UnloadPercent is > 0 and < 100 => ($"{vessel.UnloadPercent}%", $"discharged · departs {BerthFacts.Clock(vessel.Etd)}"),
             _ => ($"{vessel.LoadPercent}%", $"loaded · sails {BerthFacts.Clock(vessel.Etd)}")
         };
@@ -76,7 +76,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
         // Progress of the work the vessel is here for; nothing has started on an arrival
         (CargoPercent, CargoLabel) = vessel.Status switch
         {
-            "Arriving" or "At anchor" => (0d, $"{vessel.Containers:N0} boxes to discharge · not started"),
+            VesselStatus.Arriving or VesselStatus.AtAnchor => (0d, $"{vessel.Containers:N0} boxes to discharge · not started"),
             _ when vessel.UnloadPercent is > 0 and < 100 => (vessel.UnloadPercent, $"Discharged {vessel.UnloadPercent}%"),
             _ => (vessel.LoadPercent, $"Loaded {vessel.LoadPercent}%")
         };
@@ -117,7 +117,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
 
     private void ShowBerth(BerthDef berth)
     {
-        var restricted = berth.State == "restricted";
+        var restricted = berth.State == BerthState.Restricted;
         var next = _state.IncomingAt(berth.Number, _state.NowHours);
 
         Name = $"Berth {berth.Number}";

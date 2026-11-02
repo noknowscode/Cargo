@@ -36,6 +36,7 @@ public sealed partial class PortState : ObservableObject
 #endif
 
         RebuildDecisions();
+        YardOccupancy = Occupancy();
         clock.Tick += (_, _) => Tick();
     }
 
@@ -499,8 +500,8 @@ public sealed partial class PortState : ObservableObject
     /// berth nobody has confirmed. In the demo data that is Nordic Star to berth 07.
     /// </summary>
     public string? PendingDecision => PortData.Vessels
-        .Where(v => v.Status == "Arriving" && !_confirmed.Contains(v.Id))
-        .FirstOrDefault(v => BerthOf(v.Id) is { } berth && PortData.Berths.Any(b => b.Number == berth && b.State == "reserved"))
+        .Where(v => v.Status == VesselStatus.Arriving && !_confirmed.Contains(v.Id))
+        .FirstOrDefault(v => BerthOf(v.Id) is { } berth && PortData.Berths.Any(b => b.Number == berth && b.State == BerthState.Reserved))
         ?.Id;
 
     public bool NeedsDecision => PendingDecision is not null;
@@ -774,10 +775,8 @@ public sealed partial class PortState : ObservableObject
 
     public int YardMoves { get; private set; } = 1284;
 
-    public int YardOccupancy { get; set; } = 71;
-
-    /// <summary>Keys the yard renderer registered on its last pass.</summary>
-    public IReadOnlyList<(string Key, int Base)> YardKeys { get; set; } = Array.Empty<(string, int)>();
+    /// <summary>How full the yard is: the tiers stacked, as a share of five on every slot.</summary>
+    public int YardOccupancy { get; private set; }
 
     public int YardHeight(string key, int baseHeight) =>
         Math.Clamp(baseHeight + (_yardDelta.TryGetValue(key, out var d) ? d : 0), 0, 5);
@@ -785,20 +784,28 @@ public sealed partial class PortState : ObservableObject
     public bool YardRecentlyMoved(string key) =>
         _yardRecent.TryGetValue(key, out var at) && (_clock.Now - at).TotalSeconds < 60;
 
+    private int Occupancy() =>
+        (int)Math.Round(YardGrid.Slots.Sum(s => YardHeight(s.Key, s.Base)) * 100d / (YardGrid.Slots.Count * 5));
+
+    /// <summary>
+    /// The yard works a stack every few seconds: one slot gains or loses a tier. It runs on the store's clock whether
+    /// or not the yard map is on screen, so the yard's figures are live everywhere they are shown.
+    /// </summary>
     private void ShuffleYard()
     {
-        if (YardKeys.Count == 0 || (_clock.Now - _lastYardShuffle).TotalMilliseconds < 3500)
+        if ((_clock.Now - _lastYardShuffle).TotalMilliseconds < 3500)
         {
             return;
         }
 
         _lastYardShuffle = _clock.Now;
-        var pick = YardKeys[Random.Shared.Next(YardKeys.Count)];
+        var pick = YardGrid.Slots[Random.Shared.Next(YardGrid.Slots.Count)];
         var current = YardHeight(pick.Key, pick.Base);
         var delta = current <= 0 ? 1 : current >= 5 ? -1 : Random.Shared.Next(2) == 0 ? -1 : 1;
         _yardDelta[pick.Key] = (_yardDelta.TryGetValue(pick.Key, out var d) ? d : 0) + delta;
         _yardRecent[pick.Key] = _clock.Now;
         YardMoves++;
+        YardOccupancy = Occupancy();
         NotifyYardChanged();
     }
 

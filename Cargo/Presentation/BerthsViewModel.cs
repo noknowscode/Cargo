@@ -41,11 +41,11 @@ public sealed partial class BerthsViewModel : ObservableObject
     [ObservableProperty]
     public partial VesselsViewModel? Vessel { get; set; }
 
-    public string Alongside => PortData.Berths.Count(b => b.State == "occupied").ToString();
+    public string Alongside => PortData.Berths.Count(b => b.State == BerthState.Occupied).ToString();
 
-    public string Arriving => PortData.Vessels.Count(v => v.Status == "Arriving").ToString();
+    public string Arriving => PortData.Vessels.Count(v => v.Status == VesselStatus.Arriving).ToString();
 
-    public string AtAnchor => PortData.Vessels.Count(v => v.Status == "At anchor").ToString();
+    public string AtAnchor => PortData.Vessels.Count(v => v.Status == VesselStatus.AtAnchor).ToString();
 
     [ObservableProperty]
     public partial string Conflicts { get; set; } = "0";

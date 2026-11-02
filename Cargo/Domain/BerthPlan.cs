@@ -79,7 +79,7 @@ public sealed class BerthPlan
     public bool IsAssigned(string vesselId) => _assigned.ContainsKey(vesselId);
 
     /// <summary>A vessel alongside (docked) or leaving keeps her berth; the rest can be dragged, assigned and optimised.</summary>
-    public static bool Movable(Vessel vessel) => vessel.Status is not ("Docked" or "Departing");
+    public static bool Movable(Vessel vessel) => vessel.Status is not (VesselStatus.Docked or VesselStatus.Departing);
 
     /// <summary>Two occupation windows overlap when each starts before the other ends; touching ends do not.</summary>
     public static bool Overlaps((double Start, double End) a, (double Start, double End) b) =>
@@ -122,7 +122,7 @@ public sealed class BerthPlan
         }
 
         var berth = PortData.Berths[berthIndex];
-        if (berth.State == "restricted")
+        if (berth.State == BerthState.Restricted)
         {
             return BerthFit.Closed;
         }

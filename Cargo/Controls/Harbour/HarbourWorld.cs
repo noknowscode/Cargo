@@ -51,7 +51,7 @@ public sealed class VesselShape
 
 public sealed record CraneRig(double X, string? VesselId, double Phase, bool Working, bool Discharging, double ShipY, SKColor Box);
 
-public sealed record BerthSpot(int Index, string Number, double X, string State, double Depth);
+public sealed record BerthSpot(int Index, string Number, double X, BerthState State, double Depth);
 
 public sealed record TruckRun(int Lane, double X0, double Speed, SKColor? Load, SKColor Cab);
 
@@ -297,7 +297,7 @@ public sealed class HarbourWorld
             var berth = Berths.FirstOrDefault(b => PortData.Berths[b.Index].Occupant == vessel.Id);
 
             double x, y, heading;
-            if (berth is not null && berth.State == "occupied")
+            if (berth is not null && berth.State == BerthState.Occupied)
             {
                 x = berth.X;
                 y = 1.2 + beam / 2;
@@ -328,7 +328,7 @@ public sealed class HarbourWorld
         foreach (var shape in Vessels)
         {
             var v = PortData.Vessel(shape.Id);
-            var working = v.Status == "Docked";
+            var working = v.Status == VesselStatus.Docked;
             if (!working)
             {
                 continue;
@@ -348,7 +348,7 @@ public sealed class HarbourWorld
         }
 
         // Tugs on the inbound vessel, one ahead and one on the quarter.
-        var inbound = Vessels.FirstOrDefault(s => PortData.Vessel(s.Id).Status == "Arriving");
+        var inbound = Vessels.FirstOrDefault(s => PortData.Vessel(s.Id).Status == VesselStatus.Arriving);
         if (inbound is not null)
         {
             var c = Math.Cos(inbound.Heading);

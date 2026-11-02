@@ -129,14 +129,15 @@ public sealed partial class BerthStatusViewModel : ObservableObject
             return;
         }
 
-        row.Name = berth.State == "restricted" ? "Closed" : "Free berth";
-        row.StateLabel = berth.State == "restricted" ? "RESTRICTED" : "AVAILABLE";
-        row.Meta = berth.State == "restricted"
+        var closed = berth.State == BerthState.Restricted;
+        row.Name = closed ? "Closed" : "Free berth";
+        row.StateLabel = closed ? "RESTRICTED" : "AVAILABLE";
+        row.Meta = closed
             ? $"{BerthFacts.Restriction(berth)} · {berth.Depth:0.0} m"
             : $"Depth {berth.Depth:0.0} m";
         row.When = string.Empty;
         row.AccessibleName = $"Berth {berth.Number}, {row.Name.ToLowerInvariant()}, {row.Meta}";
-        row.Kind = berth.State == "restricted" ? RowKind.Restricted : RowKind.Free;
+        row.Kind = closed ? RowKind.Restricted : RowKind.Free;
         Paint(row);
     }
 
@@ -221,18 +222,18 @@ internal static class BerthFacts
 
     public static string State(PortState state, Vessel vessel) => vessel.Status switch
     {
-        "Arriving" when state.PendingDecision == vessel.Id => "Arriving · confirm berth",
-        "Arriving" when state.IsConfirmed(vessel.Id) => "Arriving · berth confirmed",
-        "Docked" when vessel.UnloadPercent is > 0 and < 100 => "Discharging",
-        "Docked" => "Loading",
-        _ => vessel.Status
+        VesselStatus.Arriving when state.PendingDecision == vessel.Id => "Arriving · confirm berth",
+        VesselStatus.Arriving when state.IsConfirmed(vessel.Id) => "Arriving · berth confirmed",
+        VesselStatus.Docked when vessel.UnloadPercent is > 0 and < 100 => "Discharging",
+        VesselStatus.Docked => "Loading",
+        _ => vessel.Status.Label()
     };
 
     /// <summary>The time a row leads with: the arrival countdown, else when the vessel sails.</summary>
     public static string When(PortState state, Vessel vessel) => vessel.Status switch
     {
-        "Arriving" => MinutesTo(state, PortState.ClockHours(vessel.Eta)),
-        "At anchor" => Clock(vessel.Eta),
+        VesselStatus.Arriving => MinutesTo(state, PortState.ClockHours(vessel.Eta)),
+        VesselStatus.AtAnchor => Clock(vessel.Eta),
         _ => Clock(vessel.Etd)
     };
 

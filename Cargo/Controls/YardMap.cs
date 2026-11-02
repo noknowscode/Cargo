@@ -3,7 +3,8 @@ namespace Cargo.Controls;
 /// <summary>
 /// The container yard from above. Every slot is a stack of up to five tiers: darker tops
 /// are taller stacks, and a slot that has just been worked keeps an amber ring for a minute.
-/// The RTGs and the yard tractors run off a shared timer, not repeating storyboards.
+/// The RTGs and the yard tractors run off a shared timer, not repeating storyboards. The map
+/// only draws: the slots are <see cref="YardGrid.Slots"/>, and the store works the stacks.
 /// </summary>
 public sealed partial class YardMap : SceneHost
 {
@@ -19,7 +20,7 @@ public sealed partial class YardMap : SceneHost
     // Each slot's elements and the state they were drawn for, so a yard move or a click
     // redraws only the slots that changed rather than all ~300 of them.
     private readonly Dictionary<string, (List<UIElement> Elements, int Height, bool Selected, bool Moved)> _drawn = new();
-    private List<(string Key, YardZoneDef Zone, string Slot, int Base, double X, double Y)>? _slots;
+    private IReadOnlyList<(string Key, YardZoneDef Zone, string Slot, int Base, double X, double Y)>? _slots;
 
     public YardMap(PortState state) : base(1100, 560)
     {
@@ -40,40 +41,6 @@ public sealed partial class YardMap : SceneHost
         this.RebuildWhenVisible(state, UpdateSlots);
         this.RebuildOnYardMove(state, UpdateSlots);
         this.RebuildOnTheme(Build);
-    }
-
-    /// <summary>All slots as (key, zone, slot label, tier count, cargo token).</summary>
-    public static IEnumerable<(string Key, YardZoneDef Zone, string Slot, int Base, double X, double Y)> Slots()
-    {
-        for (var z = 0; z < PortData.YardZones.Count; z++)
-        {
-            var zone = PortData.YardZones[z];
-            var columns = (int)Math.Floor((zone.W - 28) / 32);
-            var rows = (int)Math.Floor((zone.H - 60) / 24);
-
-            for (var r = 0; r < rows; r++)
-            {
-                for (var c = 0; c < columns; c++)
-                {
-                    var seed = z * 131 + r * 17 + c * 3;
-
-                    // The bonded and inspection blocks are deliberately sparse
-                    var height = z == 5
-                        ? Geo.H(seed) > 0.6 ? (int)(Geo.H(seed + 1) * 3) + 1 : 0
-                        : z == 4
-                            ? Geo.H(seed) > 0.5 ? 1 : 0
-                            : (int)(Geo.H(seed) * 6);
-
-                    yield return (
-                        $"{zone.Id}-{r}-{c}",
-                        zone,
-                        $"{zone.Id}-{r + 1:D2}-{c + 1:D2}",
-                        height,
-                        zone.X + 14 + c * 32,
-                        zone.Y + 50 + r * 24);
-                }
-            }
-        }
     }
 
     private void Build()
@@ -108,8 +75,7 @@ public sealed partial class YardMap : SceneHost
         AddRtg(_rtgA, 52);
         AddRtg(_rtgB, 602);
 
-        _slots ??= Slots().ToList();
-        _state.YardKeys = _slots.Select(s => (s.Key, s.Base)).ToList();
+        _slots = YardGrid.Slots;
         _drawn.Clear();
         UpdateSlots();
     }
@@ -122,13 +88,11 @@ public sealed partial class YardMap : SceneHost
             return;
         }
 
-        var occupied = 0;
         foreach (var (key, zone, _, baseHeight, x, y) in _slots)
         {
             var height = _state.YardHeight(key, baseHeight);
             var selected = _state.SelectedStack == key;
             var moved = _state.YardRecentlyMoved(key);
-            occupied += height;
 
             if (_drawn.TryGetValue(key, out var drawn)
                 && drawn.Height == height && drawn.Selected == selected && drawn.Moved == moved)
@@ -146,8 +110,6 @@ public sealed partial class YardMap : SceneHost
 
             _drawn[key] = (DrawSlot(key, zone, x, y, height, selected, moved), height, selected, moved);
         }
-
-        _state.YardOccupancy = _slots.Count == 0 ? 0 : (int)Math.Round(occupied * 100d / (_slots.Count * 5));
     }
 
     private List<UIElement> DrawSlot(string key, YardZoneDef zone, double x, double y, int height, bool selected, bool moved)

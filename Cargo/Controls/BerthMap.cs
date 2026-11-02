@@ -18,7 +18,7 @@ public sealed partial class BerthMap : SceneHost
     // Kept from the last build so a drag repaints them instead of rebuilding the scene.
     private readonly Microsoft.UI.Xaml.Shapes.Rectangle?[] _boxes = new Microsoft.UI.Xaml.Shapes.Rectangle?[8];
     private readonly TextBlock?[] _statusLabels = new TextBlock?[8];
-    private readonly (string Status, bool Conflict, bool Selected)[] _berthInfo = new (string, bool, bool)[8];
+    private readonly (BerthState Status, bool Conflict, bool Selected)[] _berthInfo = new (BerthState, bool, bool)[8];
     private readonly Dictionary<string, (FrameworkElement Hull, FrameworkElement Name)> _hulls = new();
     private int _paintedHover = -2;
     private string? _lastHint;
@@ -161,10 +161,10 @@ public sealed partial class BerthMap : SceneHost
             var incoming = _state.IncomingAt(berth.Number, planHour) is not null;
             var conflict = conflicts.Any(c => c.Berth == berth.Number);
 
-            var status = berth.State == "restricted" ? "restricted"
-                : occupied ? "occupied"
-                : incoming ? "reserved"
-                : "available";
+            var status = berth.State == BerthState.Restricted ? BerthState.Restricted
+                : occupied ? BerthState.Occupied
+                : incoming ? BerthState.Reserved
+                : BerthState.Available;
 
             var selected = _state.DockSelection is { } id && _state.BerthOf(id) == berth.Number;
             _berthInfo[i] = (status, conflict, selected);
@@ -172,7 +172,7 @@ public sealed partial class BerthMap : SceneHost
             _boxes[i] = Scene.Place(Draw.Rect(x, 146, 132, 70, Tokens.Transparent, 8, Tokens.Transparent, 1.2));
             Scene.Place(Draw.Text(berth.Number, x, 228, 16, Tokens.Brush("InkBrush"),
                 "MonoMediumFont", TextAlignment.Center, 132));
-            _statusLabels[i] = Scene.Place(Draw.Text(conflict ? "Conflict" : char.ToUpperInvariant(status[0]) + status[1..],
+            _statusLabels[i] = Scene.Place(Draw.Text(conflict ? "Conflict" : status.Label(),
                 x, 248, 14, Tokens.Transparent, "BodyMediumFont", TextAlignment.Center, 132));
             Scene.Place(Draw.Text($"{berth.Depth:0.0} m", x, 218, 10.5, Tokens.Brush("TextFaintBrush"),
                 "BodyFont", TextAlignment.Center, 132));
@@ -214,7 +214,7 @@ public sealed partial class BerthMap : SceneHost
                     BerthFit.TooShallow => "Too shallow",
                     _ => "Taken"
                 }
-                : conflict ? "Conflict" : char.ToUpperInvariant(status[0]) + status[1..];
+                : conflict ? "Conflict" : status.Label();
 
             var toneToken = conflict ? "AlertColor" : StatusToken(status);
             if (dragVessel is not null)
@@ -226,22 +226,22 @@ public sealed partial class BerthMap : SceneHost
             var fillOpacity = isHover && fits ? 0.45
                 : selected ? 0.35
                 : dragVessel is not null && fits ? 0.22
-                : status == "available" ? 0.14
+                : status == BerthState.Available ? 0.14
                 : 0.18;
 
             box.Fill = Tokens.Of(tone, fillOpacity);
             box.Stroke = Tokens.Of(isHover && dragVessel is not null ? Tokens.Color("InkColor") : tone);
             box.StrokeThickness = isHover || selected || conflict ? 2.5 : 1.2;
-            box.StrokeDashArray = status == "reserved" || (dragVessel is not null && fits) ? Draw.Dash(6, 5) : null;
+            box.StrokeDashArray = status == BerthState.Reserved || (dragVessel is not null && fits) ? Draw.Dash(6, 5) : null;
             label.Foreground = Tokens.Of(tone);
         }
     }
 
-    private static string StatusToken(string status) => status switch
+    private static string StatusToken(BerthState status) => status switch
     {
-        "occupied" => "NavyColor",
-        "reserved" => "AccentColor",
-        "restricted" => "RestrictedColor",
+        BerthState.Occupied => "NavyColor",
+        BerthState.Reserved => "AccentColor",
+        BerthState.Restricted => "RestrictedColor",
         _ => "AccentColor"
     };
 

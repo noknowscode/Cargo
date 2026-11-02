@@ -271,7 +271,7 @@ public sealed class HarbourRenderer : IDisposable
         // waiting on a decision is drawn live (DrawNeeds), so it can fade when it is confirmed.
         foreach (var berth in _world.Berths)
         {
-            if (berth.State == "restricted")
+            if (berth.State == BerthState.Restricted)
             {
                 BerthTile(canvas, berth, _pal.WithAlpha("AlertColor", .16), _pal["AlertColor"], dashed: true);
             }
@@ -279,7 +279,7 @@ public sealed class HarbourRenderer : IDisposable
 
         DrawRoutes(canvas, state.Layer);
 
-        foreach (var vessel in _world.Vessels.Where(v => PortData.Vessel(v.Id).Status == "Arriving"))
+        foreach (var vessel in _world.Vessels.Where(v => PortData.Vessel(v.Id).Status == VesselStatus.Arriving))
         {
             Wake(canvas, vessel, 70);
         }
@@ -315,7 +315,7 @@ public sealed class HarbourRenderer : IDisposable
         // Berth numbers painted on the quay: in the world rather than floating over it.
         foreach (var berth in _world.Berths)
         {
-            var color = berth.State == "restricted" ? _pal["AlertColor"] : _pal.WithAlpha("HarbourSignColor", .6);
+            var color = berth.State == BerthState.Restricted ? _pal["AlertColor"] : _pal.WithAlpha("HarbourSignColor", .6);
             GroundText(canvas, berth.Number, berth.X - 34, -17, HarbourWorld.QuayZ + .02, color, 9);
         }
 
@@ -866,7 +866,7 @@ public sealed class HarbourRenderer : IDisposable
             canvas.DrawLine(anchor, tag, _stroke);
 
             var status = PortData.Vessel(id).Status;
-            var alongside = status is "Docked" or "Departing";
+            var alongside = status is VesselStatus.Docked or VesselStatus.Departing;
             _fill.Color = alongside ? _pal["NavyColor"] : _pal["SurfaceColor"];
             canvas.DrawCircle(anchor, 5.5f, _fill);
             _stroke.StrokeWidth = alongside ? 2f : 1.6f;

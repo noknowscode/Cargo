@@ -517,10 +517,10 @@ public sealed partial class HarbourView : UserControl
     private static string TagLine(Vessel v) => v.Status switch
     {
         // The berth leads: a selected vessel's tag sits over its painted berth number
-        "Docked" when v.UnloadPercent is > 0 and < 100 => $"B{v.HomeBerth} · discharging",
-        "Docked" => $"B{v.HomeBerth} · loading",
-        "Departing" => $"B{v.HomeBerth} · departing",
-        "Arriving" => $"B{v.HomeBerth} · arriving {Clock(v.Eta)}",
+        VesselStatus.Docked when v.UnloadPercent is > 0 and < 100 => $"B{v.HomeBerth} · discharging",
+        VesselStatus.Docked => $"B{v.HomeBerth} · loading",
+        VesselStatus.Departing => $"B{v.HomeBerth} · departing",
+        VesselStatus.Arriving => $"B{v.HomeBerth} · arriving {Clock(v.Eta)}",
         _ => "anchored · unassigned"
     };
 
@@ -624,8 +624,8 @@ public sealed partial class HarbourView : UserControl
         }
 
         var vessels = _tags.Select(t => PortData.Vessel(t.Tag.Id)).ToList();
-        var alongside = vessels.Count(v => v.Status is "Docked" or "Departing");
-        var arriving = vessels.Count(v => v.Status == "Arriving");
+        var alongside = vessels.Count(v => v.Status is VesselStatus.Docked or VesselStatus.Departing);
+        var arriving = vessels.Count(v => v.Status == VesselStatus.Arriving);
         var selected = vessels.FirstOrDefault(v => v.Id == EffectiveSelection);
         var layer = EffectiveLayer switch { "yard" => "Yard", "security" => "Security", "traffic" => "Traffic", _ => "Map" };
         var text = $"{_viewName} view, {layer} layer. {alongside} vessels alongside, {arriving} arriving."

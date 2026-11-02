@@ -67,7 +67,7 @@ public sealed partial class YardViewModel : ObservableObject
             return;
         }
 
-        var slot = YardMap.Slots().FirstOrDefault(s => s.Key == key);
+        var slot = YardGrid.Slots.FirstOrDefault(s => s.Key == key);
         if (slot.Key is null)
         {
             return;
