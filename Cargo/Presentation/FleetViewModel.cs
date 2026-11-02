@@ -120,6 +120,13 @@ public sealed partial class FleetViewModel : ObservableObject
     [ObservableProperty]
     private string _crewSubtitle = string.Empty;
 
+    /// <summary>Empty: no message with the selected vessel yet this shift; the channel says so instead of a blank box.</summary>
+    [ObservableProperty]
+    private bool _threadEmpty;
+
+    [ObservableProperty]
+    private string _threadEmptyText = string.Empty;
+
     [ObservableProperty]
     private string _slipLabel = string.Empty;
 
@@ -284,6 +291,9 @@ public sealed partial class FleetViewModel : ObservableObject
                 Foreground = fromCrew ? Tokens.Brush("InkBrush") : Tokens.Brush("PaperBrush")
             });
         }
+
+        ThreadEmpty = Thread.Count == 0;
+        ThreadEmptyText = $"No messages with {selected.Name} this shift. Send one below or pick a quick message.";
 
         QuickMessages.Clear();
         foreach (var (label, text) in new[]
