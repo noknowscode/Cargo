@@ -203,6 +203,12 @@ public static class PortData
         ["Outbound"] = new[] { 4 }
     };
 
+    /// <summary>The containers a filter chip shows: those at one of its journey stages; "All" or an unknown filter shows every one.</summary>
+    public static IEnumerable<ContainerDef> ContainersFor(string filter) =>
+        FilterStages.TryGetValue(filter, out var stages)
+            ? Containers.Where(c => stages.Contains(c.Stage))
+            : Containers;
+
     public static readonly IReadOnlyList<string> JourneyStages = new[] { "Ship", "Crane", "Yard", "Inspection", "Truck / Rail" };
 
     /// <summary>What the X-ray finds inside each container.</summary>

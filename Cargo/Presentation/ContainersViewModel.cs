@@ -110,10 +110,8 @@ public sealed partial class ContainersViewModel : ObservableObject
 
     private void BuildCards()
     {
-        var stages = PortData.FilterStages.TryGetValue(State.ContainerFilter, out var allowed) ? allowed : null;
-
         Cards.Clear();
-        foreach (var container in PortData.Containers.Where(c => stages is null || stages.Contains(c.Stage)))
+        foreach (var container in PortData.ContainersFor(State.ContainerFilter))
         {
             Cards.Add(new ContainerCard
             {

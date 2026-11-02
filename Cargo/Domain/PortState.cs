@@ -10,7 +10,7 @@ public sealed partial class PortState : ObservableObject
 {
     private readonly DispatcherTimer _clock;
     private readonly DateTimeOffset _started = DateTimeOffset.Now;
-    private readonly Dictionary<string, string> _assigned = new();
+    private readonly BerthPlan _plan = new();
     private readonly Dictionary<string, List<ChatLine>> _sentMessages = new();
 
     private DateTimeOffset _lastYardShuffle;
@@ -440,12 +440,9 @@ public sealed partial class PortState : ObservableObject
 
     // ── Berth assignment ──────────────────────────────────────────────────────
 
-    public string? BerthOf(string vesselId) =>
-        _assigned.TryGetValue(vesselId, out var assigned)
-            ? assigned
-            : PortData.Berths.FirstOrDefault(b => b.Occupant == vesselId)?.Number;
+    public string? BerthOf(string vesselId) => _plan.BerthOf(vesselId);
 
-    public bool IsAssigned(string vesselId) => _assigned.ContainsKey(vesselId);
+    public bool IsAssigned(string vesselId) => _plan.IsAssigned(vesselId);
 
     public Vessel? OccupantAt(string berth, double hour) => PortData.Vessels.FirstOrDefault(v =>
         BerthOf(v.Id) == berth && PortData.Schedule[v.Id].Start <= hour && PortData.Schedule[v.Id].End > hour);
@@ -453,51 +450,9 @@ public sealed partial class PortState : ObservableObject
     public Vessel? IncomingAt(string berth, double hour) => PortData.Vessels.FirstOrDefault(v =>
         BerthOf(v.Id) == berth && PortData.Schedule[v.Id].Start > hour);
 
-    public IReadOnlyList<(string Berth, string A, string B)> Conflicts()
-    {
-        var found = new List<(string, string, string)>();
-        foreach (var berth in PortData.Berths)
-        {
-            var here = PortData.Vessels.Where(v => BerthOf(v.Id) == berth.Number).ToList();
-            for (var i = 0; i < here.Count; i++)
-            {
-                for (var j = i + 1; j < here.Count; j++)
-                {
-                    var a = PortData.Schedule[here[i].Id];
-                    var b = PortData.Schedule[here[j].Id];
-                    if (a.Start < b.End && b.Start < a.End)
-                    {
-                        found.Add((berth.Number, here[i].Name, here[j].Name));
-                    }
-                }
-            }
-        }
+    public IReadOnlyList<(string Berth, string A, string B)> Conflicts() => _plan.Conflicts();
 
-        return found;
-    }
-
-    public bool Fits(Vessel vessel, int berthIndex)
-    {
-        if (berthIndex < 0 || berthIndex >= PortData.Berths.Count)
-        {
-            return false;
-        }
-
-        var berth = PortData.Berths[berthIndex];
-        if (berth.State == "restricted" || vessel.Draft > berth.Depth)
-        {
-            return false;
-        }
-
-        var window = PortData.Schedule[vessel.Id];
-        return !PortData.Vessels
-            .Where(o => o.Id != vessel.Id && BerthOf(o.Id) == berth.Number)
-            .Any(o =>
-            {
-                var other = PortData.Schedule[o.Id];
-                return window.Start < other.End && other.Start < window.End;
-            });
-    }
+    public bool Fits(Vessel vessel, int berthIndex) => _plan.Fits(vessel, berthIndex);
 
     /// <summary>Returns the message to show in the map hint strip.</summary>
     public string? Assign(string vesselId, int berthIndex)
@@ -505,9 +460,8 @@ public sealed partial class PortState : ObservableObject
         var vessel = PortData.Vessel(vesselId);
         var berth = PortData.Berths[berthIndex];
 
-        if (Fits(vessel, berthIndex))
+        if (_plan.TryAssign(vesselId, berthIndex))
         {
-            _assigned[vesselId] = berth.Number;
             NotifyStructureChanged();
             return $"{vessel.Name} assigned to Berth {berth.Number} · pilots and mooring gang notified.";
         }
@@ -519,7 +473,7 @@ public sealed partial class PortState : ObservableObject
 
     public void Unassign(string vesselId)
     {
-        _assigned.Remove(vesselId);
+        _plan.Unassign(vesselId);
         NotifyStructureChanged();
     }
 
@@ -711,47 +665,10 @@ public sealed partial class PortState : ObservableObject
         OnPropertyChanged(nameof(NeedsDecision));
     }
 
-    /// <summary>Give every movable vessel the shallowest berth that still clears its draft.</summary>
+    /// <summary>Give every movable vessel the shallowest berth that still clears its draft (<see cref="BerthPlan.Optimize"/>).</summary>
     public string Optimize()
     {
-        var conflicts = Conflicts();
-        var movable = PortData.Vessels
-            .Where(v => v.Status != "Docked" && v.Status != "Departing")
-            .Where(v => BerthOf(v.Id) is null || conflicts.Any(c => c.A == v.Name || c.B == v.Name))
-            .ToList();
-
-        foreach (var vessel in movable)
-        {
-            var window = PortData.Schedule[vessel.Id];
-            var candidates = Enumerable.Range(0, PortData.Berths.Count)
-                .Where(i =>
-                {
-                    var berth = PortData.Berths[i];
-                    if (berth.State == "restricted" || vessel.Draft > berth.Depth)
-                    {
-                        return false;
-                    }
-
-                    return !PortData.Vessels.Any(o =>
-                    {
-                        if (o.Id == vessel.Id || BerthOf(o.Id) != berth.Number)
-                        {
-                            return false;
-                        }
-
-                        var other = PortData.Schedule[o.Id];
-                        return other.Start < window.End && window.Start < other.End;
-                    });
-                })
-                .OrderBy(i => Math.Abs(PortData.Berths[i].Depth - vessel.Draft))
-                .ToList();
-
-            if (candidates.Count > 0)
-            {
-                _assigned[vessel.Id] = PortData.Berths[candidates[0]].Number;
-            }
-        }
-
+        _plan.Optimize();
         NotifyStructureChanged();
         return "Optimized: every inbound vessel has a berth that fits its draft, with no overlaps in the next 36 h.";
     }
