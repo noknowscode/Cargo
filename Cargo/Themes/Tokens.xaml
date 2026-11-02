@@ -451,17 +451,6 @@
   <FontFamily x:Key="MonoFont">ms-appx:///Assets/Fonts/IBMPlexMono_Regular.ttf#IBM Plex Mono</FontFamily>
   <FontFamily x:Key="MonoMediumFont">ms-appx:///Assets/Fonts/IBMPlexMono_Medium.ttf#IBM Plex Mono Medium</FontFamily>
 
-  <!-- ── Radius ─────────────────────────────────────── -->
-  <!-- Three radii. Inner radius = outer radius − padding (concentric). -->
-  <CornerRadius x:Key="RadiusControl">8</CornerRadius>
-  <CornerRadius x:Key="RadiusPanel">12</CornerRadius>
-  <CornerRadius x:Key="RadiusCard">18</CornerRadius>
-  <!-- ── Layout ─────────────────────────────────────── -->
-  <!-- Every section page shares one frame: its padding per size class (App.xaml's DefaultResponsiveLayout) -->
-  <Thickness x:Key="PagePaddingPhone">16,20,16,32</Thickness>
-  <Thickness x:Key="PagePaddingTablet">24,24,24,40</Thickness>
-  <Thickness x:Key="PagePadding">40,28,40,48</Thickness>
-  <!-- The smallest touch target below 1000 px (phones and tablets); from 1000 the design's pointer sizes stand -->
-  <x:Double x:Key="TouchTarget">44</x:Double>
+  <!-- Radii, spacing, insets and recurring sizes: Layout.xaml -->
 
 </ResourceDictionary>

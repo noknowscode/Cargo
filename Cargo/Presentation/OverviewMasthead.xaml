@@ -8,7 +8,7 @@
        the greeting and the card; phones (under 600) drop the card, whose operator and shift are in the account flyout -->
   <!-- The Overview greeting, the shift's headline figures and the duty operator's ID card.
        Figures are ink; colour only marks status, as the mark before each label. -->
-  <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Narrow=40}">
+  <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Narrow={StaticResource Space40}}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
@@ -19,20 +19,20 @@
       <ColumnDefinition Width="Auto" />
     </Grid.ColumnDefinitions>
 
-    <StackPanel VerticalAlignment="Center" Spacing="8">
+    <StackPanel VerticalAlignment="Center" Spacing="{StaticResource Space8}">
       <TextBlock Style="{StaticResource GreetingText}" TextWrapping="Wrap">
         <Run Text="Good evening, " /><Run Text="{x:Bind ViewModel.GreetingName}" Foreground="{ThemeResource AccentDarkBrush}" />
       </TextBlock>
       <TextBlock Text="{x:Bind ViewModel.Subtitle, Mode=OneWay}" Style="{StaticResource DateLineText}" TextWrapping="Wrap" />
     </StackPanel>
 
-    <StackPanel Orientation="Horizontal" Spacing="28" VerticalAlignment="Center" Padding="0,4,0,0"
+    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space28}" VerticalAlignment="Center" Padding="{StaticResource GapTop4}"
                 Grid.Row="{utu:Responsive Narrowest=1, Wide=0}"
                 Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
                 Grid.ColumnSpan="{utu:Responsive Narrowest=3, Wide=1}"
-                Margin="{utu:Responsive Narrowest='0,16,0,0', Wide='0'}">
+                Margin="{utu:Responsive Narrowest={StaticResource GapTop16}, Wide='0'}">
       <StackPanel Style="{StaticResource FigureStack}">
-        <StackPanel Orientation="Horizontal" Spacing="6">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
           <Ellipse Width="8" Height="8" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" />
           <TextBlock Text="Alongside" Style="{StaticResource FigureLabelText}" />
         </StackPanel>
@@ -40,7 +40,7 @@
       </StackPanel>
 
       <StackPanel Style="{StaticResource FigureStack}">
-        <StackPanel Orientation="Horizontal" Spacing="6">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
           <Ellipse Width="8" Height="8" Stroke="{ThemeResource NavyBrush}" StrokeThickness="1.6" VerticalAlignment="Center" />
           <TextBlock Text="Inbound" Style="{StaticResource FigureLabelText}" />
         </StackPanel>
@@ -53,8 +53,8 @@
       <Button Style="{StaticResource BareButton}" Command="{x:Bind ViewModel.State.RevealNeedsYouCommand}"
               AutomationProperties.Name="{x:Bind ViewModel.NeedsYouLink, Mode=OneWay}">
         <StackPanel Style="{StaticResource FigureStack}">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <Rectangle Width="8" Height="8" RadiusX="2" RadiusY="2" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Center" />
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
+            <Rectangle Width="8" Height="8" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Center" />
             <TextBlock Text="Needs you" Style="{StaticResource FigureLabelText}" />
           </StackPanel>
           <TextBlock Text="{x:Bind ViewModel.NeedsYouText, Mode=OneWay}" Style="{StaticResource MetricText}"
@@ -81,7 +81,7 @@
         </utu:ShadowCollection>
       </utu:ShadowContainer.Shadows>
 
-      <Grid CornerRadius="12" Padding="16,15,16,12" RowSpacing="10">
+      <Grid CornerRadius="{StaticResource RadiusPanel}" Padding="16,15,16,12" RowSpacing="{StaticResource Space10}">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
@@ -93,7 +93,7 @@
                 BorderBrush="{ThemeResource HairlineStrongBrush}" BorderThickness="1" />
 
         <!-- The sub-line spans under the badge: in the badge's column alone it would clip at 252 px -->
-        <Grid ColumnSpacing="12" RowSpacing="3">
+        <Grid ColumnSpacing="{StaticResource Space12}" RowSpacing="{StaticResource Space4}">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="36" />
             <ColumnDefinition Width="*" />
@@ -115,7 +115,7 @@
                      Style="{StaticResource CaptionText}" />
         </Grid>
 
-        <Grid Grid.Row="1" ColumnSpacing="10">
+        <Grid Grid.Row="1" ColumnSpacing="{StaticResource Space10}">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />

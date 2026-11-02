@@ -323,7 +323,7 @@
        the Toolkit's lightweight keys, set per theme in Tokens.xaml.
        ============================================================ -->
   <Style x:Key="PanelCard" TargetType="utu:CardContentControl" BasedOn="{StaticResource ElevatedCardContentControlStyle}">
-    <Setter Property="Padding" Value="20,18" />
+    <Setter Property="Padding" Value="{StaticResource CardInset}" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusCard}" />
     <Setter Property="BorderThickness" Value="1" />
     <!-- The Simple template reads BorderBrush from the control; the ElevatedCardContentBorderBrush key had no effect -->
@@ -336,7 +336,7 @@
   </Style>
 
   <Style x:Key="OutlinedPanel" TargetType="utu:CardContentControl" BasedOn="{StaticResource OutlinedCardContentControlStyle}">
-    <Setter Property="Padding" Value="16,14" />
+    <Setter Property="Padding" Value="{StaticResource Inset16x14}" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusPanel}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="BorderBrush" Value="{ThemeResource HairlineBrush}" />
@@ -357,27 +357,27 @@
     <Setter Property="Padding" Value="{StaticResource PagePadding}" />
     <Setter Property="MaxWidth" Value="1520" />
     <Setter Property="HorizontalAlignment" Value="Stretch" />
-    <Setter Property="RowSpacing" Value="28" />
+    <Setter Property="RowSpacing" Value="{StaticResource Space28}" />
   </Style>
 
   <Style x:Key="Masthead" TargetType="Grid">
     <Setter Property="BorderBrush" Value="{ThemeResource HairlineStrongBrush}" />
     <Setter Property="BorderThickness" Value="0,0,0,1" />
-    <Setter Property="Padding" Value="0,0,0,18" />
-    <Setter Property="ColumnSpacing" Value="24" />
+    <Setter Property="Padding" Value="{StaticResource GapBottom18}" />
+    <Setter Property="ColumnSpacing" Value="{StaticResource Space24}" />
   </Style>
 
   <!-- A part of a page (Berths hosts the plan and the vessel; Cargo the explorer and the yard) -->
   <Style x:Key="SectionFrame" TargetType="Grid">
     <Setter Property="HorizontalAlignment" Value="Stretch" />
-    <Setter Property="RowSpacing" Value="18" />
+    <Setter Property="RowSpacing" Value="{StaticResource Space18}" />
   </Style>
 
   <!-- Each part starts under a 2px ink rule, like the Overview's panels -->
   <Style x:Key="SectionRule" TargetType="Border">
     <Setter Property="BorderBrush" Value="{ThemeResource InkBrush}" />
     <Setter Property="BorderThickness" Value="0,2,0,0" />
-    <Setter Property="Padding" Value="0,18,0,0" />
+    <Setter Property="Padding" Value="{StaticResource GapTop18}" />
   </Style>
 
   <Style x:Key="SectionHeadText" TargetType="TextBlock">
@@ -393,7 +393,7 @@
   <!-- Masthead figures: a number and what it counts, baseline-aligned -->
   <!-- A headline figure: its label above, the number below, left-aligned on one edge -->
   <Style x:Key="FigureStack" TargetType="StackPanel">
-    <Setter Property="Spacing" Value="4" />
+    <Setter Property="Spacing" Value="{StaticResource Space4}" />
     <Setter Property="VerticalAlignment" Value="Bottom" />
   </Style>
 
@@ -405,7 +405,7 @@
   <Style x:Key="MetricLabelText" TargetType="TextBlock" BasedOn="{StaticResource CaptionText}">
     <Setter Property="FontSize" Value="13" />
     <Setter Property="VerticalAlignment" Value="Bottom" />
-    <Setter Property="Margin" Value="0,0,0,3" />
+    <Setter Property="Margin" Value="{StaticResource GapBottom4}" />
   </Style>
 
   <!-- Status as a dot and a word; the word takes the ink variant of the status colour -->
@@ -419,7 +419,7 @@
   <Style x:Key="RuledPanel" TargetType="Border">
     <Setter Property="BorderBrush" Value="{ThemeResource InkBrush}" />
     <Setter Property="BorderThickness" Value="0,2,0,0" />
-    <Setter Property="Padding" Value="0,18,22,14" />
+    <Setter Property="Padding" Value="{StaticResource RuledPanelInset}" />
   </Style>
 
   <!-- ============================================================
@@ -432,7 +432,7 @@
     <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
     <Setter Property="FontSize" Value="13" />
     <Setter Property="Padding" Value="14,10" />
-    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusGroup}" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="UseSystemFocusVisuals" Value="True" />
@@ -590,7 +590,7 @@
   <Style x:Key="HudSummaryButton" TargetType="Button" BasedOn="{StaticResource BareButton}">
     <Setter Property="Height" Value="44" />
     <Setter Property="Padding" Value="16,0,14,0" />
-    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusGroup}" />
     <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
     <Setter Property="FontSize" Value="14" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -618,15 +618,15 @@
        on the surface with an 18% ring -->
   <Style x:Key="QueuePrimaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryActionButton}">
     <Setter Property="Height" Value="44" />
-    <Setter Property="Padding" Value="16,0" />
-    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="{StaticResource InsetX16}" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
     <Setter Property="FontSize" Value="14" />
   </Style>
 
   <Style x:Key="QueueSecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
     <Setter Property="Height" Value="44" />
-    <Setter Property="Padding" Value="16,0" />
-    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="{StaticResource InsetX16}" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
     <Setter Property="FontSize" Value="14" />
     <Setter Property="Background" Value="{ThemeResource SurfaceBrush}" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />

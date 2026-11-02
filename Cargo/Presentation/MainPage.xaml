@@ -23,7 +23,7 @@
     <Grid Grid.Row="0" Background="{ThemeResource SurfaceBrush}"
           BorderBrush="{ThemeResource HairlineBrush}" BorderThickness="0,0,0,1"
           Padding="{utu:Responsive Narrowest='16,0,10,0', Narrow='24,0,16,0', Normal='40,0,28,0'}"
-          ColumnSpacing="{utu:Responsive Narrowest=12, Normal=28}">
+          ColumnSpacing="{utu:Responsive Narrowest={StaticResource Space12}, Normal={StaticResource Space28}}">
       <!-- Below 1000 the section tabs take a second row of their own, scrolling sideways on a phone -->
       <Grid.RowDefinitions>
         <RowDefinition Height="56" />
@@ -58,8 +58,8 @@
                     AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind Tooltip, Mode=OneWay}">
               <Grid>
-                <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center"
-                            Margin="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest='5,0', Normal='12,0'}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}" VerticalAlignment="Center"
+                            Margin="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource InsetX6}, Normal={StaticResource InsetX12}}">
                   <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeStrong14}"
                              FontSize="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=13, Normal=14}"
                              Visibility="{x:Bind CurrentVisibility, Mode=OneWay}" />
@@ -78,7 +78,7 @@
       </ItemsControl>
       </ScrollViewer>
 
-      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{StaticResource Space12}" VerticalAlignment="Center">
         <!-- Minutes roll; seconds tick plainly. Phones leave the time to the device's status bar -->
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
                     Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}"
@@ -100,8 +100,8 @@
             <!-- A Flyout, not a MenuFlyout: the operator's name and shift are information, and a
                  MenuFlyout can only show them as disabled (unreadable) items -->
             <Flyout Placement="BottomEdgeAlignedRight">
-              <StackPanel Width="240" Spacing="12">
-                <StackPanel Spacing="3">
+              <StackPanel Width="240" Spacing="{StaticResource Space12}">
+                <StackPanel Spacing="{StaticResource Space4}">
                   <TextBlock Text="{x:Bind ViewModel.Operator.Name}" Style="{StaticResource TitleText}" />
                   <TextBlock Text="{x:Bind ViewModel.OperatorLine}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap" />
                 </StackPanel>
@@ -132,7 +132,7 @@
       <!-- Overlays the harbour, which reaches up behind it (HarbourView.OverlayHeight); folds away when Overview
            scrolls (SPEC-OVERVIEW-SCROLL), in step with the band's snap to its mini. Drawn above the harbour
            (ZIndex). The padding lives on this wrapper so the fold takes it too -->
-      <Border x:Name="MastheadFrame" Canvas.ZIndex="1" Padding="{utu:Responsive Narrowest='16,12,16,12', Narrow='24,14,24,14', Normal='40,14,40,14'}" Visibility="Collapsed" Opacity="0"
+      <Border x:Name="MastheadFrame" Canvas.ZIndex="1" Padding="{utu:Responsive Narrowest={StaticResource Inset16x12}, Narrow='24,14,24,14', Normal='40,14,40,14'}" Visibility="Collapsed" Opacity="0"
               controls:Reveal.IsOn="{x:Bind ViewModel.State.MastheadShown, Mode=OneWay}" controls:Reveal.Grow="True"
               controls:Reveal.DurationKey="DurationExpandMs">
         <!-- From 1600 the greeting lines up with Overview's centred column (1440 less its 40 px sides) -->
@@ -149,7 +149,7 @@
            alignment and margin live on this wrapper, so the ShadowContainer never moves within its parent -->
       <Grid Grid.Row="1" VerticalAlignment="Bottom"
             HorizontalAlignment="{utu:Responsive Narrowest=Left, Wide=Center}"
-            Margin="{utu:Responsive Narrowest='16,0,0,60', Narrow='40,0,0,64', Wide='0,0,0,16'}"
+            Margin="{utu:Responsive Narrowest='16,0,0,60', Narrow='40,0,0,64', Wide={StaticResource GapBottom16}}"
             Visibility="{x:Bind ViewModel.State.LayerSwitchShown, Mode=OneWay}">
       <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}">
         <!-- The HUD float shadow. Inline: a Style-supplied collection never applies (Toolkit gotcha G36). -->
@@ -160,10 +160,10 @@
             <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.07" />
           </utu:ShadowCollection>
         </utu:ShadowContainer.Shadows>
-        <Grid CornerRadius="10" Padding="2">
+        <Grid CornerRadius="{StaticResource RadiusGroup}" Padding="{StaticResource Inset2}">
           <!-- One ink pill slides and resizes to the current layer (DurationSlideMs on EaseSmooth) -->
           <controls:SegmentIndicator Host="{x:Bind LayerItems}" SelectedIndex="{x:Bind ViewModel.SelectedLayerIndex, Mode=OneWay}"
-                                     Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" CornerRadius="8" Background="{ThemeResource InkBrush}" />
+                                     Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" CornerRadius="{StaticResource RadiusControl}" Background="{ThemeResource InkBrush}" />
           <ItemsControl x:Name="LayerItems" ItemsSource="{x:Bind ViewModel.Layers, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
@@ -171,10 +171,10 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:LayerItem">
                 <Button Style="{StaticResource BareButton}" Command="{x:Bind Command}" CommandParameter="{x:Bind Id}"
-                        Height="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=40}" Padding="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest='11,0', Narrow='14,0'}"
+                        Height="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=40}" Padding="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest='11,0', Narrow={StaticResource InsetX14}}"
                         AutomationProperties.Name="{x:Bind Label}">
-                  <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Viewbox Width="18" Height="18" VerticalAlignment="Center">
+                  <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" VerticalAlignment="Center">
+                    <Viewbox Width="{StaticResource IconSize}" Height="{StaticResource IconSize}" VerticalAlignment="Center">
                       <Grid Width="24" Height="24">
                         <shapes:Path Data="{x:Bind Icon}" Stroke="{x:Bind IconForeground, Mode=OneWay}" StrokeThickness="1.6"
                                      StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
@@ -205,8 +205,8 @@
         <Button Style="{StaticResource HudSummaryButton}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" Padding="12,0,14,0"
                 Command="{x:Bind ViewModel.State.ToggleStageCommand}"
                 AutomationProperties.Name="{x:Bind ViewModel.State.StageToggleLabel, Mode=OneWay}">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <Viewbox Width="18" Height="18" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+            <Viewbox Width="{StaticResource IconSize}" Height="{StaticResource IconSize}" VerticalAlignment="Center">
               <Grid Width="24" Height="24">
                 <shapes:Path Style="{StaticResource ExpandIcon}" Stroke="{ThemeResource InkBrush}"
                              Visibility="{x:Bind ViewModel.State.StageCollapsed, Mode=OneWay}" />

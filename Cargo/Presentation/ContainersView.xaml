@@ -14,7 +14,7 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <Grid ColumnSpacing="20">
+    <Grid ColumnSpacing="{StaticResource Space20}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
@@ -23,15 +23,15 @@
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
-      <StackPanel Spacing="4">
+      <StackPanel Spacing="{StaticResource Space4}">
         <TextBlock Text="Containers" Style="{StaticResource SectionHeadText}" />
         <TextBlock Text="Find a box, follow its journey, release or inspect a hold" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
       </StackPanel>
       <ItemsControl ItemsSource="{x:Bind ViewModel.Filters, Mode=OneWay}" VerticalAlignment="Bottom" IsTabStop="False"
                     Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
-                    Margin="{utu:Responsive Narrowest='0,10,0,0', Wide='0'}">
+                    Margin="{utu:Responsive Narrowest={StaticResource GapTop10}, Wide='0'}">
         <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate><controls:FlowPanel Spacing="6" RowSpacing="2" /></ItemsPanelTemplate>
+          <ItemsPanelTemplate><controls:FlowPanel Spacing="{StaticResource Space6}" RowSpacing="{StaticResource Space2}" /></ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="local:FilterChip">
@@ -62,7 +62,7 @@
       </Grid.RowDefinitions>
 
       <!-- Empty: a filter that matches nothing says so, and how to get every box back -->
-      <StackPanel Spacing="12" Padding="0,24" Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay}">
+      <StackPanel Spacing="{StaticResource Space12}" Padding="{StaticResource InsetY24}" Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay}">
         <TextBlock Text="{x:Bind ViewModel.EmptyText, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap" />
         <Button Style="{StaticResource GhostButton}" Content="Show all containers" HorizontalAlignment="Left"
                 MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
@@ -79,11 +79,11 @@
           <DataTemplate x:DataType="local:ContainerCard">
             <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Id}"
                     AutomationProperties.Name="{x:Bind AccessibleName}">
-              <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind Border}" Padding="16,14">
-                <StackPanel Spacing="6">
+              <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind Border}" Padding="{StaticResource Inset16x14}">
+                <StackPanel Spacing="{StaticResource Space6}">
                   <Grid>
                     <!-- xaml-lint: allow card - the image well inside a container card -->
-                    <Border CornerRadius="10" Padding="6,8,6,4">
+                    <Border CornerRadius="{StaticResource RadiusGroup}" Padding="6,8,6,4">
                       <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                           <GradientStop Offset="0" Color="{ThemeResource SurfaceColor}" />
@@ -93,20 +93,20 @@
                       <Image Source="{x:Bind Render}" Height="72" Stretch="Uniform" />
                     </Border>
                     <!-- xaml-lint: allow card - container id tag over the image -->
-                    <Border Background="{ThemeResource SurfaceBrush}" CornerRadius="4" Padding="7,2"
-                            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
+                    <Border Background="{ThemeResource SurfaceBrush}" CornerRadius="{StaticResource RadiusTag}" Padding="7,2"
+                            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{StaticResource Inset10}">
                       <TextBlock Text="{x:Bind IdPretty}" Style="{StaticResource TypeMonoMedium12}" />
                     </Border>
                     <!-- xaml-lint: allow card - size and carrier tag over the image -->
-                    <Border Background="{ThemeResource SurfaceBrush}" CornerRadius="4" Padding="6,2"
+                    <Border Background="{ThemeResource SurfaceBrush}" CornerRadius="{StaticResource RadiusTag}" Padding="6,2"
                             HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,0,10,8">
                       <TextBlock Text="{x:Bind Meta}" Style="{StaticResource TypeMonoMedium11}"
                                  Foreground="{ThemeResource TextMutedBrush}" />
                     </Border>
                   </Grid>
                   <TextBlock Text="{x:Bind Route}" Style="{StaticResource BodyStrongText}"
-                             TextTrimming="CharacterEllipsis" Margin="0,4,0,0" />
-                  <StackPanel Orientation="Horizontal" Spacing="7">
+                             TextTrimming="CharacterEllipsis" Margin="{StaticResource GapTop4}" />
+                  <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
                     <Ellipse Width="7" Height="7" Fill="{x:Bind StateTone}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind State}" Style="{StaticResource BodySmallText}"
                                Foreground="{x:Bind StateInk}" />
@@ -119,12 +119,12 @@
       </ItemsControl>
 
       <!-- ── Selected container ───────────────────────────────── -->
-      <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest='16,16', Narrow='22,20'}" VerticalAlignment="Top"
+      <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest={StaticResource Inset16}, Narrow={StaticResource Inset22x20}}" VerticalAlignment="Top"
                               Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                               Width="{utu:Responsive Narrowest=NaN, Normal=340, Wide=360}"
-                              Margin="{utu:Responsive Narrowest='0,18,0,0', Normal='18,0,0,0'}">
-        <StackPanel Spacing="16">
-          <StackPanel Spacing="5">
+                              Margin="{utu:Responsive Narrowest={StaticResource GapTop18}, Normal={StaticResource GapStart18}}">
+        <StackPanel Spacing="{StaticResource Space16}">
+          <StackPanel Spacing="{StaticResource Space6}">
             <TextBlock Text="{x:Bind ViewModel.SelectedId, Mode=OneWay}" Style="{StaticResource TypeMonoMedium20}" />
             <TextBlock Text="{x:Bind ViewModel.SelectedMeta, Mode=OneWay}" Style="{StaticResource SubtitleText}"
                        TextWrapping="Wrap" />
@@ -132,7 +132,7 @@
 
           <Image Source="{x:Bind ViewModel.SelectedIso, Mode=OneWay}" Height="150" Stretch="Uniform" />
 
-          <StackPanel Spacing="10">
+          <StackPanel Spacing="{StaticResource Space10}">
             <TextBlock Text="JOURNEY" Style="{StaticResource TypeStrong12}"
                        Foreground="{ThemeResource TextMutedBrush}" />
             <ItemsControl ItemsSource="{x:Bind ViewModel.Journey, Mode=OneWay}">
@@ -141,12 +141,12 @@
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:JourneyStep">
-                  <Grid ColumnSpacing="4">
+                  <Grid ColumnSpacing="{StaticResource Space4}">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="Auto" />
                       <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                    <StackPanel Spacing="{StaticResource Space6}" HorizontalAlignment="Center">
                       <!-- xaml-lint: allow card - journey step icon disc -->
                       <Border Width="30" Height="30" CornerRadius="15" Background="{x:Bind Background}"
                               BorderBrush="{x:Bind Border}" BorderThickness="1.5">
@@ -167,11 +167,11 @@
           <Border Height="1" Background="{ThemeResource HairlineBrush}" />
           <ItemsControl ItemsSource="{x:Bind ViewModel.Facts, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><controls:TwoColumnPanel ColumnSpacing="14" RowSpacing="11" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><controls:TwoColumnPanel ColumnSpacing="{StaticResource Space14}" RowSpacing="{StaticResource Space12}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:Fact">
-                <StackPanel Spacing="3">
+                <StackPanel Spacing="{StaticResource Space4}">
                   <TextBlock Text="{x:Bind Key}" Style="{StaticResource MicroText}" />
                   <TextBlock Text="{x:Bind Value}" Style="{StaticResource BodyStrongText}"
                              TextWrapping="Wrap" />
@@ -183,9 +183,9 @@
           <Button Style="{StaticResource PrimaryButton}" Command="{x:Bind ViewModel.OpenScannerCommand, Mode=OneWay}" HorizontalAlignment="Stretch"
                   AutomationProperties.Name="Scan container"
                   MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}">
-            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" HorizontalAlignment="Center">
               <shapes:Path Data="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3M3 12h18"
-                           Stroke="{ThemeResource PaperBrush}" StrokeThickness="2" Width="14" Height="14"
+                           Stroke="{ThemeResource PaperBrush}" StrokeThickness="2" Width="{StaticResource IconSizeSmall}" Height="{StaticResource IconSizeSmall}"
                            Stretch="Uniform" VerticalAlignment="Center" />
               <TextBlock Text="Scan container" Style="{StaticResource TypeMedium13}"
                          Foreground="{ThemeResource PaperBrush}" />

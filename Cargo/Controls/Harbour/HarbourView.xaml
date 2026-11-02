@@ -14,7 +14,7 @@
     <!-- A vessel's data tag: the name and one status line. A selected vessel's facts open in the docked card
          (FactsCard), not on the tag: stacked above the chip they pushed it down over the ship it named -->
     <DataTemplate x:Key="HarbourTagTemplate" x:DataType="harbour:HarbourTag">
-      <StackPanel Spacing="4">
+      <StackPanel Spacing="{StaticResource Space4}">
 
         <Button Style="{StaticResource BareButton}" Command="{x:Bind Toggle}" CommandParameter="{x:Bind Id}"
                 controls:HoverLink.Command="{x:Bind Hover}" controls:HoverLink.Key="{x:Bind Id}"
@@ -31,9 +31,9 @@
                 </utu:ShadowCollection>
               </utu:ShadowContainer.Shadows>
               <!-- xaml-lint: allow card - a data-tag chip on a leader line, not a content card -->
-              <Border CornerRadius="8" Height="30" Padding="10,0"
+              <Border CornerRadius="{StaticResource RadiusControl}" Height="30" Padding="{StaticResource InsetX10}"
                       BorderBrush="{x:Bind Edge, Mode=OneWay}" BorderThickness="{x:Bind EdgeThickness, Mode=OneWay}">
-                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" VerticalAlignment="Center">
                   <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" Foreground="{ThemeResource InkBrush}" />
                   <TextBlock Text="{x:Bind Sub}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextMutedBrush}" />
                 </StackPanel>
@@ -48,10 +48,10 @@
                 </utu:ShadowCollection>
               </utu:ShadowContainer.Shadows>
               <!-- xaml-lint: allow card - a data-tag chip on a leader line, not a content card -->
-              <Border CornerRadius="8" Padding="12,8"
+              <Border CornerRadius="{StaticResource RadiusControl}" Padding="{StaticResource Inset12x8}"
                       BorderBrush="{x:Bind Edge, Mode=OneWay}" BorderThickness="{x:Bind EdgeThickness, Mode=OneWay}">
-                <StackPanel Spacing="3">
-                  <Grid ColumnSpacing="16">
+                <StackPanel Spacing="{StaticResource Space4}">
+                  <Grid ColumnSpacing="{StaticResource Space16}">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="*" />
                       <ColumnDefinition Width="Auto" />
@@ -77,7 +77,7 @@
 
     <!-- The selected vessel's facts, docked bottom-right above the HUD: the camera centres the vessel, so the
          card never covers it. Fades and rises in (Reveal); short frames (the mini band, a section's strip) skip it -->
-    <utu:CardContentControl x:Name="FactsCard" Style="{StaticResource PanelCard}" CornerRadius="8" Padding="14,12" Width="280"
+    <utu:CardContentControl x:Name="FactsCard" Style="{StaticResource PanelCard}" CornerRadius="{StaticResource RadiusControl}" Padding="14,12" Width="280"
                             HorizontalAlignment="Right" VerticalAlignment="Bottom"
                             Margin="{utu:Responsive Narrowest='0,0,16,64', Narrow='0,0,40,72'}"
                             Visibility="Collapsed" Opacity="0"
@@ -85,20 +85,20 @@
       <utu:CardContentControl.RenderTransform>
         <TranslateTransform />
       </utu:CardContentControl.RenderTransform>
-      <StackPanel Spacing="12">
-        <StackPanel Spacing="2">
+      <StackPanel Spacing="{StaticResource Space12}">
+        <StackPanel Spacing="{StaticResource Space2}">
           <TextBlock Text="{x:Bind SelectedTag.Name, Mode=OneWay}" Style="{StaticResource TitleText}" />
           <TextBlock Text="{x:Bind SelectedLine, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap" />
         </StackPanel>
         <ItemsControl ItemsSource="{x:Bind SelectedTag.Facts, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <controls:TwoColumnPanel ColumnSpacing="16" RowSpacing="8" />
+              <controls:TwoColumnPanel ColumnSpacing="{StaticResource Space16}" RowSpacing="{StaticResource Space8}" />
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="presentation:Fact">
-              <StackPanel Spacing="2">
+              <StackPanel Spacing="{StaticResource Space2}">
                 <TextBlock Text="{x:Bind Key}" Style="{StaticResource CaptionText}" />
                 <TextBlock Text="{x:Bind Value}" Style="{StaticResource BodyStrongSmallText}" />
               </StackPanel>
@@ -128,7 +128,7 @@
         </utu:ShadowCollection>
       </utu:ShadowContainer.Shadows>
       <Button Style="{StaticResource HudSummaryButton}" AutomationProperties.Name="Camera view">
-        <StackPanel Orientation="Horizontal" Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
           <TextBlock x:Name="CameraLabel" Text="Overview" Style="{StaticResource TypeMedium14}" VerticalAlignment="Center" />
           <Viewbox Width="16" Height="16" VerticalAlignment="Center">
             <Grid Width="24" Height="24">
@@ -147,7 +147,7 @@
       </Button>
     </utu:ShadowContainer>
 
-    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="{utu:Responsive Narrowest='0,0,16,12', Narrow='0,0,40,16'}"
+    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="{utu:Responsive Narrowest='0,0,16,12', Narrow='0,0,40,16'}"
                 Visibility="{x:Bind HudVisibility, Mode=OneWay}">
       <!-- Key: what each mark on the map means -->
       <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}">
@@ -163,23 +163,23 @@
             <Flyout Placement="TopEdgeAlignedRight">
               <StackPanel MinWidth="208">
                 <TextBlock Text="KEY" Style="{StaticResource CapsLabelText}" Margin="10,8,10,4" />
-                <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,8">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space10}" Padding="{StaticResource Inset10x8}">
                   <Ellipse Width="9" Height="9" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" />
                   <TextBlock Text="Vessel alongside" Style="{StaticResource KeyRowText}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,8">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space10}" Padding="{StaticResource Inset10x8}">
                   <Ellipse Width="9" Height="9" Stroke="{ThemeResource NavyBrush}" StrokeThickness="1.6" VerticalAlignment="Center" />
                   <TextBlock Text="Vessel inbound" Style="{StaticResource KeyRowText}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,8">
-                  <Rectangle Width="14" Height="12" RadiusX="2" RadiusY="2" Fill="{ThemeResource ReservedFillBrush}" Stroke="{ThemeResource AccentBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space10}" Padding="{StaticResource Inset10x8}">
+                  <Rectangle Width="14" Height="12" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource ReservedFillBrush}" Stroke="{ThemeResource AccentBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
                   <TextBlock Text="Berth reserved for an arrival" Style="{StaticResource KeyRowText}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,8">
-                  <Rectangle Width="14" Height="12" RadiusX="2" RadiusY="2" Fill="{ThemeResource HairlineBrush}" Stroke="{ThemeResource TextMutedBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space10}" Padding="{StaticResource Inset10x8}">
+                  <Rectangle Width="14" Height="12" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource HairlineBrush}" Stroke="{ThemeResource TextMutedBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
                   <TextBlock Text="Restricted" Style="{StaticResource KeyRowText}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,8">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space10}" Padding="{StaticResource Inset10x8}">
                   <Line X1="0" Y1="0" X2="14" Y2="0" Width="14" Stroke="{ThemeResource TextMutedBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
                   <TextBlock Text="Depth contour, metres" Style="{StaticResource KeyRowText}" />
                 </StackPanel>
@@ -199,7 +199,7 @@
             <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.07" />
           </utu:ShadowCollection>
         </utu:ShadowContainer.Shadows>
-        <Grid CornerRadius="10" Height="44">
+        <Grid CornerRadius="{StaticResource RadiusGroup}" Height="44">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="1" />
@@ -209,7 +209,7 @@
             <ColumnDefinition Width="1" />
             <ColumnDefinition Width="44" />
           </Grid.ColumnDefinitions>
-          <StackPanel Orientation="Horizontal" Spacing="8" Padding="14,0,12,0" VerticalAlignment="Center" IsHitTestVisible="False">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" Padding="14,0,12,0" VerticalAlignment="Center" IsHitTestVisible="False">
             <Border x:Name="ScaleBar" Height="6" Width="64" VerticalAlignment="Center"
                     BorderBrush="{ThemeResource InkBrush}" BorderThickness="1.5,0,1.5,1.5" />
             <TextBlock x:Name="ScaleLabel" Text="250 m" Style="{StaticResource TypeMonoMedium12}"
@@ -228,7 +228,7 @@
           <Rectangle Grid.Column="3" Fill="{ThemeResource HairlineBrush}" />
           <Button Grid.Column="4" Style="{StaticResource HudIconButton}" Command="{x:Bind ZoomCommand}" CommandParameter="out"
                   AutomationProperties.Name="Zoom out">
-            <Viewbox Width="18" Height="18">
+            <Viewbox Width="{StaticResource IconSize}" Height="{StaticResource IconSize}">
               <Grid Width="24" Height="24">
                 <shapes:Path Style="{StaticResource MinusIcon}" Stroke="{ThemeResource InkBrush}" />
               </Grid>
@@ -237,7 +237,7 @@
           <Rectangle Grid.Column="5" Fill="{ThemeResource HairlineBrush}" />
           <Button Grid.Column="6" Style="{StaticResource HudIconButton}" Command="{x:Bind ZoomCommand}" CommandParameter="in"
                   AutomationProperties.Name="Zoom in">
-            <Viewbox Width="18" Height="18">
+            <Viewbox Width="{StaticResource IconSize}" Height="{StaticResource IconSize}">
               <Grid Width="24" Height="24">
                 <shapes:Path Style="{StaticResource PlusIcon}" Stroke="{ThemeResource InkBrush}" />
               </Grid>

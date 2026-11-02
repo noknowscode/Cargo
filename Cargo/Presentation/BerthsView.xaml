@@ -18,7 +18,7 @@
 
     <!-- Below the breakpoint the needs-you bar takes its own full-width row under the title -->
     <Grid Style="{StaticResource Masthead}"
-          RowSpacing="{utu:Responsive Narrowest=16, Wide=0}">
+          RowSpacing="{utu:Responsive Narrowest={StaticResource Space16}, Wide=0}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
@@ -28,23 +28,23 @@
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
-      <StackPanel VerticalAlignment="Bottom" Spacing="8">
+      <StackPanel VerticalAlignment="Bottom" Spacing="{StaticResource Space8}">
         <TextBlock Text="Berths" Style="{StaticResource PageTitleText}" />
         <TextBlock Text="North Quay · 8 berths · alongside depth 12.0 to 16.0 m" Style="{StaticResource PageSubtitleText}" />
-        <controls:FlowPanel Spacing="26" RowSpacing="4" Margin="0,6,0,0">
-          <StackPanel Orientation="Horizontal" Spacing="8">
+        <controls:FlowPanel Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" Margin="{StaticResource GapTop6}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
             <TextBlock Text="{x:Bind ViewModel.Alongside, Mode=OneWay}" Style="{StaticResource MetricText}" />
             <TextBlock Text="alongside" Style="{StaticResource MetricLabelText}" />
           </StackPanel>
-          <StackPanel Orientation="Horizontal" Spacing="8">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
             <TextBlock Text="{x:Bind ViewModel.Arriving, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{ThemeResource AccentDarkBrush}" />
             <TextBlock Text="arriving" Style="{StaticResource MetricLabelText}" />
           </StackPanel>
-          <StackPanel Orientation="Horizontal" Spacing="8">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
             <TextBlock Text="{x:Bind ViewModel.AtAnchor, Mode=OneWay}" Style="{StaticResource MetricText}" />
             <TextBlock Text="at anchor" Style="{StaticResource MetricLabelText}" />
           </StackPanel>
-          <StackPanel Orientation="Horizontal" Spacing="8">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
             <TextBlock Text="{x:Bind ViewModel.Conflicts, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{x:Bind ViewModel.ConflictInk, Mode=OneWay}" />
             <TextBlock Text="conflicts in 36 h" Style="{StaticResource MetricLabelText}" />
           </StackPanel>
@@ -61,8 +61,8 @@
 
     <!-- ── Berth status · Selected vessel ───────────────────────── -->
     <Grid Grid.Row="1"
-          ColumnSpacing="{utu:Responsive Narrowest=0, Normal=24}"
-          RowSpacing="{utu:Responsive Narrowest=28, Normal=0}">
+          ColumnSpacing="{utu:Responsive Narrowest=0, Normal={StaticResource Space24}}"
+          RowSpacing="{utu:Responsive Narrowest={StaticResource Space28}, Normal=0}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="1.55*" />
         <ColumnDefinition Width="{utu:Responsive Narrowest='0', Normal='1*'}" />
@@ -73,7 +73,7 @@
       </Grid.RowDefinitions>
 
       <Border Style="{StaticResource SectionRule}">
-        <StackPanel Spacing="10">
+        <StackPanel Spacing="{StaticResource Space10}">
           <Grid>
             <TextBlock Text="Berth status" Style="{StaticResource SectionHeadText}" />
             <TextBlock Text="{x:Bind ViewModel.Status.Count, Mode=OneWay}" Style="{StaticResource PageSubtitleText}"
@@ -88,13 +88,13 @@
                           controls:HoverLink.Command="{x:Bind Hover}" controls:HoverLink.Key="{x:Bind LinkKey, Mode=OneWay}"
                           AutomationProperties.Name="{x:Bind AccessibleName, Mode=OneWay}">
                     <!-- xaml-lint: allow card - a list row whose ground and outline carry its state (needs you, selected) -->
-                    <Border Padding="10" CornerRadius="{StaticResource RadiusRow}" BorderThickness="2"
+                    <Border Padding="{StaticResource Inset10}" CornerRadius="{StaticResource RadiusRow}" BorderThickness="2"
                             Background="{x:Bind RowBackground, Mode=OneWay}" BorderBrush="{x:Bind Outline, Mode=OneWay}">
                       <!-- Linked hover and the confirm recolour fade rather than switch -->
                       <Border.BackgroundTransition>
                         <BrushTransition Duration="0:0:0.15" />
                       </Border.BackgroundTransition>
-                      <Grid ColumnSpacing="12">
+                      <Grid ColumnSpacing="{StaticResource Space12}">
                         <Grid.ColumnDefinitions>
                           <ColumnDefinition Width="34" />
                           <ColumnDefinition Width="*" />
@@ -103,13 +103,13 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- xaml-lint: allow card - the berth chip, the list's version of the harbour's painted number -->
-                        <Border Width="34" Height="30" CornerRadius="5" BorderThickness="1"
+                        <Border Width="34" Height="30" CornerRadius="{StaticResource RadiusTag}" BorderThickness="1"
                                 Background="{x:Bind PlateBackground, Mode=OneWay}" BorderBrush="{x:Bind PlateBorder, Mode=OneWay}">
                           <TextBlock Text="{x:Bind Plate, Mode=OneWay}" Style="{StaticResource PlateText}"
                                      Foreground="{x:Bind PlateForeground, Mode=OneWay}" />
                         </Border>
 
-                        <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="1" Spacing="{StaticResource Space2}" VerticalAlignment="Center">
                           <TextBlock Text="{x:Bind StateLabel, Mode=OneWay}" Style="{StaticResource ListStateText}"
                                      Foreground="{x:Bind StateForeground, Mode=OneWay}" />
                           <TextBlock Text="{x:Bind Name, Mode=OneWay}" Style="{StaticResource ListNameText}"
@@ -138,21 +138,21 @@
               Style="{StaticResource SectionRule}"
               AutomationProperties.LiveSetting="Polite"
               AutomationProperties.Name="{x:Bind ViewModel.Detail.Name, Mode=OneWay}">
-        <StackPanel Spacing="16">
+        <StackPanel Spacing="{StaticResource Space16}">
           <Grid>
             <TextBlock Text="{x:Bind ViewModel.Detail.Name, Mode=OneWay}" Style="{StaticResource SectionHeadText}" TextTrimming="CharacterEllipsis" />
             <TextBlock Text="{x:Bind ViewModel.Detail.Where, Mode=OneWay}" Style="{StaticResource PageSubtitleText}"
                        HorizontalAlignment="Right" VerticalAlignment="Bottom" />
           </Grid>
 
-          <StackPanel Spacing="8">
+          <StackPanel Spacing="{StaticResource Space8}">
             <TextBlock Text="{x:Bind ViewModel.Detail.StateLabel, Mode=OneWay}" Style="{StaticResource ListStateText}"
                        Foreground="{x:Bind ViewModel.Detail.Accent, Mode=OneWay}" />
-            <StackPanel Orientation="Horizontal" Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
               <controls:RollingText Text="{x:Bind ViewModel.Detail.Big, Mode=OneWay}" Style="{StaticResource DetailFigure}"
                                     Foreground="{x:Bind ViewModel.Detail.Accent, Mode=OneWay}" />
               <TextBlock Text="{x:Bind ViewModel.Detail.BigSub, Mode=OneWay}" Style="{StaticResource LeadText}"
-                         VerticalAlignment="Bottom" Margin="0,0,0,5" />
+                         VerticalAlignment="Bottom" Margin="{StaticResource GapBottom6}" />
             </StackPanel>
             <TextBlock Text="{x:Bind ViewModel.Detail.Note, Mode=OneWay}" Style="{StaticResource LeadText}" TextWrapping="WrapWholeWords" />
           </StackPanel>
@@ -160,9 +160,9 @@
           <!-- The cargo block collapses for a free berth; it sits with the facts in an unspaced
                panel and carries its own gap, since Spacing would still charge for it on Uno -->
           <StackPanel>
-          <StackPanel Spacing="6" Margin="0,0,0,16" Visibility="{x:Bind ViewModel.Detail.CargoVisibility, Mode=OneWay}">
+          <StackPanel Spacing="{StaticResource Space6}" Margin="{StaticResource GapBottom16}" Visibility="{x:Bind ViewModel.Detail.CargoVisibility, Mode=OneWay}">
             <!-- Slides between ships (300 ms EaseSmooth) -->
-            <ProgressBar controls:Slide.Value="{x:Bind ViewModel.Detail.CargoPercent, Mode=OneWay}" Maximum="100" Height="6" MinHeight="6" CornerRadius="3"
+            <ProgressBar controls:Slide.Value="{x:Bind ViewModel.Detail.CargoPercent, Mode=OneWay}" Maximum="100" Height="6" MinHeight="6" CornerRadius="{StaticResource RadiusTag}"
                          Foreground="{ThemeResource TextMutedBrush}" Background="{ThemeResource HairlineBrush}"
                          AutomationProperties.Name="{x:Bind ViewModel.Detail.CargoLabel, Mode=OneWay}" />
             <TextBlock Text="{x:Bind ViewModel.Detail.CargoLabel, Mode=OneWay}" Style="{StaticResource FactKeyText}" />
@@ -174,7 +174,7 @@
             </ItemsRepeater.Layout>
             <ItemsRepeater.ItemTemplate>
               <DataTemplate x:DataType="local:Fact">
-                <StackPanel Spacing="2">
+                <StackPanel Spacing="{StaticResource Space2}">
                   <TextBlock Text="{x:Bind Key}" Style="{StaticResource FactKeyText}" />
                   <TextBlock Text="{x:Bind Value}" Style="{StaticResource FactValueText}" Foreground="{x:Bind Tone}" />
                 </StackPanel>

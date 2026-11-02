@@ -13,7 +13,7 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <Grid ColumnSpacing="24">
+    <Grid ColumnSpacing="{StaticResource Space24}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
@@ -22,9 +22,9 @@
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
-      <StackPanel Spacing="4">
+      <StackPanel Spacing="{StaticResource Space4}">
         <TextBlock Text="Yard" Style="{StaticResource SectionHeadText}" />
-        <controls:FlowPanel Spacing="8" RowSpacing="4">
+        <controls:FlowPanel Spacing="{StaticResource Space8}" RowSpacing="{StaticResource Space4}">
           <Ellipse Width="6" Height="6" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Center" />
           <TextBlock Text="{x:Bind ViewModel.LiveLine, Mode=OneWay}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" />
           <controls:TickBar Height="10" VerticalAlignment="Center" Count="20" TickWidth="3" Gap="1.5"
@@ -36,14 +36,14 @@
       </StackPanel>
       <ItemsControl ItemsSource="{x:Bind ViewModel.Legend, Mode=OneWay}" VerticalAlignment="Bottom" IsTabStop="False"
                     Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
-                    Margin="{utu:Responsive Narrowest='0,10,0,0', Wide='0'}">
+                    Margin="{utu:Responsive Narrowest={StaticResource GapTop10}, Wide='0'}">
         <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate><controls:FlowPanel Spacing="14" RowSpacing="6" /></ItemsPanelTemplate>
+          <ItemsPanelTemplate><controls:FlowPanel Spacing="{StaticResource Space14}" RowSpacing="{StaticResource Space6}" /></ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="local:LegendItem">
-            <StackPanel Orientation="Horizontal" Spacing="5">
-              <Rectangle Width="10" Height="10" RadiusX="2" RadiusY="2" Fill="{x:Bind Swatch}" VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
+              <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Swatch}" VerticalAlignment="Center" />
               <TextBlock Text="{x:Bind Label}" Style="{StaticResource CaptionText}" />
             </StackPanel>
           </DataTemplate>
@@ -66,14 +66,14 @@
         <ContentControl x:Name="MapHost" HorizontalContentAlignment="Stretch" IsTabStop="False" />
       </utu:CardContentControl>
 
-      <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="22,20" VerticalAlignment="Top"
+      <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{StaticResource Inset22x20}" VerticalAlignment="Top"
                               Visibility="{x:Bind ViewModel.HasStack, Mode=OneWay}"
                               Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                               Width="{utu:Responsive Narrowest=NaN, Normal=300}"
-                              Margin="{utu:Responsive Narrowest='0,18,0,0', Normal='18,0,0,0'}">
-        <StackPanel Spacing="14">
+                              Margin="{utu:Responsive Narrowest={StaticResource GapTop18}, Normal={StaticResource GapStart18}}">
+        <StackPanel Spacing="{StaticResource Space14}">
           <Grid>
-            <StackPanel Spacing="3">
+            <StackPanel Spacing="{StaticResource Space4}">
               <TextBlock Text="{x:Bind ViewModel.SlotTitle, Mode=OneWay}" Style="{StaticResource TypeStrong18}" />
               <TextBlock Text="{x:Bind ViewModel.SlotSubtitle, Mode=OneWay}" Style="{StaticResource CaptionText}" />
             </StackPanel>
@@ -88,13 +88,13 @@
           <Border Height="1" Background="{ThemeResource HairlineBrush}" />
           <ItemsControl ItemsSource="{x:Bind ViewModel.Tiers, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><StackPanel Spacing="8" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space8}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:TierRow">
                 <Grid>
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Rectangle Width="9" Height="9" RadiusX="2" RadiusY="2" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
+                  <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+                    <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind Id}" Style="{StaticResource TypeMonoMedium12}" />
                   </StackPanel>
                   <TextBlock Text="{x:Bind Detail}" Style="{StaticResource CaptionText}" HorizontalAlignment="Right" />

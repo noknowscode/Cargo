@@ -14,7 +14,7 @@
   <Grid Background="{StaticResource PageDimInvariantBrush}" TabFocusNavigation="Cycle" KeyDown="OnKeyDown">
   <Grid Background="{StaticResource InkDeepInvariantBrush}" MaxWidth="1320" MaxHeight="820"
         CornerRadius="{utu:Responsive Narrowest='0', Narrow={StaticResource RadiusCard}}"
-        Margin="{utu:Responsive Narrowest='0', Narrow='24', Normal='48'}">
+        Margin="{utu:Responsive Narrowest='0', Narrow={StaticResource Inset24}, Normal='48'}">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*" />
       <ColumnDefinition Width="Auto" />
@@ -41,13 +41,13 @@
       <controls:GridPaper Grid.RowSpan="3" Opacity="0.5" />
       <controls:ContainerScanner x:Name="Scanner3D" Grid.Row="1" />
 
-      <Grid Padding="{utu:Responsive Narrowest='16,16', Normal='28,24'}" ColumnSpacing="20">
+      <Grid Padding="{utu:Responsive Narrowest={StaticResource Inset16}, Normal='28,24'}" ColumnSpacing="{StaticResource Space20}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <StackPanel Spacing="8">
-          <StackPanel Orientation="Horizontal" Spacing="8">
+        <StackPanel Spacing="{StaticResource Space8}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
             <Ellipse Width="7" Height="7" Fill="{StaticResource AccentBrightInvariantBrush}" VerticalAlignment="Center" />
             <TextBlock Text="{x:Bind ViewModel.ScanMode, Mode=OneWay}" Style="{StaticResource TypeMonoMedium11}"
                        Foreground="{StaticResource AccentBrightInvariantBrush}" />
@@ -65,7 +65,7 @@
 
       <!-- The view presets, X-ray and zoom: the keyboard's way to turn and size the box the pointer drags. They wrap
            onto a second line when the stage is narrow -->
-      <Grid Grid.Row="2" Padding="{utu:Responsive Narrowest='16,0,16,16', Normal='28,0,20,24'}" ColumnSpacing="20" RowSpacing="8">
+      <Grid Grid.Row="2" Padding="{utu:Responsive Narrowest='16,0,16,16', Normal='28,0,20,24'}" ColumnSpacing="{StaticResource Space20}" RowSpacing="{StaticResource Space8}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
@@ -75,10 +75,10 @@
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <controls:FlowPanel Spacing="6" RowSpacing="8" VerticalAlignment="Center">
+        <controls:FlowPanel Spacing="{StaticResource Space6}" RowSpacing="{StaticResource Space8}" VerticalAlignment="Center">
           <ItemsControl ItemsSource="{x:Bind ViewModel.Views, Mode=OneWay}" IsTabStop="False">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="6" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:ScanViewOption">
@@ -86,7 +86,7 @@
                         AutomationProperties.Name="{x:Bind AccessibleName}">
                   <!-- xaml-lint: allow card - a view-preset toggle; the Simple theme ships no segmented style -->
                   <Border Background="{x:Bind Background}" BorderBrush="{StaticResource HairlineOnDarkBrush}"
-                          BorderThickness="1" CornerRadius="8" Padding="12,7"
+                          BorderThickness="1" CornerRadius="{StaticResource RadiusControl}" Padding="{StaticResource Inset12x7}"
                           MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=0}">
                     <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium12}" VerticalAlignment="Center"
                                Foreground="{StaticResource TextOnDarkStrongBrush}" />
@@ -96,15 +96,15 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
-          <Rectangle Width="1" Height="20" Fill="{StaticResource HairlineOnDarkBrush}" Margin="6,0" VerticalAlignment="Center"
+          <Rectangle Width="1" Height="20" Fill="{StaticResource HairlineOnDarkBrush}" Margin="{StaticResource InsetX6}" VerticalAlignment="Center"
                      Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}" />
 
           <Button Style="{StaticResource BareButton}" Command="{x:Bind ViewModel.ToggleXrayCommand, Mode=OneWay}"
                   AutomationProperties.Name="{x:Bind ViewModel.XrayName, Mode=OneWay}">
             <!-- xaml-lint: allow card - the X-ray toggle face -->
             <Border Background="{x:Bind ViewModel.XrayBackground, Mode=OneWay}" BorderBrush="{x:Bind ViewModel.XrayBorder, Mode=OneWay}"
-                    BorderThickness="1" CornerRadius="8" Padding="14,7" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}">
-              <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                    BorderThickness="1" CornerRadius="{StaticResource RadiusControl}" Padding="{StaticResource Inset14x7}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}">
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" VerticalAlignment="Center">
                 <shapes:Path Data="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"
                              Stroke="{x:Bind ViewModel.XrayForeground, Mode=OneWay}" StrokeThickness="2"
                              Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" />
@@ -116,22 +116,22 @@
 
           <!-- Phones leave the hint out (a touch drag is the expected gesture) to keep the stage tall enough for the box -->
           <TextBlock Text="Drag to rotate" Style="{StaticResource CaptionText}" Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}"
-                     Foreground="{StaticResource TextOnDarkMutedBrush}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                     Foreground="{StaticResource TextOnDarkMutedBrush}" VerticalAlignment="Center" Margin="{StaticResource GapStart10}" />
         </controls:FlowPanel>
 
-        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center"
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}" VerticalAlignment="Center"
                     Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}">
           <Button Style="{StaticResource GhostButton}" Content="−" Command="{x:Bind ViewModel.ZoomOutCommand, Mode=OneWay}" AutomationProperties.Name="Zoom out"
                   Width="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
-                  CornerRadius="9" Padding="0" Background="{StaticResource HairlineOnDarkBrush}"
+                  CornerRadius="{StaticResource RadiusGroup}" Padding="0" Background="{StaticResource HairlineOnDarkBrush}"
                   Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
           <Button Style="{StaticResource GhostButton}" Content="+" Command="{x:Bind ViewModel.ZoomInCommand, Mode=OneWay}" AutomationProperties.Name="Zoom in"
                   Width="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
-                  CornerRadius="9" Padding="0" Background="{StaticResource HairlineOnDarkBrush}"
+                  CornerRadius="{StaticResource RadiusGroup}" Padding="0" Background="{StaticResource HairlineOnDarkBrush}"
                   Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
           <Button Style="{StaticResource GhostButton}" Content="Reset view" Command="{x:Bind ViewModel.ResetViewCommand, Mode=OneWay}"
                   Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
-                  CornerRadius="9" Padding="12,0" Background="{StaticResource HairlineOnDarkBrush}"
+                  CornerRadius="{StaticResource RadiusGroup}" Padding="{StaticResource InsetX12}" Background="{StaticResource HairlineOnDarkBrush}"
                   Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
         </StackPanel>
       </Grid>
@@ -145,11 +145,11 @@
                   BorderBrush="{StaticResource HairlineOnDarkBrush}" BorderThickness="{utu:Responsive Narrowest='0,1,0,0', Normal='0'}">
       <!-- The inset is on the content, not the ScrollViewer: with a set width Uno let the content run under a
            ScrollViewer's right padding -->
-      <StackPanel Spacing="18" Padding="{utu:Responsive Narrowest='16,18', Normal='24,26'}">
-        <StackPanel Spacing="8">
+      <StackPanel Spacing="{StaticResource Space18}" Padding="{utu:Responsive Narrowest='16,18', Normal='24,26'}">
+        <StackPanel Spacing="{StaticResource Space8}">
           <TextBlock Text="SCAN RESULT" Style="{StaticResource TypeMonoMedium11}"
                      Foreground="{StaticResource AccentBrightInvariantBrush}" />
-          <StackPanel Orientation="Horizontal" Spacing="10">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space10}">
             <Ellipse Width="10" Height="10" Fill="{x:Bind ViewModel.VerdictTone, Mode=OneWay}" VerticalAlignment="Center" />
             <TextBlock Text="{x:Bind ViewModel.Verdict, Mode=OneWay}" Style="{StaticResource TypeStrong18}"
                        Foreground="{StaticResource TextOnDarkStrongBrush}" />
@@ -159,19 +159,19 @@
         </StackPanel>
 
         <Border Height="1" Background="{StaticResource HairlineOnDarkBrush}" />
-        <StackPanel Spacing="12">
+        <StackPanel Spacing="{StaticResource Space12}">
           <TextBlock Text="DENSITY MAP" Style="{StaticResource TypeMonoMedium11}"
                      Foreground="{StaticResource AccentBrightInvariantBrush}" />
           <controls:CompositionBar BarHeight="10" Slices="{x:Bind ViewModel.DensitySlices, Mode=OneWay}" />
           <ItemsControl ItemsSource="{x:Bind ViewModel.Density, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><StackPanel Spacing="8" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space8}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:CompositionSlice">
                 <Grid>
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Rectangle Width="9" Height="9" RadiusX="2" RadiusY="2" Fill="{x:Bind Fill}" VerticalAlignment="Center" />
+                  <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+                    <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Fill}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind Label}" Style="{StaticResource BodyText}"
                                Foreground="{StaticResource TextOnDarkStrongBrush}" />
                   </StackPanel>
@@ -184,21 +184,21 @@
         </StackPanel>
 
         <Border Height="1" Background="{StaticResource HairlineOnDarkBrush}" />
-        <StackPanel Spacing="12">
+        <StackPanel Spacing="{StaticResource Space12}">
           <TextBlock Text="{x:Bind ViewModel.ManifestHeading, Mode=OneWay}" Style="{StaticResource TypeMonoMedium11}" Foreground="{StaticResource AccentBrightInvariantBrush}" />
           <ItemsControl ItemsSource="{x:Bind ViewModel.Manifest, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><StackPanel Spacing="9" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space10}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:ManifestRow">
-                <Grid ColumnSpacing="10">
+                <Grid ColumnSpacing="{StaticResource Space10}">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="10" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                   </Grid.ColumnDefinitions>
-                  <Rectangle Width="10" Height="10" RadiusX="2" RadiusY="2" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
+                  <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1" Text="{x:Bind Name}" Style="{StaticResource BodyText}"
                              Foreground="{StaticResource TextOnDarkStrongBrush}" TextWrapping="Wrap" />
                   <TextBlock Grid.Column="2" Text="{x:Bind Flag}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind FlagTone}" />
@@ -225,7 +225,7 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <controls:FlowPanel Spacing="8" RowSpacing="8">
+        <controls:FlowPanel Spacing="{StaticResource Space8}" RowSpacing="{StaticResource Space8}">
           <Button Style="{StaticResource GhostButton}" Content="Close" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Background="Transparent" Foreground="{StaticResource TextOnDarkStrongBrush}"
                   BorderBrush="{StaticResource HairlineOnDarkBrush}" />
