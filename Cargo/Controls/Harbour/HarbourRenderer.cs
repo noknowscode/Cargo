@@ -184,7 +184,7 @@ public sealed class HarbourRenderer : IDisposable
         DrawGround(canvas, state);
         var list = _world.Objects.ToList();
         SortAndDraw(canvas, list);
-        GroundText(canvas, "MONTREAL PORT AUTHORITY", 420, -150, HarbourWorld.QuayZ + 4.52, _pal.WithAlpha("HarbourSignColor", .75), 6.5f);
+        GroundText(canvas, "WESTHAVEN PORT AUTHORITY", 420, -150, HarbourWorld.QuayZ + 4.52, _pal.WithAlpha("HarbourSignColor", .75), 6.5f);
 
         _still = recorder.EndRecording();
         RebuildScreenShaders(width, height);

@@ -12,16 +12,16 @@
     <UnoSingleProject>true</UnoSingleProject>
 
     <!-- Display name -->
-    <ApplicationTitle>Montreal Port Authority</ApplicationTitle>
+    <ApplicationTitle>Westhaven Port Authority</ApplicationTitle>
     <!-- App Identifier -->
     <ApplicationId>com.westhaven.cargo</ApplicationId>
     <!-- Versions -->
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
     <!-- Package Publisher -->
-    <ApplicationPublisher>Montreal Port Authority</ApplicationPublisher>
+    <ApplicationPublisher>Westhaven Port Authority</ApplicationPublisher>
     <!-- Package Description -->
-    <Description>Montreal Port Authority operations dispatch, powered by Uno Platform.</Description>
+    <Description>Westhaven Port Authority operations dispatch (a fictional port), powered by Uno Platform.</Description>
 
     <!--
       UnoFeatures are used to quickly add and manage features enabled for your app.

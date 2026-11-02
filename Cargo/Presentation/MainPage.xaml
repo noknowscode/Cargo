@@ -41,7 +41,7 @@
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
 
-      <TextBlock Text="Montreal Port Authority" Style="{StaticResource WordmarkText}" VerticalAlignment="Center" />
+      <TextBlock Text="Westhaven Port Authority" Style="{StaticResource WordmarkText}" VerticalAlignment="Center" />
 
       <!-- Sections: text tabs; a section with something waiting on you carries an alert dot -->
       <ScrollViewer Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
