@@ -28,6 +28,14 @@ public sealed partial class YardMap : SceneHost
         _timer.Tick += (_, _) => Animate();
         this.RunWhileShown(_timer);
 
+        // The keyboard's way to the stacks a pointer clicks: tab to the map, the arrows step through a block's slots
+        // and the tiers panel follows; Escape clears
+        IsTabStop = true;
+        UseSystemFocusVisuals = true;
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(this,
+            "Yard map. Arrow keys move between the stacks of a block and show the selected stack's tiers; Escape clears.");
+        KeyDown += OnKeyDown;
+
         Build();
         this.RebuildWhenVisible(state, UpdateSlots);
         this.RebuildOnYardMove(state, UpdateSlots);
@@ -178,6 +186,37 @@ public sealed partial class YardMap : SceneHost
         }
 
         return elements;
+    }
+
+    // xaml-lint: allow codebehind - keyboard selection on a code-built map; the slots are not focusable elements
+    private void OnKeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        if (_slots is null)
+        {
+            return;
+        }
+
+        if (e.Key == Windows.System.VirtualKey.Escape && _state.SelectedStack is not null)
+        {
+            _state.SelectedStack = null;
+            e.Handled = true;
+            return;
+        }
+
+        var (rows, columns) = e.Key switch
+        {
+            Windows.System.VirtualKey.Up => (-1, 0),
+            Windows.System.VirtualKey.Down => (1, 0),
+            Windows.System.VirtualKey.Left => (0, -1),
+            Windows.System.VirtualKey.Right => (0, 1),
+            _ => (0, 0)
+        };
+
+        if (rows != 0 || columns != 0)
+        {
+            _state.SelectedStack = YardGrid.Step(_slots.Select(s => s.Key).ToList(), _state.SelectedStack, rows, columns);
+            e.Handled = true;
+        }
     }
 
     /// <summary>Overlays must not swallow the click meant for the slot beneath them.</summary>

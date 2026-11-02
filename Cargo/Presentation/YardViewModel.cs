@@ -45,11 +45,7 @@ public sealed partial class YardViewModel : ObservableObject
     [ObservableProperty] private IReadOnlyList<(string Id, string Tag, string Token)> _stackBoxes = [];
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(PanelWidth))]
     private bool _hasStack;
-
-    /// <summary>The stack panel takes a column only while a stack is selected.</summary>
-    public GridLength PanelWidth => HasStack ? new GridLength(300) : new GridLength(0);
 
     [RelayCommand]
     private void CloseStack() => State.SelectedStack = null;

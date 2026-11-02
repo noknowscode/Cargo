@@ -5,6 +5,8 @@
              xmlns:controls="using:Cargo.Controls"
              xmlns:utu="using:Uno.Toolkit.UI">
 
+  <!-- The yard map with the selected stack beside it from 1000 px, under it below; the legend beside the title from
+       1280, under it below -->
   <Grid Style="{StaticResource SectionFrame}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
@@ -16,21 +18,27 @@
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
       <StackPanel Spacing="4">
         <TextBlock Text="Yard" Style="{StaticResource SectionHeadText}" />
-        <StackPanel Orientation="Horizontal" Spacing="8">
+        <controls:FlowPanel Spacing="8" RowSpacing="4">
           <Ellipse Width="6" Height="6" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Center" />
           <TextBlock Text="{x:Bind ViewModel.LiveLine, Mode=OneWay}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" />
           <controls:TickBar Height="10" VerticalAlignment="Center" Count="20" TickWidth="3" Gap="1.5"
                             TallHeight="10" LitHeight="7" OffHeight="4.5"
                             Percent="{x:Bind ViewModel.Occupancy, Mode=OneWay}" />
           <TextBlock Text="{x:Bind ViewModel.OccupancyLine, Mode=OneWay}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" />
-        </StackPanel>
-        <TextBlock Text="Darker tops are taller stacks. Select a stack to see its tiers." Style="{StaticResource CaptionText}" />
+        </controls:FlowPanel>
+        <TextBlock Text="Darker tops are taller stacks. Select a stack to see its tiers." Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
       </StackPanel>
-      <ItemsControl Grid.Column="1" ItemsSource="{x:Bind ViewModel.Legend, Mode=OneWay}" VerticalAlignment="Bottom">
+      <ItemsControl ItemsSource="{x:Bind ViewModel.Legend, Mode=OneWay}" VerticalAlignment="Bottom" IsTabStop="False"
+                    Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
+                    Margin="{utu:Responsive Narrowest='0,10,0,0', Wide='0'}">
         <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="14" /></ItemsPanelTemplate>
+          <ItemsPanelTemplate><controls:FlowPanel Spacing="14" RowSpacing="6" /></ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="local:LegendItem">
@@ -43,19 +51,26 @@
       </ItemsControl>
     </Grid>
 
-    <Grid Grid.Row="1" ColumnSpacing="18">
+    <Grid Grid.Row="1">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="{x:Bind ViewModel.PanelWidth, Mode=OneWay}" />
+        <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
       <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Padding="0" VerticalAlignment="Top"
                               CornerRadius="{StaticResource RadiusCard}" Background="{ThemeResource LandBrush}">
         <ContentControl x:Name="MapHost" HorizontalContentAlignment="Stretch" />
       </utu:CardContentControl>
 
-      <utu:CardContentControl Style="{StaticResource PanelCard}" Grid.Column="1" Padding="22,20" VerticalAlignment="Top"
-                              Visibility="{x:Bind ViewModel.HasStack, Mode=OneWay}">
+      <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="22,20" VerticalAlignment="Top"
+                              Visibility="{x:Bind ViewModel.HasStack, Mode=OneWay}"
+                              Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
+                              Width="{utu:Responsive Narrowest=NaN, Normal=300}"
+                              Margin="{utu:Responsive Narrowest='0,18,0,0', Normal='18,0,0,0'}">
         <StackPanel Spacing="14">
           <Grid>
             <StackPanel Spacing="3">
@@ -63,7 +78,9 @@
               <TextBlock Text="{x:Bind ViewModel.SlotSubtitle, Mode=OneWay}" Style="{StaticResource CaptionText}" />
             </StackPanel>
             <Button Style="{StaticResource CloseButton}" Content="×" Command="{x:Bind ViewModel.CloseStackCommand, Mode=OneWay}"
-                    AutomationProperties.Name="Close stack" />
+                    MinWidth="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
+                    MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
+                    AutomationProperties.Name="Close stack" ToolTipService.ToolTip="Close stack" />
           </Grid>
 
           <controls:StackTiers Boxes="{x:Bind ViewModel.StackBoxes, Mode=OneWay}" />

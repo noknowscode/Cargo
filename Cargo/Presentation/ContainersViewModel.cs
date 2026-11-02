@@ -9,6 +9,9 @@ public sealed class FilterChip
     public required Brush Foreground { get; init; }
     public required Brush Border { get; init; }
     public required ICommand Apply { get; init; }
+
+    /// <summary>The chip for a screen reader: its stage, and whether it is the filter on now (shown by its inverse fill).</summary>
+    public required string AccessibleName { get; init; }
 }
 
 public sealed class ContainerCard
@@ -19,9 +22,15 @@ public sealed class ContainerCard
     public required string Route { get; init; }
     public required string State { get; init; }
     public required Brush StateTone { get; init; }
+
+    /// <summary>The state written out: the ink variant of its tone, which holds 4.5:1 as text.</summary>
+    public required Brush StateInk { get; init; }
     public required Brush Border { get; init; }
     public required ImageSource Render { get; init; }
     public required ICommand Select { get; init; }
+
+    /// <summary>The card for a screen reader: the box, its route and state, and what pressing it does.</summary>
+    public required string AccessibleName { get; init; }
 }
 
 public sealed class JourneyStep
@@ -57,6 +66,11 @@ public sealed partial class ContainersViewModel : ObservableObject
     [ObservableProperty] private string _selectedId = string.Empty;
     [ObservableProperty] private string _selectedMeta = string.Empty;
     [ObservableProperty] private ImageSource? _selectedIso;
+
+    /// <summary>True when the filter matches no container on the terminal: the explorer says so instead of showing nothing.</summary>
+    [ObservableProperty] private bool _isEmpty;
+
+    [ObservableProperty] private string _emptyText = string.Empty;
 
     [RelayCommand]
     private void Filter(string? value) => State.ContainerFilter = value ?? "All";
@@ -103,7 +117,8 @@ public sealed partial class ContainersViewModel : ObservableObject
                 Background = current ? Tokens.Brush("InkBrush") : Tokens.Brush("SurfaceBrush"),
                 Foreground = current ? Tokens.Brush("PaperBrush") : Tokens.Brush("InkBrush"),
                 Border = current ? Tokens.Brush("InkBrush") : Tokens.Brush("HairlineStrongBrush"),
-                Apply = FilterCommand
+                Apply = FilterCommand,
+                AccessibleName = current ? $"{filter}, filter on" : filter
             });
         }
     }
@@ -121,13 +136,18 @@ public sealed partial class ContainersViewModel : ObservableObject
                 Route = container.Route,
                 State = container.State,
                 StateTone = Tokens.Brush(container.Warn ? "OrangeColor" : "AccentColor"),
+                StateInk = Tokens.Brush(container.Warn ? "OrangeInkBrush" : "AccentBrush"),
                 Border = State.SelectedContainerId == container.Id
                     ? Tokens.Brush("InkBrush")
                     : Tokens.Brush("HairlineBrush"),
                 Render = Sprites.Source(Sprites.ContainerByTone(container.TintToken)),
-                Select = InspectCommand
+                Select = InspectCommand,
+                AccessibleName = $"{container.DisplayId}, {container.Route}, {container.State}. Opens the scanner"
             });
         }
+
+        IsEmpty = Cards.Count == 0;
+        EmptyText = $"No containers under {State.ContainerFilter} right now. Choose All to see every box on the terminal.";
     }
 
     private void BuildDetail(ContainerDef container)

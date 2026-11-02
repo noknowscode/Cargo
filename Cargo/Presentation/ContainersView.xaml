@@ -6,6 +6,8 @@
              xmlns:utu="using:Uno.Toolkit.UI"
              xmlns:shapes="using:Microsoft.UI.Xaml.Shapes">
 
+  <!-- The explorer: the cards beside the selected box from 1000 px, the box under the cards below it; the filter chips
+       beside the title from 1280, under it below (wrapping on a phone) -->
   <Grid Style="{StaticResource SectionFrame}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
@@ -17,20 +19,29 @@
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
       <StackPanel Spacing="4">
         <TextBlock Text="Containers" Style="{StaticResource SectionHeadText}" />
-        <TextBlock Text="Find a box, follow its journey, release or inspect a hold" Style="{StaticResource CaptionText}" />
+        <TextBlock Text="Find a box, follow its journey, release or inspect a hold" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
       </StackPanel>
-      <ItemsControl Grid.Column="1" ItemsSource="{x:Bind ViewModel.Filters, Mode=OneWay}" VerticalAlignment="Bottom">
+      <ItemsControl ItemsSource="{x:Bind ViewModel.Filters, Mode=OneWay}" VerticalAlignment="Bottom" IsTabStop="False"
+                    Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
+                    Margin="{utu:Responsive Narrowest='0,10,0,0', Wide='0'}">
         <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="6" /></ItemsPanelTemplate>
+          <ItemsPanelTemplate><controls:FlowPanel Spacing="6" RowSpacing="2" /></ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="local:FilterChip">
-            <Button Style="{StaticResource BareButton}" Command="{x:Bind Apply}" CommandParameter="{x:Bind Label}">
+            <!-- The pill stays 30 px; below 1000 the button around it is the 44 px touch target -->
+            <Button Style="{StaticResource BareButton}" Command="{x:Bind Apply}" CommandParameter="{x:Bind Label}"
+                    MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=0}"
+                    AutomationProperties.Name="{x:Bind AccessibleName}">
               <!-- xaml-lint: allow card - a filter pill, not a card; half-height radius (99 draws an oval on Skia) -->
               <Border Background="{x:Bind Background}" BorderBrush="{x:Bind Border}" BorderThickness="1"
-                      CornerRadius="15" Padding="13,7">
+                      CornerRadius="15" Padding="13,7" VerticalAlignment="Center">
                 <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium12}"
                            Foreground="{x:Bind Foreground}" />
               </Border>
@@ -40,13 +51,25 @@
       </ItemsControl>
     </Grid>
 
-    <Grid Grid.Row="1" ColumnSpacing="18">
+    <Grid Grid.Row="1">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" MinWidth="520" />
-        <ColumnDefinition Width="360" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
-      <ItemsControl ItemsSource="{x:Bind ViewModel.Cards, Mode=OneWay}" VerticalAlignment="Top">
+      <!-- Empty: a filter that matches nothing says so, and how to get every box back -->
+      <StackPanel Spacing="12" Padding="0,24" Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay}">
+        <TextBlock Text="{x:Bind ViewModel.EmptyText, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap" />
+        <Button Style="{StaticResource GhostButton}" Content="Show all containers" HorizontalAlignment="Left"
+                MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+                Command="{x:Bind ViewModel.FilterCommand}" CommandParameter="All" />
+      </StackPanel>
+
+      <ItemsControl ItemsSource="{x:Bind ViewModel.Cards, Mode=OneWay}" VerticalAlignment="Top" IsTabStop="False">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
             <controls:TileGridPanel MinTileWidth="240" Gap="14" />
@@ -54,7 +77,8 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="local:ContainerCard">
-            <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Id}">
+            <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Id}"
+                    AutomationProperties.Name="{x:Bind AccessibleName}">
               <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind Border}" Padding="16,14">
                 <StackPanel Spacing="6">
                   <Grid>
@@ -81,11 +105,11 @@
                     </Border>
                   </Grid>
                   <TextBlock Text="{x:Bind Route}" Style="{StaticResource BodyStrongText}"
-                             TextWrapping="Wrap" Margin="0,4,0,0" />
+                             TextTrimming="CharacterEllipsis" Margin="0,4,0,0" />
                   <StackPanel Orientation="Horizontal" Spacing="7">
                     <Ellipse Width="7" Height="7" Fill="{x:Bind StateTone}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind State}" Style="{StaticResource BodySmallText}"
-                               Foreground="{x:Bind StateTone}" />
+                               Foreground="{x:Bind StateInk}" />
                   </StackPanel>
                 </StackPanel>
               </utu:CardContentControl>
@@ -95,7 +119,10 @@
       </ItemsControl>
 
       <!-- ── Selected container ───────────────────────────────── -->
-      <utu:CardContentControl Style="{StaticResource PanelCard}" Grid.Column="1" Padding="22,20" VerticalAlignment="Top">
+      <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest='16,16', Narrow='22,20'}" VerticalAlignment="Top"
+                              Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
+                              Width="{utu:Responsive Narrowest=NaN, Normal=340, Wide=360}"
+                              Margin="{utu:Responsive Narrowest='0,18,0,0', Normal='18,0,0,0'}">
         <StackPanel Spacing="16">
           <StackPanel Spacing="5">
             <TextBlock Text="{x:Bind ViewModel.SelectedId, Mode=OneWay}" Style="{StaticResource TypeMonoMedium20}" />
@@ -153,7 +180,8 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
-          <Button Style="{StaticResource PrimaryButton}" Command="{x:Bind ViewModel.OpenScannerCommand, Mode=OneWay}" HorizontalAlignment="Stretch">
+          <Button Style="{StaticResource PrimaryButton}" Command="{x:Bind ViewModel.OpenScannerCommand, Mode=OneWay}" HorizontalAlignment="Stretch"
+                  MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}">
             <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
               <shapes:Path Data="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3M3 12h18"
                            Stroke="{ThemeResource PaperBrush}" StrokeThickness="2" Width="14" Height="14"
@@ -163,6 +191,7 @@
             </StackPanel>
           </Button>
           <Button Style="{StaticResource GhostButton}" Content="Inspection record →"
+                  MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Command="{x:Bind ViewModel.State.OpenInspectionCommand}" HorizontalAlignment="Stretch" />
         </StackPanel>
       </utu:CardContentControl>
