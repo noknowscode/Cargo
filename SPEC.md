@@ -20,7 +20,7 @@ build-end-to-end feedback), so this spec is also the build record.
 | Compact strip on Vessels / Security | **deferred** | keeps the existing `PortStage` sprite strip until phase 2 |
 | Keyboard orbit | implemented | arrows / +/- / 0 on the focusable `HarbourView` |
 | Reduced motion | **substituted** | `UISettings.AnimationsEnabled` is hardcoded true on Skia desktop (gotcha); honoured where real (Android), no in-app setting yet |
-| Dark theme | **omitted** | the app has no dark theme (audit H11); scene is light-only by design |
+| Dark theme | implemented (2026-11-02) | the same model at night: ground, water and sky tint per theme, invariant paint under `HarbourLightLevel`; rebuilt on a theme change |
 | Screen-reader access to the 3D view | **substituted** | canvas is decorative to AT; vessel tags + Overview "Next up" list carry the information |
 
 ## Architecture Brief
@@ -30,7 +30,7 @@ build-end-to-end feedback), so this spec is also the build record.
   - `HarbourMath.cs`: `V3`, polygon helpers (convex hull, clip, extrude, beam), seeded RNG.
   - `HarbourCamera.cs`: yaw/pitch/zoom/target, perspective projection (F = 1000 world units), depth, presets.
   - `HarbourWorld.cs`: builds faces, stacks, shadows, decals and the chart layer from `PortData` (vessel length, draft, load/unload %, operator livery; berth state and depth). Pure C#, built once.
-  - `HarbourPalette.cs`: resolves every scene colour from `Themes/Tokens.xaml` (`Harbour*` group) into `SKColor`; face shading and edge light.
+  - `HarbourPalette.cs`: resolves every scene colour from `Themes/Tokens.xaml` (`Harbour*` group) into `SKColor` for the current theme; face shading and edge light, both scaled by the theme's `HarbourLightLevel`. `Reload()` re-reads it after a theme change, and `HarbourScene` rebuilds the world (same seeded layout) and re-records the still.
   - `HarbourRenderer.cs`: all SkiaSharp drawing. Owns reused `SKPaint`/`SKPath`; records the static scene into an `SKPicture` when the camera, layer or selection changes; draws the live layer every frame.
   - `HarbourScene.cs`: the `SKCanvasElement`. Pointer input, camera tweens, timer, invalidation.
   - `HarbourView.xaml(.cs)`: the stage `UserControl`: canvas, tag overlay, HUD (presets, layers, scale bar, compass, zoom).
@@ -49,7 +49,7 @@ Tradeoff: two picture replays per frame when tilt-shift is on (sharp + blurred c
 ## Design Brief
 
 - **Direction:** high-key "real-life miniature" (prototype B4): true scale (1 unit = 3.9 m), perspective, studio light with blue-violet shadows, tilt-shift focus band, edge highlights, white haze at the top.
-- **Colour:** every value is a token in `Themes/Tokens.xaml` under a new `Harbour scene` group. Saturated colour is status only, using the app's existing semantics: reserved/arriving = `Amber`, restricted = `Alert`, occupied = neutral, selected = `Ink` outline. Container liveries and hulls are desaturated operator colours (MSC, ONE, Maersk, Hapag-Lloyd, CMA CGM).
+- **Colour:** every value is a token in `Themes/Tokens.xaml` under a new `Harbour scene` group (Light and Dark theme dictionaries for the ground, water, sky tint, signs and light level; the model's paint is invariant). Saturated colour is status only, using the app's existing semantics: reserved/arriving = `Amber`, restricted = `Alert`, occupied = neutral, selected = `Ink` outline. Container liveries and hulls are desaturated operator colours (MSC, ONE, Maersk, Hapag-Lloyd, CMA CGM).
 - **Layout:** stage height = clamp(width × 0.42, 380, 640) in full mode. HUD: presets bottom-left, layers bottom-centre, scale + compass + zoom bottom-right, 12 px insets.
 - **Typography:** tags use the app's `MonoMediumFont` (IBM Plex Mono) at the existing caption size; painted berth numbers use Plex Mono in the canvas.
 - **Components:** HUD surfaces use `SurfaceBrush` + the app's card shadow recipe; segmented buttons follow the existing `BareButton` pattern already used by the layer switcher.
@@ -74,6 +74,6 @@ Tradeoff: two picture replays per frame when tilt-shift is on (sharp + blurred c
 
 - Compact strip on Vessels / Security still uses the old sprite `PortStage` (deferred to phase 2).
 - Reduced motion on Skia desktop needs an in-app setting (platform reports animations always enabled).
-- Dark theme omitted: the app has none yet (audit H11).
+- Dark theme: added 2026-11-02 (night harbour, see the capability inventory).
 - The 3D view is not screen-reader navigable; tags and the Overview list carry the information.
 - Performance of orbiting on low-end GPUs is unmeasured; the static picture helps idle frames, not drag frames.

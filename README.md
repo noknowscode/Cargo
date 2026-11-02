@@ -20,6 +20,7 @@ sits under the same harbour stage: full height on Overview, a 210 px strip every
 ```
 dotnet build Cargo/Cargo.csproj -f net10.0-desktop -p:CargoTargetFrameworks=net10.0-desktop
 dotnet run   --project Cargo/Cargo.csproj -f net10.0-desktop -p:CargoTargetFrameworks=net10.0-desktop
+dotnet test  Cargo.Tests/Cargo.Tests.csproj -p:CargoTargetFrameworks=net10.0
 ```
 
 `CargoTargetFrameworks` narrows the build to one head, so a machine without the Android, iOS or
@@ -30,10 +31,15 @@ Five heads: `net10.0-desktop` (Skia on Windows, macOS and Linux), `net10.0-windo
 WebAssembly and Android build with 0 warnings on Linux; the Windows and iOS heads build on their own
 OS, in CI (`.github/workflows/ci.yml`). Warnings fail the build (`Directory.Build.props`).
 
+`Cargo.Tests` (NUnit) covers the logic with no UI in it: the berth rules and the optimiser
+(`Domain/BerthPlan.cs`), the timeline maths (`Domain/ShiftTimeline.cs`), the container filters,
+bay views and the harbour's geometry helpers. It references the app's plain `net10.0` build,
+which never starts the Uno runtime, and runs in CI's `test` job.
+
 ## Architecture
 
 - **Uno.Sdk 7.0.0-dev.115** (Uno 7 dev build, SkiaSharp 4), single project, Skia renderer,
-  `SimpleTheme` + Uno Toolkit. Hot Design and the App MCP are off in Debug while this dev SDK's
+  `SimpleTheme` + Uno Toolkit, Light and Dark. Hot Design and the App MCP are off in Debug while this dev SDK's
   clients still reference `Uno.UI.Lottie` (see `Cargo.csproj`).
 - **MVVM (`CommunityToolkit.Mvvm`)**, not MVUX. Every figure in this app is an in-memory
   constant; there is no async or reactive data flow for feeds to model. What the app
@@ -54,11 +60,22 @@ OS, in CI (`.github/workflows/ci.yml`). Warnings fail the build (`Directory.Buil
 - **Header breakpoints** come from one `utu:Responsive` layout (Normal 1040, Wide 1280).
 - **Design tokens** live in `Themes/Tokens.xaml`; `Domain/Tokens.cs` resolves them for code
   so no colour literal appears outside that one file.
+- **Themes.** Light is the design's palette; Dark is the same desk at night (a blue-black
+  page, cool off-white ink, the three blues re-spaced, status inks re-picked, every text colour
+  at 4.5:1 or better). Every themed colour and brush sits in Light and Dark theme dictionaries
+  and the XAML takes them through `{ThemeResource}`. Code asks `Domain/Tokens.cs`, which resolves
+  for the window's theme, recolours every brush it handed out when the theme changes, and raises
+  `ThemeChanged` so canvas scenes that keep colours (blends, gradients, Skia paints) redraw
+  (`Controls/Live.RebuildOnTheme`). Paint stays invariant: cargo classes, container liveries,
+  white paint, the 3D model's paint and the dark scanner stage. The account menu (the avatar)
+  offers System, Light and Dark; System is the default and follows the device, and
+  Uno.Extensions' theme service applies and saves the choice.
 - **The harbour** (`Controls/Harbour/`) is a true-scale 3D scene on `SKCanvasElement`
   (1 unit = 3.9 m) with its own perspective projection and painter's sort. The still scene is
   recorded once; when the camera settles it is baked into one GPU image with its tilt-shift,
   so an idle frame is one image draw plus the cranes and trucks. It runs at 30 fps while the
-  camera moves and 15 fps at rest. Build record: `SPEC.md`.
+  camera moves and 15 fps at rest. In Dark it is the same model at night: the ground, water and
+  sky tint come from the theme and the paint is lit lower (`HarbourLightLevel`). Build record: `SPEC.md`.
 - **Other scenes** (river, yard, berth map, charts, vessel profile) are drawn into a
   fixed design-space `Canvas` hosted by `Controls/SceneHost.cs`, which scales it to the
   available width — the WinUI equivalent of an SVG `viewBox`. The source design is SVG
@@ -122,7 +139,7 @@ frame timer (30 fps moving, 15 fps at rest), stopped on `Unloaded` the same way.
 
 `tools/Capture-Window.ps1` captures the window with `PrintWindow` (occlusion-proof, with a
 screen-copy fallback when the GL surface hands back a blank bitmap). Screenshots of every
-section are in `shots/`.
+section are in `shots/` (Light only, taken on Windows before the Westhaven rename and the Dark theme).
 
 Because Windows will not let a background process drive the foreground window, panels that
 only exist after an interaction are reachable through DEBUG-only environment hooks so a
@@ -131,6 +148,7 @@ headless run can photograph them:
 | Variable | Effect |
 |---|---|
 | `APP_NO_HOTDESIGN=1` | Skips `UseStudio()`, which otherwise blocks window creation with no DevServer (compiled out anyway while `NO_UNO_STUDIO` is defined) |
+| `CARGO_THEME` | `light`, `dark` or `system`, set through the theme service as the account menu does (so it is saved) |
 | `CARGO_START_SECTION` | Opens straight onto a section (`overview`, `berths`, `cargo`, `fleet`, `security`) |
 | `CARGO_SECURITY_TAB` | `zones`, `access` or `inspection` |
 | `CARGO_DOCK_SELECT` | Vessel id to preselect in the docking planner |

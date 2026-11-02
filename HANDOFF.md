@@ -1,7 +1,30 @@
-# HANDOFF — Cargo: production readiness, Phase A (Uno 7 foundation)
-Updated: 2026-11-01
+# HANDOFF — Cargo: production readiness, Phase B1 (rename, tests, Dark theme)
+Updated: 2026-11-02
 
-## Phase A (branch `feat/production-readiness`)
+## Phase B1 (branch `feat/production-readiness`)
+- **Westhaven, not Montreal.** The title, publisher, description, wordmark, Overview subtitle, quay sign, river map,
+  routes, river boats and staff badges named the real Montreal Port Authority (and a CBSA badge); all now the
+  fictional Westhaven (owner decision 4). The application id was already `com.westhaven.cargo`. Settings now live
+  under the new publisher folder, so a saved reduced-motion choice starts over once. Carrier names (MSC, Maersk,
+  CMA CGM, Hapag-Lloyd, ONE, COSCO, ...) stay: open question below.
+- **Cargo.Tests** (NUnit, 54 tests) on the app's plain `net10.0` build: berth rules and optimiser (`Domain/BerthPlan.cs`),
+  timeline maths (`Domain/ShiftTimeline.cs`), container filters (`PortData.ContainersFor`), bay views, harbour
+  geometry. The pure parts moved out of `PortState`, `TimelineViewModel` and `ContainersViewModel` unchanged in
+  behaviour. CI has a `test` job.
+- **Dark theme.** `Themes/Tokens.xaml` holds Light (the design, unchanged) and Dark ("Default") theme dictionaries;
+  themed brushes lost the `Invariant` suffix (mapping in the file header). XAML uses `{ThemeResource}`.
+  `Domain/Tokens.cs` is the code palette: resolves per window theme, recolours the brushes it handed out, raises
+  `ThemeChanged`; scenes that keep colours rebuild through `Live.RebuildOnTheme`; the harbour reloads its palette
+  and rebuilds the world (night: theme ground/water/sky, invariant paint under `HarbourLightLevel`). Liveline gained
+  `GridLineBrush`, `LabelBrush`, `BadgeTextBrush`. Invariant on purpose: the scanner stage and its text, cargo
+  classes, container and model paint, white paint, cast shadows.
+- **Theme choice:** System (default) / Light / Dark radio buttons in the account flyout, applied and saved by
+  Uno.Extensions' theme service (already in the graph through the Toolkit navigation package). `App.StartTheme()`
+  reads the saved choice ("CurrentTheme") so the palette and the desktop window ground start right.
+- **WinUI trap fixed:** `ActivityView`'s acrylic used the Uno-only `AcrylicBrushExtensions.UseCompositionEffectBrush`
+  (WMC0010 on WinAppSDK); it is now behind `not_win:`, with a `win:` twin.
+
+## Phase A
 - **Liveline vendored** into `Liveline/` (copied from noknowscode/uno-lab at `1289007`, then moved to Uno 7 and
   SkiaSharp 4 in separate commits). A fresh clone builds with nothing next to it.
 - **Uno.Sdk 7.0.0-dev.115** (SkiaSharp 4.151.1). Android host on `CreateHost()`; Hot Design and App MCP off in
@@ -13,9 +36,8 @@ Updated: 2026-11-01
   background (Uno 7 `SKCanvasElement` is a `Grid`); every `CARGO_*` hook is Debug-only.
 - **Build gate** (`Directory.Build.props`): warnings and Uno0001 fail the build; code style enforced; NuGet audit
   and trim analysis stay warnings. **CI** (`.github/workflows/ci.yml`): desktop x3, WinAppSDK, wasm, android, ios.
-- **Next (Phase B, UI hardening):** Dark theme (the app is light-only: 370 `StaticResource` brush/colour uses,
-  0 `ThemeResource`, 310 `Tokens.Brush` lookups in code resolved once), the desktop-first bands in Narrow and
-  Medium, then the code review.
+- **Next (Phase B2):** the desktop-first bands in Narrow and Medium (central `ResponsiveLayout` 600/1000/1280/1600,
+  owner decision 6), loading/empty/error states, accessibility, evidence, then the code review.
 
 ## Where we were (2026-10-01): Overview one-timeline built (spec steps 0-9) + uno-audit
 `SPEC-OVERVIEW-TIMELINE.md` is built end to end. App-wide: the design palette (teal → accent; reserved/arriving
@@ -31,6 +53,13 @@ it 110 px via negative margins), the duty ID card sits level (entrance is fade +
 dead-code pass removed 47 usings, 7 members, 12 motion tokens, a font and 10 unused sprites.
 
 ## Last verified state
+- 2026-11-02 (Linux, B1): Release, 0 warnings / 0 errors for `net10.0-desktop`, `net10.0-android` and
+  `net10.0-browserwasm`; `Cargo.Tests` 54/54 pass. Desktop (Debug, Xvfb, 1440×900) in Dark: Overview top and
+  scrolled, Berths (status, plan, timeline, vessels), Cargo (explorer, yard), Waterways (river, levels, chat, sea &
+  weather), Security (zones, access, inspection), the scanner overlay, the account flyout, the harbour Key and camera
+  menus, the timeline table; in Light: Overview, Berths timeline, Cargo, Waterways, Security, scanner. Light matches
+  the pre-change capture except animated pixels. Theme switched at runtime both ways (CARGO_THEME after launch, and
+  clicking System/Light/Dark in the flyout). Not run: WebAssembly and Android at runtime, WinAppSDK/iOS (CI only).
 - 2026-11-01 (Linux): Release, 0 warnings / 0 errors for `net10.0-desktop`, `net10.0-android` and
   `net10.0-browserwasm`; the WinAppSDK and iOS heads are built by CI only. No test project. Desktop runtime under
   Xvfb (every section, timeline dot hover, the scanner overlay) matches the 6.7.30 baseline; WebAssembly renders
@@ -70,6 +99,16 @@ Read, not applied: none.
 5. Queued from before: `GLCanvasElement` harbour trial (uno-build-options), MainPage gold-standard pass.
 
 ## Open questions
+- **Real carriers in the data** (owner): MSC, Maersk, CMA CGM, Hapag-Lloyd, ONE, COSCO, Textainer, Seaco, GE Seaco,
+  Triton name the vessels' and containers' operators, the ISO owner codes (MSCU, MAEU, ...) and the hull liveries,
+  and the design's `msc-side`/`msc-plan` renders paint "MSC" and "MSC AURORA" on the hull. Renaming them needs new
+  artwork, so B1 left them (the port authority was the impersonation risk).
+- Dark keeps the design's rendered sprites (hulls, containers, cranes, buoys) as they are: daylight renders on a
+  night ground. They read fine; a night set would need new artwork.
+- On a dark launch the X11 window is white for about a second before Uno's first frame (Xvfb); the startup resize
+  is covered by `WindowHelper.SetBackground`. Not reachable from app code as far as tried.
+- Light `TextFaint` is 4.35:1 on Paper (4.67 on Surface); the token comment claims 4.6. Left as the design's value
+  for B2's accessibility pass. Past berth segments on the Berths timeline are low contrast by design in both themes.
 - `SegmentIndicator` is custom (Toolkit 9.1.3 has no Simple/Material SegmentedStyle). Adopt WCT 8 `Segmented` (new package)?
 - Camera menu radio items show circles under SimpleTheme; the design shows a check mark.
 - Header uses a Flyout, not the spec's MenuFlyout (disabled MenuFlyout items were unreadable).
@@ -84,11 +123,14 @@ Read, not applied: none.
 - uno-app MCP cannot select a solution outside the session root (Liveline demo verified by exe + PrintWindow).
 
 ## Relaunch
-Linux (as verified 2026-11-01):
+Linux (as verified 2026-11-02):
 ```
 dotnet build Cargo/Cargo.csproj -f net10.0-desktop -c Release -p:CargoTargetFrameworks=net10.0-desktop
 APP_NO_HOTDESIGN=1 dotnet Cargo/bin/Release/net10.0-desktop/Cargo.dll
+dotnet test Cargo.Tests/Cargo.Tests.csproj -c Release -p:CargoTargetFrameworks=net10.0
 ```
+Debug hooks need a Debug build: `CARGO_THEME=dark CARGO_START_SECTION=berths CARGO_WINDOW=1440x900 dotnet
+Cargo/bin/Debug/net10.0-desktop/Cargo.dll` (the theme hook saves the choice, as the account menu does).
 Windows (2026-10-01):
 ```
 cd C:\Users\Platform006\Cargo\Cargo

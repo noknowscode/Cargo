@@ -62,8 +62,8 @@ let them make it in place, and link every list row to the thing it means on the 
 
 - **Direction:** keep the app's (flat, ruled, ink-first). Colour is status only.
 - **Colour mapping:** the artifact uses teal for "needs you". In this app amber already means
-  *reserved · arriving* (legend, tags, harbour), so **needs-you is amber here** (`AmberInvariantBrush`, ink
-  `AmberInkInvariantBrush`); confirmed resolves to the occupied neutral. (Unresolved question 1.)
+  *reserved · arriving* (legend, tags, harbour), so **needs-you is amber here** (`AmberBrush`, ink
+  `AmberInkBrush`; `*InvariantBrush` before the Dark theme); confirmed resolves to the occupied neutral. (Unresolved question 1.)
 - **Tokens:** add `Themes/MotionTokens.xaml` (house curves `EaseSmooth 0.22,1 0.36,1`, `EaseOut 0.17,1 0.32,1`;
   durations press 120, state 180, slide 200, bar 300, resolve 400 ms). Spacing 4-based; control height 40;
   radii panel 12 / control 8 / row 4 (from the artifact's `:root`).

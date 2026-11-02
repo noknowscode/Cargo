@@ -99,7 +99,8 @@ Answered 2026-09-30 (the user accepted the defaults):
 - **Theme (app-wide):** `Themes/Tokens.xaml` swaps teal for the design palette [X §1 Colours]:
   new keys `AccentBrush` family (`#1C6E9E`, dark `#155A82`, hover `#185F88`), `NavyBrush`
   (`#0F4A6E`), `WaterBrush` (`#5598C4`), `AlertBrush`/`AlertInkBrush` (`#C9553B`/`#B04A32`),
-  ground/surface/hairlines per [X §1]. All stay `*Invariant` (light-only app; TOKENTHEME lint).
+  ground/surface/hairlines per [X §1]. All stay `*Invariant` (light-only app; TOKENTHEME lint). Since the Dark theme (2026-11-02) they live in Light and Dark
+  theme dictionaries and are named `*Brush`.
   Status mapping changes: **reserved/arriving → accent blue** (harbour polygon, route, legend, key);
   **needs-you → alert** (Berths bar ground becomes the alert tint; amber retires from "needs you").
   Teal keys are removed once no reference remains (grep gate).
