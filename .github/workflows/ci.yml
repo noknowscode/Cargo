@@ -17,8 +17,19 @@ env:
   PROJECT: Cargo/Cargo.csproj
 
 # Every job builds one head through -p:CargoTargetFrameworks, which the vendored Liveline project follows,
-# so no job restores a head (or needs a workload) it does not build. The repository has no test project.
+# so no job restores a head (or needs a workload) it does not build. The tests use the app's plain net10.0 build.
 jobs:
+  test:
+    name: Unit tests (Cargo.Tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Test
+        run: dotnet test Cargo.Tests/Cargo.Tests.csproj -c Release -p:CargoTargetFrameworks=net10.0
+
   desktop:
     name: Desktop (${{ matrix.rid }})
     strategy:

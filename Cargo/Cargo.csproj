@@ -1,10 +1,14 @@
 <Project Sdk="Uno.Sdk">
   <PropertyGroup>
-    <!-- Uno.Sdk skips the heads the build OS can't build (iOS on Linux, Windows off Windows). -->
-    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-windows10.0.19041;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+    <!--
+      Uno.Sdk skips the heads the build OS can't build (iOS on Linux, Windows off Windows). Plain net10.0 is not a head:
+      Cargo.Tests references it for the domain and view-model logic, and it never starts the Uno runtime.
+    -->
+    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-windows10.0.19041;net10.0-browserwasm;net10.0-desktop;net10.0</TargetFrameworks>
     <!--
       App-only override for single-head builds (CI, RID-specific publish): -p:CargoTargetFrameworks=net10.0-desktop.
-      Liveline follows it, so a single-head build restores no other head (and needs no other workload).
+      Liveline follows it, so a single-head build restores no other head (and needs no other workload). The tests
+      run with -p:CargoTargetFrameworks=net10.0. A global -p:TargetFrameworks would retarget the test project too.
     -->
     <TargetFrameworks Condition="'$(CargoTargetFrameworks)' != ''">$(CargoTargetFrameworks)</TargetFrameworks>
 
