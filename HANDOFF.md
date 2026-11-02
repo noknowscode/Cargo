@@ -1,7 +1,36 @@
-# HANDOFF — Cargo: production readiness, Phase B1 (rename, tests, Dark theme)
+# HANDOFF — Cargo: production readiness, Phase B2 (responsive, states, accessibility, evidence)
 Updated: 2026-11-02
 
-## Phase B1 (branch `feat/production-readiness`)
+## Phase B2 (branch `feat/production-readiness`)
+- **Size classes** (owner decision 6): App.xaml's `DefaultResponsiveLayout` (Narrowest 0, Narrow 600, Normal 1000,
+  Wide 1280, Widest 1600), used by every `{utu:Responsive}`; the comment says why the Toolkit defaults do not fit.
+  Categories: Narrow = phone (<600) + tablet (600-999), Medium = 1000-1279, Wide = 1280-1599, Widest = 1600+.
+  No page has a minimum width and the section region no longer scrolls sideways; pages cap at 1520 (Overview 1440)
+  and centre from 1600. New: `Controls/FlowPanel.cs` (wrapping rows), `LayoutMath` (its and `TileGridPanel`'s
+  arithmetic, tested), responsive `TileGridPanel` properties, `TouchTarget` (44) and page-padding tokens.
+- **Per section** (phone / tablet / 1000 / 1280 / 1600+): header tabs on their own 44 px row below 1000 (13 px, all
+  five fit at 360); Overview timeline figures above a full-width chart below 600, table scrolls in its card below
+  1280; Berths status beside detail from 1000, needs-you bar beside the title from 1280, plan controls on one line
+  from 1280, vessel panel beside map from 1000 and under the timeline below, vessel band 3 columns from 1280 /
+  2 + voyage below from 1000 / 1 below; Cargo explorer and yard panels beside from 1000; Waterways row of four from
+  1280, 2x2 from 600; Security side columns beside from 1000, timeline and inspection diagram scroll sideways on a
+  phone; scanner a sheet below 1000 (full window on a phone), the 3D box scaled to its stage.
+- **States and feedback:** drag-to-assign labels each berth Fits / Too shallow / Taken / Closed while dragging; every
+  drop says what happened; `BerthPlan.Check`/`Refusal` name the rule (a restricted berth used to be reported as
+  "taken"); the optimiser reports what it moved and who nothing fits (it used to claim success always). Empty
+  states: container filter with no match (with "Show all"), crew channel with no messages; Needs you and Next 6 h
+  already had theirs. Loading and error states do not exist to show: every figure is an in-memory constant.
+- **Accessibility:** a "Move to berth" list in the docking panel (keyboard and touch path for the drag, same
+  refusals); the yard map takes focus and the arrows step through stacks (`Domain/YardGrid.cs`); the inspection
+  takes focus, cycles Tab and closes on Escape; names on cards, chips, tabs, presets and icon+label buttons; 44 px
+  targets below 1000; timeline bars carry shape (outline, dashed edge, ink edge) as well as colour.
+- **Contrast:** Light TextFaint #6B7377 -> #636B6F (4.89:1 on Paper); status colours set as text use their ink
+  variants (sea green 3.9, alert 4.2, orange 2.8:1 on Light before); timeline bar labels on opaque fills (>= 5.2:1).
+- **Every control works:** Assign inspector and Request re-weigh had no command; each now logs and stands done.
+- **Evidence:** `docs/evidence/b2-*.jpg`, Debug desktop under Xvfb, 640 high, 360-1920, Light and Dark. The stale
+  screenshots that named the real port (two root PNGs, `shots/`) are deleted; README points at the evidence.
+
+## Phase B1
 - **Westhaven, not Montreal.** The title, publisher, description, wordmark, Overview subtitle, quay sign, river map,
   routes, river boats and staff badges named the real Montreal Port Authority (and a CBSA badge); all now the
   fictional Westhaven (owner decision 4). The application id was already `com.westhaven.cargo`. Settings now live
@@ -36,8 +65,7 @@ Updated: 2026-11-02
   background (Uno 7 `SKCanvasElement` is a `Grid`); every `CARGO_*` hook is Debug-only.
 - **Build gate** (`Directory.Build.props`): warnings and Uno0001 fail the build; code style enforced; NuGet audit
   and trim analysis stay warnings. **CI** (`.github/workflows/ci.yml`): desktop x3, WinAppSDK, wasm, android, ios.
-- **Next (Phase B2):** the desktop-first bands in Narrow and Medium (central `ResponsiveLayout` 600/1000/1280/1600,
-  owner decision 6), loading/empty/error states, accessibility, evidence, then the code review.
+- **Next:** the code review (after B2).
 
 ## Where we were (2026-10-01): Overview one-timeline built (spec steps 0-9) + uno-audit
 `SPEC-OVERVIEW-TIMELINE.md` is built end to end. App-wide: the design palette (teal → accent; reserved/arriving
@@ -53,6 +81,14 @@ it 110 px via negative margins), the duty ID card sits level (entrance is fade +
 dead-code pass removed 47 usings, 7 members, 12 motion tokens, a font and 10 unused sprites.
 
 ## Last verified state
+- 2026-11-02 (Linux, B2): Release, 0 warnings / 0 errors for `net10.0-desktop`, `net10.0-android` and
+  `net10.0-browserwasm`; `Cargo.Tests` 89/89 pass (35 new: berth checks and refusals, the optimiser's report,
+  `LayoutMath`, `YardGrid`). Evidence: Debug desktop under Xvfb, one launch per view and theme live-resized through
+  360, 599, 600, 999, 1000, 1280, 1600, 1920 at 640 high (12 views: Overview top and scrolled, Berths top and plan,
+  Cargo top and scrolled, Waterways top and scrolled, Security zones, access and inspection, the scanner), Light and
+  Dark, contact sheets in `docs/evidence/b2-*.jpg`; also tall captures of every section at 360/600/1000/1280/1920
+  while building it. Keyboard checked under Xvfb: focus visuals on header tabs and scanner presets, Tab held inside
+  the scanner. Not run: WebAssembly and Android at runtime, WinAppSDK/iOS (CI only); a screen reader; real touch.
 - 2026-11-02 (Linux, B1): Release, 0 warnings / 0 errors for `net10.0-desktop`, `net10.0-android` and
   `net10.0-browserwasm`; `Cargo.Tests` 54/54 pass. Desktop (Debug, Xvfb, 1440×900) in Dark: Overview top and
   scrolled, Berths (status, plan, timeline, vessels), Cargo (explorer, yard), Waterways (river, levels, chat, sea &
@@ -105,10 +141,15 @@ Read, not applied: none.
   artwork, so B1 left them (the port authority was the impersonation risk).
 - Dark keeps the design's rendered sprites (hulls, containers, cranes, buoys) as they are: daylight renders on a
   night ground. They read fine; a night set would need new artwork.
-- On a dark launch the X11 window is white for about a second before Uno's first frame (Xvfb); the startup resize
-  is covered by `WindowHelper.SetBackground`. Not reachable from app code as far as tried.
-- Light `TextFaint` is 4.35:1 on Paper (4.67 on Surface); the token comment claims 4.6. Left as the design's value
-  for B2's accessibility pass. Past berth segments on the Berths timeline are low contrast by design in both themes.
+- On a dark launch the X11 window is white until Uno's first frame (measured under Xvfb, 2026-11-02: about 1.5 s of
+  white, one dark frame, white again while the startup resize repaints, then dark). `WindowHelper.SetBackground`
+  is already called right after the window exists; the X11 host creates its window on `XWhitePixel`/`XBlackPixel`
+  before app code runs, so it is not reachable from the app. Needs an Uno host option (or a smaller dev change).
+- Maps and scenes (berth map, yard, river, zone map) render as scaled overviews on a phone; their facts are in the
+  lists beside them (berth status, Move to berth, Underway, records). Only the security timeline and the inspection
+  diagram scroll sideways. A pan-and-zoom phone map would be a design decision.
+- The Vessels key-figure cards now sit under the side profile at every width (floated over the bow they covered
+  bays 01-03 up to the 1520 cap): a design change, owner to confirm.
 - `SegmentIndicator` is custom (Toolkit 9.1.3 has no Simple/Material SegmentedStyle). Adopt WCT 8 `Segmented` (new package)?
 - Camera menu radio items show circles under SimpleTheme; the design shows a check mark.
 - Header uses a Flyout, not the spec's MenuFlyout (disabled MenuFlyout items were unreadable).
@@ -116,8 +157,6 @@ Read, not applied: none.
 - Activity shows 12 entries (the data), the design 7; chips derive from open decisions (2 today).
 - Skia `SKPaint`s in `TimelineLanes`/`ShipGlyph` are left to finalizers (disposing on Unloaded breaks re-parenting, G63).
 - Security zone sub-labels spill below 34 px zones (`SecurityScenes.cs:43`); canvas scenes still pass literal text sizes.
-- Vessels key-figure cards cover bays 01-03 below ~1300 px panel width (pre-existing layout intent).
-- Berths clips its right column below ~1200 px (pre-existing, fixed columns).
 - Scanner overlay restyle (`CloseOnDarkButton`): opened from Scan container and closed with Close on Linux desktop
   (2026-11-01); `CARGO_SCANNER=1` opens it at launch in Debug.
 - uno-app MCP cannot select a solution outside the session root (Liveline demo verified by exe + PrintWindow).

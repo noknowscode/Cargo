@@ -72,8 +72,8 @@ let them make it in place, and link every list row to the thing it means on the 
 - **Layout:** Berth status rows = chip 34x30 · state/name/meta · time · chevron; 10 px padding; hairline
   dividers. Detail: state label, big number 32 px display, sub line, note, 6 px cargo bar, 2-column facts,
   ghost "Show on map".
-- **Responsive:** below 1040 px the two columns stack (`utu:Responsive`, `HeaderBreakpoints` values); the
-  needs-you bar goes full width below 960.
+- **Responsive:** below 1000 px the two columns stack, and the needs-you bar sits beside the title from 1280 and
+  full width under it below (App.xaml's `DefaultResponsiveLayout`, 600/1000/1280/1600; updated in B2).
 
 ## Interaction Brief
 

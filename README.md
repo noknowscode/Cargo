@@ -31,9 +31,10 @@ Five heads: `net10.0-desktop` (Skia on Windows, macOS and Linux), `net10.0-windo
 WebAssembly and Android build with 0 warnings on Linux; the Windows and iOS heads build on their own
 OS, in CI (`.github/workflows/ci.yml`). Warnings fail the build (`Directory.Build.props`).
 
-`Cargo.Tests` (NUnit) covers the logic with no UI in it: the berth rules and the optimiser
-(`Domain/BerthPlan.cs`), the timeline maths (`Domain/ShiftTimeline.cs`), the container filters,
-bay views and the harbour's geometry helpers. It references the app's plain `net10.0` build,
+`Cargo.Tests` (NUnit) covers the logic with no UI in it: the berth rules, the reasons a berth refuses a
+vessel and the optimiser's report (`Domain/BerthPlan.cs`), the timeline maths (`Domain/ShiftTimeline.cs`),
+the container filters, bay views, the yard map's keyboard steps (`Domain/YardGrid.cs`), the wrap and tile
+arithmetic of the responsive panels (`Controls/LayoutMath.cs`) and the harbour's geometry helpers. It references the app's plain `net10.0` build,
 which never starts the Uno runtime, and runs in CI's `test` job.
 
 ## Architecture
@@ -57,7 +58,12 @@ which never starts the Uno runtime, and runs in CI's `test` job.
   navigates with `uen:Navigation.Request`, and jumps that start in the store (open a vessel,
   "Open inspection") set `PortState.Section` for `MainViewModel` to follow. Every page and
   embedded panel has its own view model.
-- **Header breakpoints** come from one `utu:Responsive` layout (Normal 1040, Wide 1280).
+- **Size classes** come from one `utu:ResponsiveLayout`, App.xaml's `DefaultResponsiveLayout`, which every
+  `{utu:Responsive}` uses: phone below 600, tablet 600, laptop 1000 (side panels beside their map or plan),
+  desktop 1280 (the design's layout), wide 1600 (pages capped at 1520 and centred). Every section reflows to
+  the width it is given and the page never scrolls sideways; below 1000 every control is a 44 px target.
+  `Controls/FlowPanel.cs` wraps figures, legends, chips and button rows; `TileGridPanel` takes responsive
+  column widths.
 - **Design tokens** live in `Themes/Tokens.xaml`; `Domain/Tokens.cs` resolves them for code
   so no colour literal appears outside that one file.
 - **Themes.** Light is the design's palette; Dark is the same desk at night (a blue-black
@@ -88,7 +94,8 @@ which never starts the Uno runtime, and runs in CI's `test` job.
   1500-unit perspective, faces painted back to front. Drag rotates it.
 - `Controls/BerthMap.cs` — pointer-driven berth assignment. A drop is validated against
   draft versus berth depth and against the other vessels' occupancy windows, so a berth
-  that cannot take the ship lights red.
+  that cannot take the ship lights red and says why (Too shallow, Taken, Closed). The selected
+  vessel's "Move to berth" list is the keyboard and touch path to the same rules.
 - `Controls/VesselProfile.cs` — the bay grid is laid over the hull render, positioned from
   the deck rect measured inside the sprite, and each bay column is its own hit target.
 - `Liveline/` — the tide lane's chart control, a copy of Liveline from
@@ -138,8 +145,9 @@ frame timer (30 fps moving, 15 fps at rest), stopped on `Unloaded` the same way.
 ## Verification
 
 `tools/Capture-Window.ps1` captures the window with `PrintWindow` (occlusion-proof, with a
-screen-copy fallback when the GL surface hands back a blank bitmap). Screenshots of every
-section are in `shots/` (Light only, taken on Windows before the Westhaven rename and the Dark theme).
+screen-copy fallback when the GL surface hands back a blank bitmap). On Linux the evidence is
+captured under Xvfb: `docs/evidence/b2-*.jpg` are contact sheets of every section and the scanner at
+360, 599, 600, 999, 1000, 1280, 1600 and 1920 px wide (640 high), Light and Dark (Phase B2).
 
 Because Windows will not let a background process drive the foreground window, panels that
 only exist after an interaction are reachable through DEBUG-only environment hooks so a
@@ -149,6 +157,7 @@ headless run can photograph them:
 |---|---|
 | `APP_NO_HOTDESIGN=1` | Skips `UseStudio()`, which otherwise blocks window creation with no DevServer (compiled out anyway while `NO_UNO_STUDIO` is defined) |
 | `CARGO_THEME` | `light`, `dark` or `system`, set through the theme service as the account menu does (so it is saved) |
+| `CARGO_WINDOW` | Opens the window at a size, e.g. `390x844` (desktop head) |
 | `CARGO_START_SECTION` | Opens straight onto a section (`overview`, `berths`, `cargo`, `fleet`, `security`) |
 | `CARGO_SECURITY_TAB` | `zones`, `access` or `inspection` |
 | `CARGO_DOCK_SELECT` | Vessel id to preselect in the docking planner |

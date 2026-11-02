@@ -66,7 +66,7 @@ at about y 360. That is 205 px of interest; 180 keeps every tag and pin with the
   inline float shadows (ShadowContainer, Toolkit gotcha G36). Any float that moves keeps the wrapper-Grid
   workaround (gotcha "ShadowContainer keeps its paint when only its offset changes").
 - **Theme:** unchanged (invariant light tokens).
-- **Responsive:** same behaviour at every width; the HUD breakpoint (1200) only affects the full band.
+- **Responsive:** same behaviour at every width; the HUD breakpoint (1280, App.xaml's Wide) only affects the full band.
 
 ## Interaction Brief
 

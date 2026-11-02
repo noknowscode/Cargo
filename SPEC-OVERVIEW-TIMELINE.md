@@ -133,10 +133,12 @@ Answered 2026-09-30 (the user accepted the defaults):
   Masthead (greeting, date, figures, duty card) → HarbourView (restyled HUD: camera dropdown, layer
   segmented, Key flyout, scale+zoom group, Expand; tags: light + dark-for-pending) → Timeline panel
   (head, toggle, legend, lanes or table) → Aside (Needs you section, divider, Next 6 h) → Activity.
-- **Responsive:** `{utu:Responsive}` with an Overview `ResponsiveLayout` (Normal 1040, Wide 1280):
-  ≥1280 as designed; 1040–1279 aside drops below the timeline (both span 12), Activity stays two
-  columns; <1040 Activity one column, masthead figures wrap under the greeting, duty card hidden
-  into the account menu. Timeline plot width scales; px/h derives from the plot width, never fixed.
+- **Responsive:** `{utu:Responsive}` on the app's `DefaultResponsiveLayout` (App.xaml: 600/1000/1280/1600;
+  this spec first used Normal 1040, Wide 1280): ≥1280 as designed; 1000–1279 the timeline and aside share
+  the row 7 + 5; <1000 the aside drops below the timeline, Activity is one column and the masthead
+  figures wrap under the greeting; <600 the duty card moves into the account menu and the lane figures sit
+  above the chart, two by two, with the plot from x 0. Timeline plot width scales; px/h derives from the
+  plot width, never fixed.
 - **Other sections:** inherit palette, header and type; no layout redesign beyond what the palette
   and type migration forces.
 
