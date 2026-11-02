@@ -34,6 +34,10 @@ public partial class App : Application
         Justification = "The view and view-model types navigation reflects over live in the Cargo assembly, which LinkerConfig.xml roots.")]
     private async Task LaunchAsync(LaunchActivatedEventArgs args)
     {
+        // The code palette starts in the theme the window will open in, so nothing is built light and recoloured
+        // after the first frame; Shell keeps it in step with the window from then on
+        Tokens.Apply(StartTheme());
+
         // The store owns the shift clock (a DispatcherTimer), so it is built here on the UI
         // thread; the router resolves page models on a background thread.
         var state = new PortState();
@@ -64,6 +68,11 @@ public partial class App : Application
                 .UseNavigation(RegisterRoutes));
 
         MainWindow = builder.Window;
+#if __DESKTOP__
+        // The native window shows its own ground before the first frame and while it resizes: give it the page's,
+        // so a dark launch does not open on a white window (Skia desktop is the head with this API)
+        Uno.UI.Xaml.WindowHelper.SetBackground(MainWindow, Tokens.Brush("PaperBrush"));
+#endif
 
 #if DEBUG && !NO_UNO_STUDIO
         // Hot Design blocks window creation when no DevServer is reachable, so headless
@@ -94,6 +103,64 @@ public partial class App : Application
         // Open straight on the section the store starts in (Overview, unless a DEBUG hook says otherwise)
         Host = await builder.NavigateAsync<Shell>(initialNavigate: (services, navigator) =>
             navigator.NavigateRouteAsync(this, $"Main/{MainViewModel.RouteFor(state)}"));
+
+#if DEBUG
+        await ApplyThemeFixtureAsync();
+#endif
+    }
+
+#if DEBUG
+    /// <summary>
+    /// Verification runs open in a given theme: CARGO_THEME=light|dark|system, set through the window's theme
+    /// service as the account menu does (so it is saved, like a user's choice). Prints a VERIFY line.
+    /// </summary>
+    private async Task ApplyThemeFixtureAsync()
+    {
+        if (!Enum.TryParse<Uno.Extensions.Toolkit.AppTheme>(Environment.GetEnvironmentVariable("CARGO_THEME"), ignoreCase: true, out var theme))
+        {
+            return;
+        }
+
+        // The window's scoped services are attached to its content once navigation has set it up
+        for (var i = 0; i < 50; i++)
+        {
+            if (MainWindow?.Content is FrameworkElement root
+                && root.FindServiceProvider()?.GetService<Uno.Extensions.Toolkit.IThemeService>() is { } service)
+            {
+                await service.SetThemeAsync(theme);
+                Console.Error.WriteLine($"VERIFY theme={theme} actual={root.ActualTheme} palette={Tokens.Theme}");
+                return;
+            }
+
+            await Task.Delay(100);
+        }
+
+        Console.Error.WriteLine("VERIFY theme service not found");
+    }
+#endif
+
+    /// <summary>
+    /// The theme the window opens in: the choice Uno.Extensions' theme service saved (it keeps it in LocalSettings
+    /// as "CurrentTheme"), or the device's under System or when nothing readable was saved. Read before the window
+    /// exists, so the palette and the window's own ground are right from the first frame.
+    /// </summary>
+    private ElementTheme StartTheme()
+    {
+        try
+        {
+            if (ApplicationData.Current.LocalSettings.Values["CurrentTheme"] is string saved
+                && Enum.TryParse<Uno.Extensions.Toolkit.AppTheme>(saved, out var theme)
+                && theme != Uno.Extensions.Toolkit.AppTheme.System)
+            {
+                return theme == Uno.Extensions.Toolkit.AppTheme.Dark ? ElementTheme.Dark : ElementTheme.Light;
+            }
+        }
+        catch (Exception)
+        {
+            // Settings storage can be unavailable (a sandboxed or read-only profile): follow the device
+        }
+
+        return RequestedTheme == ApplicationTheme.Dark ? ElementTheme.Dark : ElementTheme.Light;
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Uno.Extensions.Toolkit;
 
 namespace Cargo.Presentation;
 
@@ -12,6 +13,7 @@ namespace Cargo.Presentation;
 public sealed partial class MainViewModel : ObservableObject
 {
     private readonly INavigator _navigator;
+    private readonly IThemeService _themes;
     private readonly ILogger<MainViewModel> _logger;
 
     // The section the router last reported, so a Section change that came from the router
@@ -19,7 +21,7 @@ public sealed partial class MainViewModel : ObservableObject
     private string? _routedSection;
 
     public MainViewModel(PortState state, INavigator navigator, IRouteNotifier routeNotifier, IDispatcher dispatcher,
-        ILogger<MainViewModel> logger, OverviewViewModel overview, BerthsViewModel berths, CargoViewModel cargo,
+        IThemeService themes, ILogger<MainViewModel> logger, OverviewViewModel overview, BerthsViewModel berths, CargoViewModel cargo,
         FleetViewModel fleet, SecurityViewModel security)
     {
         State = state;
@@ -29,6 +31,7 @@ public sealed partial class MainViewModel : ObservableObject
         Fleet = fleet;
         Security = security;
         _navigator = navigator;
+        _themes = themes;
         _logger = logger;
 
 
@@ -79,6 +82,37 @@ public sealed partial class MainViewModel : ObservableObject
                 OnPropertyChanged();
             }
         }
+    }
+
+    /// <summary>
+    /// The account menu's theme: 0 System (follow the device, the default), 1 Light, 2 Dark. Uno.Extensions'
+    /// theme service applies it to the window and saves it between launches.
+    /// </summary>
+    public int ThemeIndex
+    {
+        get => _themes.Theme switch { AppTheme.Light => 1, AppTheme.Dark => 2, _ => 0 };
+        set
+        {
+            var theme = value switch { 1 => AppTheme.Light, 2 => AppTheme.Dark, _ => AppTheme.System };
+            if (value is >= 0 and <= 2 && theme != _themes.Theme)
+            {
+                _ = SetThemeAsync(theme);
+            }
+        }
+    }
+
+    private async Task SetThemeAsync(AppTheme theme)
+    {
+        try
+        {
+            await _themes.SetThemeAsync(theme);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Switching to the {Theme} theme failed", theme);
+        }
+
+        OnPropertyChanged(nameof(ThemeIndex));
     }
 
     /// <summary>The container inspection that covers the whole window while it is open.</summary>

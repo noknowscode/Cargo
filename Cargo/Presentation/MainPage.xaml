@@ -88,8 +88,8 @@
           <TextBlock Text="{x:Bind ViewModel.State.NowSeconds, Mode=OneWay}" Style="{StaticResource HeaderClockText}" />
         </StackPanel>
 
-        <!-- Account: who is on shift, and the reduced-motion setting (Skia desktop always reports
-             animations enabled, so the app keeps its own) -->
+        <!-- Account: who is on shift, and the settings: reduced motion (Skia desktop always reports
+             animations enabled, so the app keeps its own) and the theme (System, Light or Dark) -->
         <Button Style="{StaticResource BareButton}" Width="44" Height="44"
                 AutomationProperties.Name="{x:Bind ViewModel.AccountName}"
                 ToolTipService.ToolTip="{x:Bind ViewModel.AccountName}">
@@ -109,6 +109,13 @@
                 <Rectangle Height="1" Fill="{ThemeResource HairlineBrush}" />
                 <ToggleSwitch Header="Reduce motion" IsOn="{x:Bind ViewModel.ReduceMotion, Mode=TwoWay}"
                               ToolTipService.ToolTip="Hold the cranes, trucks and camera moves still" />
+                <!-- Order matches MainViewModel.ThemeIndex: System follows the device -->
+                <RadioButtons Header="Theme" MaxColumns="3" SelectedIndex="{x:Bind ViewModel.ThemeIndex, Mode=TwoWay}"
+                              AutomationProperties.Name="Theme">
+                  <x:String>System</x:String>
+                  <x:String>Light</x:String>
+                  <x:String>Dark</x:String>
+                </RadioButtons>
               </StackPanel>
             </Flyout>
           </Button.Flyout>
