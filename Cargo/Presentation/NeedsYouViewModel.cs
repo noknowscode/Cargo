@@ -22,18 +22,18 @@ public sealed partial class NeedsYouViewModel : ObservableObject
         Refresh();
     }
 
-    [ObservableProperty] private string _title = string.Empty;
-    [ObservableProperty] private string _meta = string.Empty;
-    [ObservableProperty] private string _confirmLabel = string.Empty;
-    [ObservableProperty] private Brush? _ground;
-    [ObservableProperty] private Brush? _edge;
-    [ObservableProperty] private Brush? _metaForeground;
-    [ObservableProperty] private Visibility _needsMark;
-    [ObservableProperty] private Visibility _doneMark;
-    [ObservableProperty] private Visibility _reviewVisibility;
-    [ObservableProperty] private Visibility _confirmVisibility;
-    [ObservableProperty] private Visibility _undoVisibility;
-    [ObservableProperty] private bool _isBusy;
+    [ObservableProperty] public partial string Title { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Meta { get; set; } = string.Empty;
+    [ObservableProperty] public partial string ConfirmLabel { get; set; } = string.Empty;
+    [ObservableProperty] public partial Brush? Ground { get; set; }
+    [ObservableProperty] public partial Brush? Edge { get; set; }
+    [ObservableProperty] public partial Brush? MetaForeground { get; set; }
+    [ObservableProperty] public partial Visibility NeedsMark { get; set; }
+    [ObservableProperty] public partial Visibility DoneMark { get; set; }
+    [ObservableProperty] public partial Visibility ReviewVisibility { get; set; }
+    [ObservableProperty] public partial Visibility ConfirmVisibility { get; set; }
+    [ObservableProperty] public partial Visibility UndoVisibility { get; set; }
+    [ObservableProperty] public partial bool IsBusy { get; set; }
 
     /// <summary>Hovering the bar outlines its vessel, lights its tag and its row.</summary>
     public System.Windows.Input.ICommand HoverCommand => _state.HoverCommand;

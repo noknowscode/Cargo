@@ -18,26 +18,26 @@ public sealed partial class BerthStatusRow : ObservableObject
     public required ICommand Hover { get; init; }
 
     /// <summary>What the row stands for on the harbour: its vessel, else its berth.</summary>
-    [ObservableProperty] private string _linkKey = string.Empty;
+    [ObservableProperty] public partial string LinkKey { get; set; } = string.Empty;
 
     internal RowKind Kind { get; set; }
 
     /// <summary>The vessel on or bound for this berth; null for a free or closed berth.</summary>
-    [ObservableProperty] private string? _vesselId;
-    [ObservableProperty] private string _plate = string.Empty;
-    [ObservableProperty] private string _stateLabel = string.Empty;
-    [ObservableProperty] private string _name = string.Empty;
-    [ObservableProperty] private string _meta = string.Empty;
-    [ObservableProperty] private string _when = string.Empty;
-    [ObservableProperty] private string _accessibleName = string.Empty;
-    [ObservableProperty] private Brush? _rowBackground;
-    [ObservableProperty] private Brush? _outline;
-    [ObservableProperty] private Brush? _plateBackground;
-    [ObservableProperty] private Brush? _plateForeground;
-    [ObservableProperty] private Brush? _plateBorder;
-    [ObservableProperty] private Brush? _stateForeground;
-    [ObservableProperty] private Brush? _nameForeground;
-    [ObservableProperty] private Brush? _whenForeground;
+    [ObservableProperty] public partial string? VesselId { get; set; }
+    [ObservableProperty] public partial string Plate { get; set; } = string.Empty;
+    [ObservableProperty] public partial string StateLabel { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Name { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Meta { get; set; } = string.Empty;
+    [ObservableProperty] public partial string When { get; set; } = string.Empty;
+    [ObservableProperty] public partial string AccessibleName { get; set; } = string.Empty;
+    [ObservableProperty] public partial Brush? RowBackground { get; set; }
+    [ObservableProperty] public partial Brush? Outline { get; set; }
+    [ObservableProperty] public partial Brush? PlateBackground { get; set; }
+    [ObservableProperty] public partial Brush? PlateForeground { get; set; }
+    [ObservableProperty] public partial Brush? PlateBorder { get; set; }
+    [ObservableProperty] public partial Brush? StateForeground { get; set; }
+    [ObservableProperty] public partial Brush? NameForeground { get; set; }
+    [ObservableProperty] public partial Brush? WhenForeground { get; set; }
 }
 
 /// <summary>
@@ -57,7 +57,7 @@ public sealed partial class BerthStatusViewModel : ObservableObject
     public ObservableCollection<BerthStatusRow> Rows { get; } = new();
 
     [ObservableProperty]
-    private string _count = string.Empty;
+    public partial string Count { get; set; } = string.Empty;
 
     [RelayCommand]
     private void Pick(string slot)

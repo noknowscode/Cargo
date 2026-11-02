@@ -22,10 +22,10 @@ public sealed partial class MiniCard : ObservableObject
     public required Geometry Icon { get; init; }
 
     [ObservableProperty]
-    private string _value = string.Empty;
+    public partial string Value { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _detail = string.Empty;
+    public partial string Detail { get; set; } = string.Empty;
 }
 
 public sealed class CheckRow
@@ -70,48 +70,48 @@ public sealed partial class VesselsViewModel : ObservableObject
 
     /// <summary>The vessel whose cranes the operations scene animates.</summary>
     [ObservableProperty]
-    private Vessel? _vessel;
+    public partial Vessel? Vessel { get; set; }
 
     [ObservableProperty]
-    private BayView? _bay;
+    public partial BayView? Bay { get; set; }
 
     [ObservableProperty]
-    private IReadOnlyList<(double Weight, Brush Fill)> _compositionSlices = [];
+    public partial IReadOnlyList<(double Weight, Brush Fill)> CompositionSlices { get; set; } = [];
 
     [ObservableProperty]
-    private IReadOnlyList<(double Weight, Brush Fill)> _baySlices = [];
+    public partial IReadOnlyList<(double Weight, Brush Fill)> BaySlices { get; set; } = [];
 
     [ObservableProperty]
-    private ImageSource? _bayContainerImage;
+    public partial ImageSource? BayContainerImage { get; set; }
 
-    [ObservableProperty] private string _vesselName = string.Empty;
-    [ObservableProperty] private string _profileHint = string.Empty;
-    [ObservableProperty] private string _bayLabel = string.Empty;
-    [ObservableProperty] private string _voyage = string.Empty;
-    [ObservableProperty] private string _security = string.Empty;
-    [ObservableProperty] private Brush? _securityBackground;
-    [ObservableProperty] private Brush? _securityForeground;
-    [ObservableProperty] private string _teuLabel = string.Empty;
-    [ObservableProperty] private string _opsNote = string.Empty;
-    [ObservableProperty] private string _movesLabel = string.Empty;
-    [ObservableProperty] private string _unloadLive = string.Empty;
-    [ObservableProperty] private string _loadLive = string.Empty;
-    [ObservableProperty] private double _unloadPercent;
-    [ObservableProperty] private double _loadPercent;
+    [ObservableProperty] public partial string VesselName { get; set; } = string.Empty;
+    [ObservableProperty] public partial string ProfileHint { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayLabel { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Voyage { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Security { get; set; } = string.Empty;
+    [ObservableProperty] public partial Brush? SecurityBackground { get; set; }
+    [ObservableProperty] public partial Brush? SecurityForeground { get; set; }
+    [ObservableProperty] public partial string TeuLabel { get; set; } = string.Empty;
+    [ObservableProperty] public partial string OpsNote { get; set; } = string.Empty;
+    [ObservableProperty] public partial string MovesLabel { get; set; } = string.Empty;
+    [ObservableProperty] public partial string UnloadLive { get; set; } = string.Empty;
+    [ObservableProperty] public partial string LoadLive { get; set; } = string.Empty;
+    [ObservableProperty] public partial double UnloadPercent { get; set; }
+    [ObservableProperty] public partial double LoadPercent { get; set; }
 
-    [ObservableProperty] private string _bayHeading = string.Empty;
-    [ObservableProperty] private string _bayTotal = string.Empty;
-    [ObservableProperty] private string _bayRemaining = string.Empty;
-    [ObservableProperty] private string _bayOpsHeading = string.Empty;
-    [ObservableProperty] private string _bayCompositionHeading = string.Empty;
-    [ObservableProperty] private string _bayUnloaded = string.Empty;
-    [ObservableProperty] private string _bayLeft = string.Empty;
-    [ObservableProperty] private string _bayNextMove = string.Empty;
-    [ObservableProperty] private string _bayNextEta = string.Empty;
-    [ObservableProperty] private string _bayContainerId = string.Empty;
-    [ObservableProperty] private string _bayContainerType = string.Empty;
-    [ObservableProperty] private string _bayContainerWeight = string.Empty;
-    [ObservableProperty] private string _bayContainerStatus = string.Empty;
+    [ObservableProperty] public partial string BayHeading { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayTotal { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayRemaining { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayOpsHeading { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayCompositionHeading { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayUnloaded { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayLeft { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayNextMove { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayNextEta { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayContainerId { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayContainerType { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayContainerWeight { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BayContainerStatus { get; set; } = string.Empty;
 
     // ── Structure ─────────────────────────────────────────────────────────────
 

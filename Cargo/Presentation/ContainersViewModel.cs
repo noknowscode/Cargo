@@ -63,14 +63,14 @@ public sealed partial class ContainersViewModel : ObservableObject
     public ObservableCollection<JourneyStep> Journey { get; } = new();
     public ObservableCollection<Fact> Facts { get; } = new();
 
-    [ObservableProperty] private string _selectedId = string.Empty;
-    [ObservableProperty] private string _selectedMeta = string.Empty;
-    [ObservableProperty] private ImageSource? _selectedIso;
+    [ObservableProperty] public partial string SelectedId { get; set; } = string.Empty;
+    [ObservableProperty] public partial string SelectedMeta { get; set; } = string.Empty;
+    [ObservableProperty] public partial ImageSource? SelectedIso { get; set; }
 
     /// <summary>True when the filter matches no container on the terminal: the explorer says so instead of showing nothing.</summary>
-    [ObservableProperty] private bool _isEmpty;
+    [ObservableProperty] public partial bool IsEmpty { get; set; }
 
-    [ObservableProperty] private string _emptyText = string.Empty;
+    [ObservableProperty] public partial string EmptyText { get; set; } = string.Empty;
 
     [RelayCommand]
     private void Filter(string? value) => State.ContainerFilter = value ?? "All";

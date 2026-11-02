@@ -37,15 +37,15 @@ public sealed partial class YardViewModel : ObservableObject
 
     public ObservableCollection<TierRow> Tiers { get; } = new();
 
-    [ObservableProperty] private string _liveLine = string.Empty;
-    [ObservableProperty] private string _occupancyLine = string.Empty;
-    [ObservableProperty] private double _occupancy;
-    [ObservableProperty] private string _slotTitle = string.Empty;
-    [ObservableProperty] private string _slotSubtitle = string.Empty;
-    [ObservableProperty] private IReadOnlyList<(string Id, string Tag, string Token)> _stackBoxes = [];
+    [ObservableProperty] public partial string LiveLine { get; set; } = string.Empty;
+    [ObservableProperty] public partial string OccupancyLine { get; set; } = string.Empty;
+    [ObservableProperty] public partial double Occupancy { get; set; }
+    [ObservableProperty] public partial string SlotTitle { get; set; } = string.Empty;
+    [ObservableProperty] public partial string SlotSubtitle { get; set; } = string.Empty;
+    [ObservableProperty] public partial IReadOnlyList<(string Id, string Tag, string Token)> StackBoxes { get; set; } = [];
 
     [ObservableProperty]
-    private bool _hasStack;
+    public partial bool HasStack { get; set; }
 
     [RelayCommand]
     private void CloseStack() => State.SelectedStack = null;

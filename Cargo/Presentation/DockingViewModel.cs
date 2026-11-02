@@ -66,21 +66,21 @@ public sealed partial class DockingViewModel : ObservableObject
 
     public ObservableCollection<BerthChoice> BerthChoices { get; } = new();
 
-    [ObservableProperty] private string _planLabel = string.Empty;
-    [ObservableProperty] private string _conflictText = string.Empty;
-    [ObservableProperty] private Brush? _conflictTone;
-    [ObservableProperty] private string _hint = DefaultHint;
-    [ObservableProperty] private string _selectedName = string.Empty;
-    [ObservableProperty] private string _selectedStatus = string.Empty;
-    [ObservableProperty] private string _selectedNote = string.Empty;
-    [ObservableProperty] private ImageSource? _selectedProfile;
-    [ObservableProperty] private bool _canRelease;
-    [ObservableProperty] private bool _canMove;
-    [ObservableProperty] private Brush? _nowBackground;
-    [ObservableProperty] private Brush? _nowForeground;
+    [ObservableProperty] public partial string PlanLabel { get; set; } = string.Empty;
+    [ObservableProperty] public partial string ConflictText { get; set; } = string.Empty;
+    [ObservableProperty] public partial Brush? ConflictTone { get; set; }
+    [ObservableProperty] public partial string Hint { get; set; } = DefaultHint;
+    [ObservableProperty] public partial string SelectedName { get; set; } = string.Empty;
+    [ObservableProperty] public partial string SelectedStatus { get; set; } = string.Empty;
+    [ObservableProperty] public partial string SelectedNote { get; set; } = string.Empty;
+    [ObservableProperty] public partial ImageSource? SelectedProfile { get; set; }
+    [ObservableProperty] public partial bool CanRelease { get; set; }
+    [ObservableProperty] public partial bool CanMove { get; set; }
+    [ObservableProperty] public partial Brush? NowBackground { get; set; }
+    [ObservableProperty] public partial Brush? NowForeground { get; set; }
 
     [ObservableProperty]
-    private bool _hasSelection;
+    public partial bool HasSelection { get; set; }
 
     /// <summary>
     /// The scrubber position in hours. A value equal to the time already shown is ignored, so

@@ -20,12 +20,12 @@ public sealed partial class TimelineRow : ObservableObject
     public required string Vessels { get; init; }
     public required string Tide { get; init; }
 
-    [ObservableProperty] private string _moves = string.Empty;
-    [ObservableProperty] private string _in = string.Empty;
-    [ObservableProperty] private string _out = string.Empty;
-    [ObservableProperty] private string _net = string.Empty;
-    [ObservableProperty] private bool _isNow;
-    [ObservableProperty] private bool _isFuture;
+    [ObservableProperty] public partial string Moves { get; set; } = string.Empty;
+    [ObservableProperty] public partial string In { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Out { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Net { get; set; } = string.Empty;
+    [ObservableProperty] public partial bool IsNow { get; set; }
+    [ObservableProperty] public partial bool IsFuture { get; set; }
 }
 
 /// <summary>
@@ -72,11 +72,11 @@ public sealed partial class TimelineViewModel : ObservableObject
 
     // ── Chart / Table ───────────────────────────────────────────────────
 
-    [ObservableProperty] private Visibility _chartVisibility;
-    [ObservableProperty] private Visibility _tableVisibility;
-    [ObservableProperty] private int _viewIndex;
-    [ObservableProperty] private Brush? _chartLabel;
-    [ObservableProperty] private Brush? _tableLabel;
+    [ObservableProperty] public partial Visibility ChartVisibility { get; set; }
+    [ObservableProperty] public partial Visibility TableVisibility { get; set; }
+    [ObservableProperty] public partial int ViewIndex { get; set; }
+    [ObservableProperty] public partial Brush? ChartLabel { get; set; }
+    [ObservableProperty] public partial Brush? TableLabel { get; set; }
 
     [RelayCommand]
     private void ShowChart() => SetView(table: false);
@@ -98,10 +98,10 @@ public sealed partial class TimelineViewModel : ObservableObject
     private SKTypeface? _mono;
 
     /// <summary>The tide lane's label face (the "now" level); the HW label takes the mono face.</summary>
-    [ObservableProperty] private SKTypeface? _tideTypeface;
+    [ObservableProperty] public partial SKTypeface? TideTypeface { get; set; }
 
     /// <summary>Liveline eases toward each push; under reduced motion it snaps.</summary>
-    [ObservableProperty] private double _tideLerp = .04;
+    [ObservableProperty] public partial double TideLerp { get; set; } = .04;
 
     private async void LoadFonts()
     {
@@ -117,28 +117,28 @@ public sealed partial class TimelineViewModel : ObservableObject
     public DateTimeOffset WindowStart => At(Start);
     public DateTimeOffset WindowEnd => At(End);
 
-    [ObservableProperty] private TimelineFrame? _frame;
+    [ObservableProperty] public partial TimelineFrame? Frame { get; set; }
 
     // Summary column
-    [ObservableProperty] private string _vesselsValue = string.Empty;
-    [ObservableProperty] private string _vesselsSub = string.Empty;
-    [ObservableProperty] private string _tideValue = string.Empty;
-    [ObservableProperty] private string _tideSub = string.Empty;
-    [ObservableProperty] private string _movesValue = string.Empty;
-    [ObservableProperty] private string _movesPeak = string.Empty;
-    [ObservableProperty] private string _cargoValue = string.Empty;
-    [ObservableProperty] private string _cargoSub = string.Empty;
-    [ObservableProperty] private string _cargoSince = string.Empty;
-    [ObservableProperty] private string _movesTotal = string.Empty;
+    [ObservableProperty] public partial string VesselsValue { get; set; } = string.Empty;
+    [ObservableProperty] public partial string VesselsSub { get; set; } = string.Empty;
+    [ObservableProperty] public partial string TideValue { get; set; } = string.Empty;
+    [ObservableProperty] public partial string TideSub { get; set; } = string.Empty;
+    [ObservableProperty] public partial string MovesValue { get; set; } = string.Empty;
+    [ObservableProperty] public partial string MovesPeak { get; set; } = string.Empty;
+    [ObservableProperty] public partial string CargoValue { get; set; } = string.Empty;
+    [ObservableProperty] public partial string CargoSub { get; set; } = string.Empty;
+    [ObservableProperty] public partial string CargoSince { get; set; } = string.Empty;
+    [ObservableProperty] public partial string MovesTotal { get; set; } = string.Empty;
 
     // Tide lane (Liveline)
-    [ObservableProperty] private DateTimeOffset _nowTime;
-    [ObservableProperty] private IList<LivelinePoint>? _tidePast;
-    [ObservableProperty] private IList<LivelinePoint>? _tideAhead;
-    [ObservableProperty] private IList<LivelineMarker>? _tideMarkers;
+    [ObservableProperty] public partial DateTimeOffset NowTime { get; set; }
+    [ObservableProperty] public partial IList<LivelinePoint>? TidePast { get; set; }
+    [ObservableProperty] public partial IList<LivelinePoint>? TideAhead { get; set; }
+    [ObservableProperty] public partial IList<LivelineMarker>? TideMarkers { get; set; }
 
     /// <summary>The chart's spoken summary (its automation name); the table is the full alternative.</summary>
-    [ObservableProperty] private string _summary = string.Empty;
+    [ObservableProperty] public partial string Summary { get; set; } = string.Empty;
 
     public static DateTimeOffset At(double hours) => Day.AddHours(hours);
 

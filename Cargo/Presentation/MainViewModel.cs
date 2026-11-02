@@ -117,7 +117,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     /// <summary>The container inspection that covers the whole window while it is open.</summary>
     [ObservableProperty]
-    private ScannerViewModel? _scanner;
+    public partial ScannerViewModel? Scanner { get; set; }
 
     // The nav and the layer switcher each depend on one or two properties, so they listen for
     // those rather than for every structural change in the app.
@@ -229,7 +229,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     /// <summary>The current layer's place in <see cref="Layers"/>, for the switcher's sliding indicator.</summary>
     [ObservableProperty]
-    private int _selectedLayerIndex = -1;
+    public partial int SelectedLayerIndex { get; set; } = -1;
 
     /// <summary>The design's 24-unit stroke icons for the four layers (EXTRACTION §2 Harbour).</summary>
     private static readonly (string Id, string Label, string Icon)[] LayerDefinitions =

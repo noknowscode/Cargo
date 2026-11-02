@@ -31,20 +31,20 @@ public sealed partial class HarbourTag : ObservableObject
 
     /// <summary>"in 41 min" on the dark tag.</summary>
     [ObservableProperty]
-    private string _countdown = string.Empty;
+    public partial string Countdown { get; set; } = string.Empty;
 
     /// <summary>The light tag, or the dark one for the arrival still waiting on a berth decision.</summary>
     [ObservableProperty]
-    private Visibility _lightVisibility = Visibility.Visible;
+    public partial Visibility LightVisibility { get; set; } = Visibility.Visible;
 
     [ObservableProperty]
-    private Visibility _darkVisibility = Visibility.Collapsed;
+    public partial Visibility DarkVisibility { get; set; } = Visibility.Collapsed;
 
     [ObservableProperty]
-    private Brush _edge = Tokens.Transparent;
+    public partial Brush Edge { get; set; } = Tokens.Transparent;
 
     [ObservableProperty]
-    private Thickness _edgeThickness;
+    public partial Thickness EdgeThickness { get; set; }
 
 }
 

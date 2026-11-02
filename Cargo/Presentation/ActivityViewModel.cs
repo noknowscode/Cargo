@@ -23,15 +23,15 @@ public sealed partial class FeedEntry : ObservableObject
     public required ICommand Toggle { get; init; }
 
     [ObservableProperty]
-    private bool _isExpanded;
+    public partial bool IsExpanded { get; set; }
 
     /// <summary>Another row in the same column is open.</summary>
     [ObservableProperty]
-    private bool _isDimmed;
+    public partial bool IsDimmed { get; set; }
 
     /// <summary>"Logged 20:41 · 17 min ago", set when the row opens so it is current.</summary>
     [ObservableProperty]
-    private string _logged = string.Empty;
+    public partial string Logged { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -50,9 +50,9 @@ public sealed partial class ActivityViewModel : ObservableObject
         Build();
     }
 
-    [ObservableProperty] private IReadOnlyList<FeedEntry> _left = Array.Empty<FeedEntry>();
-    [ObservableProperty] private IReadOnlyList<FeedEntry> _right = Array.Empty<FeedEntry>();
-    [ObservableProperty] private string _sub = string.Empty;
+    [ObservableProperty] public partial IReadOnlyList<FeedEntry> Left { get; set; } = Array.Empty<FeedEntry>();
+    [ObservableProperty] public partial IReadOnlyList<FeedEntry> Right { get; set; } = Array.Empty<FeedEntry>();
+    [ObservableProperty] public partial string Sub { get; set; } = string.Empty;
 
     public Visibility EmptyVisibility => PortData.Activity.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 

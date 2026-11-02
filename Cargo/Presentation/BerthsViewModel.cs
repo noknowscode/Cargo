@@ -27,19 +27,19 @@ public sealed partial class BerthsViewModel : ObservableObject
     public PortState State { get; }
 
     [ObservableProperty]
-    private NeedsYouViewModel? _needsYou;
+    public partial NeedsYouViewModel? NeedsYou { get; set; }
 
     [ObservableProperty]
-    private BerthStatusViewModel? _status;
+    public partial BerthStatusViewModel? Status { get; set; }
 
     [ObservableProperty]
-    private VesselDetailViewModel? _detail;
+    public partial VesselDetailViewModel? Detail { get; set; }
 
     [ObservableProperty]
-    private DockingViewModel? _plan;
+    public partial DockingViewModel? Plan { get; set; }
 
     [ObservableProperty]
-    private VesselsViewModel? _vessel;
+    public partial VesselsViewModel? Vessel { get; set; }
 
     public string Alongside => PortData.Berths.Count(b => b.State == "occupied").ToString();
 
@@ -48,10 +48,10 @@ public sealed partial class BerthsViewModel : ObservableObject
     public string AtAnchor => PortData.Vessels.Count(v => v.Status == "At anchor").ToString();
 
     [ObservableProperty]
-    private string _conflicts = "0";
+    public partial string Conflicts { get; set; } = "0";
 
     [ObservableProperty]
-    private Brush? _conflictInk;
+    public partial Brush? ConflictInk { get; set; }
 
     /// <summary>The decision, status and detail panels; the page runs this only while it is shown.</summary>
     public void RefreshPanels()

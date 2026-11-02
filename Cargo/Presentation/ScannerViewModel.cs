@@ -59,19 +59,19 @@ public sealed partial class ScannerViewModel : ObservableObject
     public ObservableCollection<CompositionSlice> Density { get; } = new();
     public ObservableCollection<ScanViewOption> Views { get; } = new();
 
-    [ObservableProperty] private string _containerId = string.Empty;
-    [ObservableProperty] private string _containerMeta = string.Empty;
-    [ObservableProperty] private string _scanMode = string.Empty;
-    [ObservableProperty] private string _verdict = string.Empty;
-    [ObservableProperty] private string _verdictNote = string.Empty;
-    [ObservableProperty] private Brush? _verdictTone;
-    [ObservableProperty] private string _manifestHeading = string.Empty;
-    [ObservableProperty] private string _scanAction = string.Empty;
-    [ObservableProperty] private Brush? _xrayBackground;
-    [ObservableProperty] private Brush? _xrayBorder;
-    [ObservableProperty] private Brush? _xrayForeground;
-    [ObservableProperty] private string _xrayName = "X-ray, off";
-    [ObservableProperty] private IReadOnlyList<(double Weight, Brush Fill)> _densitySlices = [];
+    [ObservableProperty] public partial string ContainerId { get; set; } = string.Empty;
+    [ObservableProperty] public partial string ContainerMeta { get; set; } = string.Empty;
+    [ObservableProperty] public partial string ScanMode { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Verdict { get; set; } = string.Empty;
+    [ObservableProperty] public partial string VerdictNote { get; set; } = string.Empty;
+    [ObservableProperty] public partial Brush? VerdictTone { get; set; }
+    [ObservableProperty] public partial string ManifestHeading { get; set; } = string.Empty;
+    [ObservableProperty] public partial string ScanAction { get; set; } = string.Empty;
+    [ObservableProperty] public partial Brush? XrayBackground { get; set; }
+    [ObservableProperty] public partial Brush? XrayBorder { get; set; }
+    [ObservableProperty] public partial Brush? XrayForeground { get; set; }
+    [ObservableProperty] public partial string XrayName { get; set; } = "X-ray, off";
+    [ObservableProperty] public partial IReadOnlyList<(double Weight, Brush Fill)> DensitySlices { get; set; } = [];
 
     [RelayCommand]
     private void Close() => State.ScannerOpen = false;

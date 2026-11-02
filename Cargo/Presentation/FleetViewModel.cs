@@ -89,16 +89,16 @@ public sealed partial class FleetViewModel : ObservableObject
     public PortState State { get; }
 
     [ObservableProperty]
-    private IReadOnlyList<LegendItem> _legend = [];
+    public partial IReadOnlyList<LegendItem> Legend { get; set; } = [];
 
     [ObservableProperty]
-    private IReadOnlyList<LockingRow> _lockings = [];
+    public partial IReadOnlyList<LockingRow> Lockings { get; set; } = [];
 
     [ObservableProperty]
-    private IReadOnlyList<GaugeRow> _gauges = [];
+    public partial IReadOnlyList<GaugeRow> Gauges { get; set; } = [];
 
     [ObservableProperty]
-    private IReadOnlyList<NoticeRow> _notices = [];
+    public partial IReadOnlyList<NoticeRow> Notices { get; set; } = [];
 
     public ObservableCollection<FleetRow> Fleet { get; } = new();
     public ObservableCollection<ChatBubble> Thread { get; } = new();
@@ -115,26 +115,26 @@ public sealed partial class FleetViewModel : ObservableObject
     public string NoticeTotal => PortData.Notices.Count.ToString();
 
     [ObservableProperty]
-    private string _crewHeading = string.Empty;
+    public partial string CrewHeading { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _crewSubtitle = string.Empty;
+    public partial string CrewSubtitle { get; set; } = string.Empty;
 
     /// <summary>Empty: no message with the selected vessel yet this shift; the channel says so instead of a blank box.</summary>
     [ObservableProperty]
-    private bool _threadEmpty;
+    public partial bool ThreadEmpty { get; set; }
 
     [ObservableProperty]
-    private string _threadEmptyText = string.Empty;
+    public partial string ThreadEmptyText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _slipLabel = string.Empty;
+    public partial string SlipLabel { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private Brush? _slipTone;
+    public partial Brush? SlipTone { get; set; }
 
     [ObservableProperty]
-    private Brush? _slipInk;
+    public partial Brush? SlipInk { get; set; }
 
     private RiverVessel Selected =>
         PortData.RiverFleet.FirstOrDefault(v => v.Id == State.FleetSelection) ?? PortData.RiverFleet[0];

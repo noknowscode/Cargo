@@ -20,34 +20,7 @@ public sealed partial class PortState : ObservableObject
     public PortState()
     {
 #if DEBUG
-        // Lets a verification run open straight onto a section without synthesized input,
-        // which Windows will not let a background process deliver reliably.
-        if (Environment.GetEnvironmentVariable("CARGO_START_SECTION") is { Length: > 0 } requested
-            && Canonical(requested) is var start
-            && PortData.Sections.Any(s => s.Id == start))
-        {
-            _section = start;
-        }
-
-        if (Environment.GetEnvironmentVariable("CARGO_SECURITY_TAB") is { Length: > 0 } tab)
-        {
-            _securityTab = tab;
-        }
-
-        // Panels that only exist once something is selected, so a headless run can see them.
-        _dockSelection = Environment.GetEnvironmentVariable("CARGO_DOCK_SELECT");
-        _selectedStack = Environment.GetEnvironmentVariable("CARGO_STACK");
-        _scannerOpen = Environment.GetEnvironmentVariable("CARGO_SCANNER") == "1";
-        _xray = Environment.GetEnvironmentVariable("CARGO_XRAY") == "1";
-        _harbourLayer = Environment.GetEnvironmentVariable("CARGO_LAYER") ?? _harbourLayer;
-
-        // Hover states cannot be reached with synthesized input from a background process.
-        if (int.TryParse(Environment.GetEnvironmentVariable("CARGO_HOVER_BERTH"), out var berth))
-        {
-            _hoveredBerth = berth;
-        }
-
-        if (Environment.GetEnvironmentVariable("CARGO_OPTIMIZE") == "1")
+        if (Hook("CARGO_OPTIMIZE") == "1")
         {
             Optimize();
         }
@@ -59,6 +32,24 @@ public sealed partial class PortState : ObservableObject
         _clock.Tick += (_, _) => Tick();
         _clock.Start();
     }
+
+    // DEBUG verification hooks (CARGO_*). They let a headless run open straight onto a section, a selection or a
+    // hover, which Windows will not let a background process reach with synthesized input. The properties they
+    // start take them as initializers: an initializer sets the backing field without running the setter, so the
+    // change hooks stay quiet, as the constructor's field writes did before the properties became partial.
+    // Release never reads the environment.
+#if DEBUG
+    private static string? Hook(string name) => Environment.GetEnvironmentVariable(name);
+#else
+    private static string? Hook(string name) => null;
+#endif
+
+    private static string? StartSection() =>
+        Hook("CARGO_START_SECTION") is { Length: > 0 } requested
+        && Canonical(requested) is var start
+        && PortData.Sections.Any(s => s.Id == start)
+            ? start
+            : null;
 
     /// <summary>Raised once a second, after the clock advances.</summary>
     public event EventHandler? Ticked;
@@ -176,7 +167,7 @@ public sealed partial class PortState : ObservableObject
     // ── Navigation ────────────────────────────────────────────────────────────
 
     [ObservableProperty]
-    private string _section = "overview";
+    public partial string Section { get; set; } = StartSection() ?? "overview";
 
     partial void OnSectionChanged(string value)
     {
@@ -246,7 +237,7 @@ public sealed partial class PortState : ObservableObject
     public bool StageCompact => ShowStage && !StageFull;
 
     [ObservableProperty]
-    private bool _stageOpen;
+    public partial bool StageOpen { get; set; }
 
     partial void OnStageOpenChanged(bool value)
     {
@@ -259,7 +250,7 @@ public sealed partial class PortState : ObservableObject
 
     /// <summary>Overview's harbour band at its expanded height (491 rather than 340).</summary>
     [ObservableProperty]
-    private bool _overviewExpanded;
+    public partial bool OverviewExpanded { get; set; }
 
     partial void OnOverviewExpandedChanged(bool value) => OnStageToggleChanged();
 
@@ -268,7 +259,7 @@ public sealed partial class PortState : ObservableObject
     /// Set by the page from its scroll offset; the band's own height (340 or 491) comes back when it clears.
     /// </summary>
     [ObservableProperty]
-    private bool _overviewCondensed;
+    public partial bool OverviewCondensed { get; set; }
 
     partial void OnOverviewCondensedChanged(bool value)
     {
@@ -329,7 +320,7 @@ public sealed partial class PortState : ObservableObject
     }
 
     [ObservableProperty]
-    private string _harbourLayer = "port";
+    public partial string HarbourLayer { get; set; } = Hook("CARGO_LAYER") ?? "port";
 
     partial void OnHarbourLayerChanged(string value) => NotifyStructureChanged();
 
@@ -337,18 +328,18 @@ public sealed partial class PortState : ObservableObject
     private void SetLayer(string layer) => HarbourLayer = layer;
 
     [ObservableProperty]
-    private string? _harbourSelection;
+    public partial string? HarbourSelection { get; set; }
 
     partial void OnHarbourSelectionChanged(string? value) => NotifyStructureChanged();
 
     [ObservableProperty]
-    private int? _hoveredBerth;
+    public partial int? HoveredBerth { get; set; } = int.TryParse(Hook("CARGO_HOVER_BERTH"), out var berth) ? berth : null;
 
     partial void OnHoveredBerthChanged(int? value) => NotifyHoverChanged();
 
     /// <summary>The vessel a list row, tag or the needs-you bar is pointing at. Repaints, never rebuilds.</summary>
     [ObservableProperty]
-    private string? _hoveredVessel;
+    public partial string? HoveredVessel { get; set; }
 
     partial void OnHoveredVesselChanged(string? value) => NotifyHoverChanged();
 
@@ -405,7 +396,7 @@ public sealed partial class PortState : ObservableObject
     // ── Vessels ───────────────────────────────────────────────────────────────
 
     [ObservableProperty]
-    private string _selectedVesselId = "aurora";
+    public partial string SelectedVesselId { get; set; } = "aurora";
 
     partial void OnSelectedVesselIdChanged(string value)
     {
@@ -417,7 +408,7 @@ public sealed partial class PortState : ObservableObject
 
     /// <summary>A berth picked in the Berths status list with no vessel on it; null when a vessel is picked.</summary>
     [ObservableProperty]
-    private string? _selectedBerth;
+    public partial string? SelectedBerth { get; set; }
 
     partial void OnSelectedBerthChanged(string? value) => NotifyStructureChanged();
 
@@ -429,12 +420,12 @@ public sealed partial class PortState : ObservableObject
     }
 
     [ObservableProperty]
-    private int? _selectedBay;
+    public partial int? SelectedBay { get; set; }
 
     partial void OnSelectedBayChanged(int? value) => NotifyStructureChanged();
 
     [ObservableProperty]
-    private int? _hoveredBay;
+    public partial int? HoveredBay { get; set; }
 
     partial void OnHoveredBayChanged(int? value) => NotifyHoverChanged();
 
@@ -605,7 +596,7 @@ public sealed partial class PortState : ObservableObject
 
     /// <summary>Bumped by the masthead's Needs-you figure; the queue scrolls into view and takes focus.</summary>
     [ObservableProperty]
-    private int _needsYouReveal;
+    public partial int NeedsYouReveal { get; set; }
 
     [RelayCommand]
     private void RevealNeedsYou()
@@ -682,13 +673,13 @@ public sealed partial class PortState : ObservableObject
     // ── Docking planner ───────────────────────────────────────────────────────
 
     [ObservableProperty]
-    private string? _dockSelection;
+    public partial string? DockSelection { get; set; } = Hook("CARGO_DOCK_SELECT");
 
     partial void OnDockSelectionChanged(string? value) => NotifyStructureChanged();
 
     /// <summary>Null means "follow the live clock".</summary>
     [ObservableProperty]
-    private double? _planHour;
+    public partial double? PlanHour { get; set; }
 
     partial void OnPlanHourChanged(double? value) => NotifyStructureChanged();
 
@@ -697,12 +688,12 @@ public sealed partial class PortState : ObservableObject
     // ── Containers ────────────────────────────────────────────────────────────
 
     [ObservableProperty]
-    private string _containerFilter = "All";
+    public partial string ContainerFilter { get; set; } = "All";
 
     partial void OnContainerFilterChanged(string value) => NotifyStructureChanged();
 
     [ObservableProperty]
-    private string _selectedContainerId = "MSCU4821937";
+    public partial string SelectedContainerId { get; set; } = "MSCU4821937";
 
     partial void OnSelectedContainerIdChanged(string value) => NotifyStructureChanged();
 
@@ -710,26 +701,26 @@ public sealed partial class PortState : ObservableObject
         PortData.Containers.First(c => c.Id == SelectedContainerId);
 
     [ObservableProperty]
-    private bool _scannerOpen;
+    public partial bool ScannerOpen { get; set; } = Hook("CARGO_SCANNER") == "1";
 
     [ObservableProperty]
-    private bool _xray;
+    public partial bool Xray { get; set; } = Hook("CARGO_XRAY") == "1";
 
     partial void OnXrayChanged(bool value) => NotifyStructureChanged();
 
     [ObservableProperty]
-    private double _scanRotationX = -18;
+    public partial double ScanRotationX { get; set; } = -18;
 
     [ObservableProperty]
-    private double _scanRotationY = -32;
+    public partial double ScanRotationY { get; set; } = -32;
 
     [ObservableProperty]
-    private double _scanZoom = 1;
+    public partial double ScanZoom { get; set; } = 1;
 
     // ── Yard ──────────────────────────────────────────────────────────────────
 
     [ObservableProperty]
-    private string? _selectedStack;
+    public partial string? SelectedStack { get; set; } = Hook("CARGO_STACK");
 
     partial void OnSelectedStackChanged(string? value) => NotifyStructureChanged();
 
@@ -766,7 +757,7 @@ public sealed partial class PortState : ObservableObject
     // ── Security ──────────────────────────────────────────────────────────────
 
     [ObservableProperty]
-    private string _securityTab = "zones";
+    public partial string SecurityTab { get; set; } = Hook("CARGO_SECURITY_TAB") is { Length: > 0 } tab ? tab : "zones";
 
     partial void OnSecurityTabChanged(string value)
     {
@@ -782,19 +773,19 @@ public sealed partial class PortState : ObservableObject
     };
 
     [ObservableProperty]
-    private int _selectedPerson;
+    public partial int SelectedPerson { get; set; }
 
     partial void OnSelectedPersonChanged(int value) => NotifyStructureChanged();
 
     // ── Fleet ─────────────────────────────────────────────────────────────────
 
     [ObservableProperty]
-    private string _fleetSelection = "al118";
+    public partial string FleetSelection { get; set; } = "al118";
 
     partial void OnFleetSelectionChanged(string value) => NotifyStructureChanged();
 
     [ObservableProperty]
-    private string _chatDraft = string.Empty;
+    public partial string ChatDraft { get; set; } = string.Empty;
 
     public IReadOnlyList<ChatLine> ThreadFor(string vesselId)
     {

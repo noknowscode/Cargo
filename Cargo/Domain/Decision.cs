@@ -38,9 +38,9 @@ public sealed partial class Decision : ObservableObject
 
     /// <summary>The live part of the sub-line: "in 17 min", "20 min late", "waiting 54 min".</summary>
     [ObservableProperty]
-    private string _when = string.Empty;
+    public partial string When { get; set; } = string.Empty;
 
     /// <summary>Whether <see cref="When"/> is overdue, which sets it in alert ink.</summary>
     [ObservableProperty]
-    private bool _isLate;
+    public partial bool IsLate { get; set; }
 }

@@ -16,15 +16,15 @@ public sealed partial class NextSixRow : ObservableObject
     public required System.Windows.Input.ICommand Hover { get; init; }
 
     /// <summary>The linked-hover tint (accent at 7%) while this vessel is lit anywhere.</summary>
-    [ObservableProperty] private Brush? _ground;
+    [ObservableProperty] public partial Brush? Ground { get; set; }
 
-    [ObservableProperty] private bool _happened;
-    [ObservableProperty] private string _countdown = string.Empty;
-    [ObservableProperty] private Brush? _countdownInk;
-    [ObservableProperty] private Brush? _dotFill;
-    [ObservableProperty] private Brush? _dotRing;
-    [ObservableProperty] private double _dotRingWidth;
-    [ObservableProperty] private bool _departing;
+    [ObservableProperty] public partial bool Happened { get; set; }
+    [ObservableProperty] public partial string Countdown { get; set; } = string.Empty;
+    [ObservableProperty] public partial Brush? CountdownInk { get; set; }
+    [ObservableProperty] public partial Brush? DotFill { get; set; }
+    [ObservableProperty] public partial Brush? DotRing { get; set; }
+    [ObservableProperty] public partial double DotRingWidth { get; set; }
+    [ObservableProperty] public partial bool Departing { get; set; }
 }
 
 /// <summary>
@@ -61,8 +61,8 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
     /// <summary>Movements to come, below the NOW row.</summary>
     public ObservableCollection<NextSixRow> Upcoming { get; } = new();
 
-    [ObservableProperty] private string _sub = string.Empty;
-    [ObservableProperty] private Visibility _emptyVisibility;
+    [ObservableProperty] public partial string Sub { get; set; } = string.Empty;
+    [ObservableProperty] public partial Visibility EmptyVisibility { get; set; }
 
     public void Refresh()
     {

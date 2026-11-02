@@ -34,21 +34,21 @@ public sealed partial class OverviewViewModel : ObservableObject
 
     /// <summary>"Today at North Quay": the shared-axis lanes, the tide lane and the hourly table.</summary>
     [ObservableProperty]
-    private TimelineViewModel? _timeline;
+    public partial TimelineViewModel? Timeline { get; set; }
 
     public string Subtitle => $"{PortData.Today} · Westhaven Port Authority · the harbour as it is right now.";
 
     /// <summary>The shift log, with the entries an open decision is about marked.</summary>
     [ObservableProperty]
-    private ActivityViewModel? _activity;
+    public partial ActivityViewModel? Activity { get; set; }
 
     /// <summary>Next 6 h: the movements around NOW, ships to scale.</summary>
     [ObservableProperty]
-    private NextSixHoursViewModel? _nextSix;
+    public partial NextSixHoursViewModel? NextSix { get; set; }
 
     /// <summary>Hours since midnight on the shift clock, for the charts' now markers.</summary>
     [ObservableProperty]
-    private double _nowHours;
+    public partial double NowHours { get; set; }
 
     /// <summary>The operator on shift, for the masthead's ID card.</summary>
     public DutyOperator Operator => PortData.Operator;
@@ -69,7 +69,7 @@ public sealed partial class OverviewViewModel : ObservableObject
 
     /// <summary>How much of the shift has passed, 0 to 1.</summary>
     [ObservableProperty]
-    private double _shiftProgress;
+    public partial double ShiftProgress { get; set; }
 
     private void Refresh()
     {

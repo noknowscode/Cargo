@@ -100,29 +100,29 @@ public sealed partial class SecurityViewModel : ObservableObject
     public ObservableCollection<PersonCard> People { get; } = new();
 
     [ObservableProperty]
-    private IReadOnlyList<CheckRow> _clearedChecks = [];
+    public partial IReadOnlyList<CheckRow> ClearedChecks { get; set; } = [];
 
     [ObservableProperty]
-    private IReadOnlyList<CheckRow> _heldChecks = [];
+    public partial IReadOnlyList<CheckRow> HeldChecks { get; set; } = [];
 
     [ObservableProperty]
-    private IReadOnlyList<RecordRow> _records = [];
+    public partial IReadOnlyList<RecordRow> Records { get; set; } = [];
 
     [ObservableProperty]
-    private IReadOnlyList<CheckRow> _inspectionLog = [];
+    public partial IReadOnlyList<CheckRow> InspectionLog { get; set; } = [];
 
     [ObservableProperty]
-    private IReadOnlyList<VehicleCard> _vehicles = [];
+    public partial IReadOnlyList<VehicleCard> Vehicles { get; set; } = [];
 
     [ObservableProperty]
-    private string _zoneHeading = string.Empty;
+    public partial string ZoneHeading { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _zoneCount = string.Empty;
+    public partial string ZoneCount { get; set; } = string.Empty;
 
     /// <summary>The zones the selected person's badge opens, for the access map.</summary>
     [ObservableProperty]
-    private IReadOnlyList<int> _allowedZones = [];
+    public partial IReadOnlyList<int> AllowedZones { get; set; } = [];
 
     [RelayCommand]
     private void SelectPerson(int index) => State.SelectedPerson = index;
@@ -132,11 +132,11 @@ public sealed partial class SecurityViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AssignInspectorCommand))]
-    private bool _inspectorAssigned;
+    public partial bool InspectorAssigned { get; set; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RequestReweighCommand))]
-    private bool _reweighRequested;
+    public partial bool ReweighRequested { get; set; }
 
     public string AssignLabel => InspectorAssigned ? "Inspector assigned" : "Assign inspector";
 

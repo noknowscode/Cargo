@@ -19,29 +19,29 @@ public sealed partial class NavItem : ObservableObject
     public string Route => $"./{Id}";
 
     [ObservableProperty]
-    private string _tooltip = string.Empty;
+    public partial string Tooltip { get; set; } = string.Empty;
 
     /// <summary>The tab's spoken name: the label, plus ", needs you" when the dot shows.</summary>
     [ObservableProperty]
-    private string _automationName = string.Empty;
+    public partial string AutomationName { get; set; } = string.Empty;
 
     /// <summary>Muted, or ink on the section you are on (the tab's hover inks it too).</summary>
     [ObservableProperty]
-    private Brush? _labelForeground;
+    public partial Brush? LabelForeground { get; set; }
 
     [ObservableProperty]
-    private Microsoft.UI.Xaml.Visibility _needsVisibility;
+    public partial Microsoft.UI.Xaml.Visibility NeedsVisibility { get; set; }
 
     [ObservableProperty]
-    private double _underlineOpacity;
+    public partial double UnderlineOpacity { get; set; }
 
     /// <summary>The semibold label, on the section you are on.</summary>
     [ObservableProperty]
-    private Microsoft.UI.Xaml.Visibility _currentVisibility;
+    public partial Microsoft.UI.Xaml.Visibility CurrentVisibility { get; set; }
 
     /// <summary>The medium-weight label, on the other sections.</summary>
     [ObservableProperty]
-    private Microsoft.UI.Xaml.Visibility _otherVisibility;
+    public partial Microsoft.UI.Xaml.Visibility OtherVisibility { get; set; }
 }
 
 /// <summary>One segment of the harbour layer switcher; built once, recoloured in place.</summary>
@@ -53,10 +53,10 @@ public sealed partial class LayerItem : ObservableObject
     public required ICommand Command { get; init; }
 
     [ObservableProperty]
-    private Brush? _foreground;
+    public partial Brush? Foreground { get; set; }
 
     [ObservableProperty]
-    private Brush? _iconForeground;
+    public partial Brush? IconForeground { get; set; }
 }
 
 public sealed class Fact

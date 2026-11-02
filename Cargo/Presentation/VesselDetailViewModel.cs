@@ -15,17 +15,17 @@ public sealed partial class VesselDetailViewModel : ObservableObject
         Refresh();
     }
 
-    [ObservableProperty] private string _name = string.Empty;
-    [ObservableProperty] private string _where = string.Empty;
-    [ObservableProperty] private string _stateLabel = string.Empty;
-    [ObservableProperty] private string _big = string.Empty;
-    [ObservableProperty] private string _bigSub = string.Empty;
-    [ObservableProperty] private string _note = string.Empty;
-    [ObservableProperty] private double _cargoPercent;
-    [ObservableProperty] private string _cargoLabel = string.Empty;
-    [ObservableProperty] private Visibility _cargoVisibility;
-    [ObservableProperty] private Brush? _accent;
-    [ObservableProperty] private IReadOnlyList<Fact> _facts = [];
+    [ObservableProperty] public partial string Name { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Where { get; set; } = string.Empty;
+    [ObservableProperty] public partial string StateLabel { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Big { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BigSub { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Note { get; set; } = string.Empty;
+    [ObservableProperty] public partial double CargoPercent { get; set; }
+    [ObservableProperty] public partial string CargoLabel { get; set; } = string.Empty;
+    [ObservableProperty] public partial Visibility CargoVisibility { get; set; }
+    [ObservableProperty] public partial Brush? Accent { get; set; }
+    [ObservableProperty] public partial IReadOnlyList<Fact> Facts { get; set; } = [];
 
     [RelayCommand]
     private void ShowOnMap()

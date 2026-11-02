@@ -24,16 +24,16 @@ public sealed partial class CargoViewModel : ObservableObject
     public PortState State { get; }
 
     [ObservableProperty]
-    private ContainersViewModel? _containers;
+    public partial ContainersViewModel? Containers { get; set; }
 
     [ObservableProperty]
-    private YardViewModel? _yard;
+    public partial YardViewModel? Yard { get; set; }
 
     [ObservableProperty]
-    private string _occupancy = string.Empty;
+    public partial string Occupancy { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string _moves = string.Empty;
+    public partial string Moves { get; set; } = string.Empty;
 
     private void RefreshMasthead()
     {
