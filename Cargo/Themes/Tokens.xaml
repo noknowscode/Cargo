@@ -45,9 +45,10 @@
       <Color x:Key="SurfaceSunkAltColor">#FFE9EAE6</Color>
       <Color x:Key="LandColor">#FFE6E7E2</Color>
       <Color x:Key="RoadColor">#FFDDD7CA</Color>
-      <!-- Secondary text. Light: muted 5.3:1, faint 4.4:1 on Paper. Dark: muted 7.3:1, faint 5.6:1 on Surface -->
+      <!-- Secondary text. Light: muted 5.3:1, faint 4.9:1 on Paper (4.8 on SurfaceSunk). Dark: muted 7.3:1, faint 5.6:1 on Surface.
+           Faint was #6B7377 (4.35:1 on Paper) until B2 -->
       <Color x:Key="TextMutedColor">#FF5E6569</Color>
-      <Color x:Key="TextFaintColor">#FF6B7377</Color>
+      <Color x:Key="TextFaintColor">#FF636B6F</Color>
       <!-- Secondary text on an inverse (Ink) chip: the harbour's arrival tag -->
       <Color x:Key="TextInverseMutedColor">#FFC9CED1</Color>
 
