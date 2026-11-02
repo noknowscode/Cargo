@@ -22,7 +22,7 @@
         <TextBlock Text="{x:Bind ViewModel.State.SecurityTitle, Mode=OneWay}" Style="{StaticResource PageTitleText}" />
       </StackPanel>
       <!-- xaml-lint: allow card - segmented tab strip; the Simple theme ships no segmented TabBar style -->
-      <Border Grid.Column="1" Background="{StaticResource SurfaceSunkAltInvariantBrush}" CornerRadius="12" Padding="4"
+      <Border Grid.Column="1" Background="{ThemeResource SurfaceSunkAltBrush}" CornerRadius="12" Padding="4"
               VerticalAlignment="Bottom">
         <ItemsControl ItemsSource="{x:Bind ViewModel.Tabs, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
@@ -55,7 +55,7 @@
 
       <StackPanel Spacing="18">
         <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Padding="0"
-                                CornerRadius="{StaticResource RadiusCard}" Background="{StaticResource LandInvariantBrush}">
+                                CornerRadius="{StaticResource RadiusCard}" Background="{ThemeResource LandBrush}">
           <controls:SecurityZoneMap />
         </utu:CardContentControl>
 
@@ -65,15 +65,15 @@
               <TextBlock Text="Security timeline" Style="{StaticResource CardTitleText}" />
               <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal" Spacing="5">
-                  <Ellipse Width="7" Height="7" Fill="{StaticResource AccentInvariantBrush}" VerticalAlignment="Center" />
+                  <Ellipse Width="7" Height="7" Fill="{ThemeResource AccentBrush}" VerticalAlignment="Center" />
                   <TextBlock Text="clearance" Style="{StaticResource CaptionText}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="5">
-                  <Ellipse Width="7" Height="7" Fill="{StaticResource OrangeInvariantBrush}" VerticalAlignment="Center" />
+                  <Ellipse Width="7" Height="7" Fill="{ThemeResource OrangeBrush}" VerticalAlignment="Center" />
                   <TextBlock Text="hold" Style="{StaticResource CaptionText}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="5">
-                  <Ellipse Width="7" Height="7" Fill="{StaticResource RestrictedInvariantBrush}" VerticalAlignment="Center" />
+                  <Ellipse Width="7" Height="7" Fill="{ThemeResource RestrictedBrush}" VerticalAlignment="Center" />
                   <TextBlock Text="incident" Style="{StaticResource CaptionText}" />
                 </StackPanel>
               </StackPanel>
@@ -89,10 +89,10 @@
             <Grid>
               <TextBlock Text="MSCU 482193 7" Style="{StaticResource TypeMonoMedium14}" />
               <!-- xaml-lint: allow card - a status pill, not a card; half-height radius (99 draws an oval on Skia) -->
-              <Border Background="{StaticResource SurfaceSunkInvariantBrush}" CornerRadius="10" Padding="8,3"
+              <Border Background="{ThemeResource SurfaceSunkBrush}" CornerRadius="10" Padding="8,3"
                       HorizontalAlignment="Right">
                 <TextBlock Text="Cleared" Style="{StaticResource TypeMedium11}"
-                           Foreground="{StaticResource AccentInvariantBrush}" />
+                           Foreground="{ThemeResource AccentBrush}" />
               </Border>
             </Grid>
             <ItemsControl ItemsSource="{x:Bind ViewModel.ClearedChecks, Mode=OneWay}">
@@ -112,15 +112,15 @@
           </StackPanel>
         </utu:CardContentControl>
 
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="20,18" BorderBrush="{StaticResource OrangeInvariantBrush}">
+        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="20,18" BorderBrush="{ThemeResource OrangeBrush}">
           <StackPanel Spacing="8">
             <Grid>
               <TextBlock Text="CMAU 918204 4" Style="{StaticResource TypeMonoMedium14}" />
               <!-- xaml-lint: allow card - a status pill, not a card; half-height radius (99 draws an oval on Skia) -->
-              <Border Background="{StaticResource SurfaceSunkInvariantBrush}" CornerRadius="10" Padding="8,3"
+              <Border Background="{ThemeResource SurfaceSunkBrush}" CornerRadius="10" Padding="8,3"
                       HorizontalAlignment="Right">
                 <TextBlock Text="Hold" Style="{StaticResource TypeMedium11}"
-                           Foreground="{StaticResource OrangeInkInvariantBrush}" />
+                           Foreground="{ThemeResource OrangeInkBrush}" />
               </Border>
             </Grid>
             <ItemsControl ItemsSource="{x:Bind ViewModel.HeldChecks, Mode=OneWay}">
@@ -159,7 +159,7 @@
                     </Grid.ColumnDefinitions>
                     <Ellipse Width="8" Height="8" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
                     <TextBlock Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyText}" />
-                    <TextBlock Grid.Column="2" Text="{x:Bind Count}" Style="{StaticResource TypeMonoMedium12}" Foreground="{StaticResource TextMutedInvariantBrush}" />
+                    <TextBlock Grid.Column="2" Text="{x:Bind Count}" Style="{StaticResource TypeMonoMedium12}" Foreground="{ThemeResource TextMutedBrush}" />
                   </Grid>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
@@ -177,7 +177,7 @@
       </Grid.ColumnDefinitions>
 
       <StackPanel Spacing="14">
-        <TextBlock Text="Personnel" Style="{StaticResource PanelTitleText}" Foreground="{StaticResource TextMutedInvariantBrush}" />
+        <TextBlock Text="Personnel" Style="{StaticResource PanelTitleText}" Foreground="{ThemeResource TextMutedBrush}" />
         <ItemsControl ItemsSource="{x:Bind ViewModel.People, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate><controls:TileGridPanel MinTileWidth="230" Gap="12" /></ItemsPanelTemplate>
@@ -194,14 +194,14 @@
                     <!-- xaml-lint: allow card - avatar swatch -->
                     <Border Width="46" Height="46" CornerRadius="12" Background="{x:Bind Avatar}">
                       <TextBlock Text="{x:Bind Initials}" Style="{StaticResource TypeStrong14}"
-                                 Foreground="{StaticResource SurfaceInvariantBrush}"
+                                 Foreground="{ThemeResource SurfaceBrush}"
                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <StackPanel Grid.Column="1" Spacing="2">
                       <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong14}" />
                       <TextBlock Text="{x:Bind Role}" Style="{StaticResource CaptionText}" />
                       <TextBlock Text="{x:Bind Credential}" Style="{StaticResource TypeMonoMedium11}"
-                                 Foreground="{StaticResource AccentInvariantBrush}" Margin="0,4,0,0" />
+                                 Foreground="{ThemeResource AccentBrush}" Margin="0,4,0,0" />
                     </StackPanel>
                   </Grid>
                 </utu:CardContentControl>
@@ -224,7 +224,7 @@
 
       <StackPanel Grid.Column="1" Spacing="14">
         <TextBlock Text="Vehicles at gates" Style="{StaticResource PanelTitleText}"
-                   Foreground="{StaticResource TextMutedInvariantBrush}" />
+                   Foreground="{ThemeResource TextMutedBrush}" />
         <ItemsControl ItemsSource="{x:Bind ViewModel.Vehicles, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate><StackPanel Spacing="12" /></ItemsPanelTemplate>
@@ -279,10 +279,10 @@
       </utu:CardContentControl>
 
       <StackPanel Grid.Column="1" Spacing="14">
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="20,18" BorderBrush="{StaticResource OrangeInvariantBrush}">
+        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="20,18" BorderBrush="{ThemeResource OrangeBrush}">
           <StackPanel Spacing="6">
             <TextBlock Text="⚠ Weight variance" Style="{StaticResource TypeStrong14}"
-                       Foreground="{StaticResource OrangeInkInvariantBrush}" />
+                       Foreground="{ThemeResource OrangeInkBrush}" />
             <TextBlock Style="{StaticResource BodyText}" TextWrapping="Wrap" LineHeight="19"
                        Text="Declared 24,120 kg · measured 25,920 kg (+1.8 t, +7.5%). Exceeds the 5% tolerance — physical inspection scheduled before customs release." />
           </StackPanel>
@@ -303,7 +303,7 @@
                       <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{x:Bind Time}" Style="{StaticResource TypeMonoMedium12}"
-                               Foreground="{StaticResource TextFaintInvariantBrush}" />
+                               Foreground="{ThemeResource TextFaintBrush}" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="7">
                       <TextBlock Text="{x:Bind Mark}" Style="{StaticResource TypeStrong13}"
                                  Foreground="{x:Bind Tone}" />

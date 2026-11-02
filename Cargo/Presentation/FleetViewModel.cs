@@ -150,12 +150,12 @@ public sealed partial class FleetViewModel : ObservableObject
     /// <summary>Status colours are fills; the text beside them takes the darker ink variant.</summary>
     private static string InkFor(string tone) => tone switch
     {
-        var t when t.StartsWith("Orange") => "OrangeInkInvariantBrush",
-        var t when t.StartsWith("Amber") => "AmberInkInvariantBrush",
-        var t when t.StartsWith("SeaGreen") => "SeaGreenInkInvariantBrush",
-        var t when t.StartsWith("Accent") => "AccentDarkInvariantBrush",
-        var t when t.StartsWith("Alert") => "AlertInkInvariantBrush",
-        _ => "InkInvariantBrush"
+        var t when t.StartsWith("Orange") => "OrangeInkBrush",
+        var t when t.StartsWith("Amber") => "AmberInkBrush",
+        var t when t.StartsWith("SeaGreen") => "SeaGreenInkBrush",
+        var t when t.StartsWith("Accent") => "AccentDarkBrush",
+        var t when t.StartsWith("Alert") => "AlertInkBrush",
+        _ => "InkBrush"
     };
 
     /// <summary>
@@ -189,20 +189,20 @@ public sealed partial class FleetViewModel : ObservableObject
     {
         Legend = new[]
         {
-            new LegendItem { Label = "On time", Swatch = Tokens.Brush("SeaGreenInvariantBrush") },
-            new LegendItem { Label = "Running late", Swatch = Tokens.Brush("OrangeInvariantBrush") },
-            new LegendItem { Label = "Lock", Swatch = Tokens.Brush("InkInvariantBrush") },
-            new LegendItem { Label = "Warning", Swatch = Tokens.Brush("AlertInvariantBrush") }
+            new LegendItem { Label = "On time", Swatch = Tokens.Brush("SeaGreenBrush") },
+            new LegendItem { Label = "Running late", Swatch = Tokens.Brush("OrangeBrush") },
+            new LegendItem { Label = "Lock", Swatch = Tokens.Brush("InkBrush") },
+            new LegendItem { Label = "Warning", Swatch = Tokens.Brush("AlertBrush") }
         };
 
         Lockings = PortData.Lockings.Select(l =>
         {
             var (tone, ink) = l.State switch
             {
-                "Done" => ("TextFaintInvariantBrush", "TextMutedInvariantBrush"),
-                "Queued" or "At risk" => ("OrangeInvariantBrush", "OrangeInkInvariantBrush"),
-                "After maintenance" => ("AlertInvariantBrush", "AlertInvariantBrush"),
-                _ => ("SeaGreenInvariantBrush", "SeaGreenInkInvariantBrush")
+                "Done" => ("TextFaintBrush", "TextMutedBrush"),
+                "Queued" or "At risk" => ("OrangeBrush", "OrangeInkBrush"),
+                "After maintenance" => ("AlertBrush", "AlertBrush"),
+                _ => ("SeaGreenBrush", "SeaGreenInkBrush")
             };
 
             return new LockingRow
@@ -256,9 +256,9 @@ public sealed partial class FleetViewModel : ObservableObject
                 Detail = $"Order {vessel.Order} · km {vessel.Km:0.0} · {vessel.Speed} kn",
                 Eta = $"ETA {PortState.Format(vessel.Eta + vessel.SlipMinutes / 60d)}",
                 Slip = late ? $"+{vessel.SlipMinutes} min" : "On time",
-                Tone = Tokens.Brush(late ? "OrangeInvariantBrush" : "SeaGreenInvariantBrush"),
-                SlipInk = Tokens.Brush(late ? "OrangeInkInvariantBrush" : "SeaGreenInkInvariantBrush"),
-                Background = current ? Tokens.Brush("SurfaceSunkAltInvariantBrush") : Tokens.Transparent,
+                Tone = Tokens.Brush(late ? "OrangeBrush" : "SeaGreenBrush"),
+                SlipInk = Tokens.Brush(late ? "OrangeInkBrush" : "SeaGreenInkBrush"),
+                Background = current ? Tokens.Brush("SurfaceSunkAltBrush") : Tokens.Transparent,
                 Select = SelectCommand
             });
         }
@@ -268,8 +268,8 @@ public sealed partial class FleetViewModel : ObservableObject
         CrewSubtitle = $"{selected.Master} · VHF 12 · " +
                        (selected.Direction > 0 ? "upbound · " : "downbound · ") + selected.Next;
         SlipLabel = isLate ? $"+{selected.SlipMinutes} min" : "On time";
-        SlipTone = Tokens.Brush(isLate ? "OrangeInvariantBrush" : "SeaGreenInvariantBrush");
-        SlipInk = Tokens.Brush(isLate ? "OrangeInkInvariantBrush" : "SeaGreenInkInvariantBrush");
+        SlipTone = Tokens.Brush(isLate ? "OrangeBrush" : "SeaGreenBrush");
+        SlipInk = Tokens.Brush(isLate ? "OrangeInkBrush" : "SeaGreenInkBrush");
 
         Thread.Clear();
         foreach (var line in State.ThreadFor(selected.Id))
@@ -280,8 +280,8 @@ public sealed partial class FleetViewModel : ObservableObject
                 Text = line.Text,
                 Meta = $"{(fromCrew ? selected.Master.Split(' ').Last() : "Dispatch")} · {PortState.Format(line.Hour)}",
                 Align = fromCrew ? HorizontalAlignment.Left : HorizontalAlignment.Right,
-                Background = fromCrew ? Tokens.Brush("SurfaceSunkAltInvariantBrush") : Tokens.Brush("InkInvariantBrush"),
-                Foreground = fromCrew ? Tokens.Brush("InkInvariantBrush") : Tokens.Brush("PaperInvariantBrush")
+                Background = fromCrew ? Tokens.Brush("SurfaceSunkAltBrush") : Tokens.Brush("InkBrush"),
+                Foreground = fromCrew ? Tokens.Brush("InkBrush") : Tokens.Brush("PaperBrush")
             });
         }
 

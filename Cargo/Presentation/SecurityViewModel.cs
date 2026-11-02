@@ -161,8 +161,8 @@ public sealed partial class SecurityViewModel : ObservableObject
             {
                 Label = label,
                 Route = $"./{id}",
-                Background = current ? Tokens.Brush("SurfaceInvariantBrush") : Tokens.Transparent,
-                Foreground = current ? Tokens.Brush("InkInvariantBrush") : Tokens.Brush("TextMutedInvariantBrush")
+                Background = current ? Tokens.Brush("SurfaceBrush") : Tokens.Transparent,
+                Foreground = current ? Tokens.Brush("InkBrush") : Tokens.Brush("TextMutedBrush")
             });
         }
     }
@@ -181,7 +181,7 @@ public sealed partial class SecurityViewModel : ObservableObject
                 Credential = person.Credential,
                 Initials = string.Concat(person.Name.Split(' ').Select(part => part[0])),
                 Avatar = Tokens.Brush(person.AvatarToken),
-                Border = State.SelectedPerson == i ? Tokens.Brush("InkInvariantBrush") : Tokens.Brush("HairlineInvariantBrush"),
+                Border = State.SelectedPerson == i ? Tokens.Brush("InkBrush") : Tokens.Brush("HairlineBrush"),
                 Select = SelectPersonCommand
             });
         }
@@ -202,14 +202,14 @@ public sealed partial class SecurityViewModel : ObservableObject
             Mark = "✓",
             Label = label,
             Time = string.Empty,
-            Tone = Tokens.Brush("AccentInvariantBrush")
+            Tone = Tokens.Brush("AccentBrush")
         }).ToList();
 
         HeldChecks = new[]
         {
-            ("✓", "Seal verified", "AccentInvariantBrush"),
-            ("✓", "Manifest matched", "AccentInvariantBrush"),
-            ("⚠", "Weight variance +1.8 t · manual inspection required", "OrangeInvariantBrush")
+            ("✓", "Seal verified", "AccentBrush"),
+            ("✓", "Manifest matched", "AccentBrush"),
+            ("⚠", "Weight variance +1.8 t · manual inspection required", "OrangeBrush")
         }.Select(entry => new CheckRow
         {
             Mark = entry.Item1,
@@ -228,7 +228,7 @@ public sealed partial class SecurityViewModel : ObservableObject
 
         Vehicles = PortData.Vehicles.Select(v => new VehicleCard
         {
-            Tint = Tokens.Color(v.TintToken),
+            Tint = Tokens.Paint(v.TintToken),
             Facts = new[]
             {
                 new Fact { Key = "Truck", Value = v.Id },

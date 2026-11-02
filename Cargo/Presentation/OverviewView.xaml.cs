@@ -20,10 +20,10 @@ public sealed partial class OverviewView : Page
     // The timeline table's rows: future hours on the ahead-of-now shade, the NOW row between two ink rules
 
     public static Microsoft.UI.Xaml.Media.Brush RowGround(bool future) =>
-        future ? (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["AheadShadeInvariantBrush"] : Tokens.Transparent;
+        future ? Tokens.Brush("AheadShadeBrush") : Tokens.Transparent;
 
     public static Microsoft.UI.Xaml.Media.Brush RowRule(bool now) =>
-        now ? Tokens.Brush("InkInvariantBrush") : (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["HairlineInvariantBrush"];
+        now ? Tokens.Brush("InkBrush") : Tokens.Brush("HairlineBrush");
 
     public static Thickness RowRuleWidth(bool now) => now ? new Thickness(0, 1.25, 0, 1.25) : new Thickness(0, 1, 0, 0);
 }

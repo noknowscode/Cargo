@@ -22,9 +22,9 @@
 
       <!-- Needs: the alert square the app uses for every needs-you mark. Done: a check. -->
       <Grid VerticalAlignment="Center" AutomationProperties.AccessibilityView="Raw">
-        <Rectangle Width="10" Height="10" RadiusX="2" RadiusY="2" Fill="{StaticResource AlertInvariantBrush}"
+        <Rectangle Width="10" Height="10" RadiusX="2" RadiusY="2" Fill="{ThemeResource AlertBrush}"
                    Visibility="{x:Bind ViewModel.NeedsMark, Mode=OneWay}" />
-        <FontIcon Glyph="&#xE73E;" FontSize="11" Foreground="{StaticResource InkInvariantBrush}"
+        <FontIcon Glyph="&#xE73E;" FontSize="11" Foreground="{ThemeResource InkBrush}"
                   Visibility="{x:Bind ViewModel.DoneMark, Mode=OneWay}" />
       </Grid>
 
@@ -45,7 +45,7 @@
                 AutomationProperties.Name="{x:Bind ViewModel.ConfirmLabel, Mode=OneWay}">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <ProgressRing Width="12" Height="12" MinWidth="12" MinHeight="12" IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
-                          Foreground="{StaticResource OnAccentInvariantBrush}" />
+                          Foreground="{ThemeResource OnAccentBrush}" />
             <TextBlock Text="{x:Bind ViewModel.ConfirmLabel, Mode=OneWay}" Style="{StaticResource ActionLabelText}" />
           </StackPanel>
         </Button>

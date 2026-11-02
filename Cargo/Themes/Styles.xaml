@@ -115,38 +115,38 @@
     <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
     <Setter Property="FontSize" Value="40" />
     <Setter Property="LineHeight" Value="44" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="PageTitleText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
     <Setter Property="FontSize" Value="40" />
     <Setter Property="LineHeight" Value="44" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="EyebrowText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource MonoMediumFont}" />
     <Setter Property="FontSize" Value="11" />
-    <Setter Property="Foreground" Value="{StaticResource AccentInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource AccentBrush}" />
   </Style>
 
   <Style x:Key="CardTitleText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
     <Setter Property="FontSize" Value="15" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="PanelTitleText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
     <Setter Property="FontSize" Value="14" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="BodyText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
     <Setter Property="FontSize" Value="13" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="BodyStrongText" TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
@@ -156,33 +156,33 @@
   <Style x:Key="CaptionText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
     <Setter Property="FontSize" Value="12" />
-    <Setter Property="Foreground" Value="{StaticResource TextMutedInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
   </Style>
 
   <!-- Role styles at the ramp's in-between steps: the role's colour on a Type* size -->
   <Style x:Key="SubtitleText" TargetType="TextBlock" BasedOn="{StaticResource TypeBody13}">
-    <Setter Property="Foreground" Value="{StaticResource TextMutedInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
   </Style>
   <Style x:Key="BodySmallText" TargetType="TextBlock" BasedOn="{StaticResource TypeBody12}">
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
   <Style x:Key="BodyLargeText" TargetType="TextBlock" BasedOn="{StaticResource TypeBody14}">
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
   <Style x:Key="BodyStrongSmallText" TargetType="TextBlock" BasedOn="{StaticResource TypeMedium12}">
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
   <Style x:Key="BodyStrongLargeText" TargetType="TextBlock" BasedOn="{StaticResource TypeMedium14}">
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
   <Style x:Key="TitleText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong15}">
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="MicroText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
     <Setter Property="FontSize" Value="11" />
-    <Setter Property="Foreground" Value="{StaticResource TextFaintInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextFaintBrush}" />
   </Style>
 
   <!-- Headline figures: Archivo 600 (the design keeps Bricolage for the wordmark and headings) -->
@@ -190,34 +190,34 @@
     <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
     <Setter Property="FontSize" Value="30" />
     <Setter Property="LineHeight" Value="30" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <!-- Status lists (Berths): a caps state line, the name, a muted meta line, a mono time -->
   <Style x:Key="ListStateText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
     <Setter Property="FontSize" Value="11" />
-    <Setter Property="Foreground" Value="{StaticResource TextMutedInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
   </Style>
 
   <Style x:Key="ListNameText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
     <Setter Property="FontSize" Value="15" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
     <Setter Property="TextTrimming" Value="CharacterEllipsis" />
   </Style>
 
   <Style x:Key="ListMetaText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
     <Setter Property="FontSize" Value="13" />
-    <Setter Property="Foreground" Value="{StaticResource TextMutedInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
     <Setter Property="TextTrimming" Value="CharacterEllipsis" />
   </Style>
 
   <Style x:Key="ListTimeFigure" TargetType="controls:RollingText">
     <Setter Property="FontFamily" Value="{StaticResource MonoMediumFont}" />
     <Setter Property="FontSize" Value="13" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <!-- The berth chip: the list's version of the harbour's painted number -->
@@ -232,25 +232,25 @@
   <Style x:Key="DetailFigure" TargetType="controls:RollingText">
     <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
     <Setter Property="FontSize" Value="30" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="LeadText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
     <Setter Property="FontSize" Value="14" />
-    <Setter Property="Foreground" Value="{StaticResource TextMutedInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
   </Style>
 
   <Style x:Key="FactKeyText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
     <Setter Property="FontSize" Value="12" />
-    <Setter Property="Foreground" Value="{StaticResource TextMutedInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
   </Style>
 
   <Style x:Key="FactValueText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource MonoMediumFont}" />
     <Setter Property="FontSize" Value="15" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="ActionLabelText" TargetType="TextBlock">
@@ -262,51 +262,51 @@
   <Style x:Key="HeaderClockFigure" TargetType="controls:RollingText">
     <Setter Property="FontFamily" Value="{StaticResource MonoMediumFont}" />
     <Setter Property="FontSize" Value="14" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="HeaderClockText" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium14}">
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <!-- The header wordmark: the design's one size off the ramp -->
   <Style x:Key="WordmarkText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
     <Setter Property="FontSize" Value="19" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <!-- Masthead: the date under the greeting and the duty operator's ID card -->
   <Style x:Key="DateLineText" TargetType="TextBlock" BasedOn="{StaticResource TypeBody15}">
-    <Setter Property="Foreground" Value="{StaticResource TextMutedInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
   </Style>
 
   <Style x:Key="CardNameText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong14}">
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="BadgeMonoText" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium11}">
-    <Setter Property="Foreground" Value="{StaticResource TextMutedInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
   </Style>
 
   <Style x:Key="CardInitialsText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong13}">
-    <Setter Property="Foreground" Value="{StaticResource OnAccentInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource OnAccentBrush}" />
     <Setter Property="HorizontalAlignment" Value="Center" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
   <!-- Panel headings on Overview (Today at North Quay, Needs you, Next 6 h, Activity): 18/600 -->
   <Style x:Key="PanelHeadingText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong18}">
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <!-- A count badge: mono on alert ink (SemiBold in the design; Medium until the SemiBold face ships) -->
   <Style x:Key="CountBadgeText" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium13}">
-    <Setter Property="Foreground" Value="{StaticResource OnAccentInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource OnAccentBrush}" />
   </Style>
 
   <Style x:Key="AvatarInitialsText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong12}">
-    <Setter Property="Foreground" Value="{StaticResource OnAccentInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource OnAccentBrush}" />
     <Setter Property="HorizontalAlignment" Value="Center" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
@@ -317,47 +317,32 @@
        OutlinedPanel: hairline only, for cards inside a panel or a row.
        Both stretch like the old Card did (the Toolkit base does not).
        These panels are static, so pointer-over keeps the resting fill:
-       a hover tint on a panel reads as "this is clickable".
+       a hover tint on a panel reads as "this is clickable". The fills are
+       the Toolkit's lightweight keys, set per theme in Tokens.xaml.
        ============================================================ -->
   <Style x:Key="PanelCard" TargetType="utu:CardContentControl" BasedOn="{StaticResource ElevatedCardContentControlStyle}">
     <Setter Property="Padding" Value="20,18" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusCard}" />
     <Setter Property="BorderThickness" Value="1" />
     <!-- The Simple template reads BorderBrush from the control; the ElevatedCardContentBorderBrush key had no effect -->
-    <Setter Property="BorderBrush" Value="{StaticResource HairlineInvariantBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource HairlineBrush}" />
     <Setter Property="HorizontalAlignment" Value="Stretch" />
     <Setter Property="VerticalAlignment" Value="Stretch" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     <Setter Property="VerticalContentAlignment" Value="Stretch" />
     <Setter Property="IsTabStop" Value="False" />
-    <Setter Property="utu:ResourceExtensions.Resources">
-      <Setter.Value>
-        <ResourceDictionary>
-          <StaticResource x:Key="ElevatedCardContentBackground" ResourceKey="SurfaceInvariantBrush" />
-          <StaticResource x:Key="CardContentBackgroundPointerOver" ResourceKey="SurfaceInvariantBrush" />
-        </ResourceDictionary>
-      </Setter.Value>
-    </Setter>
   </Style>
 
   <Style x:Key="OutlinedPanel" TargetType="utu:CardContentControl" BasedOn="{StaticResource OutlinedCardContentControlStyle}">
     <Setter Property="Padding" Value="16,14" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusPanel}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="BorderBrush" Value="{StaticResource HairlineInvariantBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource HairlineBrush}" />
     <Setter Property="HorizontalAlignment" Value="Stretch" />
     <Setter Property="VerticalAlignment" Value="Stretch" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     <Setter Property="VerticalContentAlignment" Value="Stretch" />
     <Setter Property="IsTabStop" Value="False" />
-    <Setter Property="utu:ResourceExtensions.Resources">
-      <Setter.Value>
-        <ResourceDictionary>
-          <StaticResource x:Key="OutlinedCardContentBackground" ResourceKey="SurfaceInvariantBrush" />
-          <StaticResource x:Key="CardContentBackgroundPointerOver" ResourceKey="SurfaceInvariantBrush" />
-        </ResourceDictionary>
-      </Setter.Value>
-    </Setter>
   </Style>
 
   <!-- ============================================================
@@ -373,7 +358,7 @@
   </Style>
 
   <Style x:Key="Masthead" TargetType="Grid">
-    <Setter Property="BorderBrush" Value="{StaticResource HairlineStrongInvariantBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource HairlineStrongBrush}" />
     <Setter Property="BorderThickness" Value="0,0,0,1" />
     <Setter Property="Padding" Value="0,0,0,18" />
     <Setter Property="ColumnSpacing" Value="24" />
@@ -387,7 +372,7 @@
 
   <!-- Each part starts under a 2px ink rule, like the Overview's panels -->
   <Style x:Key="SectionRule" TargetType="Border">
-    <Setter Property="BorderBrush" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource InkBrush}" />
     <Setter Property="BorderThickness" Value="0,2,0,0" />
     <Setter Property="Padding" Value="0,18,0,0" />
   </Style>
@@ -395,7 +380,7 @@
   <Style x:Key="SectionHeadText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
     <Setter Property="FontSize" Value="24" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
   <Style x:Key="PageSubtitleText" TargetType="TextBlock" BasedOn="{StaticResource CaptionText}">
@@ -429,7 +414,7 @@
 
   <!-- Flat panel: the overview uses a 2px ink rule instead of a box -->
   <Style x:Key="RuledPanel" TargetType="Border">
-    <Setter Property="BorderBrush" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource InkBrush}" />
     <Setter Property="BorderThickness" Value="0,2,0,0" />
     <Setter Property="Padding" Value="0,18,22,14" />
   </Style>
@@ -439,8 +424,8 @@
        ============================================================ -->
 
   <Style x:Key="PrimaryButton" TargetType="Button">
-    <Setter Property="Background" Value="{StaticResource InkInvariantBrush}" />
-    <Setter Property="Foreground" Value="{StaticResource PaperInvariantBrush}" />
+    <Setter Property="Background" Value="{ThemeResource InkBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource PaperBrush}" />
     <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
     <Setter Property="FontSize" Value="13" />
     <Setter Property="Padding" Value="14,10" />
@@ -491,16 +476,16 @@
   </Style>
 
   <Style x:Key="GhostButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-    <Setter Property="Background" Value="{StaticResource SurfaceSunkInvariantBrush}" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource HairlineStrongInvariantBrush}" />
+    <Setter Property="Background" Value="{ThemeResource SurfaceSunkBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource HairlineStrongBrush}" />
     <Setter Property="BorderThickness" Value="1" />
   </Style>
 
   <!-- The primary action on a light ground: accent with white text -->
   <Style x:Key="PrimaryActionButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-    <Setter Property="Background" Value="{StaticResource AccentInvariantBrush}" />
-    <Setter Property="Foreground" Value="{StaticResource OnAccentInvariantBrush}" />
+    <Setter Property="Background" Value="{ThemeResource AccentBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource OnAccentBrush}" />
   </Style>
 
   <!-- The primary action on a dark ground (the scanner stage) -->
@@ -517,7 +502,7 @@
     <Setter Property="Padding" Value="0" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     <Setter Property="VerticalContentAlignment" Value="Stretch" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
     <Setter Property="UseSystemFocusVisuals" Value="True" />
     <Setter Property="Template">
       <Setter.Value>
@@ -560,14 +545,14 @@
     <Setter Property="Height" Value="56" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     <Setter Property="VerticalContentAlignment" Value="Stretch" />
-    <Setter Property="Foreground" Value="{StaticResource TextMutedInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
     <Setter Property="UseSystemFocusVisuals" Value="True" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
           <Grid Background="{TemplateBinding Background}">
             <Rectangle x:Name="HoverLine" Height="2" VerticalAlignment="Bottom" Opacity="0"
-                       Fill="{StaticResource TabHoverInvariantBrush}" />
+                       Fill="{ThemeResource TabHoverBrush}" />
             <ContentPresenter x:Name="Presenter"
                               Content="{TemplateBinding Content}"
                               ContentTemplate="{TemplateBinding ContentTemplate}"
@@ -581,13 +566,13 @@
                 <VisualState x:Name="PointerOver">
                   <VisualState.Setters>
                     <Setter Target="HoverLine.Opacity" Value="1" />
-                    <Setter Target="Presenter.Foreground" Value="{StaticResource InkInvariantBrush}" />
+                    <Setter Target="Presenter.Foreground" Value="{ThemeResource InkBrush}" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Pressed">
                   <VisualState.Setters>
                     <Setter Target="HoverLine.Opacity" Value="1" />
-                    <Setter Target="Presenter.Foreground" Value="{StaticResource InkInvariantBrush}" />
+                    <Setter Target="Presenter.Foreground" Value="{ThemeResource InkBrush}" />
                   </VisualState.Setters>
                 </VisualState>
               </VisualStateGroup>
@@ -618,11 +603,11 @@
 
   <!-- Caps labels (Key header, lane labels, table heads): 11/600 muted -->
   <Style x:Key="CapsLabelText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong11}">
-    <Setter Property="Foreground" Value="{StaticResource TextMutedInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
   </Style>
 
   <Style x:Key="KeyRowText" TargetType="TextBlock" BasedOn="{StaticResource TypeBody13}">
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
@@ -640,9 +625,9 @@
     <Setter Property="Padding" Value="16,0" />
     <Setter Property="CornerRadius" Value="8" />
     <Setter Property="FontSize" Value="14" />
-    <Setter Property="Background" Value="{StaticResource SurfaceInvariantBrush}" />
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource HairlineStrongInvariantBrush}" />
+    <Setter Property="Background" Value="{ThemeResource SurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource HairlineStrongBrush}" />
     <Setter Property="BorderThickness" Value="1" />
   </Style>
 
@@ -659,7 +644,7 @@
   <!-- The × that closes a detail panel, top-right of its header -->
   <Style x:Key="CloseButton" TargetType="Button" BasedOn="{StaticResource BareButton}">
     <Setter Property="FontSize" Value="18" />
-    <Setter Property="Foreground" Value="{StaticResource TextFaintInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextFaintBrush}" />
     <Setter Property="HorizontalAlignment" Value="Right" />
     <Setter Property="VerticalAlignment" Value="Top" />
   </Style>
@@ -674,7 +659,7 @@
     <Setter Property="VerticalAlignment" Value="Top" />
     <Setter Property="Background" Value="{StaticResource HairlineOnDarkBrush}" />
     <Setter Property="BorderBrush" Value="{StaticResource HairlineOnDarkBrush}" />
-    <Setter Property="Foreground" Value="{StaticResource PaperInvariantBrush}" />
+    <Setter Property="Foreground" Value="{StaticResource TextOnDarkStrongBrush}" />
   </Style>
 
   <Style x:Key="RowButton" TargetType="Button" BasedOn="{StaticResource BareButton}">
@@ -687,8 +672,8 @@
        ============================================================ -->
   <!-- Slider used by the docking timeline scrubber -->
   <Style x:Key="ScrubSlider" TargetType="Slider">
-    <Setter Property="Foreground" Value="{StaticResource InkInvariantBrush}" />
-    <Setter Property="Background" Value="{StaticResource SurfaceSunkAltInvariantBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+    <Setter Property="Background" Value="{ThemeResource SurfaceSunkAltBrush}" />
     <Setter Property="IsThumbToolTipEnabled" Value="False" />
   </Style>
 

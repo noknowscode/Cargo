@@ -121,7 +121,7 @@ public sealed class HarbourWorld
             Points = points,
             Normal = normal,
             Fill = fill,
-            Edge = HarbourPalette.EdgeLight(color),
+            Edge = _pal.EdgeLight(color),
             Top = normal.Z > 0.99,
             Thin = thin
         };

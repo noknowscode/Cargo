@@ -49,7 +49,7 @@ public sealed partial class VesselsViewModel : ObservableObject
         State = state;
         CargoLegend = Enum.GetValues<CargoClass>()
             .Select(c => new LegendItem { Label = c.Label(), Swatch = Tokens.Brush(c.Token()) })
-            .Append(new LegendItem { Label = "Already ashore", Swatch = Tokens.Brush("TextFaintInvariantBrush") })
+            .Append(new LegendItem { Label = "Already ashore", Swatch = Tokens.Brush("TextFaintBrush") })
             .ToList();
 
         Refresh();
@@ -126,7 +126,7 @@ public sealed partial class VesselsViewModel : ObservableObject
 
         var cleared = vessel.Security == "Cleared";
         SecurityBackground = cleared ? Tokens.Brush("NavyColor", 0.12) : Tokens.Brush("AmberDeepColor", 0.16);
-        SecurityForeground = cleared ? Tokens.Brush("AccentInvariantBrush") : Tokens.Brush("OrangeInkInvariantBrush");
+        SecurityForeground = cleared ? Tokens.Brush("AccentBrush") : Tokens.Brush("OrangeInkBrush");
 
         TeuLabel = vessel.Containers.ToString("N0");
         OpsNote = vessel.OpsNote;
@@ -157,7 +157,7 @@ public sealed partial class VesselsViewModel : ObservableObject
                 Line1 = string.Join(" · ", parts.Take(2)),
                 Line2 = SecondLine(vessel, parts),
                 Tone = Tokens.Brush(vessel.AccentToken),
-                Border = selected ? Tokens.Brush("AccentInvariantBrush") : Tokens.Brush("HairlineInvariantBrush"),
+                Border = selected ? Tokens.Brush("AccentBrush") : Tokens.Brush("HairlineBrush"),
                 Silhouette = Sprites.Source(Sprites.Side(vessel.Id)),
                 Select = State.PickHullVesselCommand
             });
@@ -303,13 +303,13 @@ public sealed partial class VesselsViewModel : ObservableObject
         var ashore = Math.Round(vessel.Containers * vessel.UnloadPercent / 100d);
         (string Key, string Value, string Detail, string Tone, string Icon)[] cards =
         {
-            ("Length overall", $"{vessel.Length} m", $"Draft {vessel.Draft} m", "InkInvariantBrush",
+            ("Length overall", $"{vessel.Length} m", $"Draft {vessel.Draft} m", "InkBrush",
                 "M3 12h18M3 12l4-4M3 12l4 4M21 12l-4-4M21 12l-4 4"),
-            ("Discharged", UnloadLive, $"{ashore:N0} discharged", "SeaGreenInvariantBrush",
+            ("Discharged", UnloadLive, $"{ashore:N0} discharged", "SeaGreenBrush",
                 "M12 3v12M12 15l-4-4M12 15l4-4M4 21h16"),
-            ("Loaded", LoadLive, $"{moves} moves/h", "AccentInvariantBrush",
+            ("Loaded", LoadLive, $"{moves} moves/h", "AccentBrush",
                 "M12 21V9M12 9l-4 4M12 9l4 4M4 3h16"),
-            ("Departure", vessel.Etd, State.BerthOf(vessel.Id) is { } b ? $"Berth {b}" : "Unassigned", "InkInvariantBrush",
+            ("Departure", vessel.Etd, State.BerthOf(vessel.Id) is { } b ? $"Berth {b}" : "Unassigned", "InkBrush",
                 "M3 15l2 5h14l2-5zM5 15V9h14v6M9 9V5h6v4")
         };
 

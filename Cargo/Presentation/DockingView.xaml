@@ -55,7 +55,7 @@
           <TextBlock Style="{StaticResource CaptionText}" VerticalAlignment="Center">
             <Run Text="Viewing " /><Run Text="{x:Bind ViewModel.PlanLabel, Mode=OneWay}"
                                         FontFamily="{StaticResource MonoMediumFont}"
-                                        Foreground="{StaticResource InkInvariantBrush}" />
+                                        Foreground="{ThemeResource InkBrush}" />
           </TextBlock>
         </StackPanel>
 
@@ -76,10 +76,10 @@
                      MaxWidth="360" TextWrapping="Wrap" />
           <Button Style="{StaticResource PrimaryButton}" Command="{x:Bind ViewModel.OptimizeCommand, Mode=OneWay}" CornerRadius="9" Padding="14,8">
             <StackPanel Orientation="Horizontal" Spacing="7">
-              <shapes:Path Data="M4 17l5-5 4 4 7-8M15 8h5v5" Stroke="{StaticResource PaperInvariantBrush}" StrokeThickness="2"
+              <shapes:Path Data="M4 17l5-5 4 4 7-8M15 8h5v5" Stroke="{ThemeResource PaperBrush}" StrokeThickness="2"
                            Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center" />
               <TextBlock Text="Optimize traffic" Style="{StaticResource TypeMedium13}"
-                         Foreground="{StaticResource PaperInvariantBrush}" />
+                         Foreground="{ThemeResource PaperBrush}" />
             </StackPanel>
           </Button>
         </StackPanel>
@@ -96,7 +96,7 @@
       <StackPanel Spacing="18">
         <Grid>
           <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Padding="0"
-                                  CornerRadius="{StaticResource RadiusCard}" Background="{StaticResource LandInvariantBrush}">
+                                  CornerRadius="{StaticResource RadiusCard}" Background="{ThemeResource LandBrush}">
             <ContentControl x:Name="MapHost" HorizontalContentAlignment="Stretch" />
           </utu:CardContentControl>
           <utu:CardContentControl Style="{StaticResource OutlinedPanel}" HorizontalAlignment="Left" VerticalAlignment="Bottom"
@@ -135,9 +135,9 @@
                       <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{x:Bind Berth}" Style="{StaticResource TypeMonoMedium12}"
-                               Foreground="{StaticResource TextMutedInvariantBrush}" VerticalAlignment="Center" />
+                               Foreground="{ThemeResource TextMutedBrush}" VerticalAlignment="Center" />
                     <!-- xaml-lint: allow card - the track of a timeline bar, not a card -->
-                    <Border Grid.Column="1" Height="26" CornerRadius="7" Background="{StaticResource SurfaceSunkInvariantBrush}">
+                    <Border Grid.Column="1" Height="26" CornerRadius="7" Background="{ThemeResource SurfaceSunkBrush}">
                       <controls:ProportionalPanel Segments="{x:Bind Segments}" NowFraction="{x:Bind NowFraction}" />
                     </Border>
                   </Grid>
@@ -162,9 +162,9 @@
           </Grid>
 
           <!-- xaml-lint: allow card - clips the vessel profile image -->
-          <Border CornerRadius="12" Background="{StaticResource SurfaceInvariantBrush}">
+          <Border CornerRadius="12" Background="{ThemeResource SurfaceBrush}">
             <Grid Height="120">
-              <Rectangle Fill="{StaticResource SeaFlatInvariantBrush}" Height="16" VerticalAlignment="Bottom" />
+              <Rectangle Fill="{ThemeResource SeaFlatBrush}" Height="16" VerticalAlignment="Bottom" />
               <Image Source="{x:Bind ViewModel.SelectedProfile, Mode=OneWay}" Stretch="Uniform" Margin="18,6,18,10" />
             </Grid>
           </Border>
@@ -183,7 +183,7 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
-          <Border Height="1" Background="{StaticResource HairlineInvariantBrush}" />
+          <Border Height="1" Background="{ThemeResource HairlineBrush}" />
           <TextBlock Text="{x:Bind ViewModel.SelectedNote, Mode=OneWay}" Style="{StaticResource SubtitleText}"
                      TextWrapping="Wrap" LineHeight="19" />
 

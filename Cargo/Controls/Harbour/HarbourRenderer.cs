@@ -21,7 +21,7 @@ public sealed record HarbourFrameState(
 /// </summary>
 public sealed class HarbourRenderer : IDisposable
 {
-    private readonly HarbourWorld _world;
+    private HarbourWorld _world;
     private readonly HarbourPalette _pal;
     private readonly HarbourCamera _camera;
 
@@ -89,6 +89,13 @@ public sealed class HarbourRenderer : IDisposable
     /// figures and duty card): the scene dissolves under it so its text stays legible. 0 uses the 14% default.
     /// </summary>
     public float OverlayFade { get; set; }
+
+    /// <summary>Draws a rebuilt world (the same model, recoloured for a new theme) from the next frame.</summary>
+    public void SetWorld(HarbourWorld world)
+    {
+        _world = world;
+        Invalidate();
+    }
 
     /// <summary>Forces the still scene to be recorded again on the next frame.</summary>
     public void Invalidate()

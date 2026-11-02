@@ -582,7 +582,7 @@ public sealed partial class HarbourView : UserControl
             tag.LightVisibility = needs ? Visibility.Collapsed : Visibility.Visible;
             tag.DarkVisibility = needs ? Visibility.Visible : Visibility.Collapsed;
             // The float shadow is the resting edge; selected takes a 2 px ink edge, a linked hover a 1 px one
-            tag.Edge = selected || lit ? Tokens.Brush("InkInvariantBrush") : Tokens.Transparent;
+            tag.Edge = selected || lit ? Tokens.Brush("InkBrush") : Tokens.Transparent;
             tag.EdgeThickness = new Thickness(selected ? 2 : 1);
             if (selected && !Tight)
             {

@@ -67,6 +67,6 @@ public sealed partial class BerthsViewModel : ObservableObject
     {
         var count = State.Conflicts().Count;
         Conflicts = count.ToString();
-        ConflictInk = count > 0 ? Tokens.Brush("AlertInvariantBrush") : Tokens.Brush("InkInvariantBrush");
+        ConflictInk = count > 0 ? Tokens.Brush("AlertBrush") : Tokens.Brush("InkBrush");
     }
 }

@@ -7,7 +7,7 @@
       xmlns:shapes="using:Microsoft.UI.Xaml.Shapes"
       xmlns:uen="using:Uno.Extensions.Navigation.UI"
       xmlns:utu="using:Uno.Toolkit.UI"
-      Background="{StaticResource PaperInvariantBrush}">
+      Background="{ThemeResource PaperBrush}">
 
   <Page.Resources>
     <!-- Harbour HUD breakpoint: below 1200 the centred layer switcher (370 px) would run into the
@@ -26,8 +26,8 @@
     </Grid.RowDefinitions>
 
     <!-- ══ HEADER ══════════════════════════════════════════════════════ -->
-    <Grid Grid.Row="0" Background="{StaticResource SurfaceInvariantBrush}"
-          BorderBrush="{StaticResource HairlineInvariantBrush}" BorderThickness="0,0,0,1"
+    <Grid Grid.Row="0" Background="{ThemeResource SurfaceBrush}"
+          BorderBrush="{ThemeResource HairlineBrush}" BorderThickness="0,0,0,1"
           Padding="{utu:Responsive Narrowest='16,0,10,0', Narrow='24,0,16,0', Normal='40,0,28,0'}"
           ColumnSpacing="{utu:Responsive Narrowest=12, Normal=28}">
       <!-- Below 1000 the section tabs take a second row of their own, scrolling sideways on a phone -->
@@ -67,10 +67,10 @@
                              Visibility="{x:Bind CurrentVisibility, Mode=OneWay}" />
                   <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium14}"
                              Visibility="{x:Bind OtherVisibility, Mode=OneWay}" />
-                  <Ellipse Width="6" Height="6" Fill="{StaticResource AlertInvariantBrush}" VerticalAlignment="Top"
+                  <Ellipse Width="6" Height="6" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Top"
                            Margin="0,1,0,0" Visibility="{x:Bind NeedsVisibility, Mode=OneWay}" />
                 </StackPanel>
-                <Rectangle Height="2" VerticalAlignment="Bottom" Fill="{StaticResource AccentInvariantBrush}"
+                <Rectangle Height="2" VerticalAlignment="Bottom" Fill="{ThemeResource AccentBrush}"
                            Opacity="{x:Bind UnderlineOpacity, Mode=OneWay}" />
               </Grid>
             </Button>
@@ -94,7 +94,7 @@
                 AutomationProperties.Name="{x:Bind ViewModel.AccountName}"
                 ToolTipService.ToolTip="{x:Bind ViewModel.AccountName}">
           <Grid>
-            <Ellipse Width="32" Height="32" Fill="{StaticResource AccentInvariantBrush}" />
+            <Ellipse Width="32" Height="32" Fill="{ThemeResource AccentBrush}" />
             <TextBlock Text="{x:Bind ViewModel.Operator.Initials}" Style="{StaticResource AvatarInitialsText}" />
           </Grid>
           <Button.Flyout>
@@ -106,7 +106,7 @@
                   <TextBlock Text="{x:Bind ViewModel.Operator.Name}" Style="{StaticResource TitleText}" />
                   <TextBlock Text="{x:Bind ViewModel.OperatorLine}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap" />
                 </StackPanel>
-                <Rectangle Height="1" Fill="{StaticResource HairlineInvariantBrush}" />
+                <Rectangle Height="1" Fill="{ThemeResource HairlineBrush}" />
                 <ToggleSwitch Header="Reduce motion" IsOn="{x:Bind ViewModel.ReduceMotion, Mode=TwoWay}"
                               ToolTipService.ToolTip="Hold the cranes, trucks and camera moves still" />
               </StackPanel>
@@ -144,19 +144,19 @@
             HorizontalAlignment="{utu:Responsive Narrowest=Left, Wide=Center}"
             Margin="{utu:Responsive Narrowest='16,0,0,60', Narrow='40,0,0,64', Wide='0,0,0,16'}"
             Visibility="{x:Bind ViewModel.State.LayerSwitchShown, Mode=OneWay}">
-      <utu:ShadowContainer Background="{StaticResource SurfaceInvariantBrush}">
+      <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}">
         <!-- The HUD float shadow. Inline: a Style-supplied collection never applies (Toolkit gotcha G36). -->
         <utu:ShadowContainer.Shadows>
           <utu:ShadowCollection>
-            <utu:Shadow Spread="1" BlurRadius="0" Color="{StaticResource InkColor}" Opacity="0.08" />
-            <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource InkColor}" Opacity="0.06" />
-            <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource InkColor}" Opacity="0.07" />
+            <utu:Shadow Spread="1" BlurRadius="0" Color="{ThemeResource ShadowRingColor}" Opacity="0.08" />
+            <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource ShadowColor}" Opacity="0.06" />
+            <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.07" />
           </utu:ShadowCollection>
         </utu:ShadowContainer.Shadows>
         <Grid CornerRadius="10" Padding="2">
           <!-- One ink pill slides and resizes to the current layer (DurationSlideMs on EaseSmooth) -->
           <controls:SegmentIndicator Host="{x:Bind LayerItems}" SelectedIndex="{x:Bind ViewModel.SelectedLayerIndex, Mode=OneWay}"
-                                     Height="40" CornerRadius="8" Background="{StaticResource InkInvariantBrush}" />
+                                     Height="40" CornerRadius="8" Background="{ThemeResource InkBrush}" />
           <ItemsControl x:Name="LayerItems" ItemsSource="{x:Bind ViewModel.Layers, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
@@ -185,14 +185,14 @@
       </Grid>
 
       <!-- Expand / Collapse: Overview's band grows to 491; elsewhere the strip opens to the full stage -->
-      <utu:ShadowContainer Grid.Row="1" Background="{StaticResource SurfaceInvariantBrush}"
+      <utu:ShadowContainer Grid.Row="1" Background="{ThemeResource SurfaceBrush}"
                            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="{utu:Responsive Narrowest='0,12,16,0', Narrow='0,16,40,0'}"
                            Visibility="{x:Bind ViewModel.State.ShowStageToggle, Mode=OneWay}">
         <utu:ShadowContainer.Shadows>
           <utu:ShadowCollection>
-            <utu:Shadow Spread="1" BlurRadius="0" Color="{StaticResource InkColor}" Opacity="0.08" />
-            <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource InkColor}" Opacity="0.06" />
-            <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource InkColor}" Opacity="0.07" />
+            <utu:Shadow Spread="1" BlurRadius="0" Color="{ThemeResource ShadowRingColor}" Opacity="0.08" />
+            <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource ShadowColor}" Opacity="0.06" />
+            <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.07" />
           </utu:ShadowCollection>
         </utu:ShadowContainer.Shadows>
         <Button Style="{StaticResource HudSummaryButton}" Height="40" Padding="12,0,14,0"
@@ -201,9 +201,9 @@
           <StackPanel Orientation="Horizontal" Spacing="8">
             <Viewbox Width="18" Height="18" VerticalAlignment="Center">
               <Grid Width="24" Height="24">
-                <shapes:Path Style="{StaticResource ExpandIcon}" Stroke="{StaticResource InkInvariantBrush}"
+                <shapes:Path Style="{StaticResource ExpandIcon}" Stroke="{ThemeResource InkBrush}"
                              Visibility="{x:Bind ViewModel.State.StageCollapsed, Mode=OneWay}" />
-                <shapes:Path Style="{StaticResource CollapseIcon}" Stroke="{StaticResource InkInvariantBrush}"
+                <shapes:Path Style="{StaticResource CollapseIcon}" Stroke="{ThemeResource InkBrush}"
                              Visibility="{x:Bind ViewModel.State.StageExpanded, Mode=OneWay}" />
               </Grid>
             </Viewbox>

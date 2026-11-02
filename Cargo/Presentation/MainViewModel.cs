@@ -185,7 +185,7 @@ public sealed partial class MainViewModel : ObservableObject
 
             item.Tooltip = $"{item.Label} · {subs[item.Id]}";
             item.AutomationName = needs ? $"{item.Label}, needs you" : item.Label;
-            item.LabelForeground = current ? Tokens.Brush("InkInvariantBrush") : Tokens.Brush("TextMutedInvariantBrush");
+            item.LabelForeground = current ? Tokens.Brush("InkBrush") : Tokens.Brush("TextMutedBrush");
             item.NeedsVisibility = needs ? Visibility.Visible : Visibility.Collapsed;
             item.UnderlineOpacity = current ? 1 : 0;
             item.CurrentVisibility = current ? Visibility.Visible : Visibility.Collapsed;
@@ -219,8 +219,8 @@ public sealed partial class MainViewModel : ObservableObject
         for (var i = 0; i < Layers.Count; i++)
         {
             var current = State.HarbourLayer == Layers[i].Id;
-            Layers[i].Foreground = current ? Tokens.Brush("PaperInvariantBrush") : Tokens.Brush("InkInvariantBrush");
-            Layers[i].IconForeground = current ? Tokens.Brush("PaperInvariantBrush") : Tokens.Brush("TextMutedInvariantBrush");
+            Layers[i].Foreground = current ? Tokens.Brush("PaperBrush") : Tokens.Brush("InkBrush");
+            Layers[i].IconForeground = current ? Tokens.Brush("PaperBrush") : Tokens.Brush("TextMutedBrush");
             if (current)
             {
                 SelectedLayerIndex = i;

@@ -19,7 +19,7 @@
       <StackPanel Spacing="4">
         <TextBlock Text="Yard" Style="{StaticResource SectionHeadText}" />
         <StackPanel Orientation="Horizontal" Spacing="8">
-          <Ellipse Width="6" Height="6" Fill="{StaticResource AlertInvariantBrush}" VerticalAlignment="Center" />
+          <Ellipse Width="6" Height="6" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Center" />
           <TextBlock Text="{x:Bind ViewModel.LiveLine, Mode=OneWay}" Style="{StaticResource CaptionText}" VerticalAlignment="Center" />
           <controls:TickBar Height="10" VerticalAlignment="Center" Count="20" TickWidth="3" Gap="1.5"
                             TallHeight="10" LitHeight="7" OffHeight="4.5"
@@ -50,7 +50,7 @@
       </Grid.ColumnDefinitions>
 
       <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Padding="0" VerticalAlignment="Top"
-                              CornerRadius="{StaticResource RadiusCard}" Background="{StaticResource LandInvariantBrush}">
+                              CornerRadius="{StaticResource RadiusCard}" Background="{ThemeResource LandBrush}">
         <ContentControl x:Name="MapHost" HorizontalContentAlignment="Stretch" />
       </utu:CardContentControl>
 
@@ -68,7 +68,7 @@
 
           <controls:StackTiers Boxes="{x:Bind ViewModel.StackBoxes, Mode=OneWay}" />
 
-          <Border Height="1" Background="{StaticResource HairlineInvariantBrush}" />
+          <Border Height="1" Background="{ThemeResource HairlineBrush}" />
           <ItemsControl ItemsSource="{x:Bind ViewModel.Tiers, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Spacing="8" /></ItemsPanelTemplate>

@@ -24,7 +24,7 @@ public sealed class HarbourScene : SKCanvasElement
 
     private readonly HarbourPalette _palette = new();
     private readonly HarbourCamera _camera = new();
-    private readonly HarbourWorld _world;
+    private HarbourWorld _world;
     private readonly HarbourRenderer _renderer;
     private readonly DispatcherTimer _timer = new() { Interval = IdleFrame };
     private readonly DateTimeOffset _started = DateTimeOffset.Now;
@@ -54,6 +54,16 @@ public sealed class HarbourScene : SKCanvasElement
 
         _timer.Tick += (_, _) => Tick();
         Loaded += (_, _) => LoadTypeface();
+
+        // The faces carry colours baked from the palette, so a theme change rebuilds the model (the same
+        // seeded layout, so every vessel and tag stays where it was) and records the still scene again
+        this.RebuildOnTheme(() =>
+        {
+            _palette.Reload();
+            _world = new HarbourWorld(_palette);
+            _renderer.SetWorld(_world);
+            RefreshStill();
+        });
 
         // The stage collapses on pages without a harbour; a hidden scene should not draw 30 frames a second
         this.TrackShown(shown =>

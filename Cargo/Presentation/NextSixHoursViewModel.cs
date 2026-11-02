@@ -51,7 +51,7 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
     {
         foreach (var row in Past.Concat(Upcoming))
         {
-            row.Ground = Tokens.Tint("AccentInvariantBrush", row.Id == _state.HoveredVessel ? .07 : 0);
+            row.Ground = Tokens.Tint("AccentBrush", row.Id == _state.HoveredVessel ? .07 : 0);
         }
     }
 
@@ -124,9 +124,9 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
         row.Countdown = row.Happened
             ? (row.Arrival ? "arrived" : "departing")
             : minutes < 60 ? $"in {minutes} min" : $"in {minutes / 60} h {minutes % 60:D2}";
-        row.CountdownInk = Tokens.Brush(minutes < 60 ? "InkInvariantBrush" : "TextMutedInvariantBrush");
-        row.DotFill = Tokens.Brush(row.Happened ? "NavyInvariantBrush" : "SurfaceInvariantBrush");
-        row.DotRing = Tokens.Brush(row.Happened ? "SurfaceInvariantBrush" : "NavyInvariantBrush");
+        row.CountdownInk = Tokens.Brush(minutes < 60 ? "InkBrush" : "TextMutedBrush");
+        row.DotFill = Tokens.Brush(row.Happened ? "NavyBrush" : "SurfaceBrush");
+        row.DotRing = Tokens.Brush(row.Happened ? "SurfaceBrush" : "NavyBrush");
         row.DotRingWidth = row.Happened ? 2 : 1.6;
     }
 }

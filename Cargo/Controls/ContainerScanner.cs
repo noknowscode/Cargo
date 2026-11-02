@@ -151,7 +151,8 @@ public sealed partial class ContainerScanner : Panel
         }
 
         var container = _state.SelectedContainer;
-        var tint = Tokens.Color(container.TintToken);
+        // The box's paint on a stage that is dark in both themes: the daylight value, whatever the theme
+        var tint = Tokens.Paint(container.TintToken);
         var xray = _state.Xray;
         var zoom = _state.ScanZoom;
 
@@ -173,7 +174,7 @@ public sealed partial class ContainerScanner : Panel
             (new[] { -hx, hx, hx, -hx }, new[] { hy, hy, hy, hy }, new[] { hz, hz, -hz, -hz }, Tokens.Shade(tint, -70))
         };
 
-        var edge = xray ? Tokens.Brush("AccentBrightColor", 0.75) : Tokens.Brush("InkColor", 0.35);
+        var edge = xray ? Tokens.Brush("AccentBrightColor", 0.75) : Tokens.Brush("InkDeepColor", 0.35);
 
         var ordered = faces
             .Select(face => (Face: face, Depth: Enumerable.Range(0, 4)
@@ -258,7 +259,7 @@ public sealed partial class ContainerScanner : Panel
                 Text = block.Item.Name.Split(" · ")[0],
                 FontFamily = (FontFamily)Application.Current.Resources["MonoMediumFont"],
                 FontSize = 9,
-                Foreground = Tokens.Brush("SurfaceInvariantBrush")
+                Foreground = Tokens.Brush("TextOnDarkStrongBrush")
             };
             var anchor = Project(block.X + 4, hy - 6, front, cx, cy, zoom);
             Canvas.SetLeft(label, anchor.X);

@@ -46,7 +46,7 @@ public sealed partial class NeedsYouPanel : UserControl
         }
     }
 
-    public static Brush Ground(int count) => count > 0 ? Tokens.Brush("AlertInvariantBrush", .05) : Tokens.Transparent;
+    public static Brush Ground(int count) => count > 0 ? Tokens.Brush("AlertBrush", .05) : Tokens.Transparent;
 
     public static Visibility Shown(int count) => count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
@@ -78,7 +78,7 @@ public sealed partial class NeedsYouPanel : UserControl
     /// <summary>The " · " before the live part, only when there is one.</summary>
     public static string Separator(string when) => string.IsNullOrEmpty(when) ? string.Empty : " · ";
 
-    public static Brush WhenInk(bool late) => Tokens.Brush(late ? "AlertInkInvariantBrush" : "TextMutedInvariantBrush");
+    public static Brush WhenInk(bool late) => Tokens.Brush(late ? "AlertInkBrush" : "TextMutedBrush");
 
     public static FontFamily WhenFace(bool late) =>
         (FontFamily)Application.Current.Resources[late ? "BodyStrongFont" : "BodyFont"];

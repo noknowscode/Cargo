@@ -30,9 +30,8 @@ public sealed partial class TimelineLanes : SKCanvasElement
     private readonly SKFont _monoStrong = new(SKTypeface.Default, 13);
     private readonly SKPathBuilder _pb = new();
 
-    // Palette, resolved once from Themes/Tokens.xaml (the canvas has no XAML to bind)
-    private readonly SKColor _ink = Sk("InkColor"), _muted = Sk("TextMutedColor"), _surface = Sk("SurfaceColor"),
-        _navy = Sk("NavyColor"), _water = Sk("WaterColor"), _accent = Sk("AccentColor"), _ground = Sk("PaperColor");
+    // Palette from Themes/Tokens.xaml (the canvas has no XAML to bind), read again when the theme changes
+    private SKColor _ink, _muted, _surface, _navy, _water, _accent, _ground;
 
     // The vessel dots as drawn, for hit-testing (r12 around each); swapped whole on each render
     private (string Id, SKPoint At)[] _targets = Array.Empty<(string, SKPoint)>();
@@ -46,8 +45,18 @@ public sealed partial class TimelineLanes : SKCanvasElement
         Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
         PointerMoved += OnPointerMoved;
         PointerExited += OnPointerExited;
+        ReadPalette();
+        this.RebuildOnTheme(() =>
+        {
+            ReadPalette();
+            Invalidate();
+        });
         LoadFonts();
     }
+
+    private void ReadPalette() =>
+        (_ink, _muted, _surface, _navy, _water, _accent, _ground) = (Sk("InkColor"), Sk("TextMutedColor"), Sk("SurfaceColor"),
+            Sk("NavyColor"), Sk("WaterColor"), Sk("AccentColor"), Sk("PaperColor"));
 
     public static readonly DependencyProperty HoverCommandProperty = DependencyProperty.Register(
         nameof(HoverCommand), typeof(ICommand), typeof(TimelineLanes), new PropertyMetadata(null));

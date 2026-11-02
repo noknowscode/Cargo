@@ -19,7 +19,7 @@
         <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
           <TextBlock Text="{x:Bind local:CargoFlowPanels.Moves(ViewModel.NowHours), Mode=OneWay}" Style="{StaticResource MetricText}" />
           <TextBlock Text="↑ 12% vs yesterday" Style="{StaticResource BodyStrongSmallText}"
-                     Foreground="{StaticResource SeaGreenInkInvariantBrush}" VerticalAlignment="Bottom" Margin="0,0,0,4" />
+                     Foreground="{ThemeResource SeaGreenInkBrush}" VerticalAlignment="Bottom" Margin="0,0,0,4" />
         </StackPanel>
         <controls:VolumeChart Now="{x:Bind ViewModel.NowHours, Mode=OneWay}" Margin="0,8,0,0" />
       </StackPanel>
@@ -31,11 +31,11 @@
           <TextBlock Text="Cargo flow" Style="{StaticResource CardTitleText}" />
           <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right" VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal" Spacing="5">
-              <Ellipse Width="6" Height="6" Fill="{StaticResource AccentInvariantBrush}" VerticalAlignment="Center" />
+              <Ellipse Width="6" Height="6" Fill="{ThemeResource AccentBrush}" VerticalAlignment="Center" />
               <TextBlock Text="Entering" Style="{StaticResource CaptionText}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="5">
-              <Ellipse Width="6" Height="6" Fill="{StaticResource AmberInvariantBrush}" VerticalAlignment="Center" />
+              <Ellipse Width="6" Height="6" Fill="{ThemeResource AmberBrush}" VerticalAlignment="Center" />
               <TextBlock Text="Leaving" Style="{StaticResource CaptionText}" />
             </StackPanel>
           </StackPanel>

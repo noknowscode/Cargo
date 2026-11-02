@@ -29,10 +29,10 @@ public sealed partial class DockingViewModel : ObservableObject
         Legend = new[]
         {
             new LegendItem { Label = "Available", Swatch = Tokens.Brush("AccentColor", 0.35) },
-            new LegendItem { Label = "Reserved", Swatch = Tokens.Brush("AccentInvariantBrush") },
-            new LegendItem { Label = "Occupied", Swatch = Tokens.Brush("NavyInvariantBrush") },
-            new LegendItem { Label = "Restricted", Swatch = Tokens.Brush("RestrictedInvariantBrush") },
-            new LegendItem { Label = "Conflict", Swatch = Tokens.Brush("AlertInvariantBrush") }
+            new LegendItem { Label = "Reserved", Swatch = Tokens.Brush("AccentBrush") },
+            new LegendItem { Label = "Occupied", Swatch = Tokens.Brush("NavyBrush") },
+            new LegendItem { Label = "Restricted", Swatch = Tokens.Brush("RestrictedBrush") },
+            new LegendItem { Label = "Conflict", Swatch = Tokens.Brush("AlertBrush") }
         };
 
         Refresh();
@@ -126,15 +126,15 @@ public sealed partial class DockingViewModel : ObservableObject
         PlanLabel = (planHour >= 24 ? "Thu " : string.Empty) + PortState.Format(planHour % 24);
         OnPropertyChanged(nameof(Scrub));
 
-        NowBackground = State.PlanHour is null ? Tokens.Brush("InkInvariantBrush") : Tokens.Brush("SurfaceInvariantBrush");
-        NowForeground = State.PlanHour is null ? Tokens.Brush("PaperInvariantBrush") : Tokens.Brush("InkInvariantBrush");
+        NowBackground = State.PlanHour is null ? Tokens.Brush("InkBrush") : Tokens.Brush("SurfaceBrush");
+        NowForeground = State.PlanHour is null ? Tokens.Brush("PaperBrush") : Tokens.Brush("InkBrush");
 
         var conflicts = State.Conflicts();
         ConflictText = conflicts.Count == 0
             ? "No conflicts in the next 36 h"
             : $"{conflicts.Count} berth conflict{(conflicts.Count > 1 ? "s" : string.Empty)}: " +
               string.Join(" · ", conflicts.Select(c => $"{c.A} × {c.B} on {c.Berth}"));
-        ConflictTone = conflicts.Count == 0 ? Tokens.Brush("SeaGreenInvariantBrush") : Tokens.Brush("AlertInvariantBrush");
+        ConflictTone = conflicts.Count == 0 ? Tokens.Brush("SeaGreenBrush") : Tokens.Brush("AlertBrush");
 
         BuildTimeline(conflicts);
         BuildSelection();

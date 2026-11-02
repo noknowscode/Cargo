@@ -60,11 +60,11 @@
         </ItemsControl>
 
         <Button Style="{StaticResource GhostButton}" Command="{x:Bind ViewModel.State.OpenDockingCommand}"
-                Background="{StaticResource SurfaceInvariantBrush}" CornerRadius="12" Padding="16,12"
+                Background="{ThemeResource SurfaceBrush}" CornerRadius="12" Padding="16,12"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
           <Grid>
             <TextBlock Text="View all in Docking" Style="{StaticResource TypeMedium13}" />
-            <TextBlock Text="↗" Foreground="{StaticResource TextMutedInvariantBrush}" HorizontalAlignment="Right" />
+            <TextBlock Text="↗" Foreground="{ThemeResource TextMutedBrush}" HorizontalAlignment="Right" />
           </Grid>
         </Button>
       </StackPanel>
@@ -80,7 +80,7 @@
                   <TextBlock Text="{x:Bind ViewModel.ProfileHint, Mode=OneWay}" Style="{StaticResource CaptionText}" />
                 </StackPanel>
                 <TextBlock Text="{x:Bind ViewModel.BayLabel, Mode=OneWay}" Style="{StaticResource BodyStrongSmallText}"
-                           Foreground="{StaticResource AccentInvariantBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" />
+                           Foreground="{ThemeResource AccentBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" />
               </Grid>
               <ContentControl x:Name="ProfileHost" HorizontalContentAlignment="Stretch" Margin="0,4,0,0" />
               <ItemsControl ItemsSource="{x:Bind ViewModel.CargoLegend, Mode=OneWay}" Margin="0,10,0,2">
@@ -107,12 +107,12 @@
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:MiniCard">
-                  <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Background="{StaticResource PaperInvariantBrush}" Padding="12,10,12,9">
+                  <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Background="{ThemeResource PaperBrush}" Padding="12,10,12,9">
                     <StackPanel Spacing="3">
                       <!-- xaml-lint: allow card - icon disc -->
                       <Border Width="22" Height="22" CornerRadius="11" BorderThickness="1" Margin="0,0,0,5"
-                              BorderBrush="{StaticResource HairlineStrongInvariantBrush}">
-                        <shapes:Path Data="{x:Bind Icon}" Stroke="{StaticResource InkInvariantBrush}"
+                              BorderBrush="{ThemeResource HairlineStrongBrush}">
+                        <shapes:Path Data="{x:Bind Icon}" Stroke="{ThemeResource InkBrush}"
                                    StrokeThickness="2" Width="11" Height="11" Stretch="Uniform" />
                       </Border>
                       <TextBlock Text="{x:Bind Key}" Style="{StaticResource MicroText}" />
@@ -138,12 +138,12 @@
               <Grid>
                 <TextBlock Text="Cargo operations" Style="{StaticResource CardTitleText}" />
                 <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right" VerticalAlignment="Center">
-                  <Ellipse Width="6" Height="6" Fill="{StaticResource AlertInvariantBrush}" VerticalAlignment="Center" />
+                  <Ellipse Width="6" Height="6" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Center" />
                   <TextBlock Text="{x:Bind ViewModel.MovesLabel, Mode=OneWay}" Style="{StaticResource CaptionText}" />
                 </StackPanel>
               </Grid>
               <!-- xaml-lint: allow card - clips the scene -->
-              <Border CornerRadius="12" Background="{StaticResource SurfaceInvariantBrush}">
+              <Border CornerRadius="12" Background="{ThemeResource SurfaceBrush}">
                 <controls:CargoOpsScene Vessel="{x:Bind ViewModel.Vessel, Mode=OneWay}" />
               </Border>
               <Grid ColumnSpacing="14" Margin="0,4,0,0">
@@ -154,14 +154,14 @@
                 <StackPanel Spacing="8">
                   <Grid>
                     <TextBlock Text="Unloading" Style="{StaticResource BodyStrongText}" />
-                    <TextBlock Text="{x:Bind ViewModel.UnloadLive, Mode=OneWay}" Style="{StaticResource TypeMonoMedium13}" Foreground="{StaticResource SeaGreenInvariantBrush}" HorizontalAlignment="Right" />
+                    <TextBlock Text="{x:Bind ViewModel.UnloadLive, Mode=OneWay}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource SeaGreenBrush}" HorizontalAlignment="Right" />
                   </Grid>
                   <controls:TickBar Height="14" LitToken="SeaGreenInvariantBrush" Percent="{x:Bind ViewModel.UnloadPercent, Mode=OneWay}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Spacing="8">
                   <Grid>
                     <TextBlock Text="Loading" Style="{StaticResource BodyStrongText}" />
-                    <TextBlock Text="{x:Bind ViewModel.LoadLive, Mode=OneWay}" Style="{StaticResource TypeMonoMedium13}" Foreground="{StaticResource AccentInvariantBrush}" HorizontalAlignment="Right" />
+                    <TextBlock Text="{x:Bind ViewModel.LoadLive, Mode=OneWay}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource AccentBrush}" HorizontalAlignment="Right" />
                   </Grid>
                   <controls:TickBar Height="14" LitToken="AccentInvariantBrush" Percent="{x:Bind ViewModel.LoadPercent, Mode=OneWay}" />
                 </StackPanel>
@@ -239,7 +239,7 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
-          <Border Height="1" Background="{StaticResource HairlineInvariantBrush}" />
+          <Border Height="1" Background="{ThemeResource HairlineBrush}" />
           <StackPanel Spacing="10">
             <TextBlock Text="Security clearance" Style="{StaticResource BodyStrongLargeText}" />
             <ItemsControl ItemsSource="{x:Bind ViewModel.Checks, Mode=OneWay}">
@@ -257,7 +257,7 @@
                     <TextBlock Text="{x:Bind Mark}" Style="{StaticResource TypeStrong13}"
                                Foreground="{x:Bind Tone}" />
                     <TextBlock Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyText}" />
-                    <TextBlock Grid.Column="2" Text="{x:Bind Time}" Style="{StaticResource TypeMono12}" Foreground="{StaticResource TextFaintInvariantBrush}" />
+                    <TextBlock Grid.Column="2" Text="{x:Bind Time}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextFaintBrush}" />
                   </Grid>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
@@ -276,7 +276,7 @@
         <StackPanel Orientation="Horizontal" Spacing="14">
           <TextBlock Text="{x:Bind ViewModel.BayHeading, Mode=OneWay}" Style="{StaticResource TypeStrong18}" />
           <TextBlock Text="{x:Bind ViewModel.BayTotal, Mode=OneWay}" Style="{StaticResource BodyText}"
-                     Foreground="{StaticResource AccentInvariantBrush}" VerticalAlignment="Bottom" Margin="0,0,0,2" />
+                     Foreground="{ThemeResource AccentBrush}" VerticalAlignment="Bottom" Margin="0,0,0,2" />
           <TextBlock Text="{x:Bind ViewModel.BayRemaining, Mode=OneWay}" Style="{StaticResource SubtitleText}"
                      VerticalAlignment="Bottom" Margin="0,0,0,2" />
         </StackPanel>
@@ -290,7 +290,7 @@
           </Grid.ColumnDefinitions>
 
           <!-- xaml-lint: allow card - clips the scene -->
-          <Border CornerRadius="12" Background="{StaticResource SurfaceInvariantBrush}">
+          <Border CornerRadius="12" Background="{ThemeResource SurfaceBrush}">
             <controls:BayScene Bay="{x:Bind ViewModel.Bay, Mode=OneWay}" />
           </Border>
 
@@ -305,12 +305,12 @@
               <Image Source="ms-appx:///Assets/Sprites/crane-rtg-1.png" Width="56" Height="70"
                      Stretch="Uniform" VerticalAlignment="Top" />
               <StackPanel Grid.Column="1" Spacing="4">
-                <TextBlock Text="Unloaded" Style="{StaticResource CaptionText}" Foreground="{StaticResource SeaGreenInvariantBrush}" />
-                <TextBlock Text="{x:Bind ViewModel.BayUnloaded, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{StaticResource SeaGreenInvariantBrush}" />
+                <TextBlock Text="Unloaded" Style="{StaticResource CaptionText}" Foreground="{ThemeResource SeaGreenBrush}" />
+                <TextBlock Text="{x:Bind ViewModel.BayUnloaded, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource SeaGreenBrush}" />
               </StackPanel>
               <StackPanel Grid.Column="2" Spacing="4">
                 <TextBlock Text="Remaining" Style="{StaticResource CaptionText}" />
-                <TextBlock Text="{x:Bind ViewModel.BayLeft, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{StaticResource AccentInvariantBrush}" />
+                <TextBlock Text="{x:Bind ViewModel.BayLeft, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource AccentBrush}" />
               </StackPanel>
             </Grid>
             <StackPanel Spacing="2">
@@ -350,7 +350,7 @@
           </StackPanel>
 
           <Grid Grid.Column="3" ColumnSpacing="14" Padding="18,6,4,6"
-                BorderBrush="{StaticResource HairlineInvariantBrush}" BorderThickness="1,0,0,0">
+                BorderBrush="{ThemeResource HairlineBrush}" BorderThickness="1,0,0,0">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="110" />
               <ColumnDefinition Width="*" />
@@ -376,7 +376,7 @@
                 <TextBlock Grid.Row="1" Text="Status" Style="{StaticResource MicroText}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.BayContainerStatus, Mode=OneWay}"
                            Style="{StaticResource BodyStrongSmallText}" HorizontalAlignment="Right"
-                           Foreground="{StaticResource AccentInvariantBrush}" />
+                           Foreground="{ThemeResource AccentBrush}" />
               </Grid>
             </StackPanel>
           </Grid>

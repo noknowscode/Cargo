@@ -49,14 +49,14 @@ public sealed partial class ProportionalPanel : Panel
                     Text = segment.Label,
                     FontFamily = (FontFamily)Application.Current.Resources["BodyMediumFont"],
                     FontSize = 11,
-                    Foreground = Tokens.Brush("SurfaceInvariantBrush"),
+                    Foreground = Tokens.Brush("SurfaceBrush"),
                     VerticalAlignment = VerticalAlignment.Center,
                     TextTrimming = TextTrimming.Clip
                 }
             });
         }
 
-        Children.Add(new Rectangle { Width = 1.5, Fill = Tokens.Brush("InkInvariantBrush") });
+        Children.Add(new Rectangle { Width = 1.5, Fill = Tokens.Brush("InkBrush") });
         InvalidateArrange();
     }
 

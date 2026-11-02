@@ -172,38 +172,38 @@ public sealed partial class BerthStatusViewModel : ObservableObject
         var linked = row.VesselId is not null ? _state.HoveredVessel == row.VesselId : hoveredBerth == row.Slot;
         row.LinkKey = row.VesselId ?? row.Slot;
 
-        var ink = Tokens.Brush("InkInvariantBrush");
-        var muted = Tokens.Brush("TextMutedInvariantBrush");
-        var transparent = Tokens.Brush("InkInvariantBrush", 0);
+        var ink = Tokens.Brush("InkBrush");
+        var muted = Tokens.Brush("TextMutedBrush");
+        var transparent = Tokens.Brush("InkBrush", 0);
 
         // Linked: the hover ground; the needs row keeps its alert tint and takes a thin alert edge instead
-        row.Outline = current ? ink : linked && kind == RowKind.Needs ? Tokens.Brush("AlertInvariantBrush") : transparent;
+        row.Outline = current ? ink : linked && kind == RowKind.Needs ? Tokens.Brush("AlertBrush") : transparent;
         // Alpha in the colour, not the brush: the row ground fades through a BrushTransition
-        row.RowBackground = kind == RowKind.Needs ? Tokens.Tint("AlertInvariantBrush", .05)
-            : linked ? Tokens.Tint("InkInvariantBrush", .06)
-            : Tokens.Tint("InkInvariantBrush", 0);
+        row.RowBackground = kind == RowKind.Needs ? Tokens.Tint("AlertBrush", .05)
+            : linked ? Tokens.Tint("InkBrush", .06)
+            : Tokens.Tint("InkBrush", 0);
         // The needs plate is the count badge: white on alert ink (5.6:1)
-        row.PlateBackground = kind == RowKind.Needs ? Tokens.Brush("AlertInkInvariantBrush") : Tokens.Brush("SurfaceSunkInvariantBrush");
+        row.PlateBackground = kind == RowKind.Needs ? Tokens.Brush("AlertInkBrush") : Tokens.Brush("SurfaceSunkBrush");
         row.PlateForeground = kind switch
         {
-            RowKind.Needs => Tokens.Brush("OnAccentInvariantBrush"),
-            RowKind.Restricted => Tokens.Brush("RestrictedInvariantBrush"),
+            RowKind.Needs => Tokens.Brush("OnAccentBrush"),
+            RowKind.Restricted => Tokens.Brush("RestrictedBrush"),
             _ => ink
         };
         row.PlateBorder = kind switch
         {
             RowKind.Needs => transparent,
-            RowKind.Restricted => Tokens.Brush("RestrictedInvariantBrush"),
-            _ => Tokens.Brush("HairlineStrongInvariantBrush")
+            RowKind.Restricted => Tokens.Brush("RestrictedBrush"),
+            _ => Tokens.Brush("HairlineStrongBrush")
         };
         row.StateForeground = kind switch
         {
-            RowKind.Needs => Tokens.Brush("AlertInkInvariantBrush"),
-            RowKind.Restricted => Tokens.Brush("RestrictedInvariantBrush"),
+            RowKind.Needs => Tokens.Brush("AlertInkBrush"),
+            RowKind.Restricted => Tokens.Brush("RestrictedBrush"),
             _ => muted
         };
         row.NameForeground = kind == RowKind.Free ? muted : ink;
-        row.WhenForeground = kind == RowKind.Needs ? Tokens.Brush("AlertInkInvariantBrush") : ink;
+        row.WhenForeground = kind == RowKind.Needs ? Tokens.Brush("AlertInkBrush") : ink;
     }
 }
 

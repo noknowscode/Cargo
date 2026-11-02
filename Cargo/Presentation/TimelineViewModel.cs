@@ -65,6 +65,9 @@ public sealed partial class TimelineViewModel : ObservableObject
         ShowChart();
         Refresh();
         LoadFonts();
+
+        // The tide markers carry resolved colours (Liveline paints them), so a theme change refreshes them
+        Tokens.ThemeChanged += (_, _) => Refresh();
     }
 
     // ── Chart / Table ───────────────────────────────────────────────────
@@ -86,8 +89,8 @@ public sealed partial class TimelineViewModel : ObservableObject
         ViewIndex = table ? 1 : 0;
         ChartVisibility = table ? Visibility.Collapsed : Visibility.Visible;
         TableVisibility = table ? Visibility.Visible : Visibility.Collapsed;
-        ChartLabel = Tokens.Brush(table ? "InkInvariantBrush" : "PaperInvariantBrush");
-        TableLabel = Tokens.Brush(table ? "PaperInvariantBrush" : "InkInvariantBrush");
+        ChartLabel = Tokens.Brush(table ? "InkBrush" : "PaperBrush");
+        TableLabel = Tokens.Brush(table ? "PaperBrush" : "InkBrush");
     }
 
     // ── Tide lane typefaces ─────────────────────────────────────────────

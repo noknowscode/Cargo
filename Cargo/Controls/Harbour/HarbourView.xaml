@@ -22,29 +22,29 @@
           <Grid>
             <!-- Light tag: name and status on one 30 px line, on the float shadow.
                  Shadows inline: a Style-supplied collection never applies (Toolkit gotcha G36). -->
-            <utu:ShadowContainer Background="{StaticResource SurfaceInvariantBrush}" Visibility="{x:Bind LightVisibility, Mode=OneWay}">
+            <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}" Visibility="{x:Bind LightVisibility, Mode=OneWay}">
               <utu:ShadowContainer.Shadows>
                 <utu:ShadowCollection>
-                  <utu:Shadow Spread="1" BlurRadius="0" Color="{StaticResource InkColor}" Opacity="0.08" />
-                  <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource InkColor}" Opacity="0.06" />
-                  <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource InkColor}" Opacity="0.07" />
+                  <utu:Shadow Spread="1" BlurRadius="0" Color="{ThemeResource ShadowRingColor}" Opacity="0.08" />
+                  <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource ShadowColor}" Opacity="0.06" />
+                  <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.07" />
                 </utu:ShadowCollection>
               </utu:ShadowContainer.Shadows>
               <!-- xaml-lint: allow card - a data-tag chip on a leader line, not a content card -->
               <Border CornerRadius="8" Height="30" Padding="10,0"
                       BorderBrush="{x:Bind Edge, Mode=OneWay}" BorderThickness="{x:Bind EdgeThickness, Mode=OneWay}">
                 <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                  <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" Foreground="{StaticResource InkInvariantBrush}" />
-                  <TextBlock Text="{x:Bind Sub}" Style="{StaticResource TypeMono12}" Foreground="{StaticResource TextMutedInvariantBrush}" />
+                  <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" Foreground="{ThemeResource InkBrush}" />
+                  <TextBlock Text="{x:Bind Sub}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextMutedBrush}" />
                 </StackPanel>
               </Border>
             </utu:ShadowContainer>
 
-            <!-- Dark tag: the arrival waiting on its berth, with the time to go -->
-            <utu:ShadowContainer Background="{StaticResource InkInvariantBrush}" Visibility="{x:Bind DarkVisibility, Mode=OneWay}">
+            <!-- Inverse tag (ink ground: dark on Light, light on Dark): the arrival waiting on its berth, with the time to go -->
+            <utu:ShadowContainer Background="{ThemeResource InkBrush}" Visibility="{x:Bind DarkVisibility, Mode=OneWay}">
               <utu:ShadowContainer.Shadows>
                 <utu:ShadowCollection>
-                  <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource InkColor}" Opacity="0.18" />
+                  <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.18" />
                 </utu:ShadowCollection>
               </utu:ShadowContainer.Shadows>
               <!-- xaml-lint: allow card - a data-tag chip on a leader line, not a content card -->
@@ -56,11 +56,11 @@
                       <ColumnDefinition Width="*" />
                       <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" Foreground="{StaticResource SurfaceInvariantBrush}" />
+                    <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" Foreground="{ThemeResource SurfaceBrush}" />
                     <TextBlock Grid.Column="1" Text="{x:Bind Countdown, Mode=OneWay}" Style="{StaticResource TypeMonoMedium12}"
-                               Foreground="{StaticResource SurfaceInvariantBrush}" />
+                               Foreground="{ThemeResource SurfaceBrush}" />
                   </Grid>
-                  <TextBlock Text="{x:Bind PendingSub}" Style="{StaticResource TypeMono12}" Foreground="{StaticResource TextOnDarkBrush}" />
+                  <TextBlock Text="{x:Bind PendingSub}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextInverseMutedBrush}" />
                 </StackPanel>
               </Border>
             </utu:ShadowContainer>
@@ -70,7 +70,7 @@
     </DataTemplate>
   </UserControl.Resources>
 
-  <Grid Background="{StaticResource HarbourStageInvariantBrush}">
+  <Grid Background="{ThemeResource HarbourStageBrush}">
     <Border x:Name="SceneHost" Background="Transparent" />
 
     <Canvas x:Name="TagLayer" />
@@ -118,13 +118,13 @@
          container because a Style-supplied one never applies (Toolkit gotcha G36). -->
 
     <!-- Camera: the current preset, opening the four presets upward; a drag or zoom clears the check -->
-    <utu:ShadowContainer Background="{StaticResource SurfaceInvariantBrush}" Visibility="{x:Bind HudVisibility, Mode=OneWay}"
+    <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}" Visibility="{x:Bind HudVisibility, Mode=OneWay}"
                          HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="{utu:Responsive Narrowest='16,0,0,12', Narrow='40,0,0,16'}">
       <utu:ShadowContainer.Shadows>
         <utu:ShadowCollection>
-          <utu:Shadow Spread="1" BlurRadius="0" Color="{StaticResource InkColor}" Opacity="0.08" />
-          <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource InkColor}" Opacity="0.06" />
-          <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource InkColor}" Opacity="0.07" />
+          <utu:Shadow Spread="1" BlurRadius="0" Color="{ThemeResource ShadowRingColor}" Opacity="0.08" />
+          <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource ShadowColor}" Opacity="0.06" />
+          <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.07" />
         </utu:ShadowCollection>
       </utu:ShadowContainer.Shadows>
       <Button Style="{StaticResource HudSummaryButton}" AutomationProperties.Name="Camera view">
@@ -132,7 +132,7 @@
           <TextBlock x:Name="CameraLabel" Text="Overview" Style="{StaticResource TypeMedium14}" VerticalAlignment="Center" />
           <Viewbox Width="16" Height="16" VerticalAlignment="Center">
             <Grid Width="24" Height="24">
-              <shapes:Path Style="{StaticResource ChevronDownIcon}" Stroke="{StaticResource InkInvariantBrush}" />
+              <shapes:Path Style="{StaticResource ChevronDownIcon}" Stroke="{ThemeResource InkBrush}" />
             </Grid>
           </Viewbox>
         </StackPanel>
@@ -150,12 +150,12 @@
     <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="{utu:Responsive Narrowest='0,0,16,12', Narrow='0,0,40,16'}"
                 Visibility="{x:Bind HudVisibility, Mode=OneWay}">
       <!-- Key: what each mark on the map means -->
-      <utu:ShadowContainer Background="{StaticResource SurfaceInvariantBrush}">
+      <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}">
         <utu:ShadowContainer.Shadows>
           <utu:ShadowCollection>
-            <utu:Shadow Spread="1" BlurRadius="0" Color="{StaticResource InkColor}" Opacity="0.08" />
-            <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource InkColor}" Opacity="0.06" />
-            <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource InkColor}" Opacity="0.07" />
+            <utu:Shadow Spread="1" BlurRadius="0" Color="{ThemeResource ShadowRingColor}" Opacity="0.08" />
+            <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource ShadowColor}" Opacity="0.06" />
+            <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.07" />
           </utu:ShadowCollection>
         </utu:ShadowContainer.Shadows>
         <Button Style="{StaticResource HudSummaryButton}" Content="Key" AutomationProperties.Name="Map key">
@@ -164,23 +164,23 @@
               <StackPanel MinWidth="208">
                 <TextBlock Text="KEY" Style="{StaticResource CapsLabelText}" Margin="10,8,10,4" />
                 <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,8">
-                  <Ellipse Width="9" Height="9" Fill="{StaticResource NavyInvariantBrush}" VerticalAlignment="Center" />
+                  <Ellipse Width="9" Height="9" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" />
                   <TextBlock Text="Vessel alongside" Style="{StaticResource KeyRowText}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,8">
-                  <Ellipse Width="9" Height="9" Stroke="{StaticResource NavyInvariantBrush}" StrokeThickness="1.6" VerticalAlignment="Center" />
+                  <Ellipse Width="9" Height="9" Stroke="{ThemeResource NavyBrush}" StrokeThickness="1.6" VerticalAlignment="Center" />
                   <TextBlock Text="Vessel inbound" Style="{StaticResource KeyRowText}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,8">
-                  <Rectangle Width="14" Height="12" RadiusX="2" RadiusY="2" Fill="{StaticResource ReservedFillInvariantBrush}" Stroke="{StaticResource AccentInvariantBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
+                  <Rectangle Width="14" Height="12" RadiusX="2" RadiusY="2" Fill="{ThemeResource ReservedFillBrush}" Stroke="{ThemeResource AccentBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
                   <TextBlock Text="Berth reserved for an arrival" Style="{StaticResource KeyRowText}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,8">
-                  <Rectangle Width="14" Height="12" RadiusX="2" RadiusY="2" Fill="{StaticResource HairlineInvariantBrush}" Stroke="{StaticResource TextMutedInvariantBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
+                  <Rectangle Width="14" Height="12" RadiusX="2" RadiusY="2" Fill="{ThemeResource HairlineBrush}" Stroke="{ThemeResource TextMutedBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
                   <TextBlock Text="Restricted" Style="{StaticResource KeyRowText}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,8">
-                  <Line X1="0" Y1="0" X2="14" Y2="0" Width="14" Stroke="{StaticResource TextMutedInvariantBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
+                  <Line X1="0" Y1="0" X2="14" Y2="0" Width="14" Stroke="{ThemeResource TextMutedBrush}" StrokeThickness="1.5" StrokeDashArray="2,1.5" VerticalAlignment="Center" />
                   <TextBlock Text="Depth contour, metres" Style="{StaticResource KeyRowText}" />
                 </StackPanel>
               </StackPanel>
@@ -191,12 +191,12 @@
 
       <!-- Scale, north, zoom: one float, cells split by hairlines. Phones pinch instead, and the row has no
            room for it beside the camera menu -->
-      <utu:ShadowContainer Background="{StaticResource SurfaceInvariantBrush}" Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}">
+      <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}" Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}">
         <utu:ShadowContainer.Shadows>
           <utu:ShadowCollection>
-            <utu:Shadow Spread="1" BlurRadius="0" Color="{StaticResource InkColor}" Opacity="0.08" />
-            <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource InkColor}" Opacity="0.06" />
-            <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource InkColor}" Opacity="0.07" />
+            <utu:Shadow Spread="1" BlurRadius="0" Color="{ThemeResource ShadowRingColor}" Opacity="0.08" />
+            <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource ShadowColor}" Opacity="0.06" />
+            <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.07" />
           </utu:ShadowCollection>
         </utu:ShadowContainer.Shadows>
         <Grid CornerRadius="10" Height="44">
@@ -211,35 +211,35 @@
           </Grid.ColumnDefinitions>
           <StackPanel Orientation="Horizontal" Spacing="8" Padding="14,0,12,0" VerticalAlignment="Center" IsHitTestVisible="False">
             <Border x:Name="ScaleBar" Height="6" Width="64" VerticalAlignment="Center"
-                    BorderBrush="{StaticResource InkInvariantBrush}" BorderThickness="1.5,0,1.5,1.5" />
+                    BorderBrush="{ThemeResource InkBrush}" BorderThickness="1.5,0,1.5,1.5" />
             <TextBlock x:Name="ScaleLabel" Text="250 m" Style="{StaticResource TypeMonoMedium12}"
-                       Foreground="{StaticResource InkInvariantBrush}" VerticalAlignment="Center" />
+                       Foreground="{ThemeResource InkBrush}" VerticalAlignment="Center" />
           </StackPanel>
-          <Rectangle Grid.Column="1" Fill="{StaticResource HairlineInvariantBrush}" />
+          <Rectangle Grid.Column="1" Fill="{ThemeResource HairlineBrush}" />
           <Viewbox Grid.Column="2" Width="20" Height="20" IsHitTestVisible="False" AutomationProperties.Name="North">
             <Canvas Width="26" Height="26">
               <Canvas.RenderTransform>
                 <RotateTransform x:Name="Needle" CenterX="13" CenterY="13" />
               </Canvas.RenderTransform>
-              <shapes:Path Style="{StaticResource NorthNeedleIcon}" Fill="{StaticResource AlertInvariantBrush}" />
-              <shapes:Path Style="{StaticResource SouthNeedleIcon}" Fill="{StaticResource HairlineStrongInvariantBrush}" />
+              <shapes:Path Style="{StaticResource NorthNeedleIcon}" Fill="{ThemeResource AlertBrush}" />
+              <shapes:Path Style="{StaticResource SouthNeedleIcon}" Fill="{ThemeResource HairlineStrongBrush}" />
             </Canvas>
           </Viewbox>
-          <Rectangle Grid.Column="3" Fill="{StaticResource HairlineInvariantBrush}" />
+          <Rectangle Grid.Column="3" Fill="{ThemeResource HairlineBrush}" />
           <Button Grid.Column="4" Style="{StaticResource HudIconButton}" Command="{x:Bind ZoomCommand}" CommandParameter="out"
                   AutomationProperties.Name="Zoom out">
             <Viewbox Width="18" Height="18">
               <Grid Width="24" Height="24">
-                <shapes:Path Style="{StaticResource MinusIcon}" Stroke="{StaticResource InkInvariantBrush}" />
+                <shapes:Path Style="{StaticResource MinusIcon}" Stroke="{ThemeResource InkBrush}" />
               </Grid>
             </Viewbox>
           </Button>
-          <Rectangle Grid.Column="5" Fill="{StaticResource HairlineInvariantBrush}" />
+          <Rectangle Grid.Column="5" Fill="{ThemeResource HairlineBrush}" />
           <Button Grid.Column="6" Style="{StaticResource HudIconButton}" Command="{x:Bind ZoomCommand}" CommandParameter="in"
                   AutomationProperties.Name="Zoom in">
             <Viewbox Width="18" Height="18">
               <Grid Width="24" Height="24">
-                <shapes:Path Style="{StaticResource PlusIcon}" Stroke="{StaticResource InkInvariantBrush}" />
+                <shapes:Path Style="{StaticResource PlusIcon}" Stroke="{ThemeResource InkBrush}" />
               </Grid>
             </Viewbox>
           </Button>

@@ -86,8 +86,8 @@ public sealed partial class TickBar : StackPanel
         set => SetValue(PercentProperty, value);
     }
 
-    /// <summary>Token for the lit ticks, e.g. "SeaGreenInvariantBrush".</summary>
-    public string LitToken { get; set; } = "AccentInvariantBrush";
+    /// <summary>Token for the lit ticks, e.g. "SeaGreenBrush".</summary>
+    public string LitToken { get; set; } = "AccentBrush";
 
     public int Count { get; set; } = 30;
 

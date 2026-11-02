@@ -56,12 +56,12 @@ public sealed partial class VesselDetailViewModel : ObservableObject
         var berthNumber = _state.BerthOf(vessel.Id);
         var berth = PortData.Berths.FirstOrDefault(b => b.Number == berthNumber);
         var needs = _state.PendingDecision == vessel.Id;
-        var ink = Tokens.Brush("InkInvariantBrush");
+        var ink = Tokens.Brush("InkBrush");
 
         Name = vessel.Name;
         Where = berth is null ? "Anchorage" : $"Berth {berth.Number}";
         StateLabel = BerthFacts.State(_state, vessel).ToUpperInvariant();
-        Accent = needs ? Tokens.Brush("AlertInkInvariantBrush") : ink;
+        Accent = needs ? Tokens.Brush("AlertInkBrush") : ink;
         Note = BerthFacts.Note(vessel);
 
         (Big, BigSub) = vessel.Status switch
@@ -97,7 +97,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
             var ukc = BerthFacts.UnderKeel(vessel, berth);
             facts.Add(Fact("Berth depth", $"{berth.Depth:0.0} m"));
             // A tight under-keel on the pending arrival is part of the decision, so it takes the status ink
-            facts.Add(Fact("Under-keel", $"{ukc:0.0} m", needs && ukc < 1 ? "AlertInkInvariantBrush" : null));
+            facts.Add(Fact("Under-keel", $"{ukc:0.0} m", needs && ukc < 1 ? "AlertInkBrush" : null));
         }
 
         SetFacts(facts);
@@ -113,7 +113,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
     }
 
     private static Fact Fact(string key, string value, string? tone = null) =>
-        new() { Key = key, Value = value, Tone = Tokens.Brush(tone ?? "InkInvariantBrush") };
+        new() { Key = key, Value = value, Tone = Tokens.Brush(tone ?? "InkBrush") };
 
     private void ShowBerth(BerthDef berth)
     {
@@ -123,7 +123,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
         Name = $"Berth {berth.Number}";
         Where = "North Quay";
         StateLabel = restricted ? "RESTRICTED" : "AVAILABLE";
-        Accent = restricted ? Tokens.Brush("RestrictedInvariantBrush") : Tokens.Brush("InkInvariantBrush");
+        Accent = restricted ? Tokens.Brush("RestrictedBrush") : Tokens.Brush("InkBrush");
         Big = $"{berth.Depth:0.0} m";
         BigSub = "alongside depth";
         Note = restricted

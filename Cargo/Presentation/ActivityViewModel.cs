@@ -71,7 +71,7 @@ public sealed partial class ActivityViewModel : ObservableObject
                 Title = entry.Title,
                 Detail = entry.Detail,
                 Icon = (about is null ? null : QueueIcon(about.Kind)) ?? Geo.Path(PortData.ActivityIcons[entry.Kind].Icon),
-                Tone = Tokens.Brush(about is null ? "TextMutedInvariantBrush" : "AlertInvariantBrush"),
+                Tone = Tokens.Brush(about is null ? "TextMutedBrush" : "AlertBrush"),
                 ChipVisibility = about is null ? Visibility.Collapsed : Visibility.Visible,
                 About = about,
                 Toggle = ToggleCommand

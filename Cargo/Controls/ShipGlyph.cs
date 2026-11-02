@@ -27,6 +27,8 @@ public sealed partial class ShipGlyph : SKCanvasElement
     {
         Height = 26;
         IsHitTestVisible = false;
+        // Colours are read from the tokens on every draw, so a theme change only needs a redraw
+        this.RebuildOnTheme(Invalidate);
     }
 
     public static readonly DependencyProperty LengthProperty = DependencyProperty.Register(

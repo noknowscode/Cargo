@@ -10,7 +10,7 @@
       <Grid>
         <TextBlock Text="Sea &amp; weather" Style="{StaticResource CardTitleText}" />
         <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource CaptionText}"
-                   Foreground="{StaticResource TextFaintInvariantBrush}">
+                   Foreground="{ThemeResource TextFaintBrush}">
           <Run Text="Outer harbour · " /><Run Text="{x:Bind ViewModel.Now, Mode=OneWay}" />
         </TextBlock>
       </Grid>
@@ -50,7 +50,7 @@
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" Spacing="7">
           <TextBlock Text="Pilotage" Style="{StaticResource MicroText}" VerticalAlignment="Bottom" />
           <TextBlock Text="Open · no restrictions" Style="{StaticResource BodyStrongText}"
-                     Foreground="{StaticResource SeaGreenInkInvariantBrush}" VerticalAlignment="Bottom" />
+                     Foreground="{ThemeResource SeaGreenInkBrush}" VerticalAlignment="Bottom" />
         </StackPanel>
       </Grid>
 

@@ -18,6 +18,38 @@ internal static class Live
     public static void RebuildOnYardMove(this FrameworkElement element, PortState state, Action rebuild) =>
         Subscribe(element, rebuild, handler => state.YardChanged += handler);
 
+    /// <summary>
+    /// For scenes and models that keep colours rather than <see cref="Tokens"/> brushes (blends, gradients,
+    /// Skia paints): <paramref name="rebuild"/> runs when the theme changes while the element is shown, and
+    /// once on the way back if it changed while hidden. The static event is only held while shown.
+    /// </summary>
+    public static void RebuildOnTheme(this FrameworkElement element, Action rebuild)
+    {
+        var builtFor = Tokens.Version;
+
+        void OnThemeChanged(object? sender, EventArgs e)
+        {
+            builtFor = Tokens.Version;
+            rebuild();
+        }
+
+        element.TrackShown(shown =>
+        {
+            if (!shown)
+            {
+                Tokens.ThemeChanged -= OnThemeChanged;
+                return;
+            }
+
+            Tokens.ThemeChanged += OnThemeChanged;
+            if (builtFor != Tokens.Version)
+            {
+                builtFor = Tokens.Version;
+                rebuild();
+            }
+        });
+    }
+
     /// <summary>For hover, which repaints what is already there rather than rebuilding it.</summary>
     public static void RepaintWhenVisible(this FrameworkElement element, PortState state, Action repaint) =>
         Subscribe(element, repaint, handler => state.HoverChanged += handler);

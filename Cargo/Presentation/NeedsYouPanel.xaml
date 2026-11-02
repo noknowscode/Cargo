@@ -19,7 +19,7 @@
                  IsTabStop="True" AutomationProperties.HeadingLevel="Level2"
                  AutomationProperties.Name="{x:Bind local:NeedsYouPanel.Spoken(ViewModel.NeedsYouCount), Mode=OneWay}" />
       <!-- xaml-lint: allow card - the count badge, a pill of mono digits -->
-      <Border Background="{StaticResource AlertInkInvariantBrush}" CornerRadius="12" Padding="10,4" VerticalAlignment="Center"
+      <Border Background="{ThemeResource AlertInkBrush}" CornerRadius="12" Padding="10,4" VerticalAlignment="Center"
               Visibility="{x:Bind local:NeedsYouPanel.Shown(ViewModel.NeedsYouCount), Mode=OneWay}"
               AutomationProperties.AccessibilityView="Raw">
         <TextBlock Text="{x:Bind local:NeedsYouPanel.Count(ViewModel.NeedsYouCount), Mode=OneWay}" Style="{StaticResource CountBadgeText}" />
@@ -32,7 +32,7 @@
     <ItemsControl Grid.Row="1" ItemsSource="{x:Bind ViewModel.Decisions}" Margin="0,4,0,0" IsTabStop="False">
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="domain:Decision">
-          <Grid ColumnSpacing="12" Padding="0,16" BorderBrush="{StaticResource HairlineInvariantBrush}" BorderThickness="0,0,0,1">
+          <Grid ColumnSpacing="12" Padding="0,16" BorderBrush="{ThemeResource HairlineBrush}" BorderThickness="0,0,0,1">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="20" />
               <ColumnDefinition Width="*" />
@@ -41,7 +41,7 @@
 
             <Viewbox Width="18" Height="18" VerticalAlignment="Top" Margin="0,1,0,0" AutomationProperties.AccessibilityView="Raw">
               <Grid Width="24" Height="24">
-                <shapes:Path Style="{x:Bind local:NeedsYouPanel.Icon(Kind)}" Stroke="{StaticResource AlertInvariantBrush}" />
+                <shapes:Path Style="{x:Bind local:NeedsYouPanel.Icon(Kind)}" Stroke="{ThemeResource AlertBrush}" />
               </Grid>
             </Viewbox>
 

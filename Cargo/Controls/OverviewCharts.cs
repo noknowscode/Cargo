@@ -23,6 +23,12 @@ public sealed partial class VolumeChart : SceneHost
     {
         Scene.Place(_settled);
         Scene.Place(_live);
+        this.RebuildOnTheme(() =>
+        {
+            _hour = -1;
+            _liveDrawn = (-1, false);
+            Redraw();
+        });
     }
 
     /// <summary>Hours since midnight on the shift clock.</summary>
@@ -47,10 +53,10 @@ public sealed partial class VolumeChart : SceneHost
             }
 
             _settled.Place(Draw.Rule(0, 104, 300, 104, Tokens.Brush("InkColor", 0.14)));
-            _settled.Place(Draw.Text("14:00", 0, 108, 11, Tokens.Brush("TextFaintInvariantBrush")));
-            _settled.Place(Draw.Label(PortState.Format(hour - 3), 150, 108, 11, Tokens.Brush("TextFaintInvariantBrush"),
+            _settled.Place(Draw.Text("14:00", 0, 108, 11, Tokens.Brush("TextFaintBrush")));
+            _settled.Place(Draw.Label(PortState.Format(hour - 3), 150, 108, 11, Tokens.Brush("TextFaintBrush"),
                 alignment: TextAlignment.Center, width: 80));
-            _settled.Place(Draw.Label(PortState.Format(hour), 300, 108, 11, Tokens.Brush("TextFaintInvariantBrush"),
+            _settled.Place(Draw.Label(PortState.Format(hour), 300, 108, 11, Tokens.Brush("TextFaintBrush"),
                 alignment: TextAlignment.Right, width: 80));
         }
 
@@ -97,18 +103,26 @@ public sealed partial class FlowChart : SceneHost
 {
     public FlowChart() : base(300, 150)
     {
+        Build();
+        this.RebuildOnTheme(Build);
+    }
+
+    // The area fades are gradients of resolved colours, so a theme change draws the chart again
+    private void Build()
+    {
+        Scene.Children.Clear();
         var entering = Geo.MakeSeries(PortData.CargoIn, 300, 132, 14);
         var leaving = Geo.MakeSeries(PortData.CargoOut, 300, 132, 14);
 
         Scene.Place(new Path { Data = leaving.Area, Fill = Draw.Fade("AmberColor", 0.30) });
         Scene.Place(new Path { Data = entering.Area, Fill = Draw.Fade("AccentColor", 0.26) });
-        Scene.Place(new Path { Data = leaving.Stroke, Stroke = Tokens.Brush("AmberInvariantBrush"), StrokeThickness = 1.8 });
-        Scene.Place(new Path { Data = entering.Stroke, Stroke = Tokens.Brush("AccentInvariantBrush"), StrokeThickness = 1.8 });
+        Scene.Place(new Path { Data = leaving.Stroke, Stroke = Tokens.Brush("AmberBrush"), StrokeThickness = 1.8 });
+        Scene.Place(new Path { Data = entering.Stroke, Stroke = Tokens.Brush("AccentBrush"), StrokeThickness = 1.8 });
 
         Scene.Place(Draw.Rule(0, 132, 300, 132, Tokens.Brush("InkColor", 0.1)));
-        Scene.Place(Draw.Text("00:00", 0, 136, 12, Tokens.Brush("TextFaintInvariantBrush")));
-        Scene.Place(Draw.Label("12:00", 150, 136, 12, Tokens.Brush("TextFaintInvariantBrush"), alignment: TextAlignment.Center, width: 80));
-        Scene.Place(Draw.Label("24:00", 300, 136, 12, Tokens.Brush("TextFaintInvariantBrush"), alignment: TextAlignment.Right, width: 80));
+        Scene.Place(Draw.Text("00:00", 0, 136, 12, Tokens.Brush("TextFaintBrush")));
+        Scene.Place(Draw.Label("12:00", 150, 136, 12, Tokens.Brush("TextFaintBrush"), alignment: TextAlignment.Center, width: 80));
+        Scene.Place(Draw.Label("24:00", 300, 136, 12, Tokens.Brush("TextFaintBrush"), alignment: TextAlignment.Right, width: 80));
     }
 }
 
@@ -117,13 +131,20 @@ public sealed partial class TideChart : SceneHost
 {
     public TideChart() : base(600, 70, stretchHeight: true)
     {
+        Build();
+        this.RebuildOnTheme(Build);
+    }
+
+    private void Build()
+    {
+        Scene.Children.Clear();
         var tide = Geo.MakeSeries(PortData.Tide, 600, 62, 8);
         Scene.Place(new Path { Data = tide.Area, Fill = Draw.Fade("RiverDeepColor", 0.32) });
         Scene.Place(new Path { Data = tide.Stroke, Stroke = Tokens.Brush("RiverDeepColor"), StrokeThickness = 1.8 });
 
         var x = Math.Clamp((PortData.NowHours - 18) / 12 * 600, 0, 600);
         var y = tide.At((PortData.NowHours - 18) * 2);
-        Scene.Place(Draw.Rule(x, 4, x, 62, Tokens.Brush("InkInvariantBrush"), 1, dash: Draw.Dash(3, 3)));
-        Scene.Place(Draw.Dot(x, y, 4, Tokens.Brush("AccentInvariantBrush"), Tokens.Brush("SurfaceInvariantBrush"), 2));
+        Scene.Place(Draw.Rule(x, 4, x, 62, Tokens.Brush("InkBrush"), 1, dash: Draw.Dash(3, 3)));
+        Scene.Place(Draw.Dot(x, y, 4, Tokens.Brush("AccentBrush"), Tokens.Brush("SurfaceBrush"), 2));
     }
 }
