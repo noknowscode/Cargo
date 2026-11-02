@@ -130,10 +130,11 @@ public sealed partial class VesselDetailViewModel : ObservableObject
             ? BerthFacts.Restriction(berth)
             : next is null ? "No vessel booked in the next 36 h" : $"{next.Name} booked from {BerthFacts.Clock(next.Eta)}";
         CargoVisibility = Visibility.Collapsed;
-        SetFacts(
-        [
+        // An array, not a collection expression: one typed as IReadOnlyList has no concrete type under WinRT AOT (CsWinRT1032)
+        SetFacts(new[]
+        {
             Fact("Alongside depth", $"{berth.Depth:0.0} m"),
             Fact("Next booking", next is null ? "None in 36 h" : BerthFacts.Clock(next.Eta))
-        ]);
+        });
     }
 }
