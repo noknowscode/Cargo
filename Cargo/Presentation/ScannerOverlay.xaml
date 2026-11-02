@@ -3,20 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:Cargo.Presentation"
              xmlns:controls="using:Cargo.Controls"
-             xmlns:shapes="using:Microsoft.UI.Xaml.Shapes">
+             xmlns:shapes="using:Microsoft.UI.Xaml.Shapes"
+             xmlns:utu="using:Uno.Toolkit.UI">
 
   <!-- A floating panel over the dimmed page, not a full-window takeover: the section you came from
-       stays visible around it. At most 1320 x 820, 48 px from the window edges. -->
+       stays visible around it. At most 1320 x 820, 48 px from the window edges from 1000 px (24 below).
+       Below 1000 the scan result moves under the stage and scrolls on its own; on a phone the panel fills
+       the window, as a sheet would. -->
   <Grid Background="{StaticResource PageDimInvariantBrush}">
-  <Grid Background="{StaticResource InkDeepInvariantBrush}" CornerRadius="{StaticResource RadiusCard}"
-        MaxWidth="1320" MaxHeight="820" Margin="48">
+  <Grid Background="{StaticResource InkDeepInvariantBrush}" MaxWidth="1320" MaxHeight="820"
+        CornerRadius="{utu:Responsive Narrowest='0', Narrow={StaticResource RadiusCard}}"
+        Margin="{utu:Responsive Narrowest='0', Narrow='24', Normal='48'}">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*" />
-      <ColumnDefinition Width="360" />
+      <ColumnDefinition Width="Auto" />
     </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
 
     <!-- ── Inspection stage ─────────────────────────────────────── -->
-    <Grid>
+    <Grid Grid.RowSpan="{utu:Responsive Narrowest=1, Normal=2}">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="*" />
@@ -32,7 +40,7 @@
       <controls:GridPaper Grid.RowSpan="3" Opacity="0.5" />
       <controls:ContainerScanner x:Name="Scanner3D" Grid.Row="1" />
 
-      <Grid Padding="28,24" ColumnSpacing="20">
+      <Grid Padding="{utu:Responsive Narrowest='16,16', Narrow='28,24'}" ColumnSpacing="20">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
@@ -46,30 +54,40 @@
           <TextBlock Text="{x:Bind ViewModel.ContainerId, Mode=OneWay}" Style="{StaticResource TypeMonoMedium24}"
                      Foreground="{StaticResource TextOnDarkStrongBrush}" />
           <TextBlock Text="{x:Bind ViewModel.ContainerMeta, Mode=OneWay}" Style="{StaticResource SubtitleText}"
-                     Foreground="{StaticResource TextOnDarkMutedBrush}" />
+                     Foreground="{StaticResource TextOnDarkMutedBrush}" TextWrapping="Wrap" />
         </StackPanel>
         <Button Grid.Column="1" Style="{StaticResource CloseOnDarkButton}" Content="×" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}"
-                AutomationProperties.Name="Close scanner" />
+                Width="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=34}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=34}"
+                CornerRadius="{utu:Responsive Narrowest=22, Normal=17}"
+                AutomationProperties.Name="Close scanner" ToolTipService.ToolTip="Close scanner" />
       </Grid>
 
-      <Grid Grid.Row="2" Padding="28,0,20,24" ColumnSpacing="20">
+      <!-- The view presets, X-ray and zoom: the keyboard's way to turn and size the box the pointer drags. They wrap
+           onto a second line when the stage is narrow -->
+      <Grid Grid.Row="2" Padding="{utu:Responsive Narrowest='16,0,16,16', Narrow='28,0,20,24'}" ColumnSpacing="20" RowSpacing="8">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Views, Mode=OneWay}">
+        <controls:FlowPanel Spacing="6" RowSpacing="8" VerticalAlignment="Center">
+          <ItemsControl ItemsSource="{x:Bind ViewModel.Views, Mode=OneWay}" IsTabStop="False">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="6" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:ScanViewOption">
-                <Button Style="{StaticResource BareButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Label}">
+                <Button Style="{StaticResource BareButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Label}"
+                        AutomationProperties.Name="{x:Bind AccessibleName}">
                   <!-- xaml-lint: allow card - a view-preset toggle; the Simple theme ships no segmented style -->
                   <Border Background="{x:Bind Background}" BorderBrush="{StaticResource HairlineOnDarkBrush}"
-                          BorderThickness="1" CornerRadius="8" Padding="12,7">
-                    <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium12}"
+                          BorderThickness="1" CornerRadius="8" Padding="12,7"
+                          MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=0}">
+                    <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium12}" VerticalAlignment="Center"
                                Foreground="{StaticResource TextOnDarkStrongBrush}" />
                   </Border>
                 </Button>
@@ -77,13 +95,15 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
-          <Rectangle Width="1" Height="20" Fill="{StaticResource HairlineOnDarkBrush}" Margin="6,0" />
+          <Rectangle Width="1" Height="20" Fill="{StaticResource HairlineOnDarkBrush}" Margin="6,0" VerticalAlignment="Center"
+                     Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}" />
 
-          <Button Style="{StaticResource BareButton}" Command="{x:Bind ViewModel.ToggleXrayCommand, Mode=OneWay}">
+          <Button Style="{StaticResource BareButton}" Command="{x:Bind ViewModel.ToggleXrayCommand, Mode=OneWay}"
+                  AutomationProperties.Name="{x:Bind ViewModel.XrayName, Mode=OneWay}">
             <!-- xaml-lint: allow card - the X-ray toggle face -->
             <Border Background="{x:Bind ViewModel.XrayBackground, Mode=OneWay}" BorderBrush="{x:Bind ViewModel.XrayBorder, Mode=OneWay}"
-                    BorderThickness="1" CornerRadius="8" Padding="14,7">
-              <StackPanel Orientation="Horizontal" Spacing="7">
+                    BorderThickness="1" CornerRadius="8" Padding="14,7" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}">
+              <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
                 <shapes:Path Data="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"
                              Stroke="{x:Bind ViewModel.XrayForeground, Mode=OneWay}" StrokeThickness="2"
                              Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" />
@@ -93,18 +113,23 @@
             </Border>
           </Button>
 
-          <TextBlock Text="Drag to rotate" Style="{StaticResource CaptionText}"
+          <!-- Phones leave the hint out (a touch drag is the expected gesture) to keep the stage tall enough for the box -->
+          <TextBlock Text="Drag to rotate" Style="{StaticResource CaptionText}" Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}"
                      Foreground="{StaticResource TextOnDarkMutedBrush}" VerticalAlignment="Center" Margin="10,0,0,0" />
-        </StackPanel>
+        </controls:FlowPanel>
 
-        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-          <Button Style="{StaticResource GhostButton}" Content="−" Command="{x:Bind ViewModel.ZoomOutCommand, Mode=OneWay}" AutomationProperties.Name="Zoom out" Width="32" Height="32"
+        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center"
+                    Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}">
+          <Button Style="{StaticResource GhostButton}" Content="−" Command="{x:Bind ViewModel.ZoomOutCommand, Mode=OneWay}" AutomationProperties.Name="Zoom out"
+                  Width="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
                   CornerRadius="9" Padding="0" Background="{StaticResource HairlineOnDarkBrush}"
                   Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
-          <Button Style="{StaticResource GhostButton}" Content="+" Command="{x:Bind ViewModel.ZoomInCommand, Mode=OneWay}" AutomationProperties.Name="Zoom in" Width="32" Height="32"
+          <Button Style="{StaticResource GhostButton}" Content="+" Command="{x:Bind ViewModel.ZoomInCommand, Mode=OneWay}" AutomationProperties.Name="Zoom in"
+                  Width="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
                   CornerRadius="9" Padding="0" Background="{StaticResource HairlineOnDarkBrush}"
                   Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
-          <Button Style="{StaticResource GhostButton}" Content="Reset view" Command="{x:Bind ViewModel.ResetViewCommand, Mode=OneWay}" Height="32"
+          <Button Style="{StaticResource GhostButton}" Content="Reset view" Command="{x:Bind ViewModel.ResetViewCommand, Mode=OneWay}"
+                  Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
                   CornerRadius="9" Padding="12,0" Background="{StaticResource HairlineOnDarkBrush}"
                   Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
         </StackPanel>
@@ -112,9 +137,14 @@
     </Grid>
 
     <!-- ── Scan result ──────────────────────────────────────────── -->
-    <ScrollViewer Grid.Column="1" Background="{StaticResource InkDeepInvariantBrush}" Padding="24,26"
-                  VerticalScrollBarVisibility="Auto">
-      <StackPanel Spacing="18">
+    <ScrollViewer Background="{StaticResource InkDeepInvariantBrush}" VerticalScrollBarVisibility="Auto"
+                  Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
+                  Grid.RowSpan="{utu:Responsive Narrowest=1, Normal=2}"
+                  Width="{utu:Responsive Narrowest=NaN, Normal=360}" MaxHeight="{utu:Responsive Narrowest=200, Narrow=280, Normal=820}"
+                  BorderBrush="{StaticResource HairlineOnDarkBrush}" BorderThickness="{utu:Responsive Narrowest='0,1,0,0', Normal='0'}">
+      <!-- The inset is on the content, not the ScrollViewer: with a set width Uno let the content run under a
+           ScrollViewer's right padding -->
+      <StackPanel Spacing="18" Padding="{utu:Responsive Narrowest='16,18', Narrow='24,26'}">
         <StackPanel Spacing="8">
           <TextBlock Text="SCAN RESULT" Style="{StaticResource TypeMonoMedium11}"
                      Foreground="{StaticResource AccentBrightInvariantBrush}" />
@@ -194,13 +224,13 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Style="{StaticResource GhostButton}" Content="Close" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}" Width="150"
+        <controls:FlowPanel Spacing="8" RowSpacing="8">
+          <Button Style="{StaticResource GhostButton}" Content="Close" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Background="Transparent" Foreground="{StaticResource TextOnDarkStrongBrush}"
                   BorderBrush="{StaticResource HairlineOnDarkBrush}" />
-          <Button Style="{StaticResource AccentButton}" Content="{x:Bind ViewModel.ScanAction, Mode=OneWay}" Width="150"
+          <Button Style="{StaticResource AccentButton}" Content="{x:Bind ViewModel.ScanAction, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Command="{x:Bind ViewModel.OpenInspectionCommand, Mode=OneWay}" />
-        </StackPanel>
+        </controls:FlowPanel>
       </StackPanel>
     </ScrollViewer>
   </Grid>

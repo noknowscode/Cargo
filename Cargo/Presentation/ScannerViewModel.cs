@@ -13,6 +13,9 @@ public sealed class ScanViewOption
     public required string Label { get; init; }
     public required Brush Background { get; init; }
     public required System.Windows.Input.ICommand Select { get; init; }
+
+    /// <summary>The preset for a screen reader: "Front view", with "current" when the box is turned to it.</summary>
+    public required string AccessibleName { get; init; }
 }
 
 /// <summary>
@@ -67,6 +70,7 @@ public sealed partial class ScannerViewModel : ObservableObject
     [ObservableProperty] private Brush? _xrayBackground;
     [ObservableProperty] private Brush? _xrayBorder;
     [ObservableProperty] private Brush? _xrayForeground;
+    [ObservableProperty] private string _xrayName = "X-ray, off";
     [ObservableProperty] private IReadOnlyList<(double Weight, Brush Fill)> _densitySlices = [];
 
     [RelayCommand]
@@ -125,6 +129,7 @@ public sealed partial class ScannerViewModel : ObservableObject
         XrayBackground = State.Xray ? Tokens.Brush("AccentBrightColor", 0.2) : Tokens.Transparent;
         XrayBorder = State.Xray ? Tokens.Brush("AccentBrightInvariantBrush") : Tokens.Brush("HairlineOnDarkBrush");
         XrayForeground = State.Xray ? Tokens.Brush("AccentPaleInvariantBrush") : Tokens.Brush("TextOnDarkBrush");
+        XrayName = State.Xray ? "X-ray, on" : "X-ray, off";
 
         Verdict = container.Warn ? "Anomaly detected" : container.Stage == 3 ? "Under review" : "Clear";
         VerdictTone = Tokens.Brush(container.SecurityToken);
@@ -197,7 +202,8 @@ public sealed partial class ScannerViewModel : ObservableObject
             {
                 Label = ViewAngles[i].Label,
                 Background = i == current ? Tokens.Brush("DeckWhiteColor", 0.16) : Tokens.Transparent,
-                Select = ShowViewCommand
+                Select = ShowViewCommand,
+                AccessibleName = $"{ViewAngles[i].Label} view" + (i == current ? ", current" : string.Empty)
             });
         }
     }

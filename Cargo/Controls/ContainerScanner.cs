@@ -154,7 +154,9 @@ public sealed partial class ContainerScanner : Panel
         // The box's paint on a stage that is dark in both themes: the daylight value, whatever the theme
         var tint = Tokens.Paint(container.TintToken);
         var xray = _state.Xray;
-        var zoom = _state.ScanZoom;
+        // The box is 520 units long, drawn at full size on the design's stage (760 x 440 or more); a smaller stage (a
+        // laptop's, or the phone sheet's) shrinks it to fit rather than cropping it
+        var zoom = _state.ScanZoom * Math.Min(1, Math.Min(ActualWidth / 760, ActualHeight / 440));
 
         var cx = ActualWidth / 2;
         var cy = ActualHeight / 2;
