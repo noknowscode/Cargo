@@ -9,25 +9,40 @@ using Windows.System;
 namespace Cargo.Controls.Harbour;
 
 /// <summary>One vessel's data tag, bound by <c>HarbourTagTemplate</c>.</summary>
-public sealed partial class HarbourTag : ObservableObject
+/// <remarks>
+/// Every value comes through the constructor rather than <c>required init</c> members: the WinAppSDK XAML compiler
+/// writes <c>new HarbourTag()</c> into its type metadata for any type with a parameterless constructor, and a type
+/// with required members fails there (CS9035). With no parameterless constructor it writes no activator.
+/// </remarks>
+public sealed partial class HarbourTag(
+    string id,
+    string name,
+    string sub,
+    string pendingSub,
+    double etaHours,
+    string accessibleName,
+    IReadOnlyList<Fact> facts,
+    ICommand toggle,
+    ICommand open,
+    ICommand hover) : ObservableObject
 {
-    public required string Id { get; init; }
-    public required string Name { get; init; }
+    public string Id { get; } = id;
+    public string Name { get; } = name;
 
     /// <summary>The light tag's status: "B04 · discharging".</summary>
-    public required string Sub { get; init; }
+    public string Sub { get; } = sub;
 
     /// <summary>The dark tag's second line for the arrival waiting on its berth: "B07 · pilot aboard".</summary>
-    public required string PendingSub { get; init; }
+    public string PendingSub { get; } = pendingSub;
 
     /// <summary>Hours on the app clock when the vessel arrives, for the dark tag's countdown.</summary>
-    public required double EtaHours { get; init; }
+    public double EtaHours { get; } = etaHours;
 
-    public required string AccessibleName { get; init; }
-    public required IReadOnlyList<Fact> Facts { get; init; }
-    public required ICommand Toggle { get; init; }
-    public required ICommand Open { get; init; }
-    public required ICommand Hover { get; init; }
+    public string AccessibleName { get; } = accessibleName;
+    public IReadOnlyList<Fact> Facts { get; } = facts;
+    public ICommand Toggle { get; } = toggle;
+    public ICommand Open { get; } = open;
+    public ICommand Hover { get; } = hover;
 
     /// <summary>"in 41 min" on the dark tag.</summary>
     [ObservableProperty]
@@ -471,25 +486,23 @@ public sealed partial class HarbourView : UserControl
         foreach (var shape in _scene.World.Vessels)
         {
             var vessel = PortData.Vessel(shape.Id);
-            var tag = new HarbourTag
-            {
-                Id = vessel.Id,
-                Name = vessel.Name,
-                Sub = TagLine(vessel),
-                PendingSub = $"B{vessel.HomeBerth} · pilot aboard",
-                EtaHours = PortState.ClockHours(vessel.Eta),
-                AccessibleName = $"{vessel.Name}, {vessel.StatusLine}",
-                Facts = new[]
+            var tag = new HarbourTag(
+                id: vessel.Id,
+                name: vessel.Name,
+                sub: TagLine(vessel),
+                pendingSub: $"B{vessel.HomeBerth} · pilot aboard",
+                etaHours: PortState.ClockHours(vessel.Eta),
+                accessibleName: $"{vessel.Name}, {vessel.StatusLine}",
+                facts: new[]
                 {
                     new Fact { Key = "Arrival", Value = vessel.Eta },
                     new Fact { Key = "Departure", Value = vessel.Etd },
                     new Fact { Key = "Length · draft", Value = $"{vessel.Length} m · {vessel.Draft} m" },
                     new Fact { Key = "Security", Value = vessel.Security }
                 },
-                Toggle = _state.PickHullVesselCommand,
-                Open = _state.OpenVesselCommand,
-                Hover = _state.HoverCommand
-            };
+                toggle: _state.PickHullVesselCommand,
+                open: _state.OpenVesselCommand,
+                hover: _state.HoverCommand);
 
             var host = new ContentControl { Content = tag, ContentTemplate = template, IsTabStop = false, RenderTransform = new TranslateTransform() };
             TagLayer.Children.Add(host);
