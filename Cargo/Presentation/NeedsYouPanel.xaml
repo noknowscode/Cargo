@@ -3,11 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:Cargo.Presentation"
              xmlns:domain="using:Cargo.Domain"
-             xmlns:shapes="using:Microsoft.UI.Xaml.Shapes">
+             xmlns:shapes="using:Microsoft.UI.Xaml.Shapes"
+             xmlns:utu="using:Uno.Toolkit.UI">
 
   <!-- The Needs-you queue: what waits on the dispatcher, each with the action that resolves it.
-       The section is tinted alert while anything is open; empty, it keeps its height and says so. -->
-  <Grid x:Name="Section" Padding="24,24,24,16" CornerRadius="12,12,0,0"
+       The section is tinted alert while anything is open; empty, it keeps its height and says so.
+       On a phone each action drops under its text, which keeps the width to wrap in. -->
+  <Grid x:Name="Section" Padding="{utu:Responsive Narrowest='16,20,16,12', Narrow='24,24,24,16'}" CornerRadius="12,12,0,0"
         Background="{x:Bind local:NeedsYouPanel.Ground(ViewModel.NeedsYouCount), Mode=OneWay}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
@@ -38,6 +40,10 @@
               <ColumnDefinition Width="*" />
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
             <Viewbox Width="18" Height="18" VerticalAlignment="Top" Margin="0,1,0,0" AutomationProperties.AccessibilityView="Raw">
               <Grid Width="24" Height="24">
@@ -54,8 +60,10 @@
               </TextBlock>
             </StackPanel>
 
-            <Button Grid.Column="2" Content="{x:Bind ActionLabel}" Style="{x:Bind local:NeedsYouPanel.Action(IsPrimary)}"
-                    Command="{x:Bind Command}" CommandParameter="{x:Bind CommandParameter}" VerticalAlignment="Center" />
+            <Button Content="{x:Bind ActionLabel}" Style="{x:Bind local:NeedsYouPanel.Action(IsPrimary)}"
+                    Command="{x:Bind Command}" CommandParameter="{x:Bind CommandParameter}" VerticalAlignment="Center"
+                    Grid.Row="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=1, Narrow=0}" Grid.Column="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=1, Narrow=2}"
+                    HorizontalAlignment="Left" Margin="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest='0,10,0,0', Narrow='0'}" />
           </Grid>
         </DataTemplate>
       </ItemsControl.ItemTemplate>

@@ -4,11 +4,8 @@
              xmlns:utu="using:Uno.Toolkit.UI"
              xmlns:controls="using:Cargo.Controls">
 
-  <UserControl.Resources>
-    <!-- Desktop (1280+) keeps greeting, figures and card on one line; below it the figures move under the
-         greeting; phones (under 600) drop the card, whose operator and shift are in the account flyout -->
-  </UserControl.Resources>
-
+  <!-- Desktop (1280+) keeps greeting, figures and card on one line; below it the figures take a full-width line under
+       the greeting and the card; phones (under 600) drop the card, whose operator and shift are in the account flyout -->
   <!-- The Overview greeting, the shift's headline figures and the duty operator's ID card.
        Figures are ink; colour only marks status, as the mark before each label. -->
   <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Narrow=40}">
@@ -32,6 +29,7 @@
     <StackPanel Orientation="Horizontal" Spacing="28" VerticalAlignment="Center" Padding="0,4,0,0"
                 Grid.Row="{utu:Responsive Narrowest=1, Wide=0}"
                 Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
+                Grid.ColumnSpan="{utu:Responsive Narrowest=3, Wide=1}"
                 Margin="{utu:Responsive Narrowest='0,16,0,0', Wide='0'}">
       <StackPanel Style="{StaticResource FigureStack}">
         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -67,7 +65,7 @@
 
     <!-- Duty operator: an ID card clipped to the masthead.
          Shadows inline: a Style-supplied collection never applies (Toolkit gotcha G36). -->
-    <utu:ShadowContainer Grid.Column="2" Grid.RowSpan="2" Width="252" VerticalAlignment="Center"
+    <utu:ShadowContainer Grid.Column="2" Grid.RowSpan="{utu:Responsive Narrowest=1, Wide=2}" Width="252" VerticalAlignment="Center"
                          Background="{ThemeResource SurfaceBrush}"
                          controls:IdCardMotion.IsEnabled="True"
                          Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}"
