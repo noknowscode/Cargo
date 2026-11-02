@@ -14,6 +14,22 @@ public sealed partial class DockingView : UserControl
 
     public DockingViewModel? ViewModel => DataContext as DockingViewModel;
 
+    // The model says what each element is; the theme's brushes and the artwork for it are picked here
+
+    /// <summary>Now is lit (ink on paper) while the plan follows the live clock.</summary>
+    public static Brush NowGround(bool live) => Tokens.Brush(live ? "InkBrush" : "SurfaceBrush");
+
+    public static Brush NowInk(bool live) => Tokens.Brush(live ? "PaperBrush" : "InkBrush");
+
+    public static Brush ConflictInk(bool conflicts) => Tokens.Brush(conflicts ? "AlertInkBrush" : "SeaGreenInkBrush");
+
+    public static ImageSource? Profile(string sprite) => string.IsNullOrEmpty(sprite) ? null : Sprites.Source(sprite);
+
+    /// <summary>A berth that takes her has an accent edge and caption; the rest stay quiet and say why in words.</summary>
+    public static Brush ChoiceEdge(bool fits) => Tokens.Brush(fits ? "AccentBrush" : "HairlineStrongBrush");
+
+    public static Brush ChoiceInk(bool fits) => Tokens.Brush(fits ? "AccentDarkBrush" : "TextMutedBrush");
+
     // xaml-lint: allow codebehind - the berth map is a code-built drag scene over the store; its hint
     // feeds the model, and the model's refreshes run only while the plan is on screen
     private void Attach()

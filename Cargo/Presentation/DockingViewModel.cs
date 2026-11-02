@@ -15,16 +15,19 @@ public sealed class PlanRow
 /// <summary>
 /// One berth in the selected vessel's "Move to berth" list: the keyboard and touch path for drag-to-assign. Every
 /// berth is listed; one that cannot take her says why in words (not only in colour), and choosing it anyway shows
-/// the same refusal a drop would.
+/// the same refusal a drop would. The eight rows are made once and updated in place, so the button that has
+/// keyboard focus keeps it when the clock or an assignment changes what the rows say.
 /// </summary>
-public sealed class BerthChoice
+public sealed partial class BerthChoice : ObservableObject
 {
     public required string Number { get; init; }
-    public required string Caption { get; init; }
-    public required string AccessibleName { get; init; }
-    public required Brush Edge { get; init; }
-    public required Brush CaptionInk { get; init; }
     public required ICommand Assign { get; init; }
+
+    [ObservableProperty] public partial string Caption { get; set; } = string.Empty;
+    [ObservableProperty] public partial string AccessibleName { get; set; } = string.Empty;
+
+    /// <summary>The berth takes her: an accent edge and caption (the view picks the brushes).</summary>
+    [ObservableProperty] public partial bool Fits { get; set; }
 }
 
 /// <summary>
@@ -44,21 +47,10 @@ public sealed partial class DockingViewModel : ObservableObject
     public DockingViewModel(PortState state)
     {
         State = state;
-        Legend = new[]
-        {
-            new LegendItem { Label = "Available", Swatch = Tokens.Brush("AccentColor", 0.35) },
-            new LegendItem { Label = "Reserved", Swatch = Tokens.Brush("AccentBrush") },
-            new LegendItem { Label = "Occupied", Swatch = Tokens.Brush("NavyBrush") },
-            new LegendItem { Label = "Restricted", Swatch = Tokens.Brush("RestrictedBrush") },
-            new LegendItem { Label = "Conflict", Swatch = Tokens.Brush("AlertBrush") }
-        };
-
         Refresh();
     }
 
     public PortState State { get; }
-
-    public IReadOnlyList<LegendItem> Legend { get; }
 
     public ObservableCollection<PlanRow> PlanRows { get; } = new();
 
@@ -68,16 +60,23 @@ public sealed partial class DockingViewModel : ObservableObject
 
     [ObservableProperty] public partial string PlanLabel { get; set; } = string.Empty;
     [ObservableProperty] public partial string ConflictText { get; set; } = string.Empty;
-    [ObservableProperty] public partial Brush? ConflictTone { get; set; }
+
+    /// <summary>Two vessels share a berth somewhere in the next 36 h: the conflict line reads in alert ink.</summary>
+    [ObservableProperty] public partial bool HasConflicts { get; set; }
+
     [ObservableProperty] public partial string Hint { get; set; } = DefaultHint;
     [ObservableProperty] public partial string SelectedName { get; set; } = string.Empty;
     [ObservableProperty] public partial string SelectedStatus { get; set; } = string.Empty;
     [ObservableProperty] public partial string SelectedNote { get; set; } = string.Empty;
-    [ObservableProperty] public partial ImageSource? SelectedProfile { get; set; }
+
+    /// <summary>The selected vessel's side render, by sprite name (Assets/Sprites); the view loads the image.</summary>
+    [ObservableProperty] public partial string SelectedProfile { get; set; } = string.Empty;
+
     [ObservableProperty] public partial bool CanRelease { get; set; }
     [ObservableProperty] public partial bool CanMove { get; set; }
-    [ObservableProperty] public partial Brush? NowBackground { get; set; }
-    [ObservableProperty] public partial Brush? NowForeground { get; set; }
+
+    /// <summary>The plan follows the live clock (Now is lit) rather than a scrubbed hour.</summary>
+    [ObservableProperty] public partial bool IsLive { get; set; }
 
     [ObservableProperty]
     public partial bool HasSelection { get; set; }
@@ -154,15 +153,14 @@ public sealed partial class DockingViewModel : ObservableObject
         PlanLabel = (planHour >= 24 ? "Thu " : string.Empty) + PortState.Format(planHour % 24);
         OnPropertyChanged(nameof(Scrub));
 
-        NowBackground = State.PlanHour is null ? Tokens.Brush("InkBrush") : Tokens.Brush("SurfaceBrush");
-        NowForeground = State.PlanHour is null ? Tokens.Brush("PaperBrush") : Tokens.Brush("InkBrush");
+        IsLive = State.PlanHour is null;
 
         var conflicts = State.Conflicts();
         ConflictText = conflicts.Count == 0
             ? "No conflicts in the next 36 h"
             : $"{conflicts.Count} berth conflict{(conflicts.Count > 1 ? "s" : string.Empty)}: " +
               string.Join(" · ", conflicts.Select(c => $"{c.A} × {c.B} on {c.Berth}"));
-        ConflictTone = conflicts.Count == 0 ? Tokens.Brush("SeaGreenInkBrush") : Tokens.Brush("AlertInkBrush");
+        HasConflicts = conflicts.Count > 0;
 
         BuildTimeline(conflicts);
         BuildSelection();
@@ -194,9 +192,9 @@ public sealed partial class DockingViewModel : ObservableObject
                         segment.Label,
                         segment.Start / PlanHours,
                         (Math.Min(segment.End, PlanHours) - segment.Start) / PlanHours,
-                        past ? Tokens.Transparent : Tokens.Brush("RestrictedBrush"),
-                        past ? Tokens.Brush("TextMutedBrush") : Tokens.Brush("SurfaceBrush"),
-                        past ? Tokens.Brush("TextFaintBrush") : null));
+                        past ? null : "RestrictedBrush",
+                        past ? "TextMutedBrush" : "SurfaceBrush",
+                        past ? "TextFaintBrush" : null));
                     spoken.Add(past ? $"earlier {segment.Label}" : $"closed, {segment.Label}");
                 }
             }
@@ -220,9 +218,9 @@ public sealed partial class DockingViewModel : ObservableObject
                     vessel.Name,
                     start / PlanHours,
                     (end - start) / PlanHours,
-                    Tokens.Brush(conflicted ? "AlertInkBrush" : reserved ? "AccentBrush" : "NavyBrush"),
-                    Tokens.Brush("SurfaceBrush"),
-                    conflicted || reserved ? Tokens.Brush("InkBrush") : null,
+                    conflicted ? "AlertInkBrush" : reserved ? "AccentBrush" : "NavyBrush",
+                    "SurfaceBrush",
+                    conflicted || reserved ? "InkBrush" : null,
                     Dashed: reserved && !conflicted));
                 spoken.Add($"{vessel.Name} {(conflicted ? "in conflict" : reserved ? "reserved" : "alongside")} " +
                            $"{PortState.Format(start % 24)} to {PortState.Format(end % 24)}");
@@ -257,7 +255,7 @@ public sealed partial class DockingViewModel : ObservableObject
             : State.IsAssigned(id)
                 ? $"Assigned to Berth {berth} · mooring gang notified."
                 : vessel.OpsNote;
-        SelectedProfile = Sprites.Source(Sprites.Side(vessel.Id));
+        SelectedProfile = Sprites.Side(vessel.Id);
         CanRelease = State.IsAssigned(id);
 
         BuildChoices(vessel, berth);
@@ -280,33 +278,30 @@ public sealed partial class DockingViewModel : ObservableObject
     private void BuildChoices(Vessel vessel, string? current)
     {
         CanMove = BerthPlan.Movable(vessel);
-        BerthChoices.Clear();
-        if (!CanMove)
+
+        // The berths never change: one row each, made once, then only what they say is updated
+        if (BerthChoices.Count == 0)
         {
-            return;
+            foreach (var berth in PortData.Berths)
+            {
+                BerthChoices.Add(new BerthChoice { Number = berth.Number, Assign = AssignToCommand });
+            }
         }
 
         for (var i = 0; i < PortData.Berths.Count; i++)
         {
             var berth = PortData.Berths[i];
             var fit = State.Check(vessel, i);
-            var caption = berth.Number == current ? "her berth" : fit switch
+            var choice = BerthChoices[i];
+            choice.Caption = berth.Number == current ? "her berth" : fit switch
             {
                 BerthFit.Fits => "fits",
                 BerthFit.Closed => "closed",
                 BerthFit.TooShallow => "too shallow",
                 _ => "taken"
             };
-
-            BerthChoices.Add(new BerthChoice
-            {
-                Number = berth.Number,
-                Caption = caption,
-                AccessibleName = $"Berth {berth.Number}, {berth.Depth:0.0} m: {caption}",
-                Edge = fit == BerthFit.Fits ? Tokens.Brush("AccentBrush") : Tokens.Brush("HairlineStrongBrush"),
-                CaptionInk = fit == BerthFit.Fits ? Tokens.Brush("AccentDarkBrush") : Tokens.Brush("TextMutedBrush"),
-                Assign = AssignToCommand
-            });
+            choice.AccessibleName = $"Berth {berth.Number}, {berth.Depth:0.0} m: {choice.Caption}";
+            choice.Fits = fit == BerthFit.Fits;
         }
     }
 }

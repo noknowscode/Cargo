@@ -30,21 +30,31 @@
         <TextBlock Text="Berth plan" Style="{StaticResource SectionHeadText}" />
         <TextBlock Text="Next 36 hours · drag an arriving vessel onto a berth" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
       </StackPanel>
-      <ItemsControl ItemsSource="{x:Bind ViewModel.Legend, Mode=OneWay}" VerticalAlignment="Bottom" IsTabStop="False"
-                    Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
-                    Margin="{utu:Responsive Narrowest='0,10,0,0', Wide='0'}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate><controls:FlowPanel Spacing="14" RowSpacing="6" /></ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-          <DataTemplate x:DataType="local:LegendItem">
-            <StackPanel Orientation="Horizontal" Spacing="5">
-              <Rectangle Width="10" Height="10" RadiusX="3" RadiusY="3" Fill="{x:Bind Swatch}" VerticalAlignment="Center" />
-              <TextBlock Text="{x:Bind Label}" Style="{StaticResource CaptionText}" />
-            </StackPanel>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+      <!-- The legend: the map's berth states and the timeline's conflict colour -->
+      <controls:FlowPanel Spacing="14" RowSpacing="6" VerticalAlignment="Bottom"
+                          Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
+                          Margin="{utu:Responsive Narrowest='0,10,0,0', Wide='0'}">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Rectangle Width="10" Height="10" RadiusX="3" RadiusY="3" Fill="{ThemeResource AccentBrush}" Opacity="0.35" VerticalAlignment="Center" />
+          <TextBlock Text="Available" Style="{StaticResource CaptionText}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Rectangle Width="10" Height="10" RadiusX="3" RadiusY="3" Fill="{ThemeResource AccentBrush}" VerticalAlignment="Center" />
+          <TextBlock Text="Reserved" Style="{StaticResource CaptionText}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Rectangle Width="10" Height="10" RadiusX="3" RadiusY="3" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" />
+          <TextBlock Text="Occupied" Style="{StaticResource CaptionText}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Rectangle Width="10" Height="10" RadiusX="3" RadiusY="3" Fill="{ThemeResource RestrictedBrush}" VerticalAlignment="Center" />
+          <TextBlock Text="Restricted" Style="{StaticResource CaptionText}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <Rectangle Width="10" Height="10" RadiusX="3" RadiusY="3" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Center" />
+          <TextBlock Text="Conflict" Style="{StaticResource CaptionText}" />
+        </StackPanel>
+      </controls:FlowPanel>
     </Grid>
 
     <!-- ── Scrubber ─────────────────────────────────────────────── -->
@@ -68,8 +78,8 @@
           <Button Style="{StaticResource GhostButton}" Content="Now" Padding="12,7"
                   MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   CornerRadius="8" Command="{x:Bind ViewModel.NowCommand, Mode=OneWay}"
-                  Background="{x:Bind ViewModel.NowBackground, Mode=OneWay}"
-                  Foreground="{x:Bind ViewModel.NowForeground, Mode=OneWay}"
+                  Background="{x:Bind local:DockingView.NowGround(ViewModel.IsLive), Mode=OneWay}"
+                  Foreground="{x:Bind local:DockingView.NowInk(ViewModel.IsLive), Mode=OneWay}"
                   AutomationProperties.Name="Back to now" />
           <TextBlock Style="{StaticResource CaptionText}" VerticalAlignment="Center">
             <Run Text="Viewing " /><Run Text="{x:Bind ViewModel.PlanLabel, Mode=OneWay}"
@@ -93,7 +103,7 @@
 
         <!-- A polite live region: the conflict count changes after a drop, a move or Optimize -->
         <TextBlock Text="{x:Bind ViewModel.ConflictText, Mode=OneWay}" Style="{StaticResource CaptionText}"
-                   Foreground="{x:Bind ViewModel.ConflictTone, Mode=OneWay}" VerticalAlignment="Center"
+                   Foreground="{x:Bind local:DockingView.ConflictInk(ViewModel.HasConflicts), Mode=OneWay}" VerticalAlignment="Center"
                    MaxWidth="360" HorizontalAlignment="Left" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"
                    Grid.Row="{utu:Responsive Narrowest=2, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=2}"
                    Grid.ColumnSpan="{utu:Responsive Narrowest=4, Wide=1}" Margin="{utu:Responsive Narrowest='0,8,0,0', Wide='0'}" />
@@ -221,7 +231,7 @@
           <Border CornerRadius="12" Background="{ThemeResource SurfaceBrush}">
             <Grid Height="120">
               <Rectangle Fill="{ThemeResource SeaFlatBrush}" Height="16" VerticalAlignment="Bottom" />
-              <Image Source="{x:Bind ViewModel.SelectedProfile, Mode=OneWay}" Stretch="Uniform" Margin="18,6,18,10"
+              <Image Source="{x:Bind local:DockingView.Profile(ViewModel.SelectedProfile), Mode=OneWay}" Stretch="Uniform" Margin="18,6,18,10"
                      AutomationProperties.AccessibilityView="Raw" />
             </Grid>
           </Border>
@@ -255,13 +265,14 @@
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:BerthChoice">
                   <Button Style="{StaticResource GhostButton}" Command="{x:Bind Assign}" CommandParameter="{x:Bind Number}"
-                          BorderBrush="{x:Bind Edge}" Padding="4,6" CornerRadius="8" HorizontalAlignment="Stretch"
+                          BorderBrush="{x:Bind local:DockingView.ChoiceEdge(Fits), Mode=OneWay}" Padding="4,6" CornerRadius="8" HorizontalAlignment="Stretch"
                           MinHeight="{StaticResource TouchTarget}"
-                          AutomationProperties.Name="{x:Bind AccessibleName}" ToolTipService.ToolTip="{x:Bind AccessibleName}">
+                          AutomationProperties.Name="{x:Bind AccessibleName, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind AccessibleName, Mode=OneWay}">
                     <StackPanel Spacing="1" HorizontalAlignment="Center">
                       <TextBlock Text="{x:Bind Number}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource InkBrush}"
                                  HorizontalAlignment="Center" />
-                      <TextBlock Text="{x:Bind Caption}" Style="{StaticResource TypeMedium11}" Foreground="{x:Bind CaptionInk}"
+                      <TextBlock Text="{x:Bind Caption, Mode=OneWay}" Style="{StaticResource TypeMedium11}"
+                                 Foreground="{x:Bind local:DockingView.ChoiceInk(Fits), Mode=OneWay}"
                                  HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
                     </StackPanel>
                   </Button>
