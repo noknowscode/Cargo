@@ -38,9 +38,9 @@ public partial class App : Application
         // after the first frame; Shell keeps it in step with the window from then on
         Tokens.Apply(StartTheme());
 
-        // The store owns the shift clock (a DispatcherTimer), so it is built here on the UI
-        // thread; the router resolves page models on a background thread.
-        var state = new PortState();
+        // The store's clock is a DispatcherTimer, so the store is built here on the UI thread;
+        // the router resolves page models on a background thread.
+        var state = new PortState(new DispatcherClock());
 
         var builder = this.CreateBuilder(args)
             .Configure(host => host

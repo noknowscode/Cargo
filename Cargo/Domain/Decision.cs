@@ -43,4 +43,8 @@ public sealed partial class Decision : ObservableObject
     /// <summary>Whether <see cref="When"/> is overdue, which sets it in alert ink.</summary>
     [ObservableProperty]
     public partial bool IsLate { get; set; }
+
+    /// <summary>Why the action was refused ("Berth 07 is taken by ..."), shown on the row; empty until it is.</summary>
+    [ObservableProperty]
+    public partial string Refusal { get; set; } = string.Empty;
 }

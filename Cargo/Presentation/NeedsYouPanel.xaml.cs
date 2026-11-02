@@ -75,6 +75,9 @@ public sealed partial class NeedsYouPanel : UserControl
     public static Style Action(bool primary) =>
         (Style)Application.Current.Resources[primary ? "QueuePrimaryButton" : "QueueSecondaryButton"];
 
+    /// <summary>A row's refusal shows only once there is one.</summary>
+    public static Visibility Said(string text) => string.IsNullOrEmpty(text) ? Visibility.Collapsed : Visibility.Visible;
+
     /// <summary>The " · " before the live part, only when there is one.</summary>
     public static string Separator(string when) => string.IsNullOrEmpty(when) ? string.Empty : " · ";
 

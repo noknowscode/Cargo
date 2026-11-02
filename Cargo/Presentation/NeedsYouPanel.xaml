@@ -58,6 +58,10 @@
                      Foreground="{x:Bind local:NeedsYouPanel.WhenInk(IsLate), Mode=OneWay}"
                      FontFamily="{x:Bind local:NeedsYouPanel.WhenFace(IsLate), Mode=OneWay}" />
               </TextBlock>
+              <!-- Why the action was refused, in words; a polite live region, so it is announced -->
+              <TextBlock Text="{x:Bind Refusal, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap"
+                         Foreground="{ThemeResource AlertInkBrush}" AutomationProperties.LiveSetting="Polite"
+                         Visibility="{x:Bind local:NeedsYouPanel.Said(Refusal), Mode=OneWay}" />
             </StackPanel>
 
             <Button Content="{x:Bind ActionLabel}" Style="{x:Bind local:NeedsYouPanel.Action(IsPrimary)}"

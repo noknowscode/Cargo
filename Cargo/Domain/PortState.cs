@@ -8,17 +8,25 @@ namespace Cargo.Domain;
 /// </summary>
 public sealed partial class PortState : ObservableObject
 {
-    private readonly DispatcherTimer _clock;
-    private readonly DateTimeOffset _started = DateTimeOffset.Now;
-    private readonly BerthPlan _plan = new();
+    private readonly IClock _clock;
+    private readonly DateTimeOffset _started;
+    private readonly BerthPlan _plan;
     private readonly Dictionary<string, List<ChatLine>> _sentMessages = new();
 
     private DateTimeOffset _lastYardShuffle;
     private readonly Dictionary<string, int> _yardDelta = new();
     private readonly Dictionary<string, DateTimeOffset> _yardRecent = new();
 
-    public PortState()
+    /// <summary>
+    /// The store on a clock (the app passes <see cref="DispatcherClock"/>, the tests a manual one), on the starting
+    /// berth plan unless one is given.
+    /// </summary>
+    public PortState(IClock clock, BerthPlan? plan = null)
     {
+        _clock = clock;
+        _started = clock.Now;
+        _plan = plan ?? new BerthPlan();
+
 #if DEBUG
         if (Hook("CARGO_OPTIMIZE") == "1")
         {
@@ -27,10 +35,7 @@ public sealed partial class PortState : ObservableObject
 #endif
 
         RebuildDecisions();
-
-        _clock = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-        _clock.Tick += (_, _) => Tick();
-        _clock.Start();
+        clock.Tick += (_, _) => Tick();
     }
 
     // DEBUG verification hooks (CARGO_*). They let a headless run open straight onto a section, a selection or a
@@ -90,9 +95,9 @@ public sealed partial class PortState : ObservableObject
 
     // ── Clock ─────────────────────────────────────────────────────────────────
 
-    public double NowHours => PortData.NowHours + (DateTimeOffset.Now - _started).TotalHours;
+    public double NowHours => PortData.NowHours + (_clock.Now - _started).TotalHours;
 
-    public double ElapsedSeconds => (DateTimeOffset.Now - _started).TotalSeconds;
+    public double ElapsedSeconds => (_clock.Now - _started).TotalSeconds;
 
     public string Now => FormatWithSeconds(NowHours);
 
@@ -453,7 +458,7 @@ public sealed partial class PortState : ObservableObject
 
         if (_plan.TryAssign(vesselId, berthIndex))
         {
-            NotifyStructureChanged();
+            OnPlanChanged();
             return $"{vessel.Name} assigned to Berth {berth.Number} · pilots and mooring gang notified.";
         }
 
@@ -466,7 +471,7 @@ public sealed partial class PortState : ObservableObject
     public void Unassign(string vesselId)
     {
         _plan.Unassign(vesselId);
-        NotifyStructureChanged();
+        OnPlanChanged();
     }
 
     // ── Decisions ─────────────────────────────────────────────────────────────
@@ -514,6 +519,7 @@ public sealed partial class PortState : ObservableObject
     private void RebuildDecisions()
     {
         Decisions.Clear();
+        _queuedBerthDecision = BerthDecision();
 
         if (PortData.Containers.FirstOrDefault(c => c.Security == "Hold") is { } held)
         {
@@ -590,9 +596,18 @@ public sealed partial class PortState : ObservableObject
 
     private static string Clock(double hours) => TimeSpan.FromHours(hours % 24).ToString(@"hh\:mm");
 
-    /// <summary>Confirms the berth from the queue: the row leaves the list, the berth and harbour follow.</summary>
+    /// <summary>
+    /// Confirms the berth from the queue: the row leaves the list, the berth and harbour follow. A berth that cannot
+    /// take her says why on the row, as the needs-you bar does.
+    /// </summary>
     [RelayCommand]
-    private void ConfirmDecision(string vesselId) => Confirm(vesselId);
+    private void ConfirmDecision(string vesselId)
+    {
+        if (Confirm(vesselId) is { } refusal && Decisions.FirstOrDefault(d => d.VesselId == vesselId) is { } row)
+        {
+            row.Refusal = refusal;
+        }
+    }
 
     /// <summary>Bumped by the masthead's Needs-you figure; the queue scrolls into view and takes focus.</summary>
     [ObservableProperty]
@@ -612,30 +627,28 @@ public sealed partial class PortState : ObservableObject
         Section = "security";
     }
 
-
     public bool IsConfirmed(string vesselId) => _confirmed.Contains(vesselId);
 
     /// <summary>
-    /// Confirms the vessel's reserved berth as a real assignment, so the planner, the conflict
-    /// check and the harbour all follow. Returns null on success, or why the berth cannot take it.
+    /// Confirms the berth the vessel is waiting on (<see cref="PendingDecision"/>) as a real assignment, so the
+    /// planner, the conflict check and the harbour all follow. Returns null on success, or why it cannot: she has no
+    /// berth waiting to be confirmed (it moved, or it is confirmed already), or the berth cannot take her.
     /// </summary>
     public string? Confirm(string vesselId)
     {
-        var berth = BerthOf(vesselId);
-        var index = PortData.Berths.ToList().FindIndex(b => b.Number == berth);
-        if (index < 0)
+        var vessel = PortData.Vessel(vesselId);
+        if (PendingDecision != vesselId || BerthIndex(BerthOf(vesselId)) is not { } index)
         {
-            return $"{PortData.Vessel(vesselId).Name} has no berth to confirm.";
+            return $"{vessel.Name} has no berth waiting to be confirmed.";
         }
 
-        if (!Fits(PortData.Vessel(vesselId), index))
+        if (!_plan.TryAssign(vesselId, index))
         {
-            return Assign(vesselId, index);
+            return _plan.Refusal(vessel, index);
         }
 
-        Assign(vesselId, index);
         _confirmed.Add(vesselId);
-        OnDecisionChanged();
+        OnPlanChanged();
         return null;
     }
 
@@ -644,27 +657,46 @@ public sealed partial class PortState : ObservableObject
     {
         if (_confirmed.Remove(vesselId))
         {
-            Unassign(vesselId);
-            OnDecisionChanged();
+            _plan.Unassign(vesselId);
+            OnPlanChanged();
         }
     }
 
-    private void OnDecisionChanged()
+    private static int? BerthIndex(string? number) =>
+        PortData.Berths.Select(b => b.Number).ToList().IndexOf(number ?? string.Empty) is >= 0 and var index ? index : null;
+
+    // The berth decision the queue was last built for: the vessel waiting and the berth she waits on
+    private (string? Vessel, string? Berth) _queuedBerthDecision;
+
+    private (string? Vessel, string? Berth) BerthDecision() =>
+        PendingDecision is { } vessel ? (vessel, BerthOf(vessel)) : (null, null);
+
+    /// <summary>
+    /// Every change to the berth plan ends here (an assignment, a release, the optimiser, a confirm, an undo). Which
+    /// arrival waits on a berth is read from the plan, so the queue, the masthead count, the header's dot, the
+    /// harbour marker and the needs-you bar are told whenever it changes: a drag that moves the arrival off her
+    /// reserved berth settles the decision everywhere, and a move back raises it again.
+    /// </summary>
+    private void OnPlanChanged()
     {
-        // The queue first: the header's dots read it when NeedsDecision changes
-        RebuildDecisions();
-        OnPropertyChanged(nameof(PendingDecision));
-        OnPropertyChanged(nameof(NeedsDecision));
+        if (BerthDecision() != _queuedBerthDecision)
+        {
+            // The queue first: the header's dots read it when NeedsDecision changes
+            RebuildDecisions();
+            OnPropertyChanged(nameof(PendingDecision));
+            OnPropertyChanged(nameof(NeedsDecision));
+        }
+
+        NotifyStructureChanged();
     }
 
-    /// <summary>Give every movable vessel the shallowest berth that still clears its draft (<see cref="BerthPlan.Optimize"/>).</summary>
-    /// <summary>Runs the optimiser and returns what it did, including the vessels it could not place.</summary>
+    /// <summary>Runs the optimiser (<see cref="BerthPlan.Optimize"/>) and returns what it did, including the vessels it could not place.</summary>
     public string Optimize()
     {
         var result = _plan.Optimize();
         if (result.Moved.Count > 0)
         {
-            NotifyStructureChanged();
+            OnPlanChanged();
         }
 
         return result.Summary;
@@ -735,21 +767,21 @@ public sealed partial class PortState : ObservableObject
         Math.Clamp(baseHeight + (_yardDelta.TryGetValue(key, out var d) ? d : 0), 0, 5);
 
     public bool YardRecentlyMoved(string key) =>
-        _yardRecent.TryGetValue(key, out var at) && (DateTimeOffset.Now - at).TotalSeconds < 60;
+        _yardRecent.TryGetValue(key, out var at) && (_clock.Now - at).TotalSeconds < 60;
 
     private void ShuffleYard()
     {
-        if (YardKeys.Count == 0 || (DateTimeOffset.Now - _lastYardShuffle).TotalMilliseconds < 3500)
+        if (YardKeys.Count == 0 || (_clock.Now - _lastYardShuffle).TotalMilliseconds < 3500)
         {
             return;
         }
 
-        _lastYardShuffle = DateTimeOffset.Now;
+        _lastYardShuffle = _clock.Now;
         var pick = YardKeys[Random.Shared.Next(YardKeys.Count)];
         var current = YardHeight(pick.Key, pick.Base);
         var delta = current <= 0 ? 1 : current >= 5 ? -1 : Random.Shared.Next(2) == 0 ? -1 : 1;
         _yardDelta[pick.Key] = (_yardDelta.TryGetValue(pick.Key, out var d) ? d : 0) + delta;
-        _yardRecent[pick.Key] = DateTimeOffset.Now;
+        _yardRecent[pick.Key] = _clock.Now;
         YardMoves++;
         NotifyYardChanged();
     }
