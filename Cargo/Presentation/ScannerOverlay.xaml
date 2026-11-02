@@ -10,7 +10,8 @@
        stays visible around it. At most 1320 x 820, 48 px from the window edges from 1000 px (24 below).
        Below 1000 the scan result moves under the stage and scrolls on its own; on a phone the panel fills
        the window, as a sheet would. -->
-  <Grid Background="{StaticResource PageDimInvariantBrush}">
+  <!-- Modal to the keyboard: focus moves to Close when it opens, Tab cycles inside it, Escape closes it -->
+  <Grid Background="{StaticResource PageDimInvariantBrush}" TabFocusNavigation="Cycle" KeyDown="OnKeyDown">
   <Grid Background="{StaticResource InkDeepInvariantBrush}" MaxWidth="1320" MaxHeight="820"
         CornerRadius="{utu:Responsive Narrowest='0', Narrow={StaticResource RadiusCard}}"
         Margin="{utu:Responsive Narrowest='0', Narrow='24', Normal='48'}">
@@ -56,7 +57,7 @@
           <TextBlock Text="{x:Bind ViewModel.ContainerMeta, Mode=OneWay}" Style="{StaticResource SubtitleText}"
                      Foreground="{StaticResource TextOnDarkMutedBrush}" TextWrapping="Wrap" />
         </StackPanel>
-        <Button Grid.Column="1" Style="{StaticResource CloseOnDarkButton}" Content="×" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}"
+        <Button x:Name="CloseButton" Grid.Column="1" Style="{StaticResource CloseOnDarkButton}" Content="×" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}"
                 Width="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=34}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=34}"
                 CornerRadius="{utu:Responsive Narrowest=22, Normal=17}"
                 AutomationProperties.Name="Close scanner" ToolTipService.ToolTip="Close scanner" />

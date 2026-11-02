@@ -181,6 +181,7 @@
           </ItemsControl>
 
           <Button Style="{StaticResource PrimaryButton}" Command="{x:Bind ViewModel.OpenScannerCommand, Mode=OneWay}" HorizontalAlignment="Stretch"
+                  AutomationProperties.Name="Scan container"
                   MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}">
             <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
               <shapes:Path Data="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3M3 12h18"

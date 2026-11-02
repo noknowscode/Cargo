@@ -99,6 +99,7 @@
                    Grid.ColumnSpan="{utu:Responsive Narrowest=4, Wide=1}" Margin="{utu:Responsive Narrowest='0,8,0,0', Wide='0'}" />
 
         <Button Style="{StaticResource PrimaryButton}" Command="{x:Bind ViewModel.OptimizeCommand, Mode=OneWay}" CornerRadius="9" Padding="14,8"
+                AutomationProperties.Name="Optimize traffic"
                 MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}" VerticalAlignment="Center"
                 Grid.Row="{utu:Responsive Narrowest=3, Narrow=0}" Grid.Column="{utu:Responsive Narrowest=0, Narrow=3}"
                 Grid.ColumnSpan="{utu:Responsive Narrowest=4, Narrow=1}"

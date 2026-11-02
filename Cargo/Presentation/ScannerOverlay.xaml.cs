@@ -19,6 +19,26 @@ public sealed partial class ScannerOverlay : UserControl
 
             Bindings.Update();
         };
+
+        // xaml-lint: allow codebehind - keyboard focus has no binding: an opened inspection takes it, so Tab does not
+        // wander into the dimmed page behind
+        RegisterPropertyChangedCallback(VisibilityProperty, (_, _) =>
+        {
+            if (Visibility == Visibility.Visible)
+            {
+                DispatcherQueue.TryEnqueue(() => CloseButton.Focus(FocusState.Programmatic));
+            }
+        });
+    }
+
+    // xaml-lint: allow codebehind - Escape closes the inspection, as its × does
+    private void OnKeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        if (e.Key == Windows.System.VirtualKey.Escape && ViewModel?.CloseCommand.CanExecute(null) == true)
+        {
+            ViewModel.CloseCommand.Execute(null);
+            e.Handled = true;
+        }
     }
 
     public ScannerViewModel? ViewModel => DataContext as ScannerViewModel;

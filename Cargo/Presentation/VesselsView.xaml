@@ -68,6 +68,7 @@
         </ItemsControl>
 
         <Button Style="{StaticResource GhostButton}" Command="{x:Bind ViewModel.State.OpenDockingCommand}"
+                AutomationProperties.Name="View all in Docking"
                 Background="{ThemeResource SurfaceBrush}" CornerRadius="12" Padding="16,12"
                 MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
