@@ -118,4 +118,26 @@ public class CargoDataTests
             Assert.That(x, Is.InRange(0d, 1d).And.LessThan(1d));
         }
     }
+
+    [Test]
+    public void The_profile_opens_on_the_boundary_bay_until_one_is_picked()
+    {
+        var aurora = PortData.Vessel("aurora"); // 14 bays, 62 % discharged
+
+        Assert.That(BayView.Boundary(aurora), Is.EqualTo(8));
+        Assert.That(BayView.Open(aurora, null), Is.EqualTo(8));
+        Assert.That(BayView.Open(aurora, 3), Is.EqualTo(3));
+        Assert.That(BayView.Open(aurora, 14), Is.EqualTo(8), "a bay she does not have (picked on a longer ship)");
+    }
+
+    [Test]
+    public void The_arrow_keys_step_through_the_bays_and_stop_at_the_ends()
+    {
+        var aurora = PortData.Vessel("aurora");
+
+        Assert.That(BayView.Step(aurora, null, 1), Is.EqualTo(9), "from the boundary bay");
+        Assert.That(BayView.Step(aurora, 3, -1), Is.EqualTo(2));
+        Assert.That(BayView.Step(aurora, 0, -1), Is.Zero);
+        Assert.That(BayView.Step(aurora, 13, 1), Is.EqualTo(13));
+    }
 }

@@ -112,6 +112,18 @@ public sealed class BayView
         };
     }
 
+    /// <summary>The bay at the discharge boundary: the one the cranes are working, open until another is picked.</summary>
+    public static int Boundary(Vessel vessel) =>
+        Math.Min(vessel.Bays - 1, (int)Math.Floor(vessel.Bays * vessel.UnloadPercent / 100d));
+
+    /// <summary>The bay the profile and the bay panels show: the one picked, else the boundary bay.</summary>
+    public static int Open(Vessel vessel, int? picked) =>
+        picked is { } bay && bay >= 0 && bay < vessel.Bays ? bay : Boundary(vessel);
+
+    /// <summary>The keyboard's step from the open bay, by <paramref name="delta"/>; it stops at the first and the last.</summary>
+    public static int Step(Vessel vessel, int? picked, int delta) =>
+        Math.Clamp(Open(vessel, picked) + delta, 0, vessel.Bays - 1);
+
     /// <summary>The hover/selection summary shown beside the profile heading.</summary>
     public static string Summary(Vessel vessel, int bay)
     {

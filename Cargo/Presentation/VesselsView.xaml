@@ -107,7 +107,7 @@
                            Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
                            Margin="{utu:Responsive Narrowest='0,6,0,0', Wide='16,0,0,0'}" />
               </Grid>
-              <ContentControl x:Name="ProfileHost" HorizontalContentAlignment="Stretch" Margin="0,4,0,0" />
+              <ContentControl x:Name="ProfileHost" HorizontalContentAlignment="Stretch" Margin="0,4,0,0" IsTabStop="False" />
               <ItemsControl ItemsSource="{x:Bind ViewModel.CargoLegend, Mode=OneWay}" Margin="0,10,0,2" IsTabStop="False">
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate><controls:FlowPanel Spacing="18" RowSpacing="6" /></ItemsPanelTemplate>

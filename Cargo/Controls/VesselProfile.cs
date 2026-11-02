@@ -1,4 +1,7 @@
+using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Input;
 using Windows.Foundation;
+using Windows.System;
 
 namespace Cargo.Controls;
 
@@ -10,7 +13,8 @@ namespace Cargo.Controls;
 /// <remarks>
 /// The bay grid is derived from where the deck actually sits inside the hull sprite
 /// (<see cref="Sprites.Hull"/>), so the columns land on the containers the artwork shows
-/// rather than on a rectangle guessed alongside it.
+/// rather than on a rectangle guessed alongside it. The profile takes keyboard focus: the arrow keys open the
+/// next or previous bay (Home and End the first and last), the same selection a click on a bay makes.
 /// </remarks>
 public sealed partial class VesselProfile : SceneHost
 {
@@ -40,6 +44,12 @@ public sealed partial class VesselProfile : SceneHost
     public VesselProfile(PortState state) : base(SceneW, SceneH)
     {
         _state = state;
+
+        // The keyboard's way to the bays a pointer clicks; the bay panels beside the profile follow the selection
+        IsTabStop = true;
+        UseSystemFocusVisuals = true;
+        KeyDown += OnKeyDown;
+
         Build();
         this.RebuildWhenVisible(state, Build);
         this.RebuildOnTheme(Build);
@@ -89,8 +99,11 @@ public sealed partial class VesselProfile : SceneHost
         var bayWidth = (deckRight - deckLeft) / Math.Max(1, bays);
         var deckHeight = deckBottom - deckTop;
 
-        var boundary = Math.Min(bays - 1, (int)Math.Floor(bays * vessel.UnloadPercent / 100d));
-        var selected = _state.SelectedBay is { } bay && bay < bays ? bay : boundary;
+        var boundary = BayView.Boundary(vessel);
+        var selected = BayView.Open(vessel, _state.SelectedBay);
+        AutomationProperties.SetName(this,
+            $"{vessel.Name}, bay plan: {BayView.Summary(vessel, selected)}, bay {selected + 1} of {bays}. " +
+            "Left and right arrows open the previous or next bay; Home and End the first and last.");
 
         _bayWidth = bayWidth;
         _deckLeft = deckLeft;
@@ -145,6 +158,26 @@ public sealed partial class VesselProfile : SceneHost
                 Tokens.Brush("SeaGreenInkBrush"), "BodyFont", TextAlignment.Center, 140));
             Scene.Place(Draw.Text($"{vessel.UnloadPercent}%", lineX - 70, deckTop - 36, 18,
                 Tokens.Brush("SeaGreenInkBrush"), "BodyStrongFont", TextAlignment.Center, 140));
+        }
+    }
+
+    // xaml-lint: allow codebehind - keyboard selection on a code-built scene; the bay columns are not focusable elements
+    private void OnKeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        var vessel = _state.SelectedVessel;
+        int? bay = e.Key switch
+        {
+            VirtualKey.Left => BayView.Step(vessel, _state.SelectedBay, -1),
+            VirtualKey.Right => BayView.Step(vessel, _state.SelectedBay, 1),
+            VirtualKey.Home => 0,
+            VirtualKey.End => vessel.Bays - 1,
+            _ => null
+        };
+
+        if (bay is { } open)
+        {
+            _state.SelectedBay = open;
+            e.Handled = true;
         }
     }
 

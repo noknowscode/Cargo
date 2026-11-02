@@ -238,8 +238,7 @@ public sealed partial class VesselsViewModel : ObservableObject
 
     private void BuildBay(Vessel vessel)
     {
-        var boundary = Math.Min(vessel.Bays - 1, (int)Math.Floor(vessel.Bays * vessel.UnloadPercent / 100d));
-        var selected = State.SelectedBay is { } bay && bay < vessel.Bays ? bay : boundary;
+        var selected = BayView.Open(vessel, State.SelectedBay);
         var view = BayView.For(vessel, selected);
 
         BayLabel = BayView.Summary(vessel, State.HoveredBay ?? selected);

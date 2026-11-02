@@ -100,7 +100,7 @@
           </Grid>
           <!-- xaml-lint: allow card - the river chart's ground, not a card -->
           <Border CornerRadius="{StaticResource RadiusPanel}" Background="{ThemeResource LandBrush}">
-            <ContentControl x:Name="RiverHost" HorizontalContentAlignment="Stretch" />
+            <ContentControl x:Name="RiverHost" HorizontalContentAlignment="Stretch" IsTabStop="False" />
           </Border>
         </StackPanel>
       </Border>

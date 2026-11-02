@@ -100,7 +100,8 @@ which never starts the Uno runtime, and runs in CI's `test` job.
   that cannot take the ship lights red and says why (Too shallow, Taken, Closed). The selected
   vessel's "Move to berth" list is the keyboard and touch path to the same rules.
 - `Controls/VesselProfile.cs` — the bay grid is laid over the hull render, positioned from
-  the deck rect measured inside the sprite, and each bay column is its own hit target.
+  the deck rect measured inside the sprite, and each bay column is its own hit target. The
+  profile takes keyboard focus: the arrow keys open the previous or next bay (Home and End the ends).
 - `Liveline/` — the tide lane's chart control, a copy of Liveline from
   [noknowscode/uno-lab](https://github.com/noknowscode/uno-lab) (taken at `1289007`) kept in this
   repository so it builds on its own. Changes made here are not synced back.

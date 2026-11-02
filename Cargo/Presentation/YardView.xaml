@@ -63,7 +63,7 @@
 
       <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Padding="0" VerticalAlignment="Top"
                               CornerRadius="{StaticResource RadiusCard}" Background="{ThemeResource LandBrush}">
-        <ContentControl x:Name="MapHost" HorizontalContentAlignment="Stretch" />
+        <ContentControl x:Name="MapHost" HorizontalContentAlignment="Stretch" IsTabStop="False" />
       </utu:CardContentControl>
 
       <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="22,20" VerticalAlignment="Top"
