@@ -22,6 +22,7 @@ internal sealed record ChartState(
     DateTimeOffset WindowStart, DateTimeOffset WindowEnd, DateTimeOffset NowTime,
     double ForecastOpacity,
     SKColor? Background, SKColor? Line, SKColor? FillTop, SKColor? FillBottom, SKColor? LabelHalo,
+    SKColor? GridLine, SKColor? Label, SKColor? BadgeText,
     double StrokeThickness,
     Thickness PlotPadding,
     double ValueMin, double ValueMax,
@@ -70,6 +71,9 @@ public class LivelineChartCanvas : SKCanvasElement
             LineColor = s.Line ?? derived.LineColor,
             FillTop = s.FillTop ?? derived.FillTop,
             FillBottom = s.FillBottom ?? derived.FillBottom,
+            GridLine = s.GridLine ?? derived.GridLine,
+            TextDim = s.Label ?? derived.TextDim,
+            BadgeText = s.BadgeText ?? derived.BadgeText,
         };
         _background = s.Background ?? derived.Background;
 

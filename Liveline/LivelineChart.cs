@@ -268,6 +268,39 @@ public partial class LivelineChart : UserControl
         set => SetValue(LabelHaloBrushProperty, value);
     }
 
+    /// <summary>Grid lines and the tracking line. Null derives them from <see cref="Theme"/>.</summary>
+    public static readonly DependencyProperty GridLineBrushProperty =
+        DependencyProperty.Register(nameof(GridLineBrush), typeof(Brush), typeof(LivelineChart),
+            new PropertyMetadata(null, OnRenderPropertyChanged));
+
+    public Brush? GridLineBrush
+    {
+        get => (Brush?)GetValue(GridLineBrushProperty);
+        set => SetValue(GridLineBrushProperty, value);
+    }
+
+    /// <summary>Axis labels and the loading / no-data message. Null derives them from <see cref="Theme"/>.</summary>
+    public static readonly DependencyProperty LabelBrushProperty =
+        DependencyProperty.Register(nameof(LabelBrush), typeof(Brush), typeof(LivelineChart),
+            new PropertyMetadata(null, OnRenderPropertyChanged));
+
+    public Brush? LabelBrush
+    {
+        get => (Brush?)GetValue(LabelBrushProperty);
+        set => SetValue(LabelBrushProperty, value);
+    }
+
+    /// <summary>The value badge's text, on the line colour. Null picks black or white for the line's lightness.</summary>
+    public static readonly DependencyProperty BadgeTextBrushProperty =
+        DependencyProperty.Register(nameof(BadgeTextBrush), typeof(Brush), typeof(LivelineChart),
+            new PropertyMetadata(null, OnRenderPropertyChanged));
+
+    public Brush? BadgeTextBrush
+    {
+        get => (Brush?)GetValue(BadgeTextBrushProperty);
+        set => SetValue(BadgeTextBrushProperty, value);
+    }
+
     public static readonly DependencyProperty StrokeThicknessProperty =
         DependencyProperty.Register(nameof(StrokeThickness), typeof(double), typeof(LivelineChart),
             new PropertyMetadata(2.5, OnRenderPropertyChanged));
@@ -347,6 +380,7 @@ public partial class LivelineChart : UserControl
             WindowStart, WindowEnd, NowTime,
             ForecastOpacity,
             ToColor(ChartBackground), ToColor(LineBrush), ToColor(FillTopBrush), ToColor(FillBottomBrush), ToColor(LabelHaloBrush),
+            ToColor(GridLineBrush), ToColor(LabelBrush), ToColor(BadgeTextBrush),
             StrokeThickness,
             PlotPadding,
             ValueMin, ValueMax,
