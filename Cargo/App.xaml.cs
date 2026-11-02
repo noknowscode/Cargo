@@ -85,10 +85,23 @@ public partial class App : Application
         MainWindow.SetWindowIcon();
 
 #if __DESKTOP__ || WINDOWS
-        // The dashboard is authored for a wide desk; give it room rather than opening
-        // at the platform default and clipping the harbour. Only a desktop window can be
-        // sized: Android and iOS are full screen and the browser owns the WebAssembly page.
+        // The dashboard is authored for a wide desk: open at 1680 x 1020 (the Wide layout), and every size class
+        // reflows if the window is made smaller (App.xaml). Only a desktop window can be sized: Android and iOS are
+        // full screen and the browser owns the WebAssembly page.
         var size = new Windows.Graphics.SizeInt32 { Width = 1680, Height = 1020 };
+#if WINDOWS
+        // WinAppSDK knows the screen: no larger than nine tenths of its work area, so a laptop's window never opens
+        // past the screen edge (DisplayArea is not implemented on Uno's desktop head, Uno0001)
+        if (Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(MainWindow.AppWindow.Id, Microsoft.UI.Windowing.DisplayAreaFallback.Primary)?.WorkArea
+            is { Width: > 0, Height: > 0 } work)
+        {
+            size = new Windows.Graphics.SizeInt32
+            {
+                Width = Math.Min(size.Width, work.Width * 9 / 10),
+                Height = Math.Min(size.Height, work.Height * 9 / 10)
+            };
+        }
+#endif
 #if DEBUG
         // Layout verification opens at a given size (CARGO_WINDOW=390x844), one launch per size
         if (Environment.GetEnvironmentVariable("CARGO_WINDOW")?.Split('x') is [var w, var h]

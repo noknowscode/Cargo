@@ -9,12 +9,6 @@
       xmlns:utu="using:Uno.Toolkit.UI"
       Background="{ThemeResource PaperBrush}">
 
-  <Page.Resources>
-    <!-- Harbour HUD breakpoint: below 1200 the centred layer switcher (370 px) would run into the
-         Key + scale/zoom group on the right (~360 px from a 40 px gutter), so it stacks above the
-         camera menu instead -->
-  </Page.Resources>
-
   <!-- Two layers: the page, and the inspection over the whole window. The overlay stays out of the
        page rows so its size never feeds the Auto stage row. -->
   <Grid>
@@ -49,7 +43,7 @@
                     Margin="{utu:Responsive Narrowest='-12,0,0,0', Normal='0'}"
                     HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Hidden"
                     VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
-      <ItemsControl ItemsSource="{x:Bind ViewModel.NavItems, Mode=OneWay}" VerticalAlignment="Stretch">
+      <ItemsControl x:Name="SectionTabs" ItemsSource="{x:Bind ViewModel.NavItems, Mode=OneWay}" VerticalAlignment="Stretch">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
             <StackPanel Orientation="Horizontal" />
@@ -57,15 +51,20 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="local:NavItem">
+            <!-- Phones: a 44 px row of their own, 13 px labels 10 px apart, so all five fit from 360 (narrower, the row scrolls) -->
             <Button Style="{StaticResource NavTabButton}" uen:Navigation.Request="{x:Bind Route}"
+                    Height="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=44, Normal=56}"
                     Foreground="{x:Bind LabelForeground, Mode=OneWay}"
                     AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind Tooltip, Mode=OneWay}">
               <Grid>
-                <StackPanel Orientation="Horizontal" Spacing="5" Margin="12,0" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center"
+                            Margin="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest='5,0', Normal='12,0'}">
                   <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeStrong14}"
+                             FontSize="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=13, Normal=14}"
                              Visibility="{x:Bind CurrentVisibility, Mode=OneWay}" />
                   <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium14}"
+                             FontSize="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=13, Normal=14}"
                              Visibility="{x:Bind OtherVisibility, Mode=OneWay}" />
                   <Ellipse Width="6" Height="6" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Top"
                            Margin="0,1,0,0" Visibility="{x:Bind NeedsVisibility, Mode=OneWay}" />
@@ -136,15 +135,16 @@
       <Border x:Name="MastheadFrame" Canvas.ZIndex="1" Padding="{utu:Responsive Narrowest='16,12,16,12', Narrow='24,14,24,14', Normal='40,14,40,14'}" Visibility="Collapsed" Opacity="0"
               controls:Reveal.IsOn="{x:Bind ViewModel.State.MastheadShown, Mode=OneWay}" controls:Reveal.Grow="True"
               controls:Reveal.DurationKey="DurationExpandMs">
-        <local:OverviewMasthead x:Name="Masthead" DataContext="{x:Bind ViewModel.Overview, Mode=OneWay}" />
+        <!-- From 1600 the greeting lines up with Overview's centred column (1440 less its 40 px sides) -->
+        <local:OverviewMasthead x:Name="Masthead" MaxWidth="1360" DataContext="{x:Bind ViewModel.Overview, Mode=OneWay}" />
       </Border>
       <!-- One harbour for every harbour page: Overview's 340 px band (491 expanded), a strip framed by
            the section elsewhere -->
       <harbour:HarbourView x:Name="Harbour" Grid.Row="1" Compact="{x:Bind ViewModel.State.StageCompact, Mode=OneWay}"
                            OverlayShown="{x:Bind ViewModel.State.MastheadShown, Mode=OneWay}"
                            StageHeight="{x:Bind ViewModel.State.StageHeight, Mode=OneWay}" />
-      <!-- Layer switcher: centred on the HUD row; below Normal (1200) it stacks above the camera menu
-           (16 + 44 + 4 px up), clear of the Key and scale/zoom group -->
+      <!-- Layer switcher: centred on the HUD row from 1280; below it the centred switcher (370 px) would run into the
+           Key and scale/zoom group, so it stacks above the camera menu (16 + 44 + 4 px up). 44 px tall below 1000 -->
       <!-- WORKAROUND(ShadowContainer keeps its paint when only its offset changes): the responsive
            alignment and margin live on this wrapper, so the ShadowContainer never moves within its parent -->
       <Grid Grid.Row="1" VerticalAlignment="Bottom"
@@ -163,7 +163,7 @@
         <Grid CornerRadius="10" Padding="2">
           <!-- One ink pill slides and resizes to the current layer (DurationSlideMs on EaseSmooth) -->
           <controls:SegmentIndicator Host="{x:Bind LayerItems}" SelectedIndex="{x:Bind ViewModel.SelectedLayerIndex, Mode=OneWay}"
-                                     Height="40" CornerRadius="8" Background="{ThemeResource InkBrush}" />
+                                     Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" CornerRadius="8" Background="{ThemeResource InkBrush}" />
           <ItemsControl x:Name="LayerItems" ItemsSource="{x:Bind ViewModel.Layers, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
@@ -171,7 +171,7 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:LayerItem">
                 <Button Style="{StaticResource BareButton}" Command="{x:Bind Command}" CommandParameter="{x:Bind Id}"
-                        Height="40" Padding="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest='11,0', Narrow='14,0'}"
+                        Height="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=40}" Padding="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest='11,0', Narrow='14,0'}"
                         AutomationProperties.Name="{x:Bind Label}">
                   <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Viewbox Width="18" Height="18" VerticalAlignment="Center">
@@ -202,7 +202,7 @@
             <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.07" />
           </utu:ShadowCollection>
         </utu:ShadowContainer.Shadows>
-        <Button Style="{StaticResource HudSummaryButton}" Height="40" Padding="12,0,14,0"
+        <Button Style="{StaticResource HudSummaryButton}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" Padding="12,0,14,0"
                 Command="{x:Bind ViewModel.State.ToggleStageCommand}"
                 AutomationProperties.Name="{x:Bind ViewModel.State.StageToggleLabel, Mode=OneWay}">
           <StackPanel Orientation="Horizontal" Spacing="8">
@@ -222,17 +222,16 @@
     </Grid>
 
     <!-- ══ SECTION ═════════════════════════════════════════════════════ -->
-    <ScrollViewer x:Name="SectionScroll" Grid.Row="2" HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Auto"
+    <!-- Vertical only: every section reflows to the width it is given (App.xaml's size classes), so the page never
+         scrolls sideways; wide tables and charts scroll inside their own cards on a phone -->
+    <ScrollViewer x:Name="SectionScroll" Grid.Row="2" HorizontalScrollBarVisibility="Disabled" HorizontalScrollMode="Disabled"
                   VerticalScrollBarVisibility="Auto" ZoomMode="Disabled">
       <!-- Section region: one pane per route in App.RegisterRoutes. Each pane is x:Load'ed, so
            startup pays for the section you open on; the rest are realized one per idle turn after
            load (MainPage.WarmSections), and a jump to one not yet built realizes it on the spot
            (the navigator finds panes by name). x:Name and Region.Name are both the route id. -->
       <Grid x:Name="Sections" uen:Region.Attached="True" uen:Region.Navigator="Visibility">
-        <!-- Overview has no minimum width: it takes the viewport's, so its charts fit instead of
-             measuring at their design width inside the horizontally scrolling region -->
         <local:OverviewView x:Name="overview" x:Load="False" uen:Region.Name="overview" Visibility="Collapsed"
-                            Width="{x:Bind SectionScroll.ViewportWidth, Mode=OneWay}"
                             DataContext="{x:Bind ViewModel.Overview, Mode=OneWay}" />
         <local:BerthsView x:Name="berths" x:Load="False" uen:Region.Name="berths" Visibility="Collapsed"
                           DataContext="{x:Bind ViewModel.Berths, Mode=OneWay}" />

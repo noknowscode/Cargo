@@ -118,10 +118,12 @@
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
+  <!-- A page title wraps on a phone ("Fleet & waterways" is wider than 328 px at 40) -->
   <Style x:Key="PageTitleText" TargetType="TextBlock">
     <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
     <Setter Property="FontSize" Value="40" />
     <Setter Property="LineHeight" Value="44" />
+    <Setter Property="TextWrapping" Value="WrapWholeWords" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
@@ -349,9 +351,10 @@
        Page template — every section page follows the Overview:
        one frame, a masthead over a hairline, then flat ruled sections.
        ============================================================ -->
+  <!-- No minimum width: each page sets its padding per size class and reflows below 1280 (App.xaml). From 1600 the
+       1520 cap centres it (a stretched element with a MaxWidth sits in the middle of the space) -->
   <Style x:Key="PageFrame" TargetType="Grid">
     <Setter Property="Padding" Value="{StaticResource PagePadding}" />
-    <Setter Property="MinWidth" Value="1000" />
     <Setter Property="MaxWidth" Value="1520" />
     <Setter Property="HorizontalAlignment" Value="Stretch" />
     <Setter Property="RowSpacing" Value="28" />
@@ -641,12 +644,16 @@
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
-  <!-- The × that closes a detail panel, top-right of its header -->
+  <!-- The × that closes a detail panel, top-right of its header: a 32 px target (44 where pages ask for touch) -->
   <Style x:Key="CloseButton" TargetType="Button" BasedOn="{StaticResource BareButton}">
     <Setter Property="FontSize" Value="18" />
-    <Setter Property="Foreground" Value="{ThemeResource TextFaintBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextMutedBrush}" />
+    <Setter Property="MinWidth" Value="32" />
+    <Setter Property="MinHeight" Value="32" />
     <Setter Property="HorizontalAlignment" Value="Right" />
     <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
   <!-- The same × as a round button on the dark scanner stage -->

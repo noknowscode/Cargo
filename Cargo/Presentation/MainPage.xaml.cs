@@ -23,6 +23,7 @@ public sealed partial class MainPage : Page
         {
             ScrollToStartOffset();
             WarmSections();
+            ShowCurrentTab();
         };
     }
 
@@ -56,6 +57,7 @@ public sealed partial class MainPage : Page
             {
                 _returning = false;
                 SectionScroll.ChangeView(null, 0, null, true);
+                ShowCurrentTab();
             }
         };
         vm.State.ScrollToTopRequested += (_, _) =>
@@ -64,6 +66,24 @@ public sealed partial class MainPage : Page
             SectionScroll.ChangeView(null, 0, null, Motion.Reduced);
         };
         Bindings.Update();
+    }
+
+    /// <summary>
+    /// On a phone the section tabs scroll sideways under the wordmark: keep the one you are on in view. Elsewhere
+    /// every tab is already on screen and this does nothing.
+    /// </summary>
+    private void ShowCurrentTab()
+    {
+        if (ViewModel?.State is not { } state)
+        {
+            return;
+        }
+
+        var index = PortData.Sections.Select(s => s.Id).ToList().IndexOf(state.Section);
+        if (SectionTabs.ContainerFromIndex(index) is UIElement tab)
+        {
+            tab.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = !Motion.Reduced });
+        }
     }
 
     /// <summary>
