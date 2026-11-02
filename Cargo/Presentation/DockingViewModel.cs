@@ -5,8 +5,26 @@ namespace Cargo.Presentation;
 public sealed class PlanRow
 {
     public required string Berth { get; init; }
+
+    /// <summary>The row in words for a screen reader: the berth and who holds it when.</summary>
+    public required string AccessibleName { get; init; }
     public required IReadOnlyList<ProportionalPanel.Segment> Segments { get; init; }
     public required double NowFraction { get; init; }
+}
+
+/// <summary>
+/// One berth in the selected vessel's "Move to berth" list: the keyboard and touch path for drag-to-assign. Every
+/// berth is listed; one that cannot take her says why in words (not only in colour), and choosing it anyway shows
+/// the same refusal a drop would.
+/// </summary>
+public sealed class BerthChoice
+{
+    public required string Number { get; init; }
+    public required string Caption { get; init; }
+    public required string AccessibleName { get; init; }
+    public required Brush Edge { get; init; }
+    public required Brush CaptionInk { get; init; }
+    public required ICommand Assign { get; init; }
 }
 
 /// <summary>
@@ -46,6 +64,8 @@ public sealed partial class DockingViewModel : ObservableObject
 
     public ObservableCollection<Fact> SelectedFacts { get; } = new();
 
+    public ObservableCollection<BerthChoice> BerthChoices { get; } = new();
+
     [ObservableProperty] private string _planLabel = string.Empty;
     [ObservableProperty] private string _conflictText = string.Empty;
     [ObservableProperty] private Brush? _conflictTone;
@@ -55,15 +75,12 @@ public sealed partial class DockingViewModel : ObservableObject
     [ObservableProperty] private string _selectedNote = string.Empty;
     [ObservableProperty] private ImageSource? _selectedProfile;
     [ObservableProperty] private bool _canRelease;
+    [ObservableProperty] private bool _canMove;
     [ObservableProperty] private Brush? _nowBackground;
     [ObservableProperty] private Brush? _nowForeground;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(PanelWidth))]
     private bool _hasSelection;
-
-    /// <summary>The selected vessel's panel takes a column only while something is selected.</summary>
-    public GridLength PanelWidth => HasSelection ? new GridLength(320) : new GridLength(0);
 
     /// <summary>
     /// The scrubber position in hours. A value equal to the time already shown is ignored, so
@@ -96,6 +113,17 @@ public sealed partial class DockingViewModel : ObservableObject
         if (State.DockSelection is { } id)
         {
             State.Unassign(id);
+        }
+    }
+
+    /// <summary>Assigns the selected vessel to a berth from the list; a refused move shows its reason in the hint.</summary>
+    [RelayCommand]
+    private void AssignTo(string berth)
+    {
+        var index = PortData.Berths.Select(b => b.Number).ToList().IndexOf(berth);
+        if (State.DockSelection is { } id && index >= 0)
+        {
+            Hint = State.Assign(id, index) ?? DefaultHint;
         }
     }
 
@@ -134,7 +162,7 @@ public sealed partial class DockingViewModel : ObservableObject
             ? "No conflicts in the next 36 h"
             : $"{conflicts.Count} berth conflict{(conflicts.Count > 1 ? "s" : string.Empty)}: " +
               string.Join(" · ", conflicts.Select(c => $"{c.A} × {c.B} on {c.Berth}"));
-        ConflictTone = conflicts.Count == 0 ? Tokens.Brush("SeaGreenBrush") : Tokens.Brush("AlertBrush");
+        ConflictTone = conflicts.Count == 0 ? Tokens.Brush("SeaGreenInkBrush") : Tokens.Brush("AlertInkBrush");
 
         BuildTimeline(conflicts);
         BuildSelection();
@@ -154,18 +182,22 @@ public sealed partial class DockingViewModel : ObservableObject
         foreach (var berth in PortData.Berths)
         {
             var segments = new List<ProportionalPanel.Segment>();
+            var spoken = new List<string>();
 
-            // What was here earlier today, and any planned closure
+            // What was here earlier today (outlined, muted: the past), and any planned closure
             if (PortData.BerthHistory.TryGetValue(berth.Number, out var history))
             {
                 foreach (var segment in history.Where(s => s.Kind is "prev" or "restricted"))
                 {
+                    var past = segment.Kind == "prev";
                     segments.Add(new ProportionalPanel.Segment(
                         segment.Label,
                         segment.Start / PlanHours,
                         (Math.Min(segment.End, PlanHours) - segment.Start) / PlanHours,
-                        Tokens.Brush(segment.Kind == "prev" ? "TextFaintColor" : "RestrictedColor"),
-                        segment.Kind == "prev" ? 0.45 : 1));
+                        past ? Tokens.Transparent : Tokens.Brush("RestrictedBrush"),
+                        past ? Tokens.Brush("TextMutedBrush") : Tokens.Brush("SurfaceBrush"),
+                        past ? Tokens.Brush("TextFaintBrush") : null));
+                    spoken.Add(past ? $"earlier {segment.Label}" : $"closed, {segment.Label}");
                 }
             }
 
@@ -180,18 +212,26 @@ public sealed partial class DockingViewModel : ObservableObject
                     continue;
                 }
 
+                // Alongside: navy. Reserved for an arrival: accent with a dashed edge. Two in one window: alert
+                // with an ink edge
                 var conflicted = conflicts.Any(c => c.Berth == berth.Number && (c.A == vessel.Name || c.B == vessel.Name));
+                var reserved = window.Start > now;
                 segments.Add(new ProportionalPanel.Segment(
                     vessel.Name,
                     start / PlanHours,
                     (end - start) / PlanHours,
-                    Tokens.Brush(conflicted ? "AlertColor" : window.Start > now ? "AccentColor" : "NavyColor"),
-                    conflicted ? 0.9 : window.Start > now ? 0.75 : 1));
+                    Tokens.Brush(conflicted ? "AlertInkBrush" : reserved ? "AccentBrush" : "NavyBrush"),
+                    Tokens.Brush("SurfaceBrush"),
+                    conflicted || reserved ? Tokens.Brush("InkBrush") : null,
+                    Dashed: reserved && !conflicted));
+                spoken.Add($"{vessel.Name} {(conflicted ? "in conflict" : reserved ? "reserved" : "alongside")} " +
+                           $"{PortState.Format(start % 24)} to {PortState.Format(end % 24)}");
             }
 
             PlanRows.Add(new PlanRow
             {
                 Berth = berth.Number,
+                AccessibleName = spoken.Count == 0 ? $"Berth {berth.Number}: free" : $"Berth {berth.Number}: {string.Join(", ", spoken)}",
                 Segments = segments,
                 NowFraction = nowFraction
             });
@@ -213,12 +253,14 @@ public sealed partial class DockingViewModel : ObservableObject
         SelectedName = vessel.Name;
         SelectedStatus = $"{vessel.Operator} · {vessel.StatusLine}";
         SelectedNote = berth is null
-            ? "Not yet berthed. Drag onto a green berth, or Optimize."
+            ? "Not yet berthed. Drag her onto a berth marked Fits, pick one under Move to berth, or Optimize."
             : State.IsAssigned(id)
                 ? $"Assigned to Berth {berth} · mooring gang notified."
                 : vessel.OpsNote;
         SelectedProfile = Sprites.Source(Sprites.Side(vessel.Id));
         CanRelease = State.IsAssigned(id);
+
+        BuildChoices(vessel, berth);
 
         SelectedFacts.Clear();
         foreach (var (key, value) in new[]
@@ -232,6 +274,39 @@ public sealed partial class DockingViewModel : ObservableObject
                  })
         {
             SelectedFacts.Add(new Fact { Key = key, Value = value });
+        }
+    }
+
+    private void BuildChoices(Vessel vessel, string? current)
+    {
+        CanMove = BerthPlan.Movable(vessel);
+        BerthChoices.Clear();
+        if (!CanMove)
+        {
+            return;
+        }
+
+        for (var i = 0; i < PortData.Berths.Count; i++)
+        {
+            var berth = PortData.Berths[i];
+            var fit = State.Check(vessel, i);
+            var caption = berth.Number == current ? "her berth" : fit switch
+            {
+                BerthFit.Fits => "fits",
+                BerthFit.Closed => "closed",
+                BerthFit.TooShallow => "too shallow",
+                _ => "taken"
+            };
+
+            BerthChoices.Add(new BerthChoice
+            {
+                Number = berth.Number,
+                Caption = caption,
+                AccessibleName = $"Berth {berth.Number}, {berth.Depth:0.0} m: {caption}",
+                Edge = fit == BerthFit.Fits ? Tokens.Brush("AccentBrush") : Tokens.Brush("HairlineStrongBrush"),
+                CaptionInk = fit == BerthFit.Fits ? Tokens.Brush("AccentDarkBrush") : Tokens.Brush("TextMutedBrush"),
+                Assign = AssignToCommand
+            });
         }
     }
 }

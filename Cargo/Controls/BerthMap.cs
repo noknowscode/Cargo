@@ -182,7 +182,19 @@ public sealed partial class BerthMap : SceneHost
 
             var (status, conflict, selected) = _berthInfo[i];
             var isHover = hover == i;
-            var fits = dragVessel is not null && _state.Fits(dragVessel, i);
+            var fit = dragVessel is null ? BerthFit.Unknown : _state.Check(dragVessel, i);
+            var fits = fit == BerthFit.Fits;
+
+            // While a hull is dragged each berth says in words whether it takes her, not only in green or red
+            label.Text = dragVessel is not null
+                ? fit switch
+                {
+                    BerthFit.Fits => "Fits",
+                    BerthFit.Closed => "Closed",
+                    BerthFit.TooShallow => "Too shallow",
+                    _ => "Taken"
+                }
+                : conflict ? "Conflict" : char.ToUpperInvariant(status[0]) + status[1..];
 
             var toneToken = conflict ? "AlertColor" : StatusToken(status);
             if (dragVessel is not null)
@@ -258,7 +270,7 @@ public sealed partial class BerthMap : SceneHost
                 y = 372;
             }
 
-            var movable = vessel.Status != "Docked" && vessel.Status != "Departing";
+            var movable = BerthPlan.Movable(vessel);
             var selected = _state.DockSelection == vessel.Id;
 
             var host = new Grid { Width = 160, Height = 30 };
@@ -342,7 +354,7 @@ public sealed partial class BerthMap : SceneHost
             ? _state.Fits(vessel, target)
                 ? $"Release to assign Berth {PortData.Berths[target].Number}"
                 : $"Berth {PortData.Berths[target].Number} can't take {vessel.Name}"
-            : "Drop on a green berth";
+            : "Drop on a berth marked Fits";
         if (hint != _lastHint)
         {
             _lastHint = hint;
@@ -393,13 +405,13 @@ public sealed partial class BerthMap : SceneHost
             return;
         }
 
-        if (target >= 0)
+        // Every drop says what happened: assigned, refused with the rule that refused it, or not on a berth at all
+        var message = target >= 0
+            ? _state.Assign(id, target)
+            : $"{PortData.Vessel(id).Name} was not moved: drop her on a berth marked Fits.";
+        if (message is not null)
         {
-            var message = _state.Assign(id, target);
-            if (message is not null)
-            {
-                HintChanged?.Invoke(this, message);
-            }
+            HintChanged?.Invoke(this, message);
         }
 
         // A successful assignment is a structural change, which rebuilds the map once;

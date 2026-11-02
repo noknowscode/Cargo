@@ -26,6 +26,15 @@ public sealed partial class DockingView : UserControl
             MapHost.Content = map;
             this.RebuildWhenVisible(vm.State, vm.Refresh);
             this.TickWhenVisible(vm.State, vm.Tick);
+
+            // Below 1000 px the vessel's panel follows the timeline: bring it on screen when a hull is picked
+            vm.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(DockingViewModel.HasSelection) && vm.HasSelection && Grid.GetRow(SelectedPanel) > 0)
+                {
+                    SelectedPanel.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = !Motion.Reduced });
+                }
+            };
         }
 
         Bindings.Update();

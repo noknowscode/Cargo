@@ -116,4 +116,71 @@ public class BerthPlanTests
         Assert.That(plan.BerthOf("baltic"), Is.EqualTo("01"));
         Assert.That(plan.Conflicts(), Has.Count.EqualTo(1));
     }
+
+    [TestCase("nordic", "03", BerthFit.Closed, TestName = "A restricted berth refuses first, even when it is also too shallow")]
+    [TestCase("levant", "02", BerthFit.TooShallow, TestName = "Berth 02 (13.0 m) is too shallow for Levant (14.2 m)")]
+    [TestCase("levant", "04", BerthFit.Taken, TestName = "Berth 04 is taken in Levant's window")]
+    [TestCase("levant", "05", BerthFit.Fits, TestName = "Berth 05 fits Levant")]
+    [TestCase("nordic", "07", BerthFit.Fits, TestName = "A vessel fits the berth she already holds")]
+    public void Check_names_the_rule_that_refuses(string vessel, string berth, BerthFit expected) =>
+        Assert.That(new BerthPlan().Check(PortData.Vessel(vessel), Index(berth)), Is.EqualTo(expected));
+
+    [Test]
+    public void Check_reports_a_berth_that_does_not_exist() =>
+        Assert.That(new BerthPlan().Check(PortData.Vessel("levant"), 8), Is.EqualTo(BerthFit.Unknown));
+
+    [Test]
+    public void TakenBy_names_the_vessel_in_the_way()
+    {
+        var plan = new BerthPlan();
+
+        Assert.That(plan.TakenBy(PortData.Vessel("levant"), Index("04"))?.Id, Is.EqualTo("aurora"));
+        Assert.That(plan.TakenBy(PortData.Vessel("levant"), Index("05")), Is.Null);
+    }
+
+    [Test]
+    public void Every_refusal_says_why_and_a_fit_says_nothing()
+    {
+        var plan = new BerthPlan();
+        var levant = PortData.Vessel("levant");
+
+        Assert.That(plan.Refusal(PortData.Vessel("nordic"), Index("03")), Is.EqualTo("Berth 03 is restricted and takes no vessel."));
+        Assert.That(plan.Refusal(levant, Index("02")), Is.EqualTo("Berth 02 is too shallow for Levant Express (14.2 m draft · 13 m depth)."));
+        Assert.That(plan.Refusal(levant, Index("04")), Is.EqualTo("Berth 04 is taken by MSC Aurora during Levant Express's window."));
+        Assert.That(plan.Refusal(levant, Index("05")), Is.Null);
+    }
+
+    [TestCase("aurora", false)]
+    [TestCase("baltic", false)]
+    [TestCase("nordic", true)]
+    [TestCase("levant", true)]
+    public void Only_vessels_not_alongside_or_leaving_can_be_moved(string vessel, bool movable) =>
+        Assert.That(BerthPlan.Movable(PortData.Vessel(vessel)), Is.EqualTo(movable));
+
+    [Test]
+    public void The_optimiser_reports_what_it_moved_and_a_second_run_has_nothing_to_do()
+    {
+        var plan = new BerthPlan();
+
+        var first = plan.Optimize();
+        Assert.That(first.Moved, Is.EqualTo(new[] { ("levant", "05") }));
+        Assert.That(first.Unplaced, Is.Empty);
+        Assert.That(first.Summary, Is.EqualTo("Optimized: Levant Express to Berth 05 · pilots and mooring gangs notified."));
+
+        var second = plan.Optimize();
+        Assert.That(second.Moved, Is.Empty);
+        Assert.That(second.Summary, Does.StartWith("Nothing to move"));
+    }
+
+    [Test]
+    public void The_summary_names_the_vessels_nothing_fits()
+    {
+        Assert.That(new OptimizeResult([], ["levant"]).Summary,
+            Is.EqualTo("No berth fits Levant Express for draft and window: she stays where she is."));
+        Assert.That(new OptimizeResult([], ["nordic", "levant"]).Summary,
+            Is.EqualTo("No berth fits Nordic Star and Levant Express for draft and window: they stay where they are."));
+        Assert.That(new OptimizeResult([("nordic", "08")], ["levant"]).Summary,
+            Is.EqualTo("Optimized: Nordic Star to Berth 08 · pilots and mooring gangs notified. " +
+                       "No berth fits Levant Express for draft and window: she stays where she is."));
+    }
 }

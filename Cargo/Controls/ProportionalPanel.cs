@@ -6,7 +6,12 @@ namespace Cargo.Controls;
 /// <summary>One row of the berth timeline: occupancy blocks placed by fraction of the window.</summary>
 public sealed partial class ProportionalPanel : Panel
 {
-    public sealed record Segment(string Label, double Start, double Width, Brush Fill, double Opacity);
+    /// <summary>
+    /// A block: its label, where it starts and how wide it is (fractions of the window), its fill and label ink, and
+    /// an optional edge, dashed or solid. The edge carries what the colour does (a reservation, a past berth, a
+    /// conflict) so the timeline does not say it in colour alone; fills are opaque so the label keeps its contrast.
+    /// </summary>
+    public sealed record Segment(string Label, double Start, double Width, Brush Fill, Brush Ink, Brush? Edge = null, bool Dashed = false);
 
     public static readonly DependencyProperty SegmentsProperty = DependencyProperty.Register(
         nameof(Segments), typeof(IReadOnlyList<Segment>), typeof(ProportionalPanel),
@@ -38,22 +43,27 @@ public sealed partial class ProportionalPanel : Panel
 
         foreach (var segment in Segments)
         {
-            Children.Add(new Border
+            var block = new Grid();
+            block.Children.Add(new Rectangle
             {
-                CornerRadius = new CornerRadius(7),
-                Background = segment.Fill,
-                Opacity = segment.Opacity,
-                Padding = new Thickness(9, 0, 9, 0),
-                Child = new TextBlock
-                {
-                    Text = segment.Label,
-                    FontFamily = (FontFamily)Application.Current.Resources["BodyMediumFont"],
-                    FontSize = 11,
-                    Foreground = Tokens.Brush("SurfaceBrush"),
-                    VerticalAlignment = VerticalAlignment.Center,
-                    TextTrimming = TextTrimming.Clip
-                }
+                RadiusX = 7,
+                RadiusY = 7,
+                Fill = segment.Fill,
+                Stroke = segment.Edge,
+                StrokeThickness = segment.Edge is null ? 0 : 1.5,
+                StrokeDashArray = segment.Dashed ? Draw.Dash(4, 3) : null
             });
+            block.Children.Add(new TextBlock
+            {
+                Text = segment.Label,
+                Margin = new Thickness(9, 0, 9, 0),
+                FontFamily = (FontFamily)Application.Current.Resources["BodyMediumFont"],
+                FontSize = 11,
+                Foreground = segment.Ink,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextTrimming = TextTrimming.CharacterEllipsis
+            });
+            Children.Add(block);
         }
 
         Children.Add(new Rectangle { Width = 1.5, Fill = Tokens.Brush("InkBrush") });

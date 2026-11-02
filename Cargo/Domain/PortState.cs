@@ -466,10 +466,11 @@ public sealed partial class PortState : ObservableObject
             return $"{vessel.Name} assigned to Berth {berth.Number} · pilots and mooring gang notified.";
         }
 
-        return vessel.Draft > berth.Depth
-            ? $"Berth {berth.Number} is too shallow for {vessel.Name} ({vessel.Draft} m draft · {berth.Depth} m depth)."
-            : $"Berth {berth.Number} is taken during {vessel.Name}'s window.";
+        return _plan.Refusal(vessel, berthIndex);
     }
+
+    /// <summary>Whether the berth can take the vessel, and if not, which rule refuses her (the drag and the berth list say so).</summary>
+    public BerthFit Check(Vessel vessel, int berthIndex) => _plan.Check(vessel, berthIndex);
 
     public void Unassign(string vesselId)
     {
@@ -666,11 +667,16 @@ public sealed partial class PortState : ObservableObject
     }
 
     /// <summary>Give every movable vessel the shallowest berth that still clears its draft (<see cref="BerthPlan.Optimize"/>).</summary>
+    /// <summary>Runs the optimiser and returns what it did, including the vessels it could not place.</summary>
     public string Optimize()
     {
-        _plan.Optimize();
-        NotifyStructureChanged();
-        return "Optimized: every inbound vessel has a berth that fits its draft, with no overlaps in the next 36 h.";
+        var result = _plan.Optimize();
+        if (result.Moved.Count > 0)
+        {
+            NotifyStructureChanged();
+        }
+
+        return result.Summary;
     }
 
     // ── Docking planner ───────────────────────────────────────────────────────
