@@ -5,7 +5,11 @@
              xmlns:utu="using:Uno.Toolkit.UI"
              xmlns:shapes="using:Microsoft.UI.Xaml.Shapes"
              xmlns:media="using:Microsoft.UI.Xaml.Media"
-             xmlns:controls="using:Cargo.Controls">
+             xmlns:controls="using:Cargo.Controls"
+             xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:not_win="http://uno.ui/not_win"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="not_win">
 
   <UserControl.Resources>
     <!-- Below 1040 the two columns stack (the Overview's narrow band) -->
@@ -91,12 +95,16 @@
         </Grid>
 
         <!-- Blur-back: another row in this column is open. Acrylic's blur is fixed and erases 13-15 px text, so it
-             stops at 75% and the row reads through as soft focus. A childless Border so the Skia path works on Android too -->
+             stops at 75% and the row reads through as soft focus. A childless Border so the Skia path works on Android too.
+             UseCompositionEffectBrush is Uno-only (the Skia blur path; WinUI's XAML compiler rejects it), so the WinAppSDK
+             head gets the same brush without it (conditional XAML) -->
         <Border Opacity="0" Visibility="Collapsed" IsHitTestVisible="False"
                 controls:Reveal.IsOn="{x:Bind IsDimmed, Mode=OneWay}" controls:Reveal.Hides="True" controls:Reveal.OnOpacity="0.75">
           <Border.Background>
-            <AcrylicBrush AlwaysUseFallback="False" media:AcrylicBrushExtensions.UseCompositionEffectBrush="False"
-                          TintColor="{StaticResource SurfaceColor}" TintOpacity="0.1" FallbackColor="{StaticResource SurfaceColor}" />
+            <win:AcrylicBrush AlwaysUseFallback="False"
+                              TintColor="{StaticResource SurfaceColor}" TintOpacity="0.1" FallbackColor="{StaticResource SurfaceColor}" />
+            <not_win:AcrylicBrush AlwaysUseFallback="False" media:AcrylicBrushExtensions.UseCompositionEffectBrush="False"
+                                  TintColor="{StaticResource SurfaceColor}" TintOpacity="0.1" FallbackColor="{StaticResource SurfaceColor}" />
           </Border.Background>
         </Border>
       </Grid>
