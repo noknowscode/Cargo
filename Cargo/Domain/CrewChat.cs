@@ -28,10 +28,6 @@ public sealed partial class CrewChat : ObservableObject
     [ObservableProperty]
     public partial string Draft { get; set; } = string.Empty;
 
-    /// <summary>What dispatch has sent to the vessel this session.</summary>
-    public IReadOnlyList<ChatLine> SentTo(string vesselId) =>
-        _sent.TryGetValue(vesselId, out var lines) ? lines : [];
-
     public IReadOnlyList<ChatLine> ThreadFor(string vesselId)
     {
         var vessel = PortData.RiverFleet.First(v => v.Id == vesselId);

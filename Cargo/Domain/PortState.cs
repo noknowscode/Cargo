@@ -104,8 +104,6 @@ public sealed partial class PortState : ObservableObject
         Ticked?.Invoke(this, EventArgs.Empty);
     }
 
-    public void NotifyStructureChanged() => _signals.Structure();
-
     // ── Clock ─────────────────────────────────────────────────────────────────
 
     public double NowHours => PortData.NowHours + (_clock.Now - _started).TotalHours;
