@@ -62,7 +62,7 @@ public class WaterwaysSecurityViewModelTests
 
         eta.Send.Execute(eta.Id);
 
-        Assert.That(desk.State.Decisions.Single(d => d.Kind == DecisionKind.LateOrders).Title, Is.EqualTo("1 order late"));
+        Assert.That(desk.State.NeedsYou.Decisions.Single(d => d.Kind == DecisionKind.LateOrders).Title, Is.EqualTo("1 order late"));
         Assert.That(desk.Fleet.Thread[^1].Text, Does.StartWith("Please confirm revised ETA"));
         Assert.That(desk.Fleet.QuickMessages.Single(q => q.Id == "eta").AccessibleName, Is.EqualTo("Confirm new ETA: send to Alder Trader"));
     }
@@ -71,12 +71,12 @@ public class WaterwaysSecurityViewModelTests
     public void The_other_quick_messages_just_send()
     {
         var desk = new Desk();
-        var count = desk.State.NeedsYouCount;
+        var count = desk.State.NeedsYou.Count;
 
         desk.Fleet.SendQuickCommand.Execute("hold");
 
         Assert.That(desk.Fleet.Thread[^1].Text, Does.StartWith("Hold at "));
-        Assert.That(desk.State.NeedsYouCount, Is.EqualTo(count));
+        Assert.That(desk.State.NeedsYou.Count, Is.EqualTo(count));
     }
 
     [Test]
@@ -121,7 +121,7 @@ public class WaterwaysSecurityViewModelTests
             Assert.That((desk.Security.AssignLabel, desk.Security.ReweighLabel), Is.EqualTo(("Inspector assigned", "Re-weigh requested")));
             Assert.That(desk.Security.AssignInspectorCommand.CanExecute(null), Is.False);
             Assert.That(desk.Security.RequestReweighCommand.CanExecute(null), Is.False);
-            Assert.That(desk.State.Decisions.Any(d => d.Kind == DecisionKind.InspectionHold), Is.False);
+            Assert.That(desk.State.NeedsYou.Decisions.Any(d => d.Kind == DecisionKind.InspectionHold), Is.False);
         });
     }
 
@@ -137,6 +137,6 @@ public class WaterwaysSecurityViewModelTests
         Assert.That(card.AwaitsDriver, Is.False);
         Assert.That(card.Facts.Single(f => f.Key == "Authorization").Value, Is.EqualTo("Authorized · driver ID verified"));
         Assert.That(card.AccessibleName, Does.EndWith("Authorized · driver ID verified"));
-        Assert.That(desk.State.Decisions.Any(d => d.Kind == DecisionKind.DriverCheck), Is.False);
+        Assert.That(desk.State.NeedsYou.Decisions.Any(d => d.Kind == DecisionKind.DriverCheck), Is.False);
     }
 }

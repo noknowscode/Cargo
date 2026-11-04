@@ -60,7 +60,7 @@ public class HeaderTooltipTests
 
         foreach (var late in PortData.RiverFleet.Where(v => v.SlipMinutes > 0))
         {
-            state.ConfirmRevisedEta(late.Id);
+            state.NeedsYou.ConfirmRevisedEta(late.Id);
         }
 
         Assert.That(MainViewModel.SectionSummary(state, "fleet"), Is.EqualTo("6 underway · 2 running late"));
@@ -72,7 +72,7 @@ public class HeaderTooltipTests
         var state = new PortState(new ManualClock());
         Assert.That(MainViewModel.SectionSummary(state, "security"), Is.EqualTo("ISPS level 1 · 1 incident · 2 checks waiting"));
 
-        state.AssignInspector();
+        state.NeedsYou.AssignInspector();
         Assert.That(MainViewModel.SectionSummary(state, "security"), Is.EqualTo("ISPS level 1 · 1 incident · 1 check waiting"));
     }
 }

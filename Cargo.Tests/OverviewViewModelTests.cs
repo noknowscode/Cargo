@@ -21,7 +21,7 @@ public class OverviewViewModelTests
             Assert.That(overview.ShiftProgress, Is.InRange(0.2, 0.3), "18:00 to 06:00, at 20:58");
         });
 
-        desk.State.AssignInspector();
+        desk.State.NeedsYou.AssignInspector();
         Assert.That(overview.NeedsYouText, Is.EqualTo("3"));
     }
 
@@ -110,23 +110,24 @@ public class OverviewViewModelTests
     public void The_log_marks_the_entries_about_open_decisions_until_they_settle()
     {
         var state = new PortState(new ManualClock());
-        var log = new ActivityViewModel(state);
+        var log = new ActivityViewModel(state, new NeedsYouPanelViewModel(state).ActCommand);
         var feed = log.Left.Concat(log.Right).ToList();
 
         Assert.That(feed.Count(f => f.NeedsAction), Is.EqualTo(2), "the hold and the driver check");
         Assert.That(log.Sub, Is.EqualTo($"{feed.Count} today · 2 need action · newest first"));
         Assert.That(log.IsEmpty, Is.False);
 
-        state.AssignInspector();
+        state.NeedsYou.AssignInspector();
         var after = log.Left.Concat(log.Right).ToList();
         Assert.That(after.Count(f => f.NeedsAction), Is.EqualTo(1));
-        Assert.That(after.Single(f => f.NeedsAction).About!.Kind, Is.EqualTo(DecisionKind.DriverCheck));
+        Assert.That(after.Single(f => f.NeedsAction).About?.Kind, Is.EqualTo(DecisionKind.DriverCheck));
     }
 
     [Test]
     public void Opening_a_log_entry_dims_its_column_and_a_second_press_closes_it()
     {
-        var log = new ActivityViewModel(new PortState(new ManualClock()));
+        var state = new PortState(new ManualClock());
+        var log = new ActivityViewModel(state, new NeedsYouPanelViewModel(state).ActCommand);
         var entry = log.Left[1];
 
         log.ToggleCommand.Execute(entry);

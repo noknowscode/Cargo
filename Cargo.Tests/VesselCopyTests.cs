@@ -77,7 +77,7 @@ public class VesselCopyTests
     {
         var state = new PortState(new ManualClock());
 
-        var row = state.Decisions.Single(d => d.Kind == DecisionKind.BerthConfirm);
+        var row = state.NeedsYou.Decisions.Single(d => d.Kind == DecisionKind.BerthConfirm);
 
         Assert.That((row.Title, row.Sub, row.When), Is.EqualTo(("Nordic Star needs berth 07 confirmed", "Pilot aboard", "arrives 21:40")));
     }

@@ -158,14 +158,14 @@ public sealed partial class FleetViewModel : ObservableObject
 
     /// <summary>
     /// Sends a quick message. "Confirm new ETA" to a late crew also handles her late order in the needs-you queue
-    /// (<see cref="PortState.ConfirmRevisedEta"/>).
+    /// (<see cref="NeedsYouQueue.ConfirmRevisedEta"/>).
     /// </summary>
     [RelayCommand]
     private void SendQuick(string id)
     {
         if (id == "eta")
         {
-            State.ConfirmRevisedEta(Selected.Id);
+            State.NeedsYou.ConfirmRevisedEta(Selected.Id);
             Refresh();
         }
         else if (QuickMessages.FirstOrDefault(q => q.Id == id) is { } message)
@@ -303,7 +303,7 @@ public sealed partial class FleetViewModel : ObservableObject
         QuickMessages.Clear();
         foreach (var (id, label, text) in new[]
                  {
-                     ("eta", "Confirm new ETA", PortState.RevisedEtaMessage(selected)),
+                     ("eta", "Confirm new ETA", NeedsYouQueue.RevisedEtaMessage(selected)),
                      ("hold", "Hold at next lock", $"Hold at {selected.Next} until further notice — traffic ahead. Acknowledge."),
                      ("level", "Report water level", $"Report observed water level and any squat at your position, km {selected.Km:0.0}.")
                  })
@@ -311,7 +311,7 @@ public sealed partial class FleetViewModel : ObservableObject
             QuickMessages.Add(new QuickMessage
             {
                 Id = id, Label = label, Text = text, Send = SendQuickCommand,
-                AccessibleName = $"{label}: send to {selected.Name}" + (id == "eta" && State.AwaitsEta(selected) ? ", handles her late order" : string.Empty)
+                AccessibleName = $"{label}: send to {selected.Name}" + (id == "eta" && State.NeedsYou.AwaitsEta(selected) ? ", handles her late order" : string.Empty)
             });
         }
     }

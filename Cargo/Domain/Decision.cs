@@ -11,7 +11,8 @@ public enum DecisionKind
 /// <summary>
 /// One thing waiting on the dispatcher, as the Needs-you queue lists it. The list is rebuilt when
 /// what needs deciding changes; the timing part of the sub-line (<see cref="When"/>) is updated in
-/// place on the clock, so a tick never rebuilds a row.
+/// place on the clock, so a tick never rebuilds a row. What its action does is the presentation's to decide, by
+/// <see cref="Kind"/> (<c>NeedsYouPanelViewModel</c>).
 /// </summary>
 public sealed partial class Decision : ObservableObject
 {
@@ -26,9 +27,6 @@ public sealed partial class Decision : ObservableObject
 
     /// <summary>The queue's one primary action; the rest are secondary buttons.</summary>
     public required bool IsPrimary { get; init; }
-
-    public required ICommand Command { get; init; }
-    public object? CommandParameter { get; init; }
 
     /// <summary>What the shift log calls it ("MRVU 918204 1", "TRK 8834"), so a log entry can show it needs action.</summary>
     public string? Subject { get; init; }

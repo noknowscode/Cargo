@@ -44,6 +44,7 @@ public sealed partial class MainViewModel : ObservableObject
             state.PropertyChanged += OnStateChanged;
             state.Navigation.PropertyChanged += OnStateChanged;
             state.Stage.PropertyChanged += OnStateChanged;
+            state.NeedsYou.PropertyChanged += OnStateChanged;
             // The tooltips' countdowns and the yard's figure move with the clock; once a minute is enough
             state.Ticked += (_, _) =>
             {
@@ -138,7 +139,7 @@ public sealed partial class MainViewModel : ObservableObject
                 BuildNav();
                 _ = ShowSectionAsync(State.Navigation.Section);
                 break;
-            case nameof(PortState.NeedsDecision) or nameof(PortState.NeedsYouCount):
+            case nameof(PortState.NeedsDecision) or nameof(NeedsYouQueue.Count):
                 // A settled decision (the berth, the hold, the driver, the late orders) clears its section's dot
                 BuildNav();
                 break;
@@ -213,7 +214,7 @@ public sealed partial class MainViewModel : ObservableObject
         foreach (var item in NavItems)
         {
             var current = State.Navigation.Section == item.Id;
-            var needs = State.SectionNeedsYou(item.Id);
+            var needs = State.NeedsYou.SectionNeedsYou(item.Id);
 
             item.Tooltip = $"{item.Label} · {SectionSummary(State, item.Id)}";
             item.AutomationName = needs ? $"{item.Label}, needs you" : item.Label;
@@ -270,13 +271,13 @@ public sealed partial class MainViewModel : ObservableObject
 
             case "fleet":
                 var late = PortData.RiverFleet.Count(v => v.SlipMinutes > 0);
-                var toConfirm = PortData.RiverFleet.Count(state.AwaitsEta);
+                var toConfirm = PortData.RiverFleet.Count(state.NeedsYou.AwaitsEta);
                 return $"{PortData.RiverFleet.Count} underway · {late} running late"
                     + (toConfirm > 0 ? $" · {Plural(toConfirm, "ETA", "ETAs")} to confirm" : string.Empty);
 
             case "security":
                 var incidents = PortData.SecurityRecords.FirstOrDefault(r => r.Label == "Security incidents")?.Count ?? "0";
-                var open = state.Decisions.Count(d => d.Kind is DecisionKind.InspectionHold or DecisionKind.DriverCheck);
+                var open = state.NeedsYou.Decisions.Count(d => d.Kind is DecisionKind.InspectionHold or DecisionKind.DriverCheck);
                 return $"ISPS level {PortData.IspsLevel} · {incidents} {(incidents == "1" ? "incident" : "incidents")}"
                     + (open > 0 ? $" · {Plural(open, "check", "checks")} waiting" : string.Empty);
 

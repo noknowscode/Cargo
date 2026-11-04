@@ -16,11 +16,12 @@ public sealed partial class OverviewViewModel : ObservableObject
         {
             Timeline = new TimelineViewModel(state);
             NextSix = new NextSixHoursViewModel(state, Timeline.Events);
-            Activity = new ActivityViewModel(state);
+            NeedsYou = new NeedsYouPanelViewModel(state);
+            Activity = new ActivityViewModel(state, NeedsYou.ActCommand);
             Refresh();
-            state.PropertyChanged += (_, e) =>
+            state.NeedsYou.PropertyChanged += (_, e) =>
             {
-                if (e.PropertyName == nameof(PortState.NeedsYouCount))
+                if (e.PropertyName == nameof(NeedsYouQueue.Count))
                 {
                     OnPropertyChanged(nameof(NeedsYouText));
                     OnPropertyChanged(nameof(NeedsYouLink));
@@ -36,6 +37,10 @@ public sealed partial class OverviewViewModel : ObservableObject
     public partial TimelineViewModel? Timeline { get; set; }
 
     public string Subtitle => $"{PortData.Today} · Westhaven Port Authority · the harbour as it is right now.";
+
+    /// <summary>The Needs-you queue: what waits on the dispatcher, each row with its action.</summary>
+    [ObservableProperty]
+    public partial NeedsYouPanelViewModel? NeedsYou { get; set; }
 
     /// <summary>The shift log, with the entries an open decision is about marked.</summary>
     [ObservableProperty]
@@ -62,9 +67,9 @@ public sealed partial class OverviewViewModel : ObservableObject
     public string OperatorSummary => $"{Operator.Role} {Operator.Name}, {Operator.Badge}, on shift {Operator.ClockedInText} to {Operator.ShiftEndText}";
 
     /// <summary>The masthead's needs-you figure, as text for the figure's TextBlock.</summary>
-    public string NeedsYouText => State.NeedsYouCount.ToString();
+    public string NeedsYouText => State.NeedsYou.Count.ToString();
 
-    public string NeedsYouLink => $"{State.NeedsYouCount} need you, show the queue";
+    public string NeedsYouLink => $"{State.NeedsYou.Count} need you, show the queue";
 
     /// <summary>How much of the shift has passed, 0 to 1.</summary>
     [ObservableProperty]

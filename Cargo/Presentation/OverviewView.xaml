@@ -243,7 +243,7 @@
                               Style="{StaticResource OutlinedPanel}" Padding="0"
                               VerticalAlignment="Top">
         <StackPanel>
-          <local:NeedsYouPanel x:Name="NeedsYou" DataContext="{x:Bind ViewModel.State}" />
+          <local:NeedsYouPanel x:Name="NeedsYou" DataContext="{x:Bind ViewModel.NeedsYou, Mode=OneWay}" />
           <Rectangle Height="1" Fill="{ThemeResource HairlineStrongBrush}" />
           <StackPanel Spacing="{StaticResource Space14}" Padding="{StaticResource Inset24}">
           <!-- Next 6 h: from 15 minutes back to six hours ahead, the NOW row between what has

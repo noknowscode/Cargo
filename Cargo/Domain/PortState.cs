@@ -3,10 +3,11 @@ using static Cargo.Domain.DebugHooks;
 namespace Cargo.Domain;
 
 /// <summary>
-/// The port's store: the live clock that drives the countdowns, the berth desk (the berth plan, the decisions waiting
-/// on the dispatcher, and the vessel, berth, bay and badge being worked), and the signals every view follows. Where
-/// the dispatcher is (<see cref="Navigation"/>), the harbour stage (<see cref="Stage"/>), the scanner
-/// (<see cref="Scanner"/>), the yard (<see cref="Yard"/>) and the crew channel (<see cref="Chat"/>) are its parts.
+/// The port's store: the berth desk on the shift's live clock (the berth plan, the arrival waiting on a berth, and
+/// the vessel, berth, bay and badge being worked) and the signals every view follows. Where the dispatcher is
+/// (<see cref="Navigation"/>), the harbour stage (<see cref="Stage"/>), the container pick (<see cref="Scanner"/>),
+/// the yard (<see cref="Yard"/>), the crew channel (<see cref="Chat"/>) and what needs you (<see cref="NeedsYou"/>)
+/// are its parts.
 /// </summary>
 public sealed partial class PortState : ObservableObject
 {
@@ -30,6 +31,7 @@ public sealed partial class PortState : ObservableObject
         Scanner = new ScannerState(_signals);
         Yard = new YardState(clock, _signals, random);
         Chat = new CrewChat(_signals, () => NowHours);
+        NeedsYou = new NeedsYouQueue(_signals, Chat, () => NowHours, () => PendingDecision, BerthOf);
 
 #if DEBUG
         if (Hook("CARGO_OPTIMIZE") == "1")
@@ -38,7 +40,7 @@ public sealed partial class PortState : ObservableObject
         }
 #endif
 
-        RebuildDecisions();
+        RebuildQueue();
         clock.Tick += (_, _) => Tick();
     }
 
@@ -56,6 +58,9 @@ public sealed partial class PortState : ObservableObject
 
     /// <summary>The river crews' channel.</summary>
     public CrewChat Chat { get; }
+
+    /// <summary>What waits on the dispatcher, and the actions that settle it (the berth's row settles here, <see cref="Confirm"/>).</summary>
+    public NeedsYouQueue NeedsYou { get; }
 
     /// <summary>Raised once a second, after the clock advances.</summary>
     public event EventHandler? Ticked;
@@ -95,7 +100,7 @@ public sealed partial class PortState : ObservableObject
         OnPropertyChanged(nameof(NowMinutes));
         OnPropertyChanged(nameof(NowSeconds));
         OnPropertyChanged(nameof(NowHours));
-        TickDecisions();
+        NeedsYou.Tick();
         Ticked?.Invoke(this, EventArgs.Empty);
     }
 
@@ -268,7 +273,7 @@ public sealed partial class PortState : ObservableObject
         ? berth is null ? "Released from her berth · she waits at anchor for one." : $"Assigned to Berth {berth} · pilots and mooring gang notified."
         : vessel.OpsNote;
 
-    // ── Decisions ─────────────────────────────────────────────────────────────
+    // ── The berth decision ────────────────────────────────────────────────────
 
     private readonly HashSet<string> _confirmed = new();
 
@@ -282,213 +287,6 @@ public sealed partial class PortState : ObservableObject
         ?.Id;
 
     public bool NeedsDecision => PendingDecision is not null;
-
-    /// <summary>
-    /// Whether a section holds something waiting on the dispatcher, for the header's needs-you dots: Berths the
-    /// unconfirmed arrival, Waterways the late orders (their ETAs are confirmed with the crews there), Security the
-    /// inspection hold and the driver check.
-    /// </summary>
-    public bool SectionNeedsYou(string section) => Decisions.Any(d => d.Kind switch
-    {
-        DecisionKind.BerthConfirm => section == "berths",
-        DecisionKind.LateOrders => section == "fleet",
-        _ => section == "security"
-    });
-
-    /// <summary>What needs you, counted as the queue lists it.</summary>
-    public int NeedsYouCount => Decisions.Count;
-
-    // ── Needs-you queue ─────────────────────────────────────────────────────
-
-    // What the dispatcher has done about the rows other than the berth: each one settles its row
-    private readonly HashSet<string> _verifiedDrivers = new();
-    private readonly HashSet<string> _etaConfirmed = new();
-
-    /// <summary>The held container's 21:15 inspection has an inspector: the hold's row is settled (the hold stays until the inspection).</summary>
-    [ObservableProperty]
-    public partial bool InspectorAssigned { get; set; }
-
-    /// <summary>The held container's re-weigh is booked on weighbridge 1.</summary>
-    [ObservableProperty]
-    public partial bool ReweighRequested { get; set; }
-
-    /// <summary>Assigns the inspector to the held container's inspection, which settles the hold's row. False when already done.</summary>
-    public bool AssignInspector()
-    {
-        if (InspectorAssigned)
-        {
-            return false;
-        }
-
-        InspectorAssigned = true;
-        Settled();
-        return true;
-    }
-
-    /// <summary>Books the held container's re-weigh. False when already booked.</summary>
-    public bool RequestReweigh()
-    {
-        if (ReweighRequested)
-        {
-            return false;
-        }
-
-        ReweighRequested = true;
-        _signals.Structure();
-        return true;
-    }
-
-    /// <summary>A truck at the barrier still waiting on its driver's ID check.</summary>
-    public bool AwaitsDriver(VehicleDef vehicle) =>
-        vehicle.Authorization == "Awaiting driver ID" && !_verifiedDrivers.Contains(vehicle.Id);
-
-    /// <summary>The truck's authorization as it stands: verified at the gate once the dispatcher checked the driver.</summary>
-    public string AuthorizationOf(VehicleDef vehicle) =>
-        _verifiedDrivers.Contains(vehicle.Id) ? "Authorized · driver ID verified" : vehicle.Authorization;
-
-    /// <summary>Verifies the driver of a truck waiting at the barrier, which settles the driver row. False when there is nothing to verify.</summary>
-    public bool VerifyDriver(string truckId)
-    {
-        if (PortData.Vehicles.FirstOrDefault(v => v.Id == truckId) is not { } truck || !AwaitsDriver(truck))
-        {
-            return false;
-        }
-
-        _verifiedDrivers.Add(truckId);
-        Settled();
-        return true;
-    }
-
-    /// <summary>A late river order whose revised ETA has not been confirmed with her crew yet.</summary>
-    public bool AwaitsEta(RiverVessel vessel) => vessel.SlipMinutes > 0 && !_etaConfirmed.Contains(vessel.Id);
-
-    /// <summary>The message that asks a late crew to confirm their revised ETA to the consignee.</summary>
-    public static string RevisedEtaMessage(RiverVessel vessel) =>
-        $"Please confirm revised ETA {ShiftClock.Format(vessel.Eta + vessel.SlipMinutes / 60d)} " +
-        "to the consignee. Any further slip, call dispatch on VHF 12.";
-
-    /// <summary>
-    /// Sends the late crew the revised-ETA message; the order counts as handled, so the late-orders row drops it (and
-    /// leaves when both are handled). A vessel on time is just sent the message.
-    /// </summary>
-    public void ConfirmRevisedEta(string vesselId)
-    {
-        var vessel = PortData.RiverFleet.First(v => v.Id == vesselId);
-        Chat.Send(vesselId, RevisedEtaMessage(vessel));
-        if (AwaitsEta(vessel))
-        {
-            _etaConfirmed.Add(vesselId);
-            Settled();
-        }
-    }
-
-    /// <summary>A row other than the berth's was settled: the queue, the count, the dots and the log's chips follow.</summary>
-    private void Settled()
-    {
-        RebuildDecisions();
-        _signals.Structure();
-    }
-
-    /// <summary>The physical inspection on the held container is booked for 21:15.</summary>
-    private const double InspectionDue = 21.25;
-
-    /// <summary>Everything waiting on the dispatcher: the hold, the driver check, the late orders, the berth.</summary>
-    public ObservableCollection<Decision> Decisions { get; } = new();
-
-    /// <summary>
-    /// Rebuilds the queue from the data and the berth decision, in the design's order. Called at
-    /// start and when what needs deciding changes; the clock only updates the rows' timings.
-    /// </summary>
-    private void RebuildDecisions()
-    {
-        Decisions.Clear();
-        _queuedBerthDecision = BerthDecision();
-
-        if (!InspectorAssigned && PortData.Containers.FirstOrDefault(c => c.Security == "Hold") is { } held)
-        {
-            Decisions.Add(new Decision
-            {
-                Id = $"hold-{held.Id}", Kind = DecisionKind.InspectionHold,
-                Title = $"Hold on {held.DisplayId}", Sub = $"Inspection due {ShiftClock.Format(InspectionDue)}",
-                ActionLabel = "Open inspection", IsPrimary = true, Command = Navigation.OpenInspectionCommand, Subject = held.DisplayId
-            });
-        }
-
-        if (PortData.Vehicles.FirstOrDefault(AwaitsDriver) is { } truck)
-        {
-            Decisions.Add(new Decision
-            {
-                Id = $"driver-{truck.Id}", Kind = DecisionKind.DriverCheck,
-                Title = $"Driver ID pending at {truck.Gate.Split(" · ")[0]}", Sub = $"{truck.Id} at the barrier",
-                ActionLabel = "Verify driver", IsPrimary = false, Command = Navigation.OpenAccessCommand, Subject = truck.Id
-            });
-        }
-
-        var late = PortData.RiverFleet.Count(AwaitsEta);
-        if (late > 0)
-        {
-            Decisions.Add(new Decision
-            {
-                Id = "late-orders", Kind = DecisionKind.LateOrders,
-                Title = late == 1 ? "1 order late" : $"{late} orders late", Sub = late == 1 ? "In the yard queue" : "Both in the yard queue",
-                ActionLabel = "View orders", IsPrimary = false, Command = Navigation.GoCommand, CommandParameter = "fleet"
-            });
-        }
-
-        if (PendingDecision is { } vessel)
-        {
-            var v = PortData.Vessel(vessel);
-            Decisions.Add(new Decision
-            {
-                Id = $"berth-{vessel}", Kind = DecisionKind.BerthConfirm,
-                Title = $"{v.Name} needs berth {BerthOf(vessel)} confirmed", Sub = "Pilot aboard",
-                ActionLabel = "Confirm berth", IsPrimary = false, Command = ConfirmDecisionCommand,
-                CommandParameter = vessel, VesselId = vessel
-            });
-        }
-
-        TickDecisions();
-        OnPropertyChanged(nameof(NeedsYouCount));
-    }
-
-    /// <summary>Updates each row's timing in place: due or overdue, waiting since, arriving in.</summary>
-    private void TickDecisions()
-    {
-        foreach (var d in Decisions)
-        {
-            switch (d.Kind)
-            {
-                case DecisionKind.InspectionHold:
-                    var due = (int)Math.Round((InspectionDue - NowHours) * 60);
-                    d.IsLate = due < 0;
-                    d.When = due < 0 ? $"{-due} min late" : $"in {due} min";
-                    break;
-                case DecisionKind.DriverCheck:
-                    var since = ShiftClock.ClockHours(PortData.Vehicles.First(v => v.Id == d.Subject).Entry);
-                    var waiting = double.IsNaN(since) ? 0 : (int)Math.Round((NowHours - since) * 60);
-                    d.IsLate = true;
-                    d.When = $"waiting {Math.Max(0, waiting)} min";
-                    break;
-                case DecisionKind.BerthConfirm:
-                    var eta = PortData.Vessel(d.VesselId!).Eta;
-                    d.When = $"arrives {eta[^5..]}";
-                    break;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Confirms the berth from the queue: the row leaves the list, the berth and harbour follow. A berth that cannot
-    /// take her says why on the row, as the needs-you bar does.
-    /// </summary>
-    [RelayCommand]
-    private void ConfirmDecision(string vesselId)
-    {
-        if (Confirm(vesselId) is { } refusal && Decisions.FirstOrDefault(d => d.VesselId == vesselId) is { } row)
-        {
-            row.Refusal = refusal;
-        }
-    }
 
     public bool IsConfirmed(string vesselId) => _confirmed.Contains(vesselId);
 
@@ -534,6 +332,12 @@ public sealed partial class PortState : ObservableObject
     private (string? Vessel, string? Berth) BerthDecision() =>
         PendingDecision is { } vessel ? (vessel, BerthOf(vessel)) : (null, null);
 
+    private void RebuildQueue()
+    {
+        _queuedBerthDecision = BerthDecision();
+        NeedsYou.Rebuild();
+    }
+
     /// <summary>
     /// Every change to the berth plan ends here (an assignment, a release, the optimiser, a confirm, an undo). Which
     /// arrival waits on a berth is read from the plan, so the queue, the masthead count, the header's dot, the
@@ -545,7 +349,7 @@ public sealed partial class PortState : ObservableObject
         if (BerthDecision() != _queuedBerthDecision)
         {
             // The queue first: the header's dots read it when NeedsDecision changes
-            RebuildDecisions();
+            RebuildQueue();
             OnPropertyChanged(nameof(PendingDecision));
             OnPropertyChanged(nameof(NeedsDecision));
         }

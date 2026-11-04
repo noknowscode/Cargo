@@ -20,6 +20,9 @@ public sealed partial class FeedEntry : ObservableObject
     /// <summary>The entry is about an open decision: the NEEDS ACTION chip, the alert icon and the decision's action.</summary>
     public bool NeedsAction => About is not null;
 
+    /// <summary>The decision's action, as the Needs-you queue offers it; <see cref="About"/> is its parameter.</summary>
+    public required ICommand Act { get; init; }
+
     public required ICommand Toggle { get; init; }
 
     [ObservableProperty]
@@ -42,11 +45,14 @@ public sealed partial class FeedEntry : ObservableObject
 public sealed partial class ActivityViewModel : ObservableObject
 {
     private readonly PortState _state;
+    private readonly ICommand _act;
 
-    public ActivityViewModel(PortState state)
+    /// <summary>The log over the store, offering <paramref name="act"/> on the entries about an open decision.</summary>
+    public ActivityViewModel(PortState state, ICommand act)
     {
         _state = state;
-        state.Decisions.CollectionChanged += OnQueueChanged;
+        _act = act;
+        state.NeedsYou.Decisions.CollectionChanged += OnQueueChanged;
         Build();
     }
 
@@ -62,7 +68,7 @@ public sealed partial class ActivityViewModel : ObservableObject
     private void Build()
     {
         var opened = Left.Concat(Right).FirstOrDefault(f => f.IsExpanded)?.Title;
-        var open = _state.Decisions.Where(d => d.Subject is not null).ToArray();
+        var open = _state.NeedsYou.Decisions.Where(d => d.Subject is not null).ToArray();
         var feed = PortData.Activity.Select(entry =>
         {
             var about = open.FirstOrDefault(d => entry.Title.Contains(d.Subject!) || entry.Detail.Contains(d.Subject!));
@@ -73,6 +79,7 @@ public sealed partial class ActivityViewModel : ObservableObject
                 Detail = entry.Detail,
                 IconData = PortData.ActivityIcons[entry.Kind].Icon,
                 About = about,
+                Act = _act,
                 Toggle = ToggleCommand
             };
         }).ToList();

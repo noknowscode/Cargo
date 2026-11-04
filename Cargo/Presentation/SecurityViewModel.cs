@@ -156,15 +156,15 @@ public sealed partial class SecurityViewModel : ObservableObject
         }
     }
 
-    public string AssignLabel => State.InspectorAssigned ? "Inspector assigned" : "Assign inspector";
+    public string AssignLabel => State.NeedsYou.InspectorAssigned ? "Inspector assigned" : "Assign inspector";
 
-    public string ReweighLabel => State.ReweighRequested ? "Re-weigh requested" : "Request re-weigh";
+    public string ReweighLabel => State.NeedsYou.ReweighRequested ? "Re-weigh requested" : "Request re-weigh";
 
     /// <summary>Assigns the inspector, which settles the hold's row in the needs-you queue (the hold stays until 21:15).</summary>
     [RelayCommand(CanExecute = nameof(CanAssignInspector))]
     private void AssignInspector()
     {
-        if (State.AssignInspector())
+        if (State.NeedsYou.AssignInspector())
         {
             Log("→", "Inspector assigned: Priya Nair (customs), lane 2, for the 21:15 inspection");
         }
@@ -173,12 +173,12 @@ public sealed partial class SecurityViewModel : ObservableObject
         AssignInspectorCommand.NotifyCanExecuteChanged();
     }
 
-    private bool CanAssignInspector() => !State.InspectorAssigned;
+    private bool CanAssignInspector() => !State.NeedsYou.InspectorAssigned;
 
     [RelayCommand(CanExecute = nameof(CanRequestReweigh))]
     private void RequestReweigh()
     {
-        if (State.RequestReweigh())
+        if (State.NeedsYou.RequestReweigh())
         {
             Log("→", "Re-weigh requested on weighbridge 1 · driver of TRK 3391 notified");
         }
@@ -187,7 +187,7 @@ public sealed partial class SecurityViewModel : ObservableObject
         RequestReweighCommand.NotifyCanExecuteChanged();
     }
 
-    private bool CanRequestReweigh() => !State.ReweighRequested;
+    private bool CanRequestReweigh() => !State.NeedsYou.ReweighRequested;
 
     /// <summary>
     /// Verifies the driver of a truck at the barrier, which settles the driver row in the needs-you queue; the truck's
@@ -196,7 +196,7 @@ public sealed partial class SecurityViewModel : ObservableObject
     [RelayCommand]
     private void VerifyDriver(string truckId)
     {
-        if (State.VerifyDriver(truckId))
+        if (State.NeedsYou.VerifyDriver(truckId))
         {
             BuildVehicles();
         }
@@ -323,16 +323,16 @@ public sealed partial class SecurityViewModel : ObservableObject
         {
             Id = v.Id,
             Tint = v.TintToken,
-            AwaitsDriver = State.AwaitsDriver(v),
+            AwaitsDriver = State.NeedsYou.AwaitsDriver(v),
             Verify = VerifyDriverCommand,
-            AccessibleName = $"{v.Id}, {v.Gate}, {State.AuthorizationOf(v)}",
+            AccessibleName = $"{v.Id}, {v.Gate}, {State.NeedsYou.AuthorizationOf(v)}",
             Facts = new[]
             {
                 new Fact { Key = "Truck", Value = v.Id },
                 new Fact { Key = "Driver", Value = v.Driver },
                 new Fact { Key = "Container", Value = v.Container },
                 new Fact { Key = "Gate", Value = v.Gate },
-                new Fact { Key = "Authorization", Value = State.AuthorizationOf(v) },
+                new Fact { Key = "Authorization", Value = State.NeedsYou.AuthorizationOf(v) },
                 new Fact { Key = "Entry", Value = v.Entry }
             }
         }).ToList();

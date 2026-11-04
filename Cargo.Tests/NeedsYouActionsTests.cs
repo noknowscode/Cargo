@@ -9,7 +9,7 @@ namespace Cargo.Tests;
 /// </summary>
 public class NeedsYouActionsTests
 {
-    private static DecisionKind[] Kinds(PortState state) => state.Decisions.Select(d => d.Kind).ToArray();
+    private static DecisionKind[] Kinds(PortState state) => state.NeedsYou.Decisions.Select(d => d.Kind).ToArray();
 
     [Test]
     public void The_queue_starts_with_four_rows_and_the_late_orders_dot_on_Waterways()
@@ -20,8 +20,8 @@ public class NeedsYouActionsTests
         {
             DecisionKind.InspectionHold, DecisionKind.DriverCheck, DecisionKind.LateOrders, DecisionKind.BerthConfirm
         }));
-        Assert.That(state.SectionNeedsYou("fleet"), Is.True);
-        Assert.That(state.SectionNeedsYou("cargo"), Is.False);
+        Assert.That(state.NeedsYou.SectionNeedsYou("fleet"), Is.True);
+        Assert.That(state.NeedsYou.SectionNeedsYou("cargo"), Is.False);
     }
 
     [Test]
@@ -31,12 +31,12 @@ public class NeedsYouActionsTests
         var structures = 0;
         state.StructureChanged += (_, _) => structures++;
 
-        Assert.That(state.AssignInspector(), Is.True);
-        Assert.That(state.AssignInspector(), Is.False, "a second press does nothing");
+        Assert.That(state.NeedsYou.AssignInspector(), Is.True);
+        Assert.That(state.NeedsYou.AssignInspector(), Is.False, "a second press does nothing");
 
         Assert.That(Kinds(state), Does.Not.Contain(DecisionKind.InspectionHold));
-        Assert.That(state.NeedsYouCount, Is.EqualTo(3));
-        Assert.That(state.SectionNeedsYou("security"), Is.True, "the driver check still waits there");
+        Assert.That(state.NeedsYou.Count, Is.EqualTo(3));
+        Assert.That(state.NeedsYou.SectionNeedsYou("security"), Is.True, "the driver check still waits there");
         Assert.That(structures, Is.EqualTo(1));
     }
 
@@ -46,15 +46,15 @@ public class NeedsYouActionsTests
         var state = new PortState(new ManualClock());
         var truck = PortData.Vehicles.Single(v => v.Authorization == "Awaiting driver ID");
 
-        Assert.That(state.VerifyDriver("TRK 0000"), Is.False, "an unknown truck");
-        Assert.That(state.VerifyDriver(truck.Id), Is.True);
-        Assert.That(state.VerifyDriver(truck.Id), Is.False, "already verified");
+        Assert.That(state.NeedsYou.VerifyDriver("TRK 0000"), Is.False, "an unknown truck");
+        Assert.That(state.NeedsYou.VerifyDriver(truck.Id), Is.True);
+        Assert.That(state.NeedsYou.VerifyDriver(truck.Id), Is.False, "already verified");
 
         Assert.Multiple(() =>
         {
             Assert.That(Kinds(state), Does.Not.Contain(DecisionKind.DriverCheck));
-            Assert.That(state.AwaitsDriver(truck), Is.False);
-            Assert.That(state.AuthorizationOf(truck), Is.EqualTo("Authorized · driver ID verified"));
+            Assert.That(state.NeedsYou.AwaitsDriver(truck), Is.False);
+            Assert.That(state.NeedsYou.AuthorizationOf(truck), Is.EqualTo("Authorized · driver ID verified"));
         });
     }
 
@@ -63,10 +63,10 @@ public class NeedsYouActionsTests
     {
         var state = new PortState(new ManualClock());
 
-        state.AssignInspector();
-        state.VerifyDriver(PortData.Vehicles.Single(v => v.Authorization == "Awaiting driver ID").Id);
+        state.NeedsYou.AssignInspector();
+        state.NeedsYou.VerifyDriver(PortData.Vehicles.Single(v => v.Authorization == "Awaiting driver ID").Id);
 
-        Assert.That(state.SectionNeedsYou("security"), Is.False);
+        Assert.That(state.NeedsYou.SectionNeedsYou("security"), Is.False);
     }
 
     [Test]
@@ -76,14 +76,14 @@ public class NeedsYouActionsTests
         var late = PortData.RiverFleet.Where(v => v.SlipMinutes > 0).ToArray();
         Assert.That(late, Has.Length.EqualTo(2));
 
-        state.ConfirmRevisedEta(late[0].Id);
-        var row = state.Decisions.Single(d => d.Kind == DecisionKind.LateOrders);
+        state.NeedsYou.ConfirmRevisedEta(late[0].Id);
+        var row = state.NeedsYou.Decisions.Single(d => d.Kind == DecisionKind.LateOrders);
         Assert.That((row.Title, row.Sub), Is.EqualTo(("1 order late", "In the yard queue")));
-        Assert.That(state.Chat.ThreadFor(late[0].Id)[^1].Text, Is.EqualTo(PortState.RevisedEtaMessage(late[0])));
+        Assert.That(state.Chat.ThreadFor(late[0].Id)[^1].Text, Is.EqualTo(NeedsYouQueue.RevisedEtaMessage(late[0])));
 
-        state.ConfirmRevisedEta(late[1].Id);
+        state.NeedsYou.ConfirmRevisedEta(late[1].Id);
         Assert.That(Kinds(state), Does.Not.Contain(DecisionKind.LateOrders));
-        Assert.That(state.SectionNeedsYou("fleet"), Is.False);
+        Assert.That(state.NeedsYou.SectionNeedsYou("fleet"), Is.False);
     }
 
     [Test]
@@ -91,11 +91,11 @@ public class NeedsYouActionsTests
     {
         var state = new PortState(new ManualClock());
         var onTime = PortData.RiverFleet.First(v => v.SlipMinutes <= 0);
-        var count = state.NeedsYouCount;
+        var count = state.NeedsYou.Count;
 
-        state.ConfirmRevisedEta(onTime.Id);
+        state.NeedsYou.ConfirmRevisedEta(onTime.Id);
 
-        Assert.That(state.NeedsYouCount, Is.EqualTo(count));
+        Assert.That(state.NeedsYou.Count, Is.EqualTo(count));
         Assert.That(state.Chat.ThreadFor(onTime.Id)[^1].Who, Is.EqualTo("dispatch"));
     }
 }

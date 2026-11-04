@@ -89,7 +89,7 @@
                 </TextBlock>
               </StackPanel>
               <Button AutomationProperties.Name="{x:Bind About.ActionLabel}" Grid.Column="1" Content="{x:Bind About.ActionLabel}" Style="{x:Bind local:NeedsYouPanel.Action(About.IsPrimary)}"
-                      Command="{x:Bind About.Command}" CommandParameter="{x:Bind About.CommandParameter}" VerticalAlignment="Center" />
+                      Command="{x:Bind Act}" CommandParameter="{x:Bind About}" VerticalAlignment="Center" />
             </Grid>
           </StackPanel>
         </Grid>
