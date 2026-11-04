@@ -121,7 +121,7 @@
                         <controls:RollingText Grid.Column="2" Text="{x:Bind When, Mode=OneWay}" Style="{StaticResource ListTimeFigure}"
                                               Foreground="{x:Bind WhenForeground, Mode=OneWay}" VerticalAlignment="Center" />
 
-                        <FontIcon Grid.Column="3" Glyph="&#xE76C;" FontSize="11" Foreground="{ThemeResource TextMutedBrush}"
+                        <FontIcon Grid.Column="3" Glyph="&#xE76C;" FontSize="{StaticResource GlyphSizeSmall}" Foreground="{ThemeResource TextMutedBrush}"
                                   VerticalAlignment="Center" AutomationProperties.AccessibilityView="Raw" />
                       </Grid>
                     </Border>

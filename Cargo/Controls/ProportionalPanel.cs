@@ -59,8 +59,7 @@ public sealed partial class ProportionalPanel : Panel
             {
                 Text = segment.Label,
                 Margin = new Thickness(9, 0, 9, 0),
-                FontFamily = (FontFamily)Application.Current.Resources["BodyMediumFont"],
-                FontSize = 11,
+                Style = (Style)Application.Current.Resources["TypeMedium11"],
                 Foreground = Tokens.Brush(segment.Ink),
                 VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis

@@ -426,6 +426,8 @@
        Buttons
        ============================================================ -->
 
+  <!-- Own template: the design fades the whole button on hover, press and disable (one root's Opacity, content
+       included); the theme's lightweight keys swap per-state brushes and cannot fade content -->
   <Style x:Key="PrimaryButton" TargetType="Button">
     <Setter Property="Background" Value="{ThemeResource InkBrush}" />
     <Setter Property="Foreground" Value="{ThemeResource PaperBrush}" />
@@ -445,9 +447,6 @@
                   BorderThickness="{TemplateBinding BorderThickness}"
                   CornerRadius="{TemplateBinding CornerRadius}"
                   Padding="{TemplateBinding Padding}">
-            <Border.RenderTransform>
-              <ScaleTransform x:Name="Squish" CenterX="0.5" CenterY="0.5" />
-            </Border.RenderTransform>
             <ContentPresenter Content="{TemplateBinding Content}"
                               ContentTemplate="{TemplateBinding ContentTemplate}"
                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -498,7 +497,8 @@
     <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
   </Style>
 
-  <!-- Transparent hit target: rows, cards, map furniture -->
+  <!-- Transparent hit target: rows, cards, map furniture. Own template: no chrome at all, so selectable rows keep
+       their own, and the hover is a fade of the content, which lightweight brush keys cannot express -->
   <Style x:Key="BareButton" TargetType="Button">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
@@ -537,10 +537,9 @@
     </Setter>
   </Style>
 
-  <!-- Selectable list rows keep their own chrome, so the bare template
-       just needs to not paint anything over it -->
   <!-- Header tab: the content draws the label and the active 2px accent line; the template adds
-       the hover state, which inks the label and shows the line at 16% ink -->
+       the hover state, which inks the label and shows the line at 16% ink. Own template: the hover line is an
+       element the theme's Button template does not have -->
   <Style x:Key="NavTabButton" TargetType="Button">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />

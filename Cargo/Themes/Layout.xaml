@@ -108,6 +108,8 @@
   <!-- A section or queue icon (24-unit path in a Viewbox), and the small icon beside a button's label -->
   <x:Double x:Key="IconSize">18</x:Double>
   <x:Double x:Key="IconSizeSmall">14</x:Double>
+  <!-- A small symbol-font glyph beside text: a row's chevron, the needs-you bar's done check -->
+  <x:Double x:Key="GlyphSizeSmall">11</x:Double>
   <!-- The smallest touch target below 1000 px (phones and tablets); from 1000 the design's pointer sizes stand -->
   <x:Double x:Key="TouchTarget">44</x:Double>
 
