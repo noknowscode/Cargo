@@ -100,7 +100,7 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
         var sub = e.Arrival
             ? $"Arrives {(e.Hour >= 24 ? "Thu" : berth is null ? "today" : $"Berth {berth}")}"
               + (berth is null ? " · no berth yet" : string.Empty)
-              + (vessel?.StatusLine.Contains("pilot", StringComparison.OrdinalIgnoreCase) == true ? " · pilot aboard" : string.Empty)
+              + (vessel?.PilotAboard == true ? " · pilot aboard" : string.Empty)
             : $"Departs {(berth is null ? "the quay" : $"Berth {berth}")}";
 
         return new NextSixRow

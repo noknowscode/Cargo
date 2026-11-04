@@ -117,7 +117,7 @@ public sealed partial class BerthStatusViewModel : ObservableObject
             row.Name = vessel.Name;
             row.Meta = needs
                 ? $"Pilot aboard · under-keel {BerthFacts.UnderKeel(vessel, berth):0.0} m"
-                : BerthFacts.Note(_state, vessel);
+                : VesselCopy.Note(_state, vessel).Lead;
             row.When = BerthFacts.When(_state, vessel);
             row.AccessibleName = $"Berth {berth.Number}, {vessel.Name}, {BerthFacts.State(_state, vessel)}, {row.When}"
                 + (needs ? ", needs confirming" : string.Empty);
@@ -197,11 +197,6 @@ internal static class BerthFacts
         VesselStatus.AtAnchor => ShiftClock.Display(vessel.Eta),
         _ => ShiftClock.Display(vessel.Etd)
     };
-
-    /// <summary>The first sentence of the ops note, which is what a row has room for.</summary>
-    // A sentence ends at ". " before a capital, so "est. completion" stays whole
-    public static string Note(PortState state, Vessel vessel) =>
-        System.Text.RegularExpressions.Regex.Split(state.OpsNote(vessel), @"(?<=\.)\s+(?=[A-Z])")[0].TrimEnd('.');
 
     public static double UnderKeel(Vessel vessel, BerthDef berth) => berth.Depth - vessel.Draft;
 

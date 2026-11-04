@@ -109,13 +109,28 @@ public static class StatusLabels
 
 public sealed record ClearanceCheck(string Mark, string Label, string Time, string Tone);
 
+/// <summary>
+/// A vessel's operations note: its lead (what a row has room for, "4 cranes working · est. completion 03:40") and
+/// what follows it, if anything.
+/// </summary>
+public sealed record VesselNote(string Lead, string? More = null)
+{
+    /// <summary>The whole note, as the vessel detail shows it.</summary>
+    public string Full => More is null ? $"{Lead}." : $"{Lead}. {More}";
+}
+
+/// <summary>
+/// A vessel in port. Her status lines are written from these fields as the plan stands (<c>VesselCopy</c>):
+/// <see cref="Anchorage"/> names where a vessel at anchor waits, <see cref="WaitingFor"/> the berth she
+/// waits for, and <see cref="PilotAboard"/> says an arrival has her pilot.
+/// </summary>
 public sealed partial record Vessel(
     string Id,
     string Name,
     string Operator,
     string Imo,
     VesselStatus Status,
-    string StatusLine,
+    string? Anchorage,
     string AccentToken,
     string? HomeBerth,
     string Eta,
@@ -129,8 +144,10 @@ public sealed partial record Vessel(
     int LoadPercent,
     CargoMix Mix,
     int Bays,
-    string OpsNote,
-    IReadOnlyList<ClearanceCheck> Checks);
+    VesselNote Note,
+    IReadOnlyList<ClearanceCheck> Checks,
+    string? WaitingFor = null,
+    bool PilotAboard = false);
 
 public sealed record BerthDef(string Number, BerthState State, string? Occupant, double Depth);
 

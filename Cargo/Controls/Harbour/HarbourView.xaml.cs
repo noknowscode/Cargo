@@ -548,23 +548,11 @@ public sealed partial class HarbourView : UserControl
         {
             var vessel = PortData.Vessel(tag.Id);
             var berth = _state.BerthOf(vessel.Id);
-            tag.Sub = TagLine(vessel, berth);
+            tag.Sub = VesselCopy.Words(_state, vessel).Tag;
             tag.PendingSub = $"B{berth} · pilot aboard";
-            tag.AccessibleName = $"{vessel.Name}, {_state.StatusLine(vessel)}";
+            tag.AccessibleName = $"{vessel.Name}, {VesselCopy.StatusLine(_state, vessel)}";
         }
     }
-
-    private static string TagLine(Vessel v, string? berth) => v.Status switch
-    {
-        // The berth leads: a selected vessel's tag sits over its painted berth number
-        VesselStatus.Docked when v.UnloadPercent is > 0 and < 100 => $"B{berth} · discharging",
-        VesselStatus.Docked => $"B{berth} · loading",
-        VesselStatus.Departing => $"B{berth} · departing",
-        VesselStatus.Arriving when berth is null => $"no berth · arriving {ShiftClock.Display(v.Eta)}",
-        VesselStatus.Arriving => $"B{berth} · arriving {ShiftClock.Display(v.Eta)}",
-        _ when berth is not null => $"anchored · B{berth} assigned",
-        _ => "anchored · unassigned"
-    };
 
     /// <summary>"in 41 min", "in 1 h 55": minutes only, so the dark tag changes once a minute.</summary>
     private void TickTags()
@@ -673,7 +661,7 @@ public sealed partial class HarbourView : UserControl
         var selected = vessels.FirstOrDefault(v => v.Id == EffectiveSelection);
         var layer = EffectiveLayer switch { "yard" => "Yard", "security" => "Security", "traffic" => "Traffic", _ => "Map" };
         var text = $"{_viewName} view, {layer} layer. {alongside} vessels alongside, {arriving} arriving."
-            + (selected is null ? string.Empty : $" Selected: {selected.Name}, {_state.StatusLine(selected)}.");
+            + (selected is null ? string.Empty : $" Selected: {selected.Name}, {VesselCopy.StatusLine(_state, selected)}.");
         if (text == Summary.Text)
         {
             return;

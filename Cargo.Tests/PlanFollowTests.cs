@@ -19,10 +19,10 @@ public class PlanFollowTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(state.StatusLine(PortData.Vessel("nordic")), Is.EqualTo("Arriving in 42 min · assigned Berth 07"));
-            Assert.That(state.StatusLine(PortData.Vessel("levant")), Is.EqualTo("At anchor · Outer roads"));
-            Assert.That(state.StatusLine(PortData.Vessel("aurora")), Is.EqualTo(PortData.Vessel("aurora").StatusLine));
-            Assert.That(state.OpsNote(PortData.Vessel("levant")), Is.EqualTo(PortData.Vessel("levant").OpsNote));
+            Assert.That(VesselCopy.StatusLine(state, PortData.Vessel("nordic")), Is.EqualTo("Arriving in 42 min · assigned Berth 07"));
+            Assert.That(VesselCopy.StatusLine(state, PortData.Vessel("levant")), Is.EqualTo("At anchor · Outer roads"));
+            Assert.That(VesselCopy.StatusLine(state, PortData.Vessel("aurora")), Is.EqualTo("Docked · Berth 04 · discharging"));
+            Assert.That(VesselCopy.Note(state, PortData.Vessel("levant")), Is.EqualTo(PortData.Vessel("levant").Note));
         });
     }
 
@@ -33,10 +33,10 @@ public class PlanFollowTests
         var state = new PortState(clock);
 
         clock.Advance(TimeSpan.FromMinutes(40));
-        Assert.That(state.StatusLine(PortData.Vessel("nordic")), Is.EqualTo("Arriving in 2 min · assigned Berth 07"));
+        Assert.That(VesselCopy.StatusLine(state, PortData.Vessel("nordic")), Is.EqualTo("Arriving in 2 min · assigned Berth 07"));
 
         clock.Advance(TimeSpan.FromMinutes(5));
-        Assert.That(state.StatusLine(PortData.Vessel("nordic")), Is.EqualTo("Arriving now · assigned Berth 07"));
+        Assert.That(VesselCopy.StatusLine(state, PortData.Vessel("nordic")), Is.EqualTo("Arriving now · assigned Berth 07"));
     }
 
     [Test]
@@ -52,8 +52,8 @@ public class PlanFollowTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(state.StatusLine(PortData.Vessel("nordic")), Is.EqualTo("Arriving in 42 min · assigned Berth 08"));
-            Assert.That(state.OpsNote(PortData.Vessel("nordic")), Is.EqualTo("Assigned to Berth 08 · pilots and mooring gang notified."));
+            Assert.That(VesselCopy.StatusLine(state, PortData.Vessel("nordic")), Is.EqualTo("Arriving in 42 min · assigned Berth 08"));
+            Assert.That(VesselCopy.Note(state, PortData.Vessel("nordic")).Full, Is.EqualTo("Assigned to Berth 08 · pilots and mooring gang notified."));
             Assert.That(docking.SelectedStatus, Is.EqualTo("Ferrand-Lowe · Arriving in 42 min · assigned Berth 08"));
             Assert.That(vessels.Vessels.Single(v => v.Id == "nordic").Line1, Is.EqualTo("Arriving in 42 min · assigned Berth 08"));
         });
@@ -73,7 +73,7 @@ public class PlanFollowTests
         {
             Assert.That(row.Name, Is.EqualTo("Levant Express"));
             Assert.That(row.Meta, Is.EqualTo("Assigned to Berth 05 · pilots and mooring gang notified"));
-            Assert.That(state.StatusLine(PortData.Vessel("levant")), Is.EqualTo("At anchor · assigned Berth 05"));
+            Assert.That(VesselCopy.StatusLine(state, PortData.Vessel("levant")), Is.EqualTo("At anchor · assigned Berth 05"));
             Assert.That(status.Rows.Any(r => r.Slot == "levant"), Is.False, "she has left the anchorage rows");
         });
     }

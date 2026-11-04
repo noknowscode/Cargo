@@ -83,7 +83,7 @@ public class OverviewViewModelTests
         {
             Assert.That(nordic.Countdown, Is.EqualTo("in 42 min"));
             Assert.That(nordic.IsSoon, Is.True);
-            Assert.That(nordic.Sub, Is.EqualTo("Arrives Berth 07"));
+            Assert.That(nordic.Sub, Is.EqualTo("Arrives Berth 07 · pilot aboard"));
             Assert.That(next.IsEmpty, Is.False);
         });
 
@@ -103,7 +103,7 @@ public class OverviewViewModelTests
         state.Assign("nordic", PortData.Berths.ToList().FindIndex(b => b.Number == "08"));
         var next = new NextSixHoursViewModel(state, ShiftTimeline.Events());
 
-        Assert.That(next.Upcoming.Single(r => r.Id == "nordic" && r.Arrival).Sub, Is.EqualTo("Arrives Berth 08"));
+        Assert.That(next.Upcoming.Single(r => r.Id == "nordic" && r.Arrival).Sub, Is.EqualTo("Arrives Berth 08 · pilot aboard"));
     }
 
     [Test]

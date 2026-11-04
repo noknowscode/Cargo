@@ -32,7 +32,7 @@ public class VesselCopyTests
     {
         var state = new PortState(new ManualClock());
 
-        Assert.That(Ids.Select(id => state.StatusLine(PortData.Vessel(id))), Is.EqualTo(new[]
+        Assert.That(Ids.Select(id => VesselCopy.StatusLine(state, PortData.Vessel(id))), Is.EqualTo(new[]
         {
             "Docked · Berth 04 · discharging",
             "Arriving in 42 min · assigned Berth 07",
@@ -80,5 +80,41 @@ public class VesselCopyTests
         var row = state.NeedsYou.Decisions.Single(d => d.Kind == DecisionKind.BerthConfirm);
 
         Assert.That((row.Title, row.Sub, row.When), Is.EqualTo(("Nordic Star needs berth 07 confirmed", "Pilot aboard", "arrives 21:40")));
+    }
+
+    [Test]
+    public void The_harbour_tags_read_from_the_same_status()
+    {
+        var state = new PortState(new ManualClock());
+
+        Assert.That(Ids.Select(id => VesselCopy.Words(state, PortData.Vessel(id)).Tag), Is.EqualTo(new[]
+        {
+            "B04 · discharging", "B07 · arriving 21:40", "B01 · loading", "B06 · departing", "anchored · unassigned"
+        }));
+    }
+
+    [Test]
+    public void The_tags_follow_the_plan()
+    {
+        var state = new PortState(new ManualClock());
+
+        state.Assign("nordic", PortData.BerthIndex("08") ?? -1);
+        state.Optimize();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(VesselCopy.Words(state, PortData.Vessel("nordic")).Tag, Is.EqualTo("B08 · arriving 21:40"));
+            Assert.That(VesselCopy.Words(state, PortData.Vessel("levant")).Tag, Is.EqualTo("anchored · B05 assigned"));
+        });
+    }
+
+    [Test]
+    public void An_arrival_with_her_pilot_aboard_says_so_in_Next_6_h()
+    {
+        var desk = new Desk();
+
+        var nordic = desk.Overview.NextSix!.Upcoming.Single(r => r.Id == "nordic" && r.Arrival);
+
+        Assert.That(nordic.Sub, Is.EqualTo("Arrives Berth 07 · pilot aboard"));
     }
 }

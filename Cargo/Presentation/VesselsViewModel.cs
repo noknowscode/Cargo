@@ -142,7 +142,7 @@ public sealed partial class VesselsViewModel : ObservableObject
         IsCleared = vessel.Security == "Cleared";
 
         TeuLabel = vessel.Containers.ToString("N0");
-        OpsNote = State.OpsNote(vessel);
+        OpsNote = VesselCopy.Note(State, vessel).Full;
 
         BuildVesselList();
         BuildFacts(vessel);
@@ -161,49 +161,20 @@ public sealed partial class VesselsViewModel : ObservableObject
         foreach (var vessel in PortData.Vessels)
         {
             var selected = vessel.Id == State.SelectedVesselId;
-            var (line1, line2) = Lines(vessel);
+            var words = VesselCopy.Words(State, vessel);
 
             Vessels.Add(new VesselRow
             {
                 Id = vessel.Id,
                 Name = vessel.Name,
-                Line1 = line1,
-                Line2 = line2,
+                Line1 = words.RowLine,
+                Line2 = words.Detail,
                 Tone = vessel.AccentToken,
                 IsSelected = selected,
                 Silhouette = Sprites.Side(vessel.Id),
                 Select = State.PickHullVesselCommand
             });
         }
-    }
-
-    /// <summary>A row's two lines from her status as the plan stands: "Docked · Berth 04" over "Discharging 62%".</summary>
-    private (string Line1, string Line2) Lines(Vessel vessel)
-    {
-        var parts = State.StatusLine(vessel).Split(" · ");
-        return (string.Join(" · ", parts.Take(2)), SecondLine(vessel, parts));
-    }
-
-    private string SecondLine(Vessel vessel, string[] parts)
-    {
-        if (parts.Length < 3)
-        {
-            // At anchor with no berth: what she waits for, from her note ("Waiting for Berth 06")
-            return vessel.Status == VesselStatus.AtAnchor && State.BerthOf(vessel.Id) is null
-                ? System.Text.RegularExpressions.Regex.Match(State.OpsNote(vessel), @"^Waiting for Berth \d+") is { Success: true } wait
-                    ? wait.Value
-                    : "Waiting for a berth"
-                : string.Empty;
-        }
-
-        var tail = parts[2];
-        var capitalised = char.ToUpperInvariant(tail[0]) + tail[1..];
-        return tail switch
-        {
-            "discharging" => $"{capitalised} {vessel.UnloadPercent}%",
-            "loading" => $"{capitalised} {vessel.LoadPercent}%",
-            _ => capitalised
-        };
     }
 
     private void BuildFacts(Vessel vessel)
@@ -308,7 +279,8 @@ public sealed partial class VesselsViewModel : ObservableObject
         // The arrivals' countdowns in the list
         foreach (var row in Vessels)
         {
-            (row.Line1, row.Line2) = Lines(PortData.Vessel(row.Id));
+            var words = VesselCopy.Words(State, PortData.Vessel(row.Id));
+            (row.Line1, row.Line2) = (words.RowLine, words.Detail);
         }
 
         var unload = vessel.UnloadPercent is > 0 and < 100
