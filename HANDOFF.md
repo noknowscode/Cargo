@@ -1,5 +1,36 @@
-# HANDOFF — Cargo: production readiness, uno-audit pass
+# HANDOFF — Cargo: production readiness, A pass
 Updated: 2026-11-04
+
+## A pass (branch `feat/production-readiness`, from ac065f1)
+Brief: uno-lab `docs/production-readiness/A-GRADE-PLAN.md`. Decisions: `docs/DECISIONS.md` (owner O-1..O-8, proposed
+D-C1..D-C6). Completeness: `docs/COMPLETENESS.md` (Complete with gaps, 0 functional Majors).
+- **Store split** (7561a4e, pinned by `StoreTests` first): `PortState` = clock, signals, berth desk (plan, decisions,
+  vessel/berth/bay/badge picks); parts `NavigationState`, `StageState`, `ScannerState`, `YardState`, `CrewChat`;
+  `ShiftClock` for the time arithmetic; `MovesAt` in `ShiftTimeline`. x:Bind paths `ViewModel.State.Stage.Compact`,
+  `...Navigation.SecurityTitle`, `...Chat.Draft`.
+- **States, not brushes** (e2503c0): rows hold states (`IsCurrent`, `IsLinked`, `BerthRowKind`, `StepState`,
+  `Standing`, ...) and the data's palette keys; views map them through x:Bind functions in their code-behind and
+  `Presentation/Paint.cs`; `DonutChart`/`CompositionBar` take palette keys; the tide lane's marker colours and fonts
+  live in `OverviewView`. No view model creates a UI object, so all of them run in Cargo.Tests.
+- **Functional Majors built:** tags/status lines/notes follow the plan (a89b9fc, D-C4); scanner Short state at 844x390
+  (cbb516e, D-C5); header tooltips from the store (1f7435c). Minors: hold/driver/late-order rows settle (084e41d,
+  D-C1..3, late-orders dot on Waterways); table fits at 1680 and tags never overlap at 390 (e81054d, D-C6); container
+  detail follows the filter, crew thread shows the newest (235ba64).
+- **Tests:** 125 > 211 (`Cargo.Tests/Fakes.cs` builds the frame on fake dispatcher/navigator/route notifier/theme
+  service/logger; page-model tests for every model with logic).
+- **Accessibility** (bc72e6e): 163 names / 5,111 XAML lines = 31.9 per 1k (was 11.0); every ItemsControl, the shell's
+  host and the composition charts are no longer tab stops. `CARGO_FOCUS_LOG=1` prints each focus stop; Tab walks on
+  all five sections reach every interactive area (`docs/COMPLETENESS.md`).
+- **WebAssembly** (ab8b4c0): Release wasm in headless Chromium, berth confirmed on Overview
+  (`docs/evidence/2026-11-04-wasm.md`).
+- **Black frame at 599** (b7a638a): reproduces on Mesa llvmpipe OpenGL only (CPU renderer never); bisected to a
+  scaled `Canvas` scene in view during a resize across 600; two cycles, no app fix; stays a renderer issue
+  (`docs/evidence/2026-11-04-black-frame-599.md`).
+- Lint gate (`xaml-semantic-lint.ps1 -Path Cargo`): every gating rule 0.
+- **Open owner questions (unchanged):** drag-off settles the decision; the harbour's idle frame policy; token snaps;
+  should the 3D ships follow the plan.
+- **Next:** the proposed decisions D-C1..D-C6; icons kept as path strings in C# into Icons.xaml (after a WinAppSDK
+  run); Android emulator CI (coordinator).
 
 ## uno-audit (branch `feat/production-readiness`, from cc60ef2)
 Report: `docs/UNO-AUDIT.md` (findings with file:line, the lint table, performance numbers, stack currency, Remaining
@@ -145,6 +176,10 @@ it 110 px via negative margins), the duty ID card sits level (entrance is fade +
 dead-code pass removed 47 usings, 7 members, 12 motion tokens, a font and 10 unused sprites.
 
 ## Last verified state
+- 2026-11-04 (Linux, A pass): Debug `net10.0-desktop` 0 warnings / 0 errors (also with XML docs on, as the Android head
+  builds them); Release `net10.0-browserwasm` published (trim warnings only) and run in headless Chromium; `Cargo.Tests`
+  211/211; lint gate 0. Runtime under Xvfb `:466`, CPU renderer: the seven critical workflows, Dark on Berths, Cargo and
+  Security, 844x390 scanner, 390 tags, 1680 table, Tab walks with `CARGO_FOCUS_LOG=1`.
 - 2026-11-02 (Linux, review round 2): Release, 0 warnings / 0 errors for `net10.0-desktop`, `net10.0-android` and
   `net10.0-browserwasm`; `Cargo.Tests` 125/125 (Debug and Release); desktop with the toolkit's WinRT analyzers on: 0
   MVVMTK0045. CI green on 13596fc and 222e1fa, WinAppSDK included. Debug desktop under Xvfb: the review's repro

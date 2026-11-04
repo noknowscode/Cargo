@@ -31,15 +31,17 @@ Five heads: `net10.0-desktop` (Skia on Windows, macOS and Linux), `net10.0-windo
 WebAssembly and Android build with 0 warnings on Linux; the Windows and iOS heads build on their own
 OS, in CI (`.github/workflows/ci.yml`). Warnings fail the build (`Directory.Build.props`).
 
-`Cargo.Tests` (NUnit) covers the logic with no UI in it: the berth rules, the reasons a berth refuses a
-vessel and the optimiser's report (`Domain/BerthPlan.cs`), the store on a manual clock (`PortState`: the
-needs-you queue after every berth change, Confirm and Undo, countdowns, the yard), the needs-you bar's state
-machine and the berth plan's model (`NeedsYouViewModel`, `DockingViewModel`: Move to berth, scrubbing), the
-schedule and the one clock reader, the timeline maths (`Domain/ShiftTimeline.cs`), the container filters, bay
-views and their keyboard steps, the yard's slots and keyboard steps (`Domain/YardGrid.cs`), the wrap and tile
-arithmetic of the responsive panels (`Controls/LayoutMath.cs`), the harbour's geometry helpers and the
-culture rules. It references the app's plain `net10.0` build, which never starts the Uno runtime, so the models
-it drives hold states, not brushes (the views map them to the theme), and it runs in CI's `test` job.
+`Cargo.Tests` (NUnit, 211 tests) covers the logic with no UI in it. The domain: the berth rules, the reasons a berth
+refuses a vessel and the optimiser's report (`Domain/BerthPlan.cs`); the store on a manual clock (`PortState` and its
+parts: the needs-you queue after every berth change and every settled row, Confirm and Undo, countdowns, the status
+lines the plan gives, navigation, the stage, the scanner's camera, the yard, the crew chat); the schedule and the one
+clock reader (`ShiftClock`); the timeline maths; the container filters; bay views; the yard's slots; the responsive
+panels' arithmetic; the harbour's geometry; the culture rules. The page models: every view model that holds logic,
+from `MainViewModel` (tabs, dots, router sync, tooltips, layers, theme) to the Berths, Cargo, Overview, Waterways
+and Security models, built as the host builds them on fakes for the dispatcher, navigator, route notifier, theme
+service and logger (`Cargo.Tests/Fakes.cs`). It references the app's plain `net10.0` build, which never starts the
+Uno runtime, so the models hold states and the data's tones, never brushes, geometry or images: the views pick those
+(`Presentation/Paint.cs` and each view's x:Bind mapping functions). It runs in CI's `test` job.
 
 ## Architecture
 
@@ -50,7 +52,11 @@ it drives hold states, not brushes (the views map them to the theme), and it run
   constant; there is no async or reactive data flow for feeds to model. What the app
   actually has is a lot of imperative selection state — which berth is hovered, which bay
   is open, where a dragged hull currently is — which is what MVVM is good at.
-  `Domain/PortState.cs` is the single observable store, and it raises five separate signals
+  `Domain/PortState.cs` is the single observable store: the clock, the berth desk (the plan, the decisions waiting
+  on the dispatcher, the vessel, berth, bay and badge being worked) and the signals. Its parts each hold one job:
+  `NavigationState` (the section, Security's tab, the jumps), `StageState` (the harbour stage's size, layer,
+  selection and linked hover), `ScannerState` (the explorer's filter and pick, the scanner's camera), `YardState`
+  (the yard at work) and `CrewChat` (the river crews' channel); `ShiftClock` is the time arithmetic. The store raises five separate signals
   so that work is proportional to what actually changed: `StructureChanged` for selections
   and assignments, `PlanHourChanged` for the berth plan's scrubber (only the plan and its map
   follow it), `Ticked` for the clock, `HoverChanged` for the pointer, and `YardChanged`
@@ -63,7 +69,7 @@ it drives hold states, not brushes (the views map them to the theme), and it run
   Shell > Main > one view-less route per section, and Security's tabs nest under `security`.
   `MainPage` declares the sections as `x:Load` panes in its Visibility region; the header
   navigates with `uen:Navigation.Request`, and jumps that start in the store (open a vessel,
-  "Open inspection") set `PortState.Section` for `MainViewModel` to follow. Every page and
+  "Open inspection") set `NavigationState.Section` for `MainViewModel` to follow. Every page and
   embedded panel has its own view model.
 - **Size classes** come from one `utu:ResponsiveLayout`, App.xaml's `DefaultResponsiveLayout`, which every
   `{utu:Responsive}` uses: phone below 600, tablet 600, laptop 1000 (side panels beside their map or plan),
@@ -166,7 +172,7 @@ leaving their berths, Nordic Star docking) would be new behaviour, not a fix.
 
 **Culture.** Screens format numbers in the machine's culture (a French machine reads "14,2 m
 draft"); the data's own times ("Thu 02:30") are read with the invariant culture through one
-reader, `PortState.ClockHours`. Cargo.Tests runs in en-US whatever the machine's culture is
+reader, `ShiftClock.ClockHours`. Cargo.Tests runs in en-US whatever the machine's culture is
 (`Cargo.Tests/Culture.cs`), and `CultureTests` checks both rules.
 
 ## Verification
@@ -196,6 +202,7 @@ headless run can photograph them:
 | `CARGO_HARBOUR_VIEW` | Harbour camera preset, no intro swing: `overview`, `sea`, `land`, `plan` |
 | `CARGO_ORBIT=1` | Spins the harbour camera without stopping, to measure drag-frame cost |
 | `CARGO_HOVER_BERTH` | Berth index 0–7 to show hovered, for the harbour highlight and its label |
+| `CARGO_FOCUS_LOG=1` | Prints a `VERIFY focus` line (type, automation name, position) for every element that takes keyboard focus, so a headless run can walk the app with Tab |
 | `CARGO_X11_RENDERER=software` | Draws with Skia's CPU backend on X11 instead of Mesa's llvmpipe OpenGL (Xvfb runs: about a third of the CPU on Overview) |
 
 Every `CARGO_*` variable is read through `DebugHooks.Hook` (`Domain/DebugHooks.cs`), which reads nothing in Release.

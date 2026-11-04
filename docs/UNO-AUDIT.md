@@ -161,6 +161,16 @@ window is active. Measure on a Windows GPU first: llvmpipe overstates every fram
   chevrons at `GlyphSizeSmall`), Berths Dark confirm (the bar's done check), the berth timeline's segment labels
   (`TypeMedium11`); the layer switcher A/B across 1280; Expand and the camera menu across 600 both ways; Waterways.
 
+## Done in the A pass (2026-11-04)
+
+- `PortState` split as planned below: `NavigationState`, `StageState`, `ScannerState`, `YardState`, `CrewChat`,
+  `PortSignals` and the static `ShiftClock`; `OpenVessel`, `OpenDocking` and `PickHullVessel` stay with the berth
+  desk, since they pick a vessel before they move (7561a4e). `PortState` 856 > 582 lines (it gained the plan-derived status lines and the needs-you actions).
+- Brushes, visibilities, geometry and images out of the view models (e2503c0, c852534 for the timeline's tide marks):
+  rows carry states and the data's palette keys; views map them (`Presentation/Paint.cs`, x:Bind functions).
+- View-model tests for every model that holds logic (c852534); 211 tests.
+- Header tooltips from the store (1f7435c).
+
 ## Remaining (next pass)
 
 | Item | Where | Size |
