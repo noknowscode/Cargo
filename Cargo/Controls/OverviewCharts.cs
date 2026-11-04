@@ -5,8 +5,8 @@ namespace Cargo.Controls;
 /// <summary>
 /// Throughput, six settled hours plus the one in progress. Only the live column changes
 /// between ticks, so the settled six and the axis are drawn once per hour and the live
-/// column gets its own layer to redraw; rebuilding all of it every second was the bulk
-/// of what the clock cost.
+/// column gets its own layer to redraw: rebuilding all of it every second would be the bulk
+/// of what the clock costs.
 /// </summary>
 public sealed partial class VolumeChart : SceneHost
 {
@@ -60,8 +60,8 @@ public sealed partial class VolumeChart : SceneHost
                 alignment: TextAlignment.Right, width: 80));
         }
 
-        // The live column only changes when a block fills or starts, a few times an hour:
-        // rebuilding its shapes every second was the bulk of the clock tick's cost
+        // The live column only changes when a block fills or starts, a few times an hour, so its shapes are
+        // rebuilt then and not on every tick
         var moves = PortState.MovesAt(Now);
         var live = ((int)Math.Ceiling(moves / 20d), moves % 20 != 0);
         if (live == _liveDrawn)

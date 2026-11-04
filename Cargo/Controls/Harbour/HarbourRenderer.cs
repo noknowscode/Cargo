@@ -134,7 +134,7 @@ public sealed class HarbourRenderer : IDisposable
 
         if (_baked is not null && _bakedKey == key)
         {
-            // Baked at device pixels, so it lands 1:1: nearest sampling, as the pre-SkiaSharp 4 overload did.
+            // Baked at device pixels, so it lands 1:1: nearest sampling
             canvas.DrawImage(_baked, bounds, SKSamplingOptions.Default);
         }
         else

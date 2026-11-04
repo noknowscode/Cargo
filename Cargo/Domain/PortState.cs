@@ -66,8 +66,8 @@ public sealed partial class PortState : ObservableObject
 
     /// <summary>
     /// Raised when the plan scrubber moves. It steps every quarter hour while it is dragged, and only the berth plan
-    /// and its map show the plan hour, so it stays off <see cref="StructureChanged"/>: on that signal a scrub
-    /// re-recorded the harbour and rebuilt the vessel profile and every Berths panel at each step.
+    /// and its map show the plan hour, so it stays off <see cref="StructureChanged"/>: on that signal every step of a
+    /// scrub would re-record the harbour and rebuild the vessel profile and every Berths panel.
     /// </summary>
     public event EventHandler? PlanHourChanged;
 

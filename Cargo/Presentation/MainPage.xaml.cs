@@ -49,8 +49,8 @@ public sealed partial class MainPage : Page
                 Harbour.OverlayHeight = MastheadFrame.ActualHeight;
             }
         };
-        // Each section opens at its top: one ScrollViewer hosts them all, and a carried offset opened
-        // Berths halfway down and brought Overview back scrolled under its full chrome
+        // Each section opens at its top: one ScrollViewer hosts them all, and a carried offset would open
+        // Berths halfway down and bring Overview back scrolled under its full chrome
         vm.State.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(PortState.Section))
@@ -133,8 +133,8 @@ public sealed partial class MainPage : Page
 
     /// <summary>
     /// Builds the sections not yet shown, one per idle turn after the first frame. A section
-    /// costs the better part of a second to build, and paying that on the first click is what
-    /// made a first visit feel like a stall.
+    /// costs the better part of a second to build: paid on the first click, it makes a first
+    /// visit feel like a stall.
     /// </summary>
     // xaml-lint: allow codebehind - x:Load has no XAML trigger for "after startup, when idle"
     private void WarmSections()

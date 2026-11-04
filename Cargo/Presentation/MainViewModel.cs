@@ -186,8 +186,8 @@ public sealed partial class MainViewModel : ObservableObject
 
     /// <summary>
     /// Builds the header items on first use, then only refreshes what navigation
-    /// actually changes. Replacing the collection recreated every button and its subtree,
-    /// which read as a flicker across the header on each move between sections.
+    /// actually changes: replacing the collection would recreate every button and its subtree,
+    /// a flicker across the header on each move between sections.
     /// </summary>
     private void BuildNav()
     {

@@ -5,8 +5,8 @@ namespace Cargo.Presentation;
 
 /// <summary>
 /// One section in the header. Unlike the other rows here this one is built once and then
-/// updated in place: rebuilding the collection on every navigation recreated every
-/// button, which is what made moving between sections flicker.
+/// updated in place: rebuilding the collection on every navigation would recreate every
+/// button, and moving between sections would flicker.
 /// </summary>
 public sealed partial class NavItem : ObservableObject
 {
