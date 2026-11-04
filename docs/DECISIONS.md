@@ -71,6 +71,18 @@ Reason: "Log scan →" logged nothing and opened MRVU 918204 1's inspection for 
 Tradeoff: no inspection record is built for the other nine boxes, which are clear or under documentary review. The
 log is in memory for the session, like every figure (O-4).
 
+## Made for the showcase move (2026-11-04)
+
+### D-C8 · A container-ship icon in place of the Uno template's · proposed
+Decision: the launcher, splash and gallery icon is a container ship from the side (the bridge aft, two tiers of
+boxes, the hull, a wave) in white on the accent, `AccentColor` #1C6E9E (`Themes/Tokens.xaml`): `Assets/Icons/icon.svg`
+is the ground, `icon_foreground.svg` the glyph, `Assets/Splash/splash_screen.svg` the same glyph in the accent on the
+splash's white. The template's viewBoxes stay; the glyph keeps about 14% margins, so it fills 72% of the icon on
+desktop, WebAssembly and Windows (foreground scale 1.0), 58% on iOS (0.8) and 47% on Android (0.65, inside the
+adaptive icon's safe zone).
+Reason: the owner approved a simple custom icon for the apps that still shipped the template's (info file brief).
+Tradeoff: flat and generic; no wordmark, so it does not say "Westhaven".
+
 ## Still open (owner questions, unchanged)
 
 - Should dragging the waiting arrival off her reserved berth settle the decision, or need a confirm on the new berth?
