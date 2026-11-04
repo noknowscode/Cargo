@@ -73,7 +73,6 @@ public sealed partial class OverviewView : Page
     public double FirstSectionTop(UIElement content) =>
         FirstSection.TransformToVisual(content).TransformPoint(new Windows.Foundation.Point(0, 0)).Y;
 
-    /// <summary>A Next 6 h row's spoken name: "Nordic Star, arrives Berth 07, in 42 min".</summary>
     // The Chart/Table toggle: the chosen segment's label is paper on the ink indicator
 
     public static Microsoft.UI.Xaml.Media.Brush ChartInk(bool table) => Tokens.Brush(table ? "InkBrush" : "PaperBrush");
@@ -93,6 +92,7 @@ public sealed partial class OverviewView : Page
 
     public static Microsoft.UI.Xaml.Media.Brush CountdownInk(bool soon) => Tokens.Brush(soon ? "InkBrush" : "TextMutedBrush");
 
+    /// <summary>A Next 6 h row's spoken name: "Nordic Star, Arrives Berth 07 · pilot aboard, in 42 min".</summary>
     public static string SixName(string name, string sub, string countdown) => $"{name}, {sub}, {countdown}";
 
     // The timeline table's rows: future hours on the ahead-of-now shade, the NOW row between two ink rules
