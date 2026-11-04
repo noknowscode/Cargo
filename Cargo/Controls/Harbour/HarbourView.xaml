@@ -13,7 +13,7 @@
   <UserControl.Resources>
     <!-- A vessel's data tag: the name and one status line. A selected vessel's facts open in the docked card
          (FactsCard), not on the tag: stacked above the chip they pushed it down over the ship it named -->
-    <DataTemplate x:Key="HarbourTagTemplate" x:DataType="harbour:HarbourTag">
+    <DataTemplate x:Key="HarbourTagTemplate" x:DataType="presentation:HarbourTag">
       <StackPanel Spacing="{StaticResource Space4}">
 
         <Button Style="{StaticResource BareButton}" Command="{x:Bind Toggle}" CommandParameter="{x:Bind Id}"
@@ -22,7 +22,7 @@
           <Grid>
             <!-- Light tag: name and status on one 30 px line, on the float shadow.
                  Shadows inline: a Style-supplied collection never applies (Toolkit gotcha G36). -->
-            <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}" Visibility="{x:Bind LightVisibility, Mode=OneWay}">
+            <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}" Visibility="{x:Bind harbour:HarbourView.LightTag(IsPending), Mode=OneWay}">
               <utu:ShadowContainer.Shadows>
                 <utu:ShadowCollection>
                   <utu:Shadow Spread="1" BlurRadius="0" Color="{ThemeResource ShadowRingColor}" Opacity="0.08" />
@@ -32,7 +32,7 @@
               </utu:ShadowContainer.Shadows>
               <!-- xaml-lint: allow card - a data-tag chip on a leader line, not a content card -->
               <Border CornerRadius="{StaticResource RadiusControl}" Height="30" Padding="{StaticResource InsetX10}"
-                      BorderBrush="{x:Bind Edge, Mode=OneWay}" BorderThickness="{x:Bind EdgeThickness, Mode=OneWay}">
+                      BorderBrush="{x:Bind harbour:HarbourView.TagEdge(IsSelected, IsLit), Mode=OneWay}" BorderThickness="{x:Bind harbour:HarbourView.TagEdgeWidth(IsSelected), Mode=OneWay}">
                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" VerticalAlignment="Center">
                   <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" Foreground="{ThemeResource InkBrush}" />
                   <TextBlock Text="{x:Bind Sub, Mode=OneWay}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextMutedBrush}" />
@@ -41,7 +41,7 @@
             </utu:ShadowContainer>
 
             <!-- Inverse tag (ink ground: dark on Light, light on Dark): the arrival waiting on its berth, with the time to go -->
-            <utu:ShadowContainer Background="{ThemeResource InkBrush}" Visibility="{x:Bind DarkVisibility, Mode=OneWay}">
+            <utu:ShadowContainer Background="{ThemeResource InkBrush}" Visibility="{x:Bind harbour:HarbourView.DarkTag(IsPending), Mode=OneWay}">
               <utu:ShadowContainer.Shadows>
                 <utu:ShadowCollection>
                   <utu:Shadow OffsetY="6" BlurRadius="20" Color="{StaticResource ShadowColor}" Opacity="0.18" />
@@ -49,7 +49,7 @@
               </utu:ShadowContainer.Shadows>
               <!-- xaml-lint: allow card - a data-tag chip on a leader line, not a content card -->
               <Border CornerRadius="{StaticResource RadiusControl}" Padding="{StaticResource Inset12x8}"
-                      BorderBrush="{x:Bind Edge, Mode=OneWay}" BorderThickness="{x:Bind EdgeThickness, Mode=OneWay}">
+                      BorderBrush="{x:Bind harbour:HarbourView.TagEdge(IsSelected, IsLit), Mode=OneWay}" BorderThickness="{x:Bind harbour:HarbourView.TagEdgeWidth(IsSelected), Mode=OneWay}">
                 <StackPanel Spacing="{StaticResource Space4}">
                   <Grid ColumnSpacing="{StaticResource Space16}">
                     <Grid.ColumnDefinitions>
@@ -81,16 +81,16 @@
                             HorizontalAlignment="Right" VerticalAlignment="Bottom"
                             Margin="{utu:Responsive Narrowest='0,0,16,64', Narrow='0,0,40,72'}"
                             Visibility="Collapsed" Opacity="0"
-                            controls:Reveal.IsOn="{x:Bind HasSelectedTag, Mode=OneWay}" controls:Reveal.Hides="True" controls:Reveal.Rise="6">
+                            controls:Reveal.IsOn="{x:Bind ViewModel.HasSelectedTag, Mode=OneWay}" controls:Reveal.Hides="True" controls:Reveal.Rise="6">
       <utu:CardContentControl.RenderTransform>
         <TranslateTransform />
       </utu:CardContentControl.RenderTransform>
       <StackPanel Spacing="{StaticResource Space12}">
         <StackPanel Spacing="{StaticResource Space2}">
-          <TextBlock Text="{x:Bind SelectedTag.Name, Mode=OneWay}" Style="{StaticResource TitleText}" />
-          <TextBlock Text="{x:Bind SelectedLine, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap" />
+          <TextBlock Text="{x:Bind ViewModel.SelectedTag.Name, Mode=OneWay}" Style="{StaticResource TitleText}" />
+          <TextBlock Text="{x:Bind ViewModel.SelectedLine, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap" />
         </StackPanel>
-        <ItemsControl IsTabStop="False" AutomationProperties.Name="Vessel facts" ItemsSource="{x:Bind SelectedTag.Facts, Mode=OneWay}">
+        <ItemsControl IsTabStop="False" AutomationProperties.Name="Vessel facts" ItemsSource="{x:Bind ViewModel.SelectedTag.Facts, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
               <controls:TwoColumnPanel ColumnSpacing="{StaticResource Space16}" RowSpacing="{StaticResource Space8}" />
@@ -105,12 +105,12 @@
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <Button AutomationProperties.Name="Open vessel profile" Style="{StaticResource GhostButton}" Command="{x:Bind SelectedTag.Open, Mode=OneWay}"
-                CommandParameter="{x:Bind SelectedTag.Id, Mode=OneWay}" Content="Open vessel profile →" HorizontalAlignment="Stretch" />
+        <Button AutomationProperties.Name="Open vessel profile" Style="{StaticResource GhostButton}" Command="{x:Bind ViewModel.SelectedTag.Open, Mode=OneWay}"
+                CommandParameter="{x:Bind ViewModel.SelectedTag.Id, Mode=OneWay}" Content="Open vessel profile →" HorizontalAlignment="Stretch" />
       </StackPanel>
     </utu:CardContentControl>
 
-    <!-- Screen-reader summary (HarbourView.UpdateSummary): present to automation, invisible on screen -->
+    <!-- Screen-reader summary (HarbourViewModel.Summary): present to automation, invisible on screen -->
     <TextBlock x:Name="Summary" Opacity="0" IsHitTestVisible="False" Width="1" Height="1"
                HorizontalAlignment="Left" VerticalAlignment="Top" AutomationProperties.LiveSetting="Polite" />
 

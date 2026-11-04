@@ -35,7 +35,7 @@ public sealed partial class MainPage : Page
 
     public static Brush LayerIconInk(bool current) => Tokens.Brush(current ? "PaperBrush" : "TextMutedBrush");
 
-    // xaml-lint: allow codebehind - the harbour scene is a code-built control that takes the store directly
+    // xaml-lint: allow codebehind - the harbour scene is a code-built control that takes its model once, with the store it draws
     private void Attach()
     {
         if (_attached || ViewModel is not { } vm)
@@ -44,7 +44,7 @@ public sealed partial class MainPage : Page
         }
 
         _attached = true;
-        Harbour.State = vm.State;
+        Harbour.ViewModel = vm.Harbour;
         SectionScroll.ViewChanged += OnSectionScrolled;
         // The harbour reaches up behind the masthead by its natural height (not while it folds)
         MastheadFrame.SizeChanged += (_, _) =>

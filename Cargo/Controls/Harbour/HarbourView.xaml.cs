@@ -8,79 +8,26 @@ using Windows.System;
 
 namespace Cargo.Controls.Harbour;
 
-/// <summary>One vessel's data tag, bound by <c>HarbourTagTemplate</c>.</summary>
-/// <remarks>
-/// Every value comes through the constructor rather than <c>required init</c> members: the WinAppSDK XAML compiler
-/// writes <c>new HarbourTag()</c> into its type metadata for any type with a parameterless constructor, and a type
-/// with required members fails there (CS9035). With no parameterless constructor it writes no activator.
-/// </remarks>
-public sealed partial class HarbourTag(
-    string id,
-    string name,
-    double etaHours,
-    IReadOnlyList<Fact> facts,
-    ICommand toggle,
-    ICommand open,
-    ICommand hover) : ObservableObject
-{
-    public string Id { get; } = id;
-    public string Name { get; } = name;
-
-    /// <summary>The light tag's status, by the berth the plan gives her: "B04 · discharging".</summary>
-    [ObservableProperty]
-    public partial string Sub { get; set; } = string.Empty;
-
-    /// <summary>The dark tag's second line for the arrival waiting on its berth: "B07 · pilot aboard".</summary>
-    [ObservableProperty]
-    public partial string PendingSub { get; set; } = string.Empty;
-
-    /// <summary>Hours on the app clock when the vessel arrives, for the dark tag's countdown.</summary>
-    public double EtaHours { get; } = etaHours;
-
-    /// <summary>The tag for a screen reader: her name and her status line as the plan stands.</summary>
-    [ObservableProperty]
-    public partial string AccessibleName { get; set; } = string.Empty;
-    public IReadOnlyList<Fact> Facts { get; } = facts;
-    public ICommand Toggle { get; } = toggle;
-    public ICommand Open { get; } = open;
-    public ICommand Hover { get; } = hover;
-
-    /// <summary>"in 41 min" on the dark tag.</summary>
-    [ObservableProperty]
-    public partial string Countdown { get; set; } = string.Empty;
-
-    /// <summary>The light tag, or the dark one for the arrival still waiting on a berth decision.</summary>
-    [ObservableProperty]
-    public partial Visibility LightVisibility { get; set; } = Visibility.Visible;
-
-    [ObservableProperty]
-    public partial Visibility DarkVisibility { get; set; } = Visibility.Collapsed;
-
-    [ObservableProperty]
-    public partial Brush Edge { get; set; } = Tokens.Transparent;
-
-    [ObservableProperty]
-    public partial Thickness EdgeThickness { get; set; }
-
-}
-
 /// <summary>
-/// The harbour stage: the 3D scene, the data tags that ride its vessels, and the camera HUD.
+/// The harbour stage: the 3D scene, the data tags that ride its vessels, and the camera HUD. What the tags, the facts
+/// card and the screen-reader line say is its view model's (<see cref="HarbourViewModel"/>); this view keeps the camera,
+/// the input, the band's motion and the per-frame placement of the tags over the projection.
 /// </summary>
 // xaml-lint: allow codebehind - Skia glue: tag positions follow the camera every frame; presets drive the scene camera
 public sealed partial class HarbourView : UserControl
 {
-    private const double Lead = 30;
-
     private readonly HarbourScene? _scene;
-    private readonly List<(HarbourTag Tag, ContentControl Host)> _tags = new();
-    private PortState? _state;
+    private readonly HarbourBand _band;
+    private readonly HarbourTagHosts _tags;
+    private HarbourViewModel? _model;
     private string? _selection;
     private bool _introPlayed;
 
     public HarbourView()
     {
         InitializeComponent();
+        _band = new HarbourBand(OnBandStep);
+        _tags = new HarbourTagHosts(TagLayer, (DataTemplate)Resources["HarbourTagTemplate"]);
 
         if (SKCanvasElement.IsSupportedOnCurrentPlatform())
         {
@@ -121,15 +68,16 @@ public sealed partial class HarbourView : UserControl
 
     private void OnXamlRootChanged(XamlRoot sender, XamlRootChangedEventArgs args) => InvalidateMeasure();
 
-    public PortState? State
+    /// <summary>The harbour's words and marks; set once, by the page, with the store the scene draws.</summary>
+    public HarbourViewModel? ViewModel
     {
-        get => _state;
+        get => _model;
         set
         {
-            _state = value;
+            _model = value;
             if (_scene is not null)
             {
-                _scene.State = value;
+                _scene.State = value?.State;
             }
 
             if (value is null)
@@ -137,45 +85,23 @@ public sealed partial class HarbourView : UserControl
                 return;
             }
 
-            _selection = EffectiveSelection;
+            var state = value.State;
+            value.Tight = Tight;
+            _selection = value.Selection;
             SyncScene();
             BuildTags();
-            this.RebuildWhenVisible(value, OnStructureChanged);
-            this.TickWhenVisible(value, TickTags);
+            this.RebuildWhenVisible(state, OnStructureChanged);
+            this.TickWhenVisible(state, value.Tick);
             // Hover outlines draw in the live layer, so a hover never re-bakes the still frame
-            this.RepaintWhenVisible(value, () =>
+            this.RepaintWhenVisible(state, () =>
             {
                 _scene?.Invalidate();
-                PaintTags();
+                value.Paint();
             });
-            _scene?.SetNeeds(value.PendingDecision, value.NeedsDecision);
-            value.PropertyChanged += (_, e) =>
-            {
-                if (e.PropertyName is nameof(PortState.PendingDecision))
-                {
-                    _scene?.SetNeeds(value.PendingDecision, value.NeedsDecision);
-                    PaintTags();
-                }
-
-                if (e.PropertyName is nameof(PortState.SelectedVesselId))
-                {
-                    Reframe();
-                }
-            };
-            value.Navigation.PropertyChanged += (_, e) =>
-            {
-                if (e.PropertyName is nameof(NavigationState.Section))
-                {
-                    Reframe();
-                }
-            };
-            value.Stage.PropertyChanged += (_, e) =>
-            {
-                if (e.PropertyName is nameof(StageState.Open))
-                {
-                    Reframe();
-                }
-            };
+            _scene?.SetNeeds(state.PendingDecision, state.NeedsDecision);
+            value.PendingChanged += (_, _) => _scene?.SetNeeds(state.PendingDecision, state.NeedsDecision);
+            value.ReframeRequested += (_, _) => Reframe();
+            Bindings.Update();
         }
     }
 
@@ -205,17 +131,8 @@ public sealed partial class HarbourView : UserControl
     }
 
 
-    /// <summary>The band's full height (expanded) and how far the scene rides up when collapsed to 340 (the design).</summary>
-    private const double BandFull = 491, BandCollapsed = 340, BandRise = 110;
-
-    /// <summary>
-    /// The mini band Overview condenses to while scrolled (SPEC-OVERVIEW-SCROLL), and how far the scene sits
-    /// up in it: the slice from scene y 180 to 360 holds every pin and most of each hull; tags clamp to its top edge.
-    /// </summary>
-    private const double BandMini = 180, BandMiniRise = 180;
-
     /// <summary>Overview condensed to its mini band: no HUD, no facts card, tags kept clear of the edges only.</summary>
-    private bool Mini => !double.IsNaN(StageHeight) && StageHeight <= BandMini;
+    private bool Mini => !double.IsNaN(StageHeight) && StageHeight <= HarbourBand.Mini;
 
     /// <summary>A short frame (the strip elsewhere, the mini band here): tight tag insets, no facts card.</summary>
     private bool Tight => Compact || Mini;
@@ -249,32 +166,23 @@ public sealed partial class HarbourView : UserControl
         set => SetValue(OverlayShownProperty, value);
     }
 
-    // The band right now: its height below the overlay and how far it reaches up behind the overlay
-    private double _h = double.NaN, _inset;
-
-    // One tween for both, stepped per frame (see Retarget)
-    private double _hFrom, _hTo, _insetFrom, _insetTo;
-    private DateTimeOffset _bandStart;
-    private bool _bandTicking;
-
     private void OnStageHeightChanged(double from, double to) =>
         Retarget(animate: !double.IsNaN(from) && !double.IsNaN(to));
 
     /// <summary>
-    /// Moves the band to its target: the height below the overlay (340, 491 expanded, 180 condensed) and the
-    /// reach up behind the overlay (its height while shown, 0 folded). Between two band states it eases over
-    /// 320 ms on EaseSmooth, stepped per frame, and each step sets the height, the reach, the scene's slide,
-    /// the clip and the edge fades together (driving Height and following it from SizeChanged put those a
-    /// frame behind and shimmered). The scene renders once at full height plus the overlay and is only clipped
-    /// and slid, so no step re-bakes or re-frames it.
+    /// Moves the band to its target (<see cref="HarbourBand"/>): the height below the overlay and the reach up behind
+    /// it, eased between two band states. The scene renders at full height plus the overlay, framed below it.
     /// </summary>
     private void Retarget(bool animate)
     {
         var band = !double.IsNaN(StageHeight);
-        var insetTo = band && OverlayShown ? OverlayHeight : 0;
         HudVisibility = Tight ? Visibility.Collapsed : Visibility.Visible;
-        PaintTags();
-        SceneHost.Height = TagLayer.Height = band ? BandFull + OverlayHeight : double.NaN;
+        if (_model is not null)
+        {
+            _model.Tight = Tight;
+        }
+
+        SceneHost.Height = TagLayer.Height = band ? HarbourBand.Full + OverlayHeight : double.NaN;
         SceneHost.VerticalAlignment = TagLayer.VerticalAlignment = band ? VerticalAlignment.Top : VerticalAlignment.Stretch;
         if (_scene is not null && _scene.Camera.TopInset != (band ? OverlayHeight : 0))
         {
@@ -282,60 +190,15 @@ public sealed partial class HarbourView : UserControl
             _scene.RefreshStill();
         }
 
-        StopBand();
-        if (!animate || !band || double.IsNaN(_h) || Motion.Reduced)
-        {
-            SetBand(StageHeight, insetTo);
-            return;
-        }
-
-        (_hFrom, _hTo, _insetFrom, _insetTo, _bandStart) = (_h, StageHeight, _inset, insetTo, DateTimeOffset.Now);
-        CompositionTarget.Rendering += OnBandFrame;
-        _bandTicking = true;
-
-        // Rendering stops when a frame changes nothing on screen, so the last step is guaranteed by a timer
-        var start = _bandStart;
-        var finish = DispatcherQueue.CreateTimer();
-        finish.Interval = Motion.Duration("DurationExpandMs") + TimeSpan.FromMilliseconds(50);
-        finish.IsRepeating = false;
-        finish.Tick += (_, _) =>
-        {
-            if (_bandTicking && _bandStart == start)
-            {
-                SetBand(_hTo, _insetTo);
-                StopBand();
-            }
-        };
-        finish.Start();
-    }
-
-    // xaml-lint: allow codebehind - the band's per-frame step (CompositionTarget.Rendering has no XAML surface)
-    private void OnBandFrame(object? sender, object e)
-    {
-        var k = (DateTimeOffset.Now - _bandStart).TotalMilliseconds / Motion.Duration("DurationExpandMs").TotalMilliseconds;
-        var eased = Motion.Curve(Math.Min(1, k));
-        SetBand(_hFrom + (_hTo - _hFrom) * eased, _insetFrom + (_insetTo - _insetFrom) * eased);
-        if (k >= 1)
-        {
-            StopBand();
-        }
-    }
-
-    private void StopBand()
-    {
-        if (_bandTicking)
-        {
-            CompositionTarget.Rendering -= OnBandFrame;
-            _bandTicking = false;
-        }
+        _band.MoveTo(StageHeight, band && OverlayShown ? OverlayHeight : 0, animate, DispatcherQueue);
     }
 
     /// <summary>One band step: the height and the reach, then everything that follows them, in the same frame.</summary>
-    private void SetBand(double height, double inset)
+    // xaml-lint: allow codebehind - the band's per-frame step (CompositionTarget.Rendering has no XAML surface)
+    private void OnBandStep(double height, double inset)
     {
-        (_h, _inset) = (height, double.IsNaN(height) ? 0 : inset);
-        Height = double.IsNaN(height) ? double.NaN : height + _inset;
-        Margin = new Thickness(0, -_inset, 0, 0);
+        Height = double.IsNaN(height) ? double.NaN : height + inset;
+        Margin = new Thickness(0, -inset, 0, 0);
         SlideBand();
         PlaceOverlays();
     }
@@ -343,28 +206,17 @@ public sealed partial class HarbourView : UserControl
     /// <summary>The band's height as set this frame (layout catches up after); otherwise the laid-out height.</summary>
     private double VisibleHeight => !double.IsNaN(StageHeight) && !double.IsNaN(Height) ? Height : ActualHeight;
 
-    /// <summary>
-    /// Slides the scene within the view. Below the overlay it maps as before: flush at 491, the design's 110 px
-    /// up at 340, 180 up at the mini band. The overlay's full height sits above all of that in the rendered
-    /// scene, and the view reaches up into it by the current reach. Called per band step, and on SizeChanged.
-    /// </summary>
+    /// <summary>Slides the scene within the view (<see cref="HarbourBand.Slide"/>). Called per band step, and on SizeChanged.</summary>
     // xaml-lint: allow responsive - follows the band's height animation frame by frame; no size class or threshold
     private void SlideBand()
     {
         var band = !double.IsNaN(StageHeight);
         var visible = VisibleHeight;
-        var below = Math.Max(0, visible - _inset);
-        var rise = !band || visible <= 0
-            ? 0
-            : below >= BandCollapsed
-                ? Math.Clamp((BandFull - below) * BandRise / (BandFull - BandCollapsed), 0, BandRise)
-                : Math.Clamp(BandRise + (BandCollapsed - below) * (BandMiniRise - BandRise) / (BandCollapsed - BandMini), BandRise, BandMiniRise);
-        _bandOffset = band ? rise + OverlayHeight - _inset : 0;
+        (_bandOffset, var rest) = HarbourBand.Slide(band, visible, _band.Inset, OverlayHeight);
         // Negative margins keep each layer's slot at its full height: a slot shorter than the layer
         // clips it in its own coordinates, before any offset, which left the band's bottom empty
-        var rest = band ? Math.Max(0, BandFull + OverlayHeight - visible - _bandOffset) : 0;
         SceneHost.Margin = TagLayer.Margin = new Thickness(0, -_bandOffset, 0, -rest);
-        _scene?.SetWindow(band ? _bandOffset : double.NaN, _bandOffset + visible, _inset);
+        _scene?.SetWindow(band ? _bandOffset : double.NaN, _bandOffset + visible, _band.Inset);
     }
 
     public static readonly DependencyProperty HudVisibilityProperty = DependencyProperty.Register(
@@ -395,18 +247,7 @@ public sealed partial class HarbourView : UserControl
 
     // ── State ──────────────────────────────────────────────────────────────────
 
-    /// <summary>Berths has its own selection (the vessel being worked); elsewhere the harbour's selection applies.</summary>
-    private string? EffectiveSelection =>
-        _state is null ? null : _state.Navigation.Section == "berths" ? _state.SelectedVesselId : _state.Stage.Selection;
-
-    /// <summary>Security shows the perimeter and Cargo the yard zones; on Overview the layer switcher decides.</summary>
-    private string EffectiveLayer => _state?.Navigation.Section switch
-    {
-        null => "port",
-        "security" => "security",
-        "cargo" => "yard",
-        _ => _state.Stage.Layer
-    };
+    private string? EffectiveSelection => _model?.Selection;
 
     private void SyncScene()
     {
@@ -416,12 +257,17 @@ public sealed partial class HarbourView : UserControl
         }
 
         _scene.SelectedVessel = EffectiveSelection;
-        _scene.Layer = EffectiveLayer;
+        _scene.Layer = _model?.Layer ?? "port";
     }
 
     private void OnModeChanged()
     {
         HudVisibility = Tight ? Visibility.Collapsed : Visibility.Visible;
+        if (_model is not null)
+        {
+            _model.Tight = Tight;
+        }
+
         InvalidateMeasure();
         RefreshTags();
         Frame(animate: true);
@@ -429,7 +275,7 @@ public sealed partial class HarbourView : UserControl
 
     private void OnStructureChanged()
     {
-        if (_state is null)
+        if (_model is null)
         {
             return;
         }
@@ -439,10 +285,9 @@ public sealed partial class HarbourView : UserControl
         if (selection != _selection)
         {
             _selection = selection;
-            var vessel = _scene?.World.Vessels.FirstOrDefault(v => v.Id == selection);
-            if (vessel is not null && !Compact)
+            if (_scene?.World.Vessels.FirstOrDefault(v => v.Id == selection) is { } vessel && !Compact)
             {
-                _scene!.FlyTo(vessel.X, vessel.Y);
+                _scene.FlyTo(vessel.X, vessel.Y);
                 // Flown off the preset, as a drag or zoom is: the menu says Custom, so Overview frames it again
                 MarkView(null);
             }
@@ -459,17 +304,17 @@ public sealed partial class HarbourView : UserControl
     /// </summary>
     private void Frame(bool animate)
     {
-        if (_scene is null || _state is null)
+        if (_scene is null || _model is null)
         {
             return;
         }
 
-        static double Rad(double d) => d * Math.PI / 180;
+        var section = _model.State.Navigation.Section;
         var ms = animate ? 420 : 0;
 
         if (!Compact)
         {
-            if (_state.Navigation.Section == "overview")
+            if (section == "overview")
             {
                 _scene.GoTo(HarbourCameraPose.Overview, ms);
                 MarkView("overview");
@@ -479,165 +324,42 @@ public sealed partial class HarbourView : UserControl
         }
 
         var vessel = _scene.World.Vessels.FirstOrDefault(v => v.Id == EffectiveSelection);
-        var pose = _state.Navigation.Section == "security"
-            ? new HarbourCameraPose(Rad(-8), Rad(36), 2.4, 40, -40)
-            : _state.Navigation.Section == "cargo"
-                ? new HarbourCameraPose(Rad(-6), Rad(42), 3.0, 0, -66)
-            : vessel is not null
-                ? new HarbourCameraPose(Rad(-14), Rad(26), 4.6, vessel.X, vessel.Y + 2)
-                : HarbourCameraPose.Overview with { Pitch = Rad(26) };
-        _scene.GoTo(pose, ms);
+        _scene.GoTo(HarbourCameraPose.ForStrip(section, vessel is null ? null : (vessel.X, vessel.Y)), ms);
     }
 
     // ── Tags ───────────────────────────────────────────────────────────────────
 
+    /// <summary>A host per tag on the tag layer; the placement moves them over the projection each frame.</summary>
     private void BuildTags()
     {
-        foreach (var (_, host) in _tags)
-        {
-            TagLayer.Children.Remove(host);
-        }
-
-        _tags.Clear();
-        if (_state is null || _scene is null)
+        if (_model is null || _scene is null)
         {
             return;
         }
 
-        var template = (DataTemplate)Resources["HarbourTagTemplate"];
-        foreach (var shape in _scene.World.Vessels)
-        {
-            var vessel = PortData.Vessel(shape.Id);
-            var tag = new HarbourTag(
-                id: vessel.Id,
-                name: vessel.Name,
-                etaHours: ShiftClock.ClockHours(vessel.Eta),
-                facts: new[]
-                {
-                    new Fact { Key = "Arrival", Value = vessel.Eta },
-                    new Fact { Key = "Departure", Value = vessel.Etd },
-                    new Fact { Key = "Length · draft", Value = $"{vessel.Length} m · {vessel.Draft} m" },
-                    new Fact { Key = "Security", Value = vessel.Security }
-                },
-                toggle: _state.PickHullVesselCommand,
-                open: _state.OpenVesselCommand,
-                hover: _state.Stage.HoverCommand);
-
-            var host = new ContentControl { Content = tag, ContentTemplate = template, IsTabStop = false, RenderTransform = new TranslateTransform() };
-            TagLayer.Children.Add(host);
-            _tags.Add((tag, host));
-        }
-
-        TickTags();
+        _tags.Build(_model.Tags);
+        _model.Tick();
         RefreshTags();
-    }
-
-    /// <summary>
-    /// The tags' words as the plan stands: a drag or the optimiser moves an arrival's berth, and her tag, the docked
-    /// card and the screen reader's line say so. (The 3D ships stay at the data's berths: the harbour is the data's
-    /// picture of 20:58.)
-    /// </summary>
-    private void DescribeTags()
-    {
-        if (_state is null)
-        {
-            return;
-        }
-
-        foreach (var (tag, _) in _tags)
-        {
-            var vessel = PortData.Vessel(tag.Id);
-            var berth = _state.BerthOf(vessel.Id);
-            tag.Sub = VesselCopy.Words(_state, vessel).Tag;
-            tag.PendingSub = $"B{berth} · pilot aboard";
-            tag.AccessibleName = $"{vessel.Name}, {VesselCopy.StatusLine(_state, vessel)}";
-        }
-    }
-
-    /// <summary>"in 41 min", "in 1 h 55": minutes only, so the dark tag changes once a minute.</summary>
-    private void TickTags()
-    {
-        if (_state is null)
-        {
-            return;
-        }
-
-        foreach (var (tag, _) in _tags)
-        {
-            tag.Countdown = _state.Countdown(tag.EtaHours);
-        }
-
-        // An arrival's status line counts down too
-        DescribeTags();
     }
 
     private void RefreshTags()
     {
-        DescribeTags();
-        PaintTags();
+        _model?.Describe();
+        _model?.Paint();
         DispatcherQueue.TryEnqueue(PlaceOverlays);
         UpdateSummary();
     }
 
-    /// <summary>Tag chrome only: selected takes a 2 px ink edge, a linked hover a 1 px one.</summary>
-    public static readonly DependencyProperty SelectedTagProperty = DependencyProperty.Register(
-        nameof(SelectedTag), typeof(HarbourTag), typeof(HarbourView), new PropertyMetadata(null));
+    // The tag's chrome: the dark tag for the arrival waiting on a decision, else the light one; selected takes a 2 px
+    // ink edge, a linked hover a 1 px one (the float shadow is the resting edge)
 
-    /// <summary>The vessel the docked facts card describes; kept while the card fades out so it never blanks.</summary>
-    public HarbourTag? SelectedTag
-    {
-        get => (HarbourTag?)GetValue(SelectedTagProperty);
-        private set => SetValue(SelectedTagProperty, value);
-    }
+    public static Visibility LightTag(bool pending) => pending ? Visibility.Collapsed : Visibility.Visible;
 
-    public static readonly DependencyProperty SelectedLineProperty = DependencyProperty.Register(
-        nameof(SelectedLine), typeof(string), typeof(HarbourView), new PropertyMetadata(string.Empty));
+    public static Visibility DarkTag(bool pending) => pending ? Visibility.Visible : Visibility.Collapsed;
 
-    /// <summary>The status line the selected vessel's tag is showing (its pending line while a decision waits).</summary>
-    public string SelectedLine
-    {
-        get => (string)GetValue(SelectedLineProperty);
-        private set => SetValue(SelectedLineProperty, value);
-    }
+    public static Brush TagEdge(bool selected, bool lit) => selected || lit ? Tokens.Brush("InkBrush") : Tokens.Transparent;
 
-    public static readonly DependencyProperty HasSelectedTagProperty = DependencyProperty.Register(
-        nameof(HasSelectedTag), typeof(bool), typeof(HarbourView), new PropertyMetadata(false));
-
-    /// <summary>Whether the facts card is up: a vessel is selected and the frame has room for it.</summary>
-    public bool HasSelectedTag
-    {
-        get => (bool)GetValue(HasSelectedTagProperty);
-        private set => SetValue(HasSelectedTagProperty, value);
-    }
-
-    private void PaintTags()
-    {
-        HarbourTag? shown = null;
-        foreach (var (tag, _) in _tags)
-        {
-            // The arrival still waiting on a berth decision wears the dark tag; confirmed, it is a light one
-            var needs = _state?.PendingDecision == tag.Id;
-            var selected = EffectiveSelection == tag.Id;
-            var lit = _state?.Stage.HoveredVessel == tag.Id;
-            tag.LightVisibility = needs ? Visibility.Collapsed : Visibility.Visible;
-            tag.DarkVisibility = needs ? Visibility.Visible : Visibility.Collapsed;
-            // The float shadow is the resting edge; selected takes a 2 px ink edge, a linked hover a 1 px one
-            tag.Edge = selected || lit ? Tokens.Brush("InkBrush") : Tokens.Transparent;
-            tag.EdgeThickness = new Thickness(selected ? 2 : 1);
-            if (selected && !Tight)
-            {
-                shown = tag;
-                SelectedLine = needs ? tag.PendingSub : tag.Sub;
-            }
-        }
-
-        if (shown is not null)
-        {
-            SelectedTag = shown;
-        }
-
-        HasSelectedTag = shown is not null;
-    }
+    public static Thickness TagEdgeWidth(bool selected) => new(selected ? 2 : 1);
 
     // ── Screen readers ─────────────────────────────────────────────────────────
 
@@ -650,19 +372,7 @@ public sealed partial class HarbourView : UserControl
     /// </summary>
     private void UpdateSummary()
     {
-        if (_state is null)
-        {
-            return;
-        }
-
-        var vessels = _tags.Select(t => PortData.Vessel(t.Tag.Id)).ToList();
-        var alongside = vessels.Count(v => v.Status is VesselStatus.Docked or VesselStatus.Departing);
-        var arriving = vessels.Count(v => v.Status == VesselStatus.Arriving);
-        var selected = vessels.FirstOrDefault(v => v.Id == EffectiveSelection);
-        var layer = EffectiveLayer switch { "yard" => "Yard", "security" => "Security", "traffic" => "Traffic", _ => "Map" };
-        var text = $"{_viewName} view, {layer} layer. {alongside} vessels alongside, {arriving} arriving."
-            + (selected is null ? string.Empty : $" Selected: {selected.Name}, {VesselCopy.StatusLine(_state, selected)}.");
-        if (text == Summary.Text)
+        if (_model?.Summary(_viewName) is not { } text || text == Summary.Text)
         {
             return;
         }
@@ -673,8 +383,8 @@ public sealed partial class HarbourView : UserControl
     }
 
     /// <summary>
-    /// Tags sit on a short leader above each mast and stay inside the frame; when a vessel is near
-    /// an edge the leader angles over to reach its tag.
+    /// Each frame: the clip, the tags on their leaders over the projection (<see cref="HarbourTagHosts"/>), the north
+    /// needle and the scale bar.
     /// </summary>
     // xaml-lint: allow responsive - ActualWidth/Height clamp tags inside the frame; this is projection, not a breakpoint
     private void PlaceOverlays()
@@ -689,113 +399,17 @@ public sealed partial class HarbourView : UserControl
         Clip = new RectangleGeometry { Rect = new Rect(0, 0, ActualWidth, visible) };
         _scene.SyncCamera();
         var camera = _scene.Camera;
-        var leaders = new Dictionary<string, (SKPoint, SKPoint)>();
-        var placed = new List<Rect>();
+        var world = _scene.World;
+        (float X, float Y) Project(string vessel) => camera.Project(world.Vessels.First(v => v.Id == vessel).Mast);
+        _scene.Leaders = _model is null
+            ? new Dictionary<string, (SKPoint, SKPoint)>()
+            : _tags.Place(_model.PlacementOrder(t => Project(t.Id).X), Project,
+                new HarbourTagFrame(ActualWidth, visible, _bandOffset, _band.Inset, Tight, Compact));
 
-        // The arrival waiting on a decision first, then the selected vessel, then left to right: a later tag gives way to
-        // one already placed, so the dark tag and its countdown are never the ones hidden
-        var pending = _state?.PendingDecision;
-        var selection = EffectiveSelection;
-        foreach (var (tag, host) in _tags
-                     .OrderBy(t => t.Tag.Id == pending ? 0 : t.Tag.Id == selection ? 1 : 2)
-                     .ThenBy(t => camera.Project(_scene.World.Vessels.First(v => v.Id == t.Tag.Id).Mast).X))
-        {
-            var vessel = _scene.World.Vessels.First(v => v.Id == tag.Id);
-            var (x, y) = camera.Project(vessel.Mast);
-
-            // A vessel out of frame loses its tag rather than pinning it to an edge it is not near.
-            // xaml-lint: allow responsive - per-frame projection culling, not a breakpoint
-            var inFrame = x > 0 && x < ActualWidth && y - _bandOffset > _inset + (Tight ? 16 : 40) && y - _bandOffset < visible - (Tight ? 8 : 56);
-            // xaml-lint: allow codebehind - per-frame projection culling; there is no XAML surface for the camera
-            host.Visibility = inFrame ? Visibility.Visible : Visibility.Collapsed;
-            if (!inFrame)
-            {
-                continue;
-            }
-
-            // xaml-lint: allow responsive - the tag's own measured size, used to place it on its leader
-            var width = host.ActualWidth > 0 ? host.ActualWidth : 160;
-            // xaml-lint: allow responsive - the tag's own measured size, used to place it on its leader
-            var height = host.ActualHeight > 0 ? host.ActualHeight : 36;
-            // The strip keeps its top-right corner clear for the Expand harbour button.
-            var right = Compact ? 150 : 10;
-            var left = Math.Clamp(x - width / 2, 10, Math.Max(10, ActualWidth - width - right));
-            // Below the overlay (the greeting and figures), clear of the top-right float
-            var minTop = (Tight ? 6 : 52) + _inset + _bandOffset;
-            var top = Math.Max(minTop, y - Lead - height);
-            (left, top, var fits) = AvoidOverlap(placed, left, top, width, height, minTop, ActualWidth - right,
-                visible + _bandOffset - (Tight ? 8 : 56));
-            if (!fits)
-            {
-                // No clear spot beside, above or below the tags already placed (a narrow band with vessels close
-                // together): this one gives way rather than covering another's countdown
-                // xaml-lint: allow codebehind - per-frame tag placement over the camera; there is no XAML surface for it
-                host.Visibility = Visibility.Collapsed;
-                continue;
-            }
-
-            placed.Add(new Rect(left, top, width, height));
-
-            var transform = (TranslateTransform)host.RenderTransform;
-            transform.X = Math.Round(left);
-            transform.Y = Math.Round(top);
-            leaders[tag.Id] = (new SKPoint(x, y), new SKPoint((float)(left + width / 2), (float)(top + height)));
-        }
-
-        _scene.Leaders = leaders;
-
-        // North needle and a scale bar in round metres.
-        var a = camera.Project(camera.TargetX, camera.TargetY, 0);
-        var b = camera.Project(camera.TargetX, camera.TargetY - 100, 0);
-        Needle.Angle = Math.Atan2(b.Y - a.Y, b.X - a.X) * 180 / Math.PI + 90;
-
-        var pxPerMetre = camera.Scale / HarbourWorld.MetresPerUnit;
-        var metres = new[] { 25, 50, 100, 200, 250, 500, 1000 }.LastOrDefault(m => m * pxPerMetre <= 130, 25);
-        ScaleBar.Width = Math.Max(8, Math.Round(metres * pxPerMetre));
+        Needle.Angle = camera.NorthAngle();
+        var (metres, width) = camera.ScaleBar();
+        ScaleBar.Width = width;
         ScaleLabel.Text = $"{metres} m";
-    }
-
-    /// <summary>
-    /// Vessels alongside neighbouring berths project close together, most of all in the compact strip and on a phone,
-    /// so a tag that lands on one already placed moves up above it (its leader grows); with no room above, beside it
-    /// (right, then left); then below it. When none of those is clear it does not fit, and the caller hides it.
-    /// </summary>
-    private static (double Left, double Top, bool Fits) AvoidOverlap(List<Rect> placed, double left, double top,
-        double width, double height, double minTop, double maxRight, double maxBottom)
-    {
-        const double Gap = 6;
-        for (var guard = 0; guard < placed.Count * 4 + 1; guard++)
-        {
-            var hit = placed.FirstOrDefault(r => left < r.Right + Gap && left + width + Gap > r.Left
-                && top < r.Bottom + Gap && top + height + Gap > r.Top, Rect.Empty);
-            if (hit.IsEmpty)
-            {
-                return (left, top, true);
-            }
-
-            if (hit.Top - Gap - height >= minTop)
-            {
-                top = hit.Top - Gap - height;
-            }
-            else if (hit.Right + Gap + width <= maxRight)
-            {
-                left = hit.Right + Gap;
-            }
-            else if (hit.Left - Gap - width >= 10)
-            {
-                left = hit.Left - Gap - width;
-            }
-            else if (hit.Bottom + Gap + height <= maxBottom)
-            {
-                top = hit.Bottom + Gap;
-            }
-            else
-            {
-                return (left, top, false);
-            }
-        }
-
-        return (left, top, false);
     }
 
     // ── Camera controls ────────────────────────────────────────────────────────
@@ -808,14 +422,7 @@ public sealed partial class HarbourView : UserControl
             return;
         }
 
-        var pose = _scene.Camera.Pose;
-        _scene.GoTo(name switch
-        {
-            "sea" => HarbourCameraPose.FromSea(pose),
-            "land" => HarbourCameraPose.FromLand(pose),
-            "plan" => HarbourCameraPose.Plan(pose),
-            _ => HarbourCameraPose.Overview
-        });
+        _scene.GoTo(HarbourCameraPose.Preset(name, _scene.Camera.Pose));
         MarkView(name);
     }
 
@@ -828,14 +435,7 @@ public sealed partial class HarbourView : UserControl
 
     private void MarkView(string? name)
     {
-        _viewName = name switch
-        {
-            "overview" => "Overview",
-            "sea" => "From sea",
-            "land" => "From land",
-            "plan" => "Plan",
-            _ => "Custom"
-        };
+        _viewName = HarbourViewModel.ViewName(name);
         UpdateSummary();
 
         // The camera menu: the current preset is checked and named on the button; a drag or a
@@ -907,14 +507,7 @@ public sealed partial class HarbourView : UserControl
             return;
         }
 
-        var pose = HarbourCameraPose.Overview;
-        _scene.GoTo(view switch
-        {
-            "sea" => HarbourCameraPose.FromSea(pose),
-            "land" => HarbourCameraPose.FromLand(pose),
-            "plan" => HarbourCameraPose.Plan(pose),
-            _ => pose
-        }, 0);
+        _scene.GoTo(HarbourCameraPose.Preset(view, HarbourCameraPose.Overview), 0);
         MarkView(view);
     }
 }

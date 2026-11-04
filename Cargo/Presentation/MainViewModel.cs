@@ -24,6 +24,7 @@ public sealed partial class MainViewModel : ObservableObject
         FleetViewModel fleet, SecurityViewModel security)
     {
         State = state;
+        Harbour = new HarbourViewModel(state);
         Overview = overview;
         Berths = berths;
         Cargo = cargo;
@@ -58,6 +59,9 @@ public sealed partial class MainViewModel : ObservableObject
     }
 
     public PortState State { get; }
+
+    /// <summary>The harbour stage's tags, facts card and description, shared by every harbour section.</summary>
+    public HarbourViewModel Harbour { get; }
 
     public OverviewViewModel Overview { get; }
     public BerthsViewModel Berths { get; }
