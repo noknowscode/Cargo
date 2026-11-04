@@ -1,19 +1,20 @@
 # Completeness audit: Cargo / Westhaven Dispatch (2026-11-04, Uno.Sdk 7.0.0-dev.115, heads: desktop, WinAppSDK, wasm, android, ios)
 
-**Updated after the A pass** (`feat/production-readiness`, from ac065f1; the commits are listed under Fixed) and the
-Android emulator job's two findings (Fixed after the A pass). The
+**Updated after the A pass** (`feat/production-readiness`, from ac065f1; the commits are listed under Fixed), the
+Android emulator job's two findings (Fixed after the A pass) and A pass 2 (from 16c5a30: the code review's Major and
+three new Minors found in its runtime pass). The
 first audit, at a6d1ce4, follows for the record; the Fixed table maps each of its findings to its fix. Runtime proof:
 Debug `net10.0-desktop` under Xvfb (CPU renderer), driven with xdotool and screenshots, and a Release
 `net10.0-browserwasm` build in headless Chromium (Playwright).
 
-Verdict: **Complete with gaps** (0 Blockers, 0 functional Majors, 3 head Majors, 4 Minors)
+Verdict: **Complete with gaps** (0 Blockers, 0 functional Majors, 3 head Majors, 7 Minors)
 Safe to show: every section; confirm and undo the berth (bar and Overview queue, desktop and WebAssembly); drag and
 Move to berth with refusals, and the tags, docking card and Berths rows naming the new berth; the optimiser and the
-36 h scrub; filter, scanner (also on a phone on its side), X-ray, inspection record, Assign inspector (settles the
-hold's row), Request re-weigh; Verify driver at Access control; Confirm new ETA to a late crew (counts the late orders
+36 h scrub; filter, scanner (also on a phone on its side), X-ray, Log scan (adds the scan to the inspection log),
+the held box's inspection record, Assign inspector (settles the hold's row), Request re-weigh; Verify driver at Access control; Confirm new ETA to a late crew (counts the late orders
 down); crew chat; harbour layers, presets and tag > vessel profile; header tooltips; theme and reduce-motion choices
 across a relaunch.
-Keep off screen: nothing in the app. Under Xvfb, use the CPU renderer (`CARGO_X11_RENDERER=software`): the Mesa
+Keep off screen: on WebAssembly, Security's check marks (missing-glyph boxes, Minors). Under Xvfb, use the CPU renderer (`CARGO_X11_RENDERER=software`): the Mesa
 llvmpipe OpenGL path can draw a black frame after a live resize across 600 (renderer issue, below).
 
 By design (not findings): every figure is in-memory and the vessels' statuses are frozen at 20:58 (the clock runs;
@@ -59,7 +60,13 @@ The A-pass code review (2026-11-04) found one functional Major the audit had mis
 
 | Finding | Severity | Fix | Commit | Proof |
 |---|---|---|---|---|
-| "Log scan →" (9 of 10 boxes) logged nothing: it closed the scanner and opened Security's inspection, which always shows MRVU 918204 1; "Inspection record →" in the container explorer did the same for every box (`ScannerViewModel.cs:143`, `SecurityView.xaml:329`, `ContainersView.xaml:194`) | Major (Interactions) | "Log scan" adds the scan to the inspection log (`Domain/InspectionLog.cs`, held by the store), once per box, and then reads "Scan logged"; "Open inspection →" is offered on the held box only, whose record Security shows (D-C7) | ITEM13 | `CargoViewModelTests` (3 new) |
+| "Log scan →" (9 of 10 boxes) logged nothing: it closed the scanner and opened Security's inspection, which always shows MRVU 918204 1; "Inspection record →" in the container explorer did the same for every box (`ScannerViewModel.cs:143`, `SecurityView.xaml:329`, `ContainersView.xaml:194`) | Major (Interactions) | "Log scan" adds the scan to the inspection log (`Domain/InspectionLog.cs`, held by the store), once per box, and then reads "Scan logged"; "Open inspection →" is offered on the held box only, whose record Security shows (D-C7) | e6f1789 | `CargoViewModelTests` (3 new); R desktop: AVRU 482193 4's Log scan > Security's log "20:58 · Scan logged · AVRU 482193 4 · optical · clear", the button "Scan logged" (disabled), the scanner stays open; by keyboard on a phone (Tab 10 reaches it, Enter logs); AVRU's detail has no inspection button, MRVU's "Open inspection →" lands on her record; R wasm (below) |
+
+Also in A pass 2, from the review's structure and quality list (no behaviour change but Next 6 h's " · pilot aboard",
+which the data now carries): the needs-you queue left `PortState` (582 > 362 lines) with its own panel model; the
+harbour's tags, facts card and screen-reader line moved to `HarbourViewModel` (`HarbourView.xaml.cs` 934 > 488); view
+state left `Domain/`; one berth lookup and one clock helper; copy written from the data, not parsed back; two dead
+members removed. Every critical workflow was re-run on desktop at the end of the pass.
 
 ## Current findings
 
@@ -80,20 +87,27 @@ The A-pass code review (2026-11-04) found one functional Major the audit had mis
 - [States] The empty crew-thread state is unreachable: every river vessel has a seeded thread - C
 - [Performance] Idle CPU on Overview is the designed 15 fps harbour loop (49% of a core on the CPU backend under Xvfb, 4.9% with reduce motion); its idle policy is an owner decision - R
 - [Accessibility] Screen reader never run (names on every list, card, chart and canvas target; keyboard walked with `CARGO_FOCUS_LOG=1`) - X
+- [Logic] The berth map's dashed approach path is ground drawn once toward Berth 07 (`Controls/BerthMap.cs:148-151`):
+  after Nordic Star is dragged to 08 or confirmed it still runs from the anchorage to 07 - R (A pass 2)
+- [Responsive] With a custom camera on the expanded Overview stage, a harbour tag can sit against the Collapse button:
+  the tag frame keeps the top 52 px clear and the button sits lower (`Controls/Harbour/HarbourTagHosts.cs:22`) - R (A pass 2)
+- [Platform] On WebAssembly the text marks ✓ ○ ⚠ (Security's checks and inspection log, the inspection diagram) draw
+  as missing-glyph boxes: the bundled fonts lack them and the browser head has no system fallback (desktop falls back)
+  - R (A pass 2, `docs/evidence/2026-11-04-wasm.md`)
 
 ### Environment (not an app defect)
 - Under Xvfb, Mesa llvmpipe's OpenGL path draws a black frame after a live resize across 600 on scrolled Waterways
   with the river map in view; the CPU renderer draws the same tree correctly. Evidence and method:
   `docs/evidence/2026-11-04-black-frame-599.md`.
 
-## Critical workflows by head (A pass)
+## Critical workflows by head (A pass; desktop re-run in A pass 2)
 
 | Workflow | desktop | WinAppSDK | android | ios | wasm |
 |---|---|---|---|---|---|
 | 1. Confirm and undo the berth | R Complete (bar: "Berth 07 confirmed for Nordic Star", Berths dot gone; Undo restores the bar and the dot) | X | X | X | R Complete (Overview queue: Needs you 4 > 3, row gone, dot gone, tag light) |
 | 2. Drag or move to a berth | R Complete (drag to 08: hint, plan, card, tag "B08 · arriving 21:40" all follow) | X | X | X | X |
 | 3. Optimise and scrub the plan | R Complete (optimiser: row 05 and Levant's lines name Berth 05) | X | X | X | X |
-| 4. Scan and inspect a container | R Complete (scanner at 1440 and at 844x390; Assign inspector logs and settles the hold row) | X | X | X | X |
+| 4. Scan and inspect a container | R Complete (A pass 2: Log scan logs the box and stands done, at 1440 and by keyboard at 390; the held box's Open inspection from the scanner and the explorer lands on her record; Assign inspector and Request re-weigh log and stand done) | X | X | X | R Complete (A pass 2: Log scan > "Scan logged"; Security's log "21:01 · Scan logged · AVRU 482193 4 · optical · clear", `2026-11-04-wasm-log-scan.jpg`) |
 | 5. Work the needs-you queue | R Complete (hold, driver, one late order and the berth settled where each row leads) | X | X | X | X |
 | 6. Message a river crew | R Complete (typed reply sent with Enter, box cleared, thread shows the newest) | X | X | X | X |
 | 7. Choice survives relaunch | R Complete (Dark saved, relaunch opens Dark, `VERIFY theme=Dark actual=Dark palette=Dark`) | X | X | X | X |

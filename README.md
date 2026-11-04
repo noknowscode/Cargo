@@ -31,14 +31,14 @@ Five heads: `net10.0-desktop` (Skia on Windows, macOS and Linux), `net10.0-windo
 WebAssembly and Android build with 0 warnings on Linux; the Windows and iOS heads build on their own
 OS, in CI (`.github/workflows/ci.yml`). Warnings fail the build (`Directory.Build.props`).
 
-`Cargo.Tests` (NUnit, 211 tests) covers the logic with no UI in it. The domain: the berth rules, the reasons a berth
+`Cargo.Tests` (NUnit, 276 tests) covers the logic with no UI in it. The domain: the berth rules, the reasons a berth
 refuses a vessel and the optimiser's report (`Domain/BerthPlan.cs`); the store on a manual clock (`PortState` and its
 parts: the needs-you queue after every berth change and every settled row, Confirm and Undo, countdowns, the status
-lines the plan gives, navigation, the stage, the scanner's camera, the yard, the crew chat); the schedule and the one
+lines the plan gives, navigation, the stage, the inspection log, the yard, the crew chat); the schedule and the one
 clock reader (`ShiftClock`); the timeline maths; the container filters; bay views; the yard's slots; the responsive
 panels' arithmetic; the harbour's geometry; the culture rules. The page models: every view model that holds logic,
 from `MainViewModel` (tabs, dots, router sync, tooltips, layers, theme) to the Berths, Cargo, Overview, Waterways
-and Security models, built as the host builds them on fakes for the dispatcher, navigator, route notifier, theme
+and Security models, the harbour's tags and the needs-you panel, built as the host builds them on fakes for the dispatcher, navigator, route notifier, theme
 service and logger (`Cargo.Tests/Fakes.cs`). It references the app's plain `net10.0` build, which never starts the
 Uno runtime, so the models hold states and the data's tones, never brushes, geometry or images: the views pick those
 (`Presentation/Paint.cs` and each view's x:Bind mapping functions). It runs in CI's `test` job.
@@ -54,9 +54,11 @@ Uno runtime, so the models hold states and the data's tones, never brushes, geom
   is open, where a dragged hull currently is — which is what MVVM is good at.
   `Domain/PortState.cs` is the single observable store: the clock, the berth desk (the plan, the decisions waiting
   on the dispatcher, the vessel, berth, bay and badge being worked) and the signals. Its parts each hold one job:
-  `NavigationState` (the section, Security's tab, the jumps), `StageState` (the harbour stage's size, layer,
-  selection and linked hover), `ScannerState` (the explorer's filter and pick, the scanner's camera), `YardState`
-  (the yard at work) and `CrewChat` (the river crews' channel); `ShiftClock` is the time arithmetic. The store raises five separate signals
+  `NavigationState` (the section, Security's tab, the jumps), `StageState` (the harbour stage's layer, selection
+  and linked hover), `ScannerState` (the explorer's filter and pick), `YardState` (the yard at work), `CrewChat`
+  (the river crews' channel), `NeedsYouQueue` (what waits on the dispatcher and the actions that settle it) and
+  `InspectionLog` (Security's log, with the scans and actions logged this shift); `ShiftClock` is the time
+  arithmetic. View state (stage heights, toggle labels, the scanner's camera) lives in `Presentation/`. The store raises five separate signals
   so that work is proportional to what actually changed: `StructureChanged` for selections
   and assignments, `PlanHourChanged` for the berth plan's scrubber (only the plan and its map
   follow it), `Ticked` for the clock, `HoverChanged` for the pointer, and `YardChanged`

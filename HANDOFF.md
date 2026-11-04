@@ -1,5 +1,31 @@
-# HANDOFF — Cargo: production readiness, A pass
+# HANDOFF — Cargo: production readiness, A pass 2
 Updated: 2026-11-04
+
+## A pass 2 (branch `feat/production-readiness`, from 16c5a30)
+Brief: the A-pass code review's closed list for Cargo (uno-lab `docs/production-readiness/reviews/2026-11-04-a-pass/
+cargo.json`). Decisions: `docs/DECISIONS.md` (new: D-C7, proposed). Completeness: Complete with gaps, 0 functional
+Majors, 3 head Majors, 7 Minors.
+- **Structure:** the needs-you queue and its settle actions left `PortState` for `Domain/NeedsYouQueue.cs`, and the
+  panel acts through `NeedsYouPanelViewModel` (0cd7053); vessel copy is written from the data in
+  `Presentation/VesselCopy.cs`, nothing parses display text back (0a2f544); the harbour's tags, facts card and
+  screen-reader line live in `HarbourViewModel` (8745ada); view state (stage heights, toggle labels, Security's
+  title, `ScannerCamera`) left `Domain/` (b63c866); `Decision` carries no command. `PortState` 582 > 362 lines (the
+  clock and the berth desk); `HarbourView.xaml.cs` 934 > 488 (camera, input, band motion, tag placement).
+- **Quality:** dead `NotifyStructureChanged` and `CrewChat.SentTo` removed (b534043); Next 6 h's "pilot aboard" reads
+  `Vessel.PilotAboard`; one berth lookup (`PortData.BerthIndex`, `PortData.Berth`; a678e30, 685dae3) and one clock
+  helper (`ShiftClock.Display`); the berth map's "nordic" case is `BerthMap.WaitsInApproach` (255397e); the
+  masthead's 3 and 2 read the data (a503cdf); `SixName`'s doc comment sits on it (6a5d2ec); UNO-AUDIT's stale
+  Remaining rows, dead-code claim and async void list corrected (afe43ae).
+- **The Major (e6f1789, D-C7):** "Log scan" adds the scan to the store's inspection log (`Domain/InspectionLog.cs`)
+  once per box and then reads "Scan logged"; "Open inspection →" is offered on the held box only (scanner and
+  explorer), since Security's record is hers. Assign inspector and Request re-weigh write to the same log.
+- **Proof:** 276 tests; lint gating 0 (8fc8cb9 restored an allow line the harbour refactor dropped); 163 names /
+  5,122 XAML lines = 31.8 per 1k. Desktop under Xvfb: every critical workflow plus each change (Log scan at 1440 and
+  by keyboard at 390, the explorer's button on AVRU and MRVU, Security's log, the four queue rows, confirm and undo,
+  drag to 08, optimiser and scrub, crew message, theme across a relaunch, the facts card, Expand). WebAssembly:
+  workflow 4 in headless Chromium (`docs/evidence/2026-11-04-wasm.md`, `2026-11-04-wasm-log-scan.jpg`).
+- **New Minors (not fixed, in COMPLETENESS):** the berth map's approach path is drawn once toward 07; a harbour tag
+  can sit against the Collapse button under a custom camera; on WebAssembly ✓ ○ ⚠ draw as missing-glyph boxes.
 
 ## Android emulator follow-up (branch `feat/production-readiness`, from 2e3cb44)
 The emulator job's window dump (CI run 21) found two defects; both fixed and re-read in run 22's dump
