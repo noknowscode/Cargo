@@ -199,9 +199,63 @@ public class CargoViewModelTests
         var scanner = new ScannerViewModel(state, camera);
         Inspect(state, camera, "MRVU9182041");
 
-        scanner.OpenInspectionCommand.Execute(null);
+        scanner.TakeScanActionCommand.Execute(null);
 
         Assert.That(camera.Open, Is.False);
         Assert.That((state.Navigation.Section, state.Navigation.SecurityTab), Is.EqualTo(("security", "inspection")));
+    }
+
+    [Test]
+    public void Log_scan_logs_the_box_once_and_keeps_the_scanner_on_it()
+    {
+        var desk = new Desk();
+        var scanner = desk.Main.Scanner ?? throw new InvalidOperationException("no scanner model");
+        Inspect(desk.State, desk.Camera, "AVRU4821934");
+        var section = desk.State.Navigation.Section;
+        Assert.That((scanner.ScanAction, scanner.TakeScanActionCommand.CanExecute(null)), Is.EqualTo(("Log scan", true)));
+
+        scanner.TakeScanActionCommand.Execute(null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(desk.Security.InspectionLog[^1].Label, Is.EqualTo("Scan logged · AVRU 482193 4 · optical · clear"));
+            Assert.That(desk.Security.InspectionLog[^1].Time, Is.EqualTo("20:58"));
+            Assert.That((scanner.ScanAction, scanner.TakeScanActionCommand.CanExecute(null)), Is.EqualTo(("Scan logged", false)));
+            Assert.That((desk.Camera.Open, desk.State.Navigation.Section), Is.EqualTo((true, section)), "logging does not leave the scanner");
+        });
+
+        var count = desk.Security.InspectionLog.Count;
+        scanner.TakeScanActionCommand.Execute(null);
+        Assert.That(desk.Security.InspectionLog, Has.Count.EqualTo(count), "a box is logged once");
+    }
+
+    [Test]
+    public void A_scan_in_X_ray_says_so_and_another_box_can_still_be_logged()
+    {
+        var desk = new Desk();
+        var scanner = desk.Main.Scanner ?? throw new InvalidOperationException("no scanner model");
+        Inspect(desk.State, desk.Camera, "AVRU4821934");
+        scanner.TakeScanActionCommand.Execute(null);
+
+        Inspect(desk.State, desk.Camera, "LNHU1905533");
+        scanner.ToggleXrayCommand.Execute(null);
+        Assert.That(scanner.ScanAction, Is.EqualTo("Log scan"));
+        scanner.TakeScanActionCommand.Execute(null);
+
+        Assert.That(desk.Security.InspectionLog[^1].Label, Is.EqualTo("Scan logged · LNHU 190553 3 · X-ray · under review"));
+    }
+
+    [Test]
+    public void Only_the_held_box_offers_her_inspection_record()
+    {
+        var state = new PortState(new ManualClock());
+        var explorer = new ContainersViewModel(state, new ScannerCamera());
+        Assert.That(explorer.IsHeld, Is.False);
+
+        state.Scanner.SelectedContainerId = "MRVU9182041";
+        explorer.Refresh();
+
+        Assert.That(explorer.IsHeld, Is.True);
+        Assert.That(PortData.Containers.Count(c => c.IsHeld), Is.EqualTo(1));
     }
 }

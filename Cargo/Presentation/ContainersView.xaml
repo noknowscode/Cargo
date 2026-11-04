@@ -191,8 +191,9 @@
                          Foreground="{ThemeResource PaperBrush}" />
             </StackPanel>
           </Button>
-          <Button AutomationProperties.Name="Inspection record" Style="{StaticResource GhostButton}" Content="Inspection record →"
-                  MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+          <!-- Security's inspection record is the held box's: only she offers it -->
+          <Button AutomationProperties.Name="Open inspection" Style="{StaticResource GhostButton}" Content="Open inspection →"
+                  MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}" Visibility="{x:Bind ViewModel.IsHeld, Mode=OneWay}"
                   Command="{x:Bind ViewModel.State.Navigation.OpenInspectionCommand}" HorizontalAlignment="Stretch" />
         </StackPanel>
       </utu:CardContentControl>

@@ -53,6 +53,14 @@ The emulator job's window dump of the first screen (run 21, job 126701803671) fo
 | No safe area on Android: the header started at y 0 (wordmark y 43-103, account button y 16-132, in the status bar's band) and the section scroll ran to y 2400 under the gesture bar | Major (Platform) | `utu:SafeArea` in Padding mode, so the surfaces still run edge to edge: the header through a wrapper Border (Left, Top, Right; its own responsive padding stays its own), the section region inside the scroll (Left, Right, Bottom: padding at the content's end), the inspection panel (VisibleBounds) | a245b3e | R (CI run 22 dump): every header node 128 px lower, wordmark [42,171][666,231], account button [938,144][1054,260], tabs y 275-391; the scroll still runs to y 2400. The content's end is below the launch dump; a desktop simulation of the insets padded the sections 24 at their end (`2026-11-04-safe-area-simulated.jpg`). Desktop 1440/999/390 Light and Dark and the inspection overlay: unchanged but for the clock and the harbour's animation; WebAssembly: header and greeting match desktop |
 | The phone figure tiles (and the summary column from 600) were read twice: Raw on their panel hid only the panel, so the texts stayed in the tree beside the lanes' name | Minor (Accessibility) | Each text in the tiles and the column is Raw; the lanes' name (the timeline summary) is the one reading | ad78135 | R (CI run 22 dump): none of run 21's tile texts ("3 of 7 done", "1.5 m", "2,447 today", "Net −34 / h", their labels and sub-lines) is in the tree; the lanes' node is below the first screen |
 
+## Fixed in A pass 2
+
+The A-pass code review (2026-11-04) found one functional Major the audit had missed.
+
+| Finding | Severity | Fix | Commit | Proof |
+|---|---|---|---|---|
+| "Log scan →" (9 of 10 boxes) logged nothing: it closed the scanner and opened Security's inspection, which always shows MRVU 918204 1; "Inspection record →" in the container explorer did the same for every box (`ScannerViewModel.cs:143`, `SecurityView.xaml:329`, `ContainersView.xaml:194`) | Major (Interactions) | "Log scan" adds the scan to the inspection log (`Domain/InspectionLog.cs`, held by the store), once per box, and then reads "Scan logged"; "Open inspection →" is offered on the held box only, whose record Security shows (D-C7) | ITEM13 | `CargoViewModelTests` (3 new) |
+
 ## Current findings
 
 ### Blockers

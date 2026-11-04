@@ -6,8 +6,8 @@ namespace Cargo.Domain;
 /// The port's store: the berth desk on the shift's live clock (the berth plan, the arrival waiting on a berth, and
 /// the vessel, berth, bay and badge being worked) and the signals every view follows. Where the dispatcher is
 /// (<see cref="Navigation"/>), the harbour stage (<see cref="Stage"/>), the container pick (<see cref="Scanner"/>),
-/// the yard (<see cref="Yard"/>), the crew channel (<see cref="Chat"/>) and what needs you (<see cref="NeedsYou"/>)
-/// are its parts.
+/// the yard (<see cref="Yard"/>), the crew channel (<see cref="Chat"/>), what needs you (<see cref="NeedsYou"/>) and
+/// the inspection log (<see cref="Inspections"/>) are its parts.
 /// </summary>
 public sealed partial class PortState : ObservableObject
 {
@@ -32,6 +32,7 @@ public sealed partial class PortState : ObservableObject
         Yard = new YardState(clock, _signals, random);
         Chat = new CrewChat(_signals, () => NowHours);
         NeedsYou = new NeedsYouQueue(_signals, Chat, () => NowHours, () => PendingDecision, BerthOf);
+        Inspections = new InspectionLog(() => NowHours);
 
 #if DEBUG
         if (Hook("CARGO_OPTIMIZE") == "1")
@@ -61,6 +62,9 @@ public sealed partial class PortState : ObservableObject
 
     /// <summary>What waits on the dispatcher, and the actions that settle it (the berth's row settles here, <see cref="Confirm"/>).</summary>
     public NeedsYouQueue NeedsYou { get; }
+
+    /// <summary>The terminal's inspection log, with what the dispatcher logs this shift.</summary>
+    public InspectionLog Inspections { get; }
 
     /// <summary>Raised once a second, after the clock advances.</summary>
     public event EventHandler? Ticked;

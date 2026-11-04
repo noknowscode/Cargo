@@ -59,6 +59,18 @@ together), it is hidden for that frame rather than drawn over another's countdow
 Reason: at 390 Baltic Crown's tag covered Nordic Star's countdown (completeness Minor).
 Tradeoff: on the narrowest band one vessel can be untagged; her facts stay in Next 6 h, the Berths list and her hull.
 
+## Made in A pass 2 (2026-11-04)
+
+### D-C7 · A scan is logged where it is taken; the inspection record opens for the held box only · proposed
+Decision: on any box but the held one, the scanner's action reads "Log scan". It adds "Scan logged · <box> · optical
+or X-ray · <verdict>" to Security's inspection log at the time now, once per box, then reads "Scan logged" (disabled),
+and the scanner stays open. The held box (MRVU 918204 1) keeps "Open inspection →". The container explorer offers
+"Open inspection →" on the held box only; it showed "Inspection record →" on every box.
+Reason: "Log scan →" logged nothing and opened MRVU 918204 1's inspection for any box, and so did "Inspection record →"
+(the A-pass review's completeness Major). Security keeps an inspection record for the held box only.
+Tradeoff: no inspection record is built for the other nine boxes, which are clear or under documentary review. The
+log is in memory for the session, like every figure (O-4).
+
 ## Still open (owner questions, unchanged)
 
 - Should dragging the waiting arrival off her reserved berth settle the decision, or need a confirm on the new berth?

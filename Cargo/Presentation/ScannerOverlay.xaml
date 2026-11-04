@@ -258,7 +258,7 @@
                   Background="Transparent" Foreground="{StaticResource TextOnDarkStrongBrush}"
                   BorderBrush="{StaticResource HairlineOnDarkBrush}" />
           <Button AutomationProperties.Name="{x:Bind ViewModel.ScanAction, Mode=OneWay}" Style="{StaticResource AccentButton}" Content="{x:Bind ViewModel.ScanAction, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
-                  Command="{x:Bind ViewModel.OpenInspectionCommand, Mode=OneWay}" />
+                  Command="{x:Bind ViewModel.TakeScanActionCommand, Mode=OneWay}" />
         </controls:FlowPanel>
       </StackPanel>
     </ScrollViewer>

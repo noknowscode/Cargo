@@ -107,6 +107,7 @@ public sealed partial class SecurityViewModel : ObservableObject
                     BuildPeople();
                 }
             };
+            state.Inspections.Changed += (_, _) => BuildLog();
             routeNotifier.RouteChanged += (_, e) => dispatcher.TryEnqueue(() => OnRouteChanged(e));
         });
     }
@@ -211,9 +212,12 @@ public sealed partial class SecurityViewModel : ObservableObject
         }
     }
 
-    private void Log(string mark, string text) =>
-        InspectionLog = InspectionLog
-            .Append(new CheckRow { Mark = mark, Label = text, Time = ShiftClock.Format(State.NowHours % 24), Tone = "AccentBrush" })
+    private void Log(string mark, string text) => State.Inspections.Add(mark, text, "AccentBrush");
+
+    /// <summary>The log's rows; a status colour that is too light for text takes its ink variant, as the marks are text.</summary>
+    private void BuildLog() =>
+        InspectionLog = State.Inspections.Entries
+            .Select(l => new CheckRow { Mark = l.Mark, Label = l.Text, Time = l.Time, Tone = l.Tone == "OrangeColor" ? "OrangeInkBrush" : l.Tone })
             .ToList();
 
     private void OnRouteChanged(RouteChangedEventArgs e)
@@ -318,10 +322,7 @@ public sealed partial class SecurityViewModel : ObservableObject
             .Select(r => new RecordRow { Label = r.Label, Count = r.Count, Tone = r.Tone })
             .ToList();
 
-        // The marks are text: a status colour that is too light for text takes its ink variant
-        InspectionLog = PortData.InspectionLog
-            .Select(l => new CheckRow { Mark = l.Mark, Label = l.Text, Time = l.Time, Tone = l.Tone == "OrangeColor" ? "OrangeInkBrush" : l.Tone })
-            .ToList();
+        BuildLog();
 
         BuildVehicles();
     }

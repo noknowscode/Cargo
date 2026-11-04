@@ -83,6 +83,10 @@ public sealed partial class ScannerViewModel : ObservableObject
     /// <summary>The verdict's dot, as the container's security palette key.</summary>
     [ObservableProperty] public partial string VerdictTone { get; set; } = "AccentColor";
     [ObservableProperty] public partial string ManifestHeading { get; set; } = string.Empty;
+    /// <summary>
+    /// The scan's action: the held box opens her inspection record on Security ("Open inspection →"); any other box's
+    /// scan is logged in the inspection log ("Log scan"), once, and then the action stands done ("Scan logged").
+    /// </summary>
     [ObservableProperty] public partial string ScanAction { get; set; } = string.Empty;
 
     /// <summary>The scanner images in X-ray: the toggle lights.</summary>
@@ -96,11 +100,26 @@ public sealed partial class ScannerViewModel : ObservableObject
     [RelayCommand]
     private void ToggleXray() => Camera.Xray = !Camera.Xray;
 
-    [RelayCommand]
-    private void OpenInspection()
+    [RelayCommand(CanExecute = nameof(CanTakeScanAction))]
+    private void TakeScanAction()
     {
-        Camera.Open = false;
-        State.Navigation.OpenInspectionCommand.Execute(null);
+        var container = State.Scanner.SelectedContainer;
+        if (container.IsHeld)
+        {
+            Camera.Open = false;
+            State.Navigation.OpenInspectionCommand.Execute(null);
+            return;
+        }
+
+        State.Inspections.LogScan(container.Id,
+            $"Scan logged · {container.DisplayId} · {(Camera.Xray ? "X-ray" : "optical")} · {Verdict.ToLowerInvariant()}");
+        Refresh();
+    }
+
+    private bool CanTakeScanAction()
+    {
+        var box = State.Scanner.SelectedContainer;
+        return box.IsHeld || !State.Inspections.Scanned(box.Id);
     }
 
     [RelayCommand]
@@ -150,7 +169,8 @@ public sealed partial class ScannerViewModel : ObservableObject
             : container.Stage == 3
                 ? "Documentary review in progress · imaging consistent with manifest."
                 : "Imaging consistent with manifest · seal intact · weight within tolerance.";
-        ScanAction = container.Warn ? "Open inspection →" : "Log scan →";
+        ScanAction = container.IsHeld ? "Open inspection →" : State.Inspections.Scanned(container.Id) ? "Scan logged" : "Log scan";
+        TakeScanActionCommand.NotifyCanExecuteChanged();
 
         var manifest = PortData.Manifests.TryGetValue(container.Id, out var listed)
             ? listed

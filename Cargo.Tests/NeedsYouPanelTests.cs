@@ -112,10 +112,10 @@ public class NeedsYouPanelTests
     public void The_shift_log_offers_the_rows_action_on_the_entries_about_them()
     {
         var desk = new Desk();
-        var log = desk.Overview.Activity!;
+        var log = desk.Overview.Activity ?? throw new InvalidOperationException("no shift log model");
         var hold = log.Left.Concat(log.Right).Single(e => e.About?.Kind == DecisionKind.InspectionHold);
 
-        Assert.That(hold.Act, Is.SameAs(desk.Overview.NeedsYou!.ActCommand));
+        Assert.That(hold.Act, Is.SameAs(desk.Overview.NeedsYou?.ActCommand));
         hold.Act.Execute(hold.About);
 
         Assert.That((desk.State.Navigation.Section, desk.State.Navigation.SecurityTab), Is.EqualTo(("security", "inspection")));

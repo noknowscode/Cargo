@@ -80,6 +80,9 @@ public sealed partial class ContainersViewModel : ObservableObject
     /// <summary>The selected box's render, by sprite name (Assets/Sprites).</summary>
     [ObservableProperty] public partial string SelectedIso { get; set; } = string.Empty;
 
+    /// <summary>The box is the held one, whose inspection record Security shows: the detail offers to open it.</summary>
+    [ObservableProperty] public partial bool IsHeld { get; set; }
+
     /// <summary>True when the filter matches no container on the terminal: the explorer says so instead of showing nothing.</summary>
     [ObservableProperty] public partial bool IsEmpty { get; set; }
 
@@ -158,6 +161,7 @@ public sealed partial class ContainersViewModel : ObservableObject
     private void BuildDetail(ContainerDef container)
     {
         SelectedId = container.DisplayId;
+        IsHeld = container.IsHeld;
         SelectedMeta = $"{container.Size} · {container.Carrier} · {container.Route}";
 
         Journey.Clear();
