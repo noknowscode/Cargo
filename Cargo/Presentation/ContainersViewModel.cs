@@ -82,7 +82,7 @@ public sealed partial class ContainersViewModel : ObservableObject
     [ObservableProperty] public partial string EmptyText { get; set; } = string.Empty;
 
     [RelayCommand]
-    private void Filter(string? value) => State.Scanner.Filter = value ?? "All";
+    private void Filter(string? value) => State.Scanner.FilterBy(value ?? "All");
 
     /// <summary>Selects a container and opens it in the scanner at the default view.</summary>
     [RelayCommand]

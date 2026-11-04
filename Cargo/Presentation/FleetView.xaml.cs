@@ -32,6 +32,12 @@ public sealed partial class FleetView : Page
         }
 
         RiverHost.Content = new RiverMap(vm.State);
+        vm.Thread.CollectionChanged += (_, _) => ShowNewest();
         Bindings.Update();
     }
+
+    // xaml-lint: allow codebehind - a sent message lands below the 220 px thread's fold; bringing the newest into view
+    // has no XAML surface
+    private void ShowNewest() =>
+        DispatcherQueue.TryEnqueue(() => ThreadScroll.ChangeView(null, ThreadScroll.ScrollableHeight, null, Motion.Reduced));
 }

@@ -47,6 +47,19 @@ public sealed partial class ScannerState : ObservableObject
     [ObservableProperty]
     public partial double Zoom { get; set; } = 1;
 
+    /// <summary>
+    /// Filters the explorer by stage. The detail follows the filter: a box the filter hides gives way to the first it
+    /// shows (with none shown, the detail keeps its box beside the empty state).
+    /// </summary>
+    public void FilterBy(string filter)
+    {
+        Filter = filter;
+        if (PortData.ContainersFor(filter).ToList() is { Count: > 0 } shown && shown.All(c => c.Id != SelectedContainerId))
+        {
+            SelectedContainerId = shown[0].Id;
+        }
+    }
+
     /// <summary>Opens a container in the scanner at the default view, optical.</summary>
     public void Inspect(string id)
     {

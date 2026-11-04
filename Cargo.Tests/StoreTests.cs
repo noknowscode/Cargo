@@ -270,6 +270,20 @@ public class StoreTests
         Assert.That(state.Scanner.SelectedContainer, Is.SameAs(PortData.Containers[1]));
     }
 
+    [Test]
+    public void A_filter_that_hides_the_open_box_moves_the_detail_to_its_first()
+    {
+        var state = Store();
+        var first = PortData.ContainersFor("Inspection").First();
+
+        state.Scanner.FilterBy("Inspection");
+        Assert.That(state.Scanner.SelectedContainerId, Is.EqualTo(first.Id));
+
+        state.Scanner.SelectedContainerId = PortData.ContainersFor("Inspection").Last().Id;
+        state.Scanner.FilterBy("All");
+        Assert.That(state.Scanner.SelectedContainerId, Is.EqualTo(PortData.ContainersFor("Inspection").Last().Id), "a box still shown stays open");
+    }
+
     // ── Yard ────────────────────────────────────────────────────────────────
 
     [Test]

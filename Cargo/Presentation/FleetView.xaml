@@ -281,7 +281,7 @@
 
           <TextBlock Text="{x:Bind ViewModel.ThreadEmptyText, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap"
                      Visibility="{x:Bind ViewModel.ThreadEmpty, Mode=OneWay}" />
-          <ScrollViewer AutomationProperties.Name="{x:Bind ViewModel.CrewHeading, Mode=OneWay}" MaxHeight="220" VerticalScrollBarVisibility="Auto">
+          <ScrollViewer x:Name="ThreadScroll" AutomationProperties.Name="{x:Bind ViewModel.CrewHeading, Mode=OneWay}" MaxHeight="220" VerticalScrollBarVisibility="Auto">
             <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.Thread, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space8}" /></ItemsPanelTemplate>
