@@ -66,8 +66,10 @@ docs/evidence/2026-10-01-shadowcontainer-offset-paint.md."
   since the header became text tabs. Removed. f01ec9f
 - `Themes/Styles.xaml:451` PrimaryButton's `ScaleTransform x:Name="Squish"`, which no state animated. Removed. f57b314
 - Theme resource keys: none unreferenced (the three keys with no app reference are Toolkit lightweight keys).
-- Public members: none unreferenced besides the above (scan of declarations against every `.cs`/`.xaml`, commands by
-  their generated `*Command` name).
+- Public members: this scan missed two, which the A-pass code review found: `PortState.NotifyStructureChanged` and
+  `CrewChat.SentTo`, referenced nowhere. Removed in A pass 2 (b534043). The same review found an unreachable branch:
+  Next 6 h added " · pilot aboard" when a status line contained "pilot", which none does. The data now says which
+  arrival has her pilot (`Vessel.PilotAboard`), and the row reads it (0a2f544).
 
 ### Unused usings and duplicates (fixed)
 - IDE0005 (one-off build with the rule raised): `Controls/TimelineLanes.cs:1`, `Presentation/BerthStatusViewModel.cs:1`,
@@ -96,9 +98,10 @@ History-phrased justifications rewritten as present constraints: `Presentation/I
 - Debug verification: `CARGO_X11_RENDERER=software` added (Debug, desktop), as the other apps on this box have; the
   `CARGO_THEME` VERIFY line now waits for the palette to follow the window (it printed the old palette, noted by the
   completeness audit). d35a5f2
-- Reviewed, kept: three `async void` font loads (`Presentation/TimelineViewModel.cs:109`, `Controls/TimelineLanes.cs:145`,
-  `Controls/Harbour/HarbourScene.cs:476`) await `CanvasFonts.Load`, which catches and returns null, so nothing can throw
-  out of them.
+- Reviewed, kept: two `async void` font loads (`Controls/TimelineLanes.cs:145`, `Controls/Harbour/HarbourScene.cs:476`)
+  await `CanvasFonts.Load`, which catches and returns null, so nothing can throw out of them. The tide lane's load is
+  a `Task` now (`OverviewView.LoadTideFacesAsync`). The one other `async void` is the framework's `App.OnLaunched`
+  override, which logs a launch failure to `startup.log` before rethrowing.
 
 ### Performance
 
@@ -171,16 +174,26 @@ window is active. Measure on a Windows GPU first: llvmpipe overstates every fram
 - View-model tests for every model that holds logic (c852534); 211 tests.
 - Header tooltips from the store (1f7435c).
 
+## Done in A pass 2 (2026-11-04)
+
+- The needs-you queue and its settle actions left `PortState` for `NeedsYouQueue`, and the panel acts through
+  `NeedsYouPanelViewModel` (0cd7053). The vessel copy moved to `VesselCopy`, written from the data rather than parsed
+  back from display text (0a2f544). `PortState` 582 > 362 lines: the clock and the berth desk.
+- The harbour's tags, facts card and screen-reader line moved to a tested `HarbourViewModel` (8745ada).
+  `HarbourView.xaml.cs` 934 > 488 lines: the camera, the input, the band's motion and the per-frame tag placement.
+- View state left `Domain/`: stage heights, toggle labels, Security's title and the scanner camera (b63c866).
+  `Decision` carries no `ICommand` (0cd7053).
+- One berth-number lookup (`PortData.BerthIndex`, `PortData.Berth`) and one stamp-to-clock helper
+  (`ShiftClock.Display`) (a678e30, 685dae3).
+- Dead members removed (b534043); the "nordic" special case in the berth map replaced by the pending arrival
+  (255397e); the masthead's figures read the data (a503cdf).
+
 ## Remaining (next pass)
 
 | Item | Where | Size |
 |---|---|---|
-| Split `PortState` (870 lines: navigation, stage, berth desk, scanner, yard, crew chat, clock text). Owner approved for the next pass. Plan: `PortState` keeps the clock, the events and the berth plan with its decisions, and composes `NavigationState` (Section, Go, Canonical, Open* and RevealNeedsYou commands, SecurityTab/Title), `StageState` (ShowStage, StageFull/Compact/Open, OverviewExpanded/Condensed, StageHeight, the toggle, HarbourLayer, HarbourSelection, hovers), `ScannerState` (filter, selected container, ScannerOpen, X-ray, rotation, zoom), `YardState` (stack, shuffle, moves, occupancy) and `CrewChat` (FleetSelection, ChatDraft, ThreadFor, Send); `ClockHours`/`Format`/`Countdown` move to a static `ShiftClock`. About 25 `x:Bind` paths (`ViewModel.State.StageCompact` to `ViewModel.State.Stage.Compact`) and the view models' reads change; the DEBUG initializers move with their properties. Tests per part with the `ManualClock`. | Domain/PortState.cs | 1-1.5 days with runtime re-check of every section |
-| Brushes and `Visibility` out of the view models: 13 of 18 build brushes (BerthStatus 23 sites, Containers 27, Fleet 36, Scanner 18, Security 18, Vessels 24, Timeline 10, NextSix 8, Yard 8, Docking 6, VesselDetail 6, Main 3, Activity 2, plus Items.cs). Move to states and `x:Bind` functions in the views, as NeedsYouBar and DockingView already do. | Presentation/*ViewModel.cs | 2-3 days |
-| View-model tests: only NeedsYouViewModel and DockingViewModel are tested (plus PortState's decisions). After the brush move: MainViewModel (route and section sync, dots), Timeline, NextSix, Containers filter, Scanner, Security log. | Cargo.Tests | 1 day |
-| Header tooltips are hard-coded figures (functional Major, completeness audit): "2,146 moves today", "1 hold", "0 incidents", "Berth 06 frees 21:30", Nordic Star's minutes by `Floor` against the tags' `Ceiling`. Derive from the store. | Presentation/MainViewModel.cs:194-203 | 0.5 day |
-| Icons kept as path strings in C# (18): the layer switcher (`MainViewModel.cs:233-239`), the cargo journey (`Domain/PortData.cs:29`), the activity kinds (`PortData.cs:485`), the vessel cards (`VesselsViewModel.cs:306-312`). Move them into `Themes/Icons.xaml` with the rest. First run the WinAppSDK head: `Geo.Path` caches one Geometry per path string and hands the same instance to every Path that uses it (`Domain/Geo.cs:15`), which Skia accepts and WinUI may not. | 4 files | 0.5 day + a Windows run |
+| Icons kept as path strings in C# (18): the layer switcher (`MainViewModel.cs:298-301`), the cargo journey (`Domain/PortData.cs:31-35`), the activity kinds (`PortData.cs:519-523`), the vessel cards (`VesselsViewModel.cs:307-313`). Move them into `Themes/Icons.xaml` with the rest. First run the WinAppSDK head: `Geo.Path` caches one Geometry per path string and hands the same instance to every Path that uses it (`Controls/Geo.cs:12`), which Skia accepts and WinUI may not. | 3 files | 0.5 day + a Windows run |
 | The harbour's idle policy (above) | Controls/Harbour/HarbourScene.cs:244 | owner decision, then 1-2 h |
 | Pool the live layer's per-frame geometry (about 2.4 MB/s of allocation) | Controls/Harbour/HarbourRenderer.cs:682 | 0.5-1 day; low value unless GC pauses show |
 | Test package bumps; NUnit 5 is a major version | Directory.Packages.props | 1 h + a decision |
-| WinAppSDK, iOS, Android and WebAssembly not run at runtime here (CI builds them) | | per head |
+| WinAppSDK and iOS not run at runtime (CI builds them); Android launches in CI's emulator job, but no workflow is driven there | | per head |
