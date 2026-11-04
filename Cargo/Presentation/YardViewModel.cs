@@ -89,15 +89,15 @@ public sealed partial class YardViewModel : ObservableObject
             var tag = slot.Zone.TintToken switch
             {
                 "CargoReeferColor" => "Reefer −18°C",
-                "CargoHazardColor" => $"IMDG class {3 + (int)(Geo.H(seed) * 6)}",
+                "CargoHazardColor" => $"IMDG class {3 + (int)(Noise.H(seed) * 6)}",
                 "CargoOversizeColor" => "Awaiting exam",
                 "RestrictedColor" => "Bonded",
-                _ => Geo.H(seed) > 0.7 ? "Empty" : "Laden"
+                _ => Noise.H(seed) > 0.7 ? "Empty" : "Laden"
             };
 
             var token = tag == "Empty" ? "CargoEmptyColor" : slot.Zone.TintToken;
-            var id = $"{PortData.ContainerPrefixes[(int)(Geo.H(seed) * 8)]} " +
-                     $"{(int)(Geo.H(seed + 5) * 900000 + 100000)} {(int)(Geo.H(seed + 9) * 10)}";
+            var id = $"{PortData.ContainerPrefixes[(int)(Noise.H(seed) * 8)]} " +
+                     $"{(int)(Noise.H(seed + 5) * 900000 + 100000)} {(int)(Noise.H(seed + 9) * 10)}";
 
             boxes.Add((id, tag, token));
             Tiers.Add(new TierRow

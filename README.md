@@ -65,6 +65,10 @@ Uno runtime, so the models hold states and the data's tones, never brushes, geom
   berth hover used to tear down and rebuild the entire harbour, and a scrub of the plan
   re-recorded it at every quarter-hour step. The store runs on an `IClock` (a
   `DispatcherTimer` in the app, a manual clock in the tests).
+- **Layers.** `Domain/` is the port: its data, the berth rules, the clock arithmetic and the store with its parts; it
+  holds no UI type, which is why Cargo.Tests can drive it and every view model. `Presentation/` holds the view models,
+  the views and the app's `DispatcherClock`; `Controls/` the canvas scenes and the geometry helpers (`Geo`);
+  `Themes/` the XAML resources and their code side (`Tokens` for the palette, `Motion` for the reduced-motion choice).
 - **Navigation** is Uno Navigation. The route tree (`App.xaml.cs` `RegisterRoutes`) is
   Shell > Main > one view-less route per section, and Security's tabs nest under `security`.
   `MainPage` declares the sections as `x:Load` panes in its Visibility region; the header
@@ -78,13 +82,13 @@ Uno runtime, so the models hold states and the data's tones, never brushes, geom
   `Controls/FlowPanel.cs` wraps figures, legends, chips and button rows; `TileGridPanel` takes responsive
   column widths.
 - **Design tokens** live in `Themes/Tokens.xaml` (colour, type) and `Themes/Layout.xaml` (the spacing
-  scale, insets, radii and the sizes that recur); `Domain/Tokens.cs` resolves colours for code so no
+  scale, insets, radii and the sizes that recur); `Themes/Tokens.cs` resolves colours for code so no
   colour literal appears outside that one file. Pages take gaps, insets and radii from Layout.xaml; the
   literals left are zeros, circles and pills (half their height) and one-off sizes that place art.
 - **Themes.** Light is the design's palette; Dark is the same desk at night (a blue-black
   page, cool off-white ink, the three blues re-spaced, status inks re-picked, every text colour
   at 4.5:1 or better). Every themed colour and brush sits in Light and Dark theme dictionaries
-  and the XAML takes them through `{ThemeResource}`. Code asks `Domain/Tokens.cs`, which resolves
+  and the XAML takes them through `{ThemeResource}`. Code asks `Themes/Tokens.cs`, which resolves
   for the window's theme, recolours every brush it handed out when the theme changes, and raises
   `ThemeChanged` so canvas scenes that keep colours (blends, gradients, Skia paints) redraw
   (`Controls/Live.RebuildOnTheme`). Paint stays invariant: cargo classes, container liveries,

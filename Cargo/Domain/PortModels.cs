@@ -53,7 +53,7 @@ public sealed record CargoMix(int Standard, int Reefer, int Hazard, int Oversize
     /// <summary>Picks a class for cell <paramref name="i"/> so a deck reads like a real stow plan.</summary>
     public CargoClass ClassAt(int i)
     {
-        var r = Geo.H(i) * 100;
+        var r = Noise.H(i) * 100;
         var acc = 0d;
         foreach (var (cls, pct) in Parts())
         {

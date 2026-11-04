@@ -15,7 +15,7 @@
        paint under a lower light). Every text colour holds >= 4.5:1 on the grounds it is set on.
 
        Pages and styles use {ThemeResource} for every themed brush. Code resolves tokens for
-       the window's theme through Domain/Tokens, which recolours the brushes it handed out and
+       the window's theme through Themes/Tokens.cs, which recolours the brushes it handed out and
        raises ThemeChanged so canvas and Skia scenes re-read (see Controls/Live.cs).
        "Default" is the Dark dictionary (the WinUI convention, so High Contrast falls back to it).
 
@@ -139,7 +139,7 @@
       <!-- How far a model's top edges lift toward white -->
       <x:Double x:Key="HarbourEdgeLift">0.42</x:Double>
 
-      <!-- Brushes. Pages use {ThemeResource} for every one; code gets them from Domain/Tokens, which recolours them in place -->
+      <!-- Brushes. Pages use {ThemeResource} for every one; code gets them from Themes/Tokens.cs, which recolours them in place -->
       <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
       <SolidColorBrush x:Key="PaperBrush" Color="{StaticResource PaperColor}" />
       <SolidColorBrush x:Key="PaperWarmBrush" Color="{StaticResource PaperWarmColor}" />
@@ -292,7 +292,7 @@
       <x:Double x:Key="HarbourLightLevel">0.62</x:Double>
       <x:Double x:Key="HarbourEdgeLift">0.22</x:Double>
 
-      <!-- Brushes. Pages use {ThemeResource} for every one; code gets them from Domain/Tokens, which recolours them in place -->
+      <!-- Brushes. Pages use {ThemeResource} for every one; code gets them from Themes/Tokens.cs, which recolours them in place -->
       <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
       <SolidColorBrush x:Key="PaperBrush" Color="{StaticResource PaperColor}" />
       <SolidColorBrush x:Key="PaperWarmBrush" Color="{StaticResource PaperWarmColor}" />

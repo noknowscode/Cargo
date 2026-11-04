@@ -119,7 +119,7 @@ public sealed partial class BerthMap : SceneHost
             {
                 for (var j = 0; j < 3; j++)
                 {
-                    if (Geo.H(g * 13 + i * 5 + j) < 0.2)
+                    if (Noise.H(g * 13 + i * 5 + j) < 0.2)
                     {
                         continue;
                     }

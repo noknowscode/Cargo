@@ -1,3 +1,5 @@
+using Cargo.Controls;
+
 namespace Cargo.Presentation;
 
 public sealed partial class ActivityView : UserControl

@@ -1,6 +1,6 @@
 using Windows.UI;
 
-namespace Cargo.Domain;
+namespace Cargo.Themes;
 
 /// <summary>
 /// Typed access to the palette declared in Themes/Tokens.xaml, so view models and scenes can hand

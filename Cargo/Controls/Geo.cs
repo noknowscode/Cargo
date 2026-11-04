@@ -1,7 +1,7 @@
 using Microsoft.UI.Xaml.Markup;
 using Windows.Foundation;
 
-namespace Cargo.Domain;
+namespace Cargo.Controls;
 
 /// <summary>
 /// Geometry helpers. The source design draws every chart and every piece of harbour
@@ -24,9 +24,6 @@ public static class Geo
         PathCache[data] = geometry;
         return geometry;
     }
-
-    /// <summary>Deterministic pseudo-noise — the same generator the design uses, so layouts match.</summary>
-    public static double H(int i) => ((i * 7919 + 13) % 97) / 97d;
 
     /// <summary>Horizontal-tangent cubic through the points (the design's `smooth`).</summary>
     public static PathFigure SmoothFigure(IReadOnlyList<Point> points)

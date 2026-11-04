@@ -3,7 +3,7 @@
 
   <!-- ============================================================
        Motion tokens. Every curve and duration in the app resolves here;
-       code reads the same keys through Domain/Motion.cs.
+       code reads the same keys through Themes/Motion.cs.
        ============================================================ -->
 
   <!-- ── Curves ───────────────────────────────────────────────── -->

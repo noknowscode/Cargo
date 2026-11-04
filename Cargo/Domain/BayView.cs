@@ -101,11 +101,11 @@ public sealed class BayView
             Cells = cells,
             Composition = composition,
             ContainerClass = featured,
-            ContainerId = $"{prefix} {(int)(Geo.H(seed) * 900000 + 100000)} {(int)(Geo.H(seed + 3) * 10)}",
+            ContainerId = $"{prefix} {(int)(Noise.H(seed) * 900000 + 100000)} {(int)(Noise.H(seed + 3) * 10)}",
             ContainerType = $"{typeName} · {isoCode}",
             Weight = featured == CargoClass.Empty
                 ? "3,940 kg"
-                : $"{14000 + (int)(Geo.H(seed + 7) * 14000):N0} kg",
+                : $"{14000 + (int)(Noise.H(seed + 7) * 14000):N0} kg",
             Status = remaining > 0 ? "Aboard" : "Ashore",
             NextMove = remaining > 0 ? typeName : "Bay complete",
             NextEta = remaining > 0 ? $"{21 + bay / 4:D2}:{bay * 13 % 60:D2}" : "—"

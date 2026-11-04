@@ -12,6 +12,8 @@ D-C1..D-C6). Completeness: `docs/COMPLETENESS.md` (Complete with gaps, 0 functio
   `Standing`, ...) and the data's palette keys; views map them through x:Bind functions in their code-behind and
   `Presentation/Paint.cs`; `DonutChart`/`CompositionBar` take palette keys; the tide lane's marker colours and fonts
   live in `OverviewView`. No view model creates a UI object, so all of them run in Cargo.Tests.
+- **Layers:** `Domain/` holds no UI type now: `Tokens` and `Motion` moved to `Themes/` (namespace `Cargo.Themes`),
+  `DispatcherClock` to `Presentation/`, `Geo` to `Controls/` with its pseudo-noise left in `Domain/Noise.cs`.
 - **Functional Majors built:** tags/status lines/notes follow the plan (a89b9fc, D-C4); scanner Short state at 844x390
   (cbb516e, D-C5); header tooltips from the store (1f7435c). Minors: hold/driver/late-order rows settle (084e41d,
   D-C1..3, late-orders dot on Waterways); table fits at 1680 and tags never overlap at 390 (e81054d, D-C6); container

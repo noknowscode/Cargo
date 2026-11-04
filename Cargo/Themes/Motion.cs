@@ -2,7 +2,7 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml.Media.Animation;
 using Windows.UI.ViewManagement;
 
-namespace Cargo.Domain;
+namespace Cargo.Themes;
 
 /// <summary>
 /// The reduced-motion preference. Skia desktop reports <see cref="UISettings.AnimationsEnabled"/>

@@ -30,10 +30,10 @@ public static class YardGrid
 
                     // The bonded and inspection blocks are deliberately sparse
                     var height = z == 5
-                        ? Geo.H(seed) > 0.6 ? (int)(Geo.H(seed + 1) * 3) + 1 : 0
+                        ? Noise.H(seed) > 0.6 ? (int)(Noise.H(seed + 1) * 3) + 1 : 0
                         : z == 4
-                            ? Geo.H(seed) > 0.5 ? 1 : 0
-                            : (int)(Geo.H(seed) * 6);
+                            ? Noise.H(seed) > 0.5 ? 1 : 0
+                            : (int)(Noise.H(seed) * 6);
 
                     yield return (
                         $"{zone.Id}-{r}-{c}",

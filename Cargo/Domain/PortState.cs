@@ -16,7 +16,7 @@ public sealed partial class PortState : ObservableObject
     private readonly PortSignals _signals = new();
 
     /// <summary>
-    /// The store on a clock (the app passes <see cref="DispatcherClock"/>, the tests a manual one), on the starting
+    /// The store on a clock (the app passes the app's <c>DispatcherClock</c>, the tests a manual one), on the starting
     /// berth plan unless one is given; <paramref name="random"/> picks the yard's moves.
     /// </summary>
     public PortState(IClock clock, BerthPlan? plan = null, Random? random = null)

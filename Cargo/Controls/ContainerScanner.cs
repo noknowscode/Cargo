@@ -217,10 +217,10 @@ public sealed partial class ContainerScanner : Panel
             .Select((item, i) =>
             {
                 var seed = i * 37 + container.Id.Length;
-                var width = 60 + Math.Round(Geo.H(seed) * 50);
-                var height = 90 + Math.Round(Geo.H(seed + 3) * 90);
+                var width = 60 + Math.Round(Noise.H(seed) * 50);
+                var height = 90 + Math.Round(Noise.H(seed + 3) * 90);
                 var x = -hx + 14 + i * Math.Floor(490.0 / manifest.Count);
-                var z = -60 + Math.Round(Geo.H(seed + 7) * 120);
+                var z = -60 + Math.Round(Noise.H(seed + 7) * 120);
                 return (Item: item, X: x, W: width, H: height, Z: z);
             })
             .OrderBy(b => DepthOf(b.X + b.W / 2, hy - b.H / 2, b.Z))
