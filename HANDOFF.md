@@ -1,5 +1,28 @@
-# HANDOFF — Cargo: production readiness, A pass 2
+# HANDOFF — Cargo: production readiness, A pass 2, cleanup and showcase info file
 Updated: 2026-11-04
+
+## Pre-transfer cleanup and the showcase info file (branch `feat/production-readiness`, from 3e2202b)
+Briefs: the owner's cleanup request before the move to `unoplatform/uno.labs/samples-staging`, and the `.studiolive`
+info file for the showcase gallery. Completeness: Complete with gaps, 0 functional Majors, 3 head Majors, 8 Minors.
+- **Cleanup:** analyzers IDE0051/0052/0060/0005, CA1823 and IDE0035 raised for one build (app, Liveline, tests; not
+  committed) found 1 unused parameter and 3 blocks of usings the SDK's global usings repeat (5cfa2cc); a comment-free
+  name scan found Liveline's `LivelineChart.IsAnimating` and `LerpEngine.HasTargets` (e955c4e); 3 history comments
+  rewritten (6287eb7); template leftovers removed: `Cargo/ReadMe.md`, `Assets/SharedAssets.md`, Android's two "About"
+  notes, `Strings/en/Resources.resw` (its one string was read nowhere) (351fe49). No unused resource key besides the
+  three Toolkit lightweight keys, no unused asset, DI registration or package, no commented-out code; secret scan
+  clean. Liveline is referenced (the Overview tide lane) and was cleaned like the app; its unused dependency
+  properties (`Value`, `Theme`, `ShowFill`, `IsLoading`, `IsPaused`) are the vendored chart's API and stay.
+- **Info file (63f742f):** `.studiolive/` with sample.json (id `cargo`), agent-context.json, user-conversation.json,
+  a 256 px icon and four screenshots (Overview and Security's inspection at 1280x800, Overview and Berths at 390x844,
+  desktop head, System theme = Light here); `validate_studiolive.py`: OK. The URLs point at Uno.Samples (D-C9).
+- **Icon (30ce4a4, D-C8):** a container ship in white on the accent #1C6E9E replaces the template's launcher and
+  splash; desktop and Android build and Resizetizer's outputs were looked at.
+- **Proof:** 276 tests; lint gating 0; 163 names / 5,121 XAML lines = 31.8 per 1k; desktop, WebAssembly and Android
+  build with 0 warnings; desktop run of workflows 1, 3, 4, 5, 6 and 7 at the final code.
+- **New Minor (in COMPLETENESS, not fixed):** choosing System in the account menu and closing it with Escape saves
+  Dark (the theme RadioButtons push index 2 as the flyout closes); a click outside keeps System.
+- **CI:** the A pass 2 head (3e2202b, run 41901082475) passed every non-macOS job but the Android emulator test,
+  which failed with the known blank white first frame while its content marker passed.
 
 ## A pass 2 (branch `feat/production-readiness`, from 16c5a30)
 Brief: the A-pass code review's closed list for Cargo (uno-lab `docs/production-readiness/reviews/2026-11-04-a-pass/

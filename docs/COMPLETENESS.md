@@ -1,13 +1,13 @@
 # Completeness audit: Cargo / Westhaven Dispatch (2026-11-04, Uno.Sdk 7.0.0-dev.115, heads: desktop, WinAppSDK, wasm, android, ios)
 
 **Updated after the A pass** (`feat/production-readiness`, from ac065f1; the commits are listed under Fixed), the
-Android emulator job's two findings (Fixed after the A pass) and A pass 2 (from 16c5a30: the code review's Major and
-three new Minors found in its runtime pass). The
+Android emulator job's two findings (Fixed after the A pass), A pass 2 (from 16c5a30: the code review's Major and
+three new Minors found in its runtime pass) and the pre-transfer cleanup (one more Minor, found in its runtime run). The
 first audit, at a6d1ce4, follows for the record; the Fixed table maps each of its findings to its fix. Runtime proof:
 Debug `net10.0-desktop` under Xvfb (CPU renderer), driven with xdotool and screenshots, and a Release
 `net10.0-browserwasm` build in headless Chromium (Playwright).
 
-Verdict: **Complete with gaps** (0 Blockers, 0 functional Majors, 3 head Majors, 7 Minors)
+Verdict: **Complete with gaps** (0 Blockers, 0 functional Majors, 3 head Majors, 8 Minors)
 Safe to show: every section; confirm and undo the berth (bar and Overview queue, desktop and WebAssembly); drag and
 Move to berth with refusals, and the tags, docking card and Berths rows naming the new berth; the optimiser and the
 36 h scrub; filter, scanner (also on a phone on its side), X-ray, Log scan (adds the scan to the inspection log),
@@ -94,6 +94,9 @@ members removed. Every critical workflow was re-run on desktop at the end of the
 - [Platform] On WebAssembly the text marks ✓ ○ ⚠ (Security's checks and inspection log, the inspection diagram) draw
   as missing-glyph boxes: the bundled fonts lack them and the browser head has no system fallback (desktop falls back)
   - R (A pass 2, `docs/evidence/2026-11-04-wasm.md`)
+- [Interactions] Choosing System in the account menu and then closing the menu with Escape saves Dark: the theme
+  RadioButtons push index 2 as the flyout closes (`MainPage.xaml:115`, `MainViewModel.ThemeIndex`). Closing it by a
+  click outside keeps System, and Light and Dark survive either way - R (cleanup, settings file read after each step)
 
 ### Environment (not an app defect)
 - Under Xvfb, Mesa llvmpipe's OpenGL path draws a black frame after a live resize across 600 on scrolled Waterways
@@ -110,7 +113,7 @@ members removed. Every critical workflow was re-run on desktop at the end of the
 | 4. Scan and inspect a container | R Complete (A pass 2: Log scan logs the box and stands done, at 1440 and by keyboard at 390; the held box's Open inspection from the scanner and the explorer lands on her record; Assign inspector and Request re-weigh log and stand done) | X | X | X | R Complete (A pass 2: Log scan > "Scan logged"; Security's log "21:01 · Scan logged · AVRU 482193 4 · optical · clear", `2026-11-04-wasm-log-scan.jpg`) |
 | 5. Work the needs-you queue | R Complete (hold, driver, one late order and the berth settled where each row leads) | X | X | X | X |
 | 6. Message a river crew | R Complete (typed reply sent with Enter, box cleared, thread shows the newest) | X | X | X | X |
-| 7. Choice survives relaunch | R Complete (Dark saved, relaunch opens Dark, `VERIFY theme=Dark actual=Dark palette=Dark`) | X | X | X | X |
+| 7. Choice survives relaunch | R Complete (Dark saved, relaunch opens Dark, `VERIFY theme=Dark actual=Dark palette=Dark`; re-run in the cleanup: Light and Dark survive; System survives unless the menu is closed with Escape, Minor) | X | X | X | X |
 
 Keyboard (A pass): Tab walks on Overview, Berths, Cargo, Waterways and Security (Access) reach every interactive
 area: tabs, account menu, harbour and its tags, camera, key, zoom, layers, Expand, Chart/Table, every queue action,
