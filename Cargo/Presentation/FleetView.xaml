@@ -38,7 +38,7 @@
         </Grid>
       </StackPanel>
 
-      <controls:FlowPanel Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" VerticalAlignment="Bottom"
+      <controls:FlowPanel AutomationProperties.Name="Waterways figures" Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" VerticalAlignment="Bottom"
                           Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}">
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
           <TextBlock Text="{x:Bind ViewModel.UnderwayCount, Mode=OneWay}" Style="{StaticResource MetricText}" />
@@ -82,7 +82,7 @@
               <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TextBlock Text="Alder River" Style="{StaticResource CardTitleText}" VerticalAlignment="Center" />
-            <ItemsControl ItemsSource="{x:Bind ViewModel.Legend, Mode=OneWay}" VerticalAlignment="Center" IsTabStop="False"
+            <ItemsControl AutomationProperties.Name="River map legend" ItemsSource="{x:Bind ViewModel.Legend, Mode=OneWay}" VerticalAlignment="Center" IsTabStop="False"
                           Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                           Margin="{utu:Responsive Narrowest={StaticResource GapTop8}, Normal='0'}">
               <ItemsControl.ItemsPanel>
@@ -115,7 +115,7 @@
             <TextBlock Text="{x:Bind ViewModel.FleetCount, Mode=OneWay}" Style="{StaticResource CaptionText}"
                        HorizontalAlignment="Right" VerticalAlignment="Center" />
           </Grid>
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Fleet, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="River fleet" ItemsSource="{x:Bind ViewModel.Fleet, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space2}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -164,7 +164,7 @@
             <TextBlock Text="Lockings today" Style="{StaticResource CardTitleText}" />
             <TextBlock Text="{x:Bind ViewModel.BookedLabel, Mode=OneWay}" Style="{StaticResource CaptionText}" />
           </StackPanel>
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Lockings, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="Lockings today" ItemsSource="{x:Bind ViewModel.Lockings, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space10}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -199,7 +199,7 @@
             <TextBlock Text="Water levels" Style="{StaticResource CardTitleText}" />
             <TextBlock Text="Gauges · last 24 h" Style="{StaticResource CaptionText}" />
           </StackPanel>
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Gauges, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="Water levels" ItemsSource="{x:Bind ViewModel.Gauges, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space12}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -235,7 +235,7 @@
             <TextBlock Text="Notices to skippers" Style="{StaticResource CardTitleText}" />
             <TextBlock Text="{x:Bind ViewModel.NoticeCount, Mode=OneWay}" Style="{StaticResource CaptionText}" />
           </StackPanel>
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Notices, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="Notices to skippers" ItemsSource="{x:Bind ViewModel.Notices, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space12}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -281,8 +281,8 @@
 
           <TextBlock Text="{x:Bind ViewModel.ThreadEmptyText, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap"
                      Visibility="{x:Bind ViewModel.ThreadEmpty, Mode=OneWay}" />
-          <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{x:Bind ViewModel.Thread, Mode=OneWay}">
+          <ScrollViewer AutomationProperties.Name="{x:Bind ViewModel.CrewHeading, Mode=OneWay}" MaxHeight="220" VerticalScrollBarVisibility="Auto">
+            <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.Thread, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space8}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
@@ -302,7 +302,7 @@
             </ItemsControl>
           </ScrollViewer>
 
-          <ItemsControl ItemsSource="{x:Bind ViewModel.QuickMessages, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="Quick messages" ItemsSource="{x:Bind ViewModel.QuickMessages, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space6}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -326,7 +326,7 @@
                      Padding="12,9" AutomationProperties.Name="Message the crew" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                      Text="{x:Bind ViewModel.State.Chat.Draft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      utu:CommandExtensions.Command="{x:Bind ViewModel.SendDraftCommand, Mode=OneWay}" />
-            <Button Grid.Column="1" Style="{StaticResource PrimaryButton}" Content="Send" Command="{x:Bind ViewModel.SendDraftCommand, Mode=OneWay}"
+            <Button AutomationProperties.Name="Send message" Grid.Column="1" Style="{StaticResource PrimaryButton}" Content="Send" Command="{x:Bind ViewModel.SendDraftCommand, Mode=OneWay}"
                     CornerRadius="{StaticResource RadiusControl}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}" />
           </Grid>
         </StackPanel>

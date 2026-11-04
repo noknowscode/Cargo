@@ -118,9 +118,43 @@ public partial class App : Application
             navigator.NavigateRouteAsync(this, $"Main/{MainViewModel.RouteFor(state)}"));
 
 #if DEBUG
+        TraceFocus();
         await ApplyThemeFixtureAsync();
 #endif
     }
+
+#if DEBUG
+    /// <summary>
+    /// Keyboard verification (CARGO_FOCUS_LOG=1): every element that takes focus prints a VERIFY line with its type,
+    /// automation name and where it sits, so a headless run can walk the app with Tab and read what it reached.
+    /// </summary>
+    private static void TraceFocus()
+    {
+        if (DebugHooks.Hook("CARGO_FOCUS_LOG") != "1")
+        {
+            return;
+        }
+
+        Microsoft.UI.Xaml.Input.FocusManager.GotFocus += (_, e) =>
+        {
+            if (e.NewFocusedElement is not FrameworkElement element)
+            {
+                return;
+            }
+
+            var name = Microsoft.UI.Xaml.Automation.AutomationProperties.GetName(element);
+            if (string.IsNullOrEmpty(name) && element is ContentControl { Content: string text })
+            {
+                name = text;
+            }
+
+            var at = element.XamlRoot?.Content is UIElement root
+                ? element.TransformToVisual(root).TransformPoint(new Windows.Foundation.Point(0, 0))
+                : default;
+            Console.Error.WriteLine($"VERIFY focus {element.GetType().Name} \"{name}\" at {at.X:0},{at.Y:0}");
+        };
+    }
+#endif
 
 #if DEBUG
     /// <summary>

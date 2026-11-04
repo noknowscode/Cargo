@@ -30,7 +30,7 @@
 
       <!-- Today at North Quay: four lanes on one time axis, or the same hours as a table. It stretches
            to the row so its bottom meets the aside's (Needs you + Next 6 h) when they sit side by side -->
-      <utu:CardContentControl x:Name="FirstSection" Grid.ColumnSpan="{utu:Responsive Narrowest=12, Normal=7, Wide=8}"
+      <utu:CardContentControl AutomationProperties.Name="Today at North Quay" x:Name="FirstSection" Grid.ColumnSpan="{utu:Responsive Narrowest=12, Normal=7, Wide=8}"
                               Style="{StaticResource OutlinedPanel}" VerticalAlignment="Stretch" VerticalContentAlignment="Top"
                               Padding="{utu:Responsive Narrowest={StaticResource Inset16}, Narrow={StaticResource Inset24}}">
         <StackPanel Spacing="{StaticResource Space16}">
@@ -57,16 +57,16 @@
                 <controls:SegmentIndicator Host="{x:Bind ViewToggle}" SelectedIndex="{x:Bind ViewModel.Timeline.ViewIndex, Mode=OneWay}"
                                            Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" CornerRadius="{StaticResource RadiusControl}" Background="{ThemeResource InkBrush}" />
                 <StackPanel x:Name="ViewToggle" Orientation="Horizontal">
-                  <Button Content="Chart" Style="{StaticResource ToggleSegmentButton}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" Command="{x:Bind ViewModel.Timeline.ShowChartCommand, Mode=OneWay}"
+                  <Button AutomationProperties.Name="Chart" Content="Chart" Style="{StaticResource ToggleSegmentButton}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" Command="{x:Bind ViewModel.Timeline.ShowChartCommand, Mode=OneWay}"
                           Foreground="{x:Bind local:OverviewView.ChartInk(ViewModel.Timeline.IsTable), Mode=OneWay}" />
-                  <Button Content="Table" Style="{StaticResource ToggleSegmentButton}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" Command="{x:Bind ViewModel.Timeline.ShowTableCommand, Mode=OneWay}"
+                  <Button AutomationProperties.Name="Table" Content="Table" Style="{StaticResource ToggleSegmentButton}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" Command="{x:Bind ViewModel.Timeline.ShowTableCommand, Mode=OneWay}"
                           Foreground="{x:Bind local:OverviewView.TableInk(ViewModel.Timeline.IsTable), Mode=OneWay}" />
                 </StackPanel>
               </Grid>
             </Border>
           </Grid>
 
-          <controls:FlowPanel Spacing="{StaticResource Space20}" RowSpacing="{StaticResource Space8}">
+          <controls:FlowPanel AutomationProperties.Name="Timeline legend" Spacing="{StaticResource Space20}" RowSpacing="{StaticResource Space8}">
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}"><Ellipse Width="10" Height="10" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" /><TextBlock Text="Happened" Style="{StaticResource SubtitleText}" /></StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}"><Ellipse Width="10" Height="10" Stroke="{ThemeResource NavyBrush}" StrokeThickness="1.6" VerticalAlignment="Center" /><TextBlock Text="Planned" Style="{StaticResource SubtitleText}" /></StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}"><Rectangle Width="16" Height="12" Fill="{ThemeResource HairlineBrush}" VerticalAlignment="Center" /><TextBlock Text="Ahead of now" Style="{StaticResource SubtitleText}" /></StackPanel>
@@ -109,7 +109,7 @@
                                     AutomationProperties.Name="{x:Bind ViewModel.Timeline.Summary, Mode=OneWay}"
                                     AutomationProperties.LiveSetting="Polite" />
             <!-- Tide: y = 284 - 35 m in the design, so the band 164-300 holds 0 to 3.43 m over 16 px of floor -->
-            <liveline:LivelineChart x:Name="TideLane" Margin="{utu:Responsive Narrowest='0,164,12,0', Narrow='168,164,12,0'}" Height="136" VerticalAlignment="Top"
+            <liveline:LivelineChart AutomationProperties.Name="{x:Bind ViewModel.Timeline.TideSub, Mode=OneWay}" x:Name="TideLane" Margin="{utu:Responsive Narrowest='0,164,12,0', Narrow='168,164,12,0'}" Height="136" VerticalAlignment="Top"
                                     WindowStart="{x:Bind ViewModel.Timeline.WindowStart, Mode=OneWay}"
                                     WindowEnd="{x:Bind ViewModel.Timeline.WindowEnd, Mode=OneWay}"
                                     NowTime="{x:Bind ViewModel.Timeline.NowTime, Mode=OneWay}"
@@ -178,7 +178,7 @@
 
           <!-- Table: the same day hour by hour, the chart's full non-visual alternative. Its seven columns need 600 px:
                narrower (a phone, or the 7-of-12 band from 1000 to 1279) it scrolls sideways inside the card -->
-          <ScrollViewer Visibility="{x:Bind ViewModel.Timeline.IsTable, Mode=OneWay}"
+          <ScrollViewer AutomationProperties.Name="Today at North Quay, by the hour" Visibility="{x:Bind ViewModel.Timeline.IsTable, Mode=OneWay}"
                         HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto"
                         VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
           <StackPanel MinWidth="600" Padding="{StaticResource GapBottom8}">
@@ -233,7 +233,7 @@
       </utu:CardContentControl>
 
       <!-- Aside: the Needs-you queue bleeding to the card's edges, a full-bleed rule, then what's next -->
-      <utu:CardContentControl Grid.Row="{utu:Responsive Narrowest=1, Normal=0}"
+      <utu:CardContentControl AutomationProperties.Name="Next 6 hours" Grid.Row="{utu:Responsive Narrowest=1, Normal=0}"
                               Grid.Column="{utu:Responsive Narrowest=0, Normal=7, Wide=8}"
                               Grid.ColumnSpan="{utu:Responsive Narrowest=12, Normal=5, Wide=4}"
                               Style="{StaticResource OutlinedPanel}" Padding="0"
@@ -254,7 +254,7 @@
             <!-- The rail through the dots (x 60: the 44 time column, a 12 gap, half the 10 dot) -->
             <Rectangle Width="1" HorizontalAlignment="Left" Margin="60,0,0,0" Fill="{ThemeResource HairlineStrongBrush}" />
             <StackPanel>
-              <ItemsControl ItemsSource="{x:Bind ViewModel.NextSix.Past, Mode=OneWay}" IsTabStop="False">
+              <ItemsControl AutomationProperties.Name="Movements so far" ItemsSource="{x:Bind ViewModel.NextSix.Past, Mode=OneWay}" IsTabStop="False">
                 <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:NextSixRow">
                   <!-- The row opens the vessel; hover or keyboard focus lights it on the map and the chart.
@@ -301,7 +301,7 @@
                 </Border>
                 <Rectangle Grid.Column="1" Height="1.25" Fill="{ThemeResource InkBrush}" VerticalAlignment="Center" />
               </Grid>
-              <ItemsControl ItemsSource="{x:Bind ViewModel.NextSix.Upcoming, Mode=OneWay}" IsTabStop="False">
+              <ItemsControl AutomationProperties.Name="Movements ahead" ItemsSource="{x:Bind ViewModel.NextSix.Upcoming, Mode=OneWay}" IsTabStop="False">
                 <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:NextSixRow">
                   <!-- The row opens the vessel; hover or keyboard focus lights it on the map and the chart.

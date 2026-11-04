@@ -31,7 +31,7 @@
       <StackPanel VerticalAlignment="Bottom" Spacing="{StaticResource Space8}">
         <TextBlock Text="Berths" Style="{StaticResource PageTitleText}" />
         <TextBlock Text="North Quay · 8 berths · alongside depth 12.0 to 16.0 m" Style="{StaticResource PageSubtitleText}" />
-        <controls:FlowPanel Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" Margin="{StaticResource GapTop6}">
+        <controls:FlowPanel AutomationProperties.Name="Berth figures" Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" Margin="{StaticResource GapTop6}">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
             <TextBlock Text="{x:Bind ViewModel.Alongside, Mode=OneWay}" Style="{StaticResource MetricText}" />
             <TextBlock Text="alongside" Style="{StaticResource MetricLabelText}" />
@@ -80,7 +80,7 @@
                        HorizontalAlignment="Right" VerticalAlignment="Bottom" />
           </Grid>
 
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Status.Rows, Mode=OneWay}" IsTabStop="False">
+          <ItemsControl AutomationProperties.Name="Berth status" ItemsSource="{x:Bind ViewModel.Status.Rows, Mode=OneWay}" IsTabStop="False">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:BerthStatusRow">
                 <Border BorderBrush="{ThemeResource HairlineBrush}" BorderThickness="0,1,0,0" Padding="0,1">
@@ -183,7 +183,7 @@
           </ItemsRepeater>
           </StackPanel>
 
-          <Button Content="Show on map" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
+          <Button AutomationProperties.Name="Show on map" Content="Show on map" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
                   MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}"
                   Command="{x:Bind ViewModel.Detail.ShowOnMapCommand, Mode=OneWay}" />
         </StackPanel>

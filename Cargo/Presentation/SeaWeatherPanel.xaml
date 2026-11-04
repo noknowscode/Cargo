@@ -21,7 +21,7 @@
       </Grid>
 
       <!-- Three by two from 1000 px, fewer across below (TileGridPanel) -->
-      <controls:TileGridPanel Margin="{StaticResource GapTop12}" Gap="12" MinTileWidth="{utu:Responsive Narrowest=240, Normal=280}">
+      <controls:TileGridPanel AutomationProperties.Name="Sea and weather readings" Margin="{StaticResource GapTop12}" Gap="12" MinTileWidth="{utu:Responsive Narrowest=240, Normal=280}">
 
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
           <TextBlock Text="Wind" Style="{StaticResource MicroText}" VerticalAlignment="Bottom" />
@@ -55,7 +55,7 @@
         <TextBlock Text="Tide · Port of Westhaven" Style="{StaticResource CaptionText}" />
         <TextBlock Text="HW 23:10 · +2.1 m" Style="{StaticResource CaptionText}" HorizontalAlignment="Right" />
       </Grid>
-      <controls:TideChart Height="78" Margin="{StaticResource GapTop6}" />
+      <controls:TideChart AutomationProperties.Name="Tide at the port of Westhaven" Height="78" Margin="{StaticResource GapTop6}" />
       <Grid Margin="{StaticResource GapTop2}">
         <TextBlock Text="18:00" Style="{StaticResource MicroText}" HorizontalAlignment="Left" />
         <TextBlock Text="00:00" Style="{StaticResource MicroText}" HorizontalAlignment="Center" />

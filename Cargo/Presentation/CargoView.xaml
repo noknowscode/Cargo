@@ -30,7 +30,7 @@
         <TextBlock Text="Containers on the terminal · yard blocks A to D, reefer, inspection and bonded" Style="{StaticResource PageSubtitleText}" TextWrapping="Wrap" />
       </StackPanel>
 
-      <controls:FlowPanel Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" VerticalAlignment="Bottom"
+      <controls:FlowPanel AutomationProperties.Name="Cargo figures" Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" VerticalAlignment="Bottom"
                           Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}">
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
           <TextBlock Text="{x:Bind ViewModel.OnSite}" Style="{StaticResource MetricText}" />

@@ -3,5 +3,5 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="{ThemeResource PaperBrush}">
   <!-- The navigation host: the router puts the Main route here. Regions live in MainPage, never here. -->
-  <ContentControl x:Name="Host" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+  <ContentControl x:Name="Host" IsTabStop="False" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
 </UserControl>

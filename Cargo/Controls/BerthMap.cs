@@ -170,6 +170,11 @@ public sealed partial class BerthMap : SceneHost
             _berthInfo[i] = (status, conflict, selected);
 
             _boxes[i] = Scene.Place(Draw.Rect(x, 146, 132, 70, Tokens.Transparent, 8, Tokens.Transparent, 1.2));
+            // A screen reader reads each berth as the map draws it
+            var holder = _state.OccupantAt(berth.Number, planHour) ?? _state.IncomingAt(berth.Number, planHour);
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(_boxes[i],
+                $"Berth {berth.Number}, {berth.Depth:0.0} m, {(conflict ? "conflict" : status.Label().ToLowerInvariant())}"
+                + (holder is null ? string.Empty : $", {holder.Name}"));
             Scene.Place(Draw.Text(berth.Number, x, 228, 16, Tokens.Brush("InkBrush"),
                 "MonoMediumFont", TextAlignment.Center, 132));
             _statusLabels[i] = Scene.Place(Draw.Text(conflict ? "Conflict" : status.Label(),
@@ -314,6 +319,9 @@ public sealed partial class BerthMap : SceneHost
             });
 
             host.Opacity = opacity;
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(host,
+                $"{vessel.Name}, " + (_state.BerthOf(vessel.Id) is { } at ? $"Berth {at}" : "at anchor")
+                + (movable ? ", inbound: drag onto a berth, or use Move to berth" : string.Empty));
             host.PointerPressed += (_, e) => BeginDrag(vessel, movable, e, Canvas.GetLeft(host), Canvas.GetTop(host));
             Scene.Place(host.At(x, y));
 

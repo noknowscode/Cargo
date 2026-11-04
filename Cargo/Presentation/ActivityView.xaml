@@ -88,7 +88,7 @@
                        Foreground="{x:Bind local:NeedsYouPanel.WhenInk(About.IsLate), Mode=OneWay}" />
                 </TextBlock>
               </StackPanel>
-              <Button Grid.Column="1" Content="{x:Bind About.ActionLabel}" Style="{x:Bind local:NeedsYouPanel.Action(About.IsPrimary)}"
+              <Button AutomationProperties.Name="{x:Bind About.ActionLabel}" Grid.Column="1" Content="{x:Bind About.ActionLabel}" Style="{x:Bind local:NeedsYouPanel.Action(About.IsPrimary)}"
                       Command="{x:Bind About.Command}" CommandParameter="{x:Bind About.CommandParameter}" VerticalAlignment="Center" />
             </Grid>
           </StackPanel>
@@ -112,7 +112,7 @@
   </UserControl.Resources>
 
   <!-- The shift log, newest first, in two columns -->
-  <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Padding="24,24,24,12">
+  <utu:CardContentControl AutomationProperties.Name="Activity" Style="{StaticResource OutlinedPanel}" Padding="24,24,24,12">
     <StackPanel Spacing="{StaticResource Space8}">
       <StackPanel Spacing="{StaticResource Space4}" Margin="{StaticResource GapBottom8}">
         <TextBlock Text="Activity" Style="{StaticResource PanelHeadingText}" AutomationProperties.HeadingLevel="Level2" />
@@ -128,8 +128,8 @@
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ItemsControl ItemsSource="{x:Bind ViewModel.Left, Mode=OneWay}" ItemTemplate="{StaticResource FeedRowTemplate}" IsTabStop="False" />
-        <ItemsControl Grid.Row="{utu:Responsive Narrowest=1, Normal=0}"
+        <ItemsControl AutomationProperties.Name="Activity, newest" ItemsSource="{x:Bind ViewModel.Left, Mode=OneWay}" ItemTemplate="{StaticResource FeedRowTemplate}" IsTabStop="False" />
+        <ItemsControl AutomationProperties.Name="Activity, earlier" Grid.Row="{utu:Responsive Narrowest=1, Normal=0}"
                       Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                       ItemsSource="{x:Bind ViewModel.Right, Mode=OneWay}" ItemTemplate="{StaticResource FeedRowTemplate}" IsTabStop="False" />
       </Grid>

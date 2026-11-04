@@ -31,7 +31,7 @@
     <TextBlock Grid.Row="1" Text="Nothing needs you" Style="{StaticResource SubtitleText}" Margin="{StaticResource GapTop16}"
                Visibility="{x:Bind local:NeedsYouPanel.Empty(ViewModel.NeedsYouCount), Mode=OneWay}" />
 
-    <ItemsControl Grid.Row="1" ItemsSource="{x:Bind ViewModel.Decisions}" Margin="{StaticResource GapTop4}" IsTabStop="False">
+    <ItemsControl AutomationProperties.Name="Decisions waiting" Grid.Row="1" ItemsSource="{x:Bind ViewModel.Decisions}" Margin="{StaticResource GapTop4}" IsTabStop="False">
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="domain:Decision">
           <Grid ColumnSpacing="{StaticResource Space12}" Padding="{StaticResource InsetY16}" BorderBrush="{ThemeResource HairlineBrush}" BorderThickness="0,0,0,1">
@@ -64,7 +64,7 @@
                          Visibility="{x:Bind local:NeedsYouPanel.Said(Refusal), Mode=OneWay}" />
             </StackPanel>
 
-            <Button Content="{x:Bind ActionLabel}" Style="{x:Bind local:NeedsYouPanel.Action(IsPrimary)}"
+            <Button AutomationProperties.Name="{x:Bind ActionLabel}" Content="{x:Bind ActionLabel}" Style="{x:Bind local:NeedsYouPanel.Action(IsPrimary)}"
                     Command="{x:Bind Command}" CommandParameter="{x:Bind CommandParameter}" VerticalAlignment="Center"
                     Grid.Row="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=1, Narrow=0}" Grid.Column="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=1, Narrow=2}"
                     HorizontalAlignment="Left" Margin="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource GapTop10}, Narrow='0'}" />

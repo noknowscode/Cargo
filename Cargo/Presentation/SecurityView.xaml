@@ -32,7 +32,7 @@
       <Border Background="{ThemeResource SurfaceSunkAltBrush}" CornerRadius="{StaticResource RadiusPanel}" Padding="{StaticResource Inset4}"
               VerticalAlignment="Bottom" HorizontalAlignment="Left"
               Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}">
-        <ItemsControl ItemsSource="{x:Bind ViewModel.Tabs, Mode=OneWay}" IsTabStop="False">
+        <ItemsControl AutomationProperties.Name="Security tabs" ItemsSource="{x:Bind ViewModel.Tabs, Mode=OneWay}" IsTabStop="False">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="{StaticResource Space4}" /></ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
@@ -68,12 +68,12 @@
       </Grid.RowDefinitions>
 
       <StackPanel Spacing="{StaticResource Space18}">
-        <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Padding="0"
+        <utu:CardContentControl AutomationProperties.Name="Security zone map" Style="{StaticResource OutlinedPanel}" Padding="0"
                                 CornerRadius="{StaticResource RadiusCard}" Background="{ThemeResource LandBrush}">
           <controls:SecurityZoneMap />
         </utu:CardContentControl>
 
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="22,20,22,18">
+        <utu:CardContentControl AutomationProperties.Name="Security timeline" Style="{StaticResource PanelCard}" Padding="22,20,22,18">
           <StackPanel Spacing="{StaticResource Space12}">
             <Grid>
               <Grid.RowDefinitions>
@@ -112,7 +112,7 @@
                   Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                   Width="{utu:Responsive Narrowest=NaN, Normal=340, Wide=380}"
                   Margin="{utu:Responsive Narrowest={StaticResource GapTop18}, Normal={StaticResource GapStart18}}">
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
+        <utu:CardContentControl AutomationProperties.Name="Cleared container" Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
           <StackPanel Spacing="{StaticResource Space8}">
             <Grid>
               <TextBlock Text="AVRU 482193 4" Style="{StaticResource TypeMonoMedium14}" />
@@ -123,7 +123,7 @@
                            Foreground="{ThemeResource AccentBrush}" />
               </Border>
             </Grid>
-            <ItemsControl ItemsSource="{x:Bind ViewModel.ClearedChecks, Mode=OneWay}">
+            <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.ClearedChecks, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space6}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
@@ -144,7 +144,7 @@
           </StackPanel>
         </utu:CardContentControl>
 
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}" BorderBrush="{ThemeResource OrangeBrush}">
+        <utu:CardContentControl AutomationProperties.Name="Held container" Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}" BorderBrush="{ThemeResource OrangeBrush}">
           <StackPanel Spacing="{StaticResource Space8}">
             <Grid>
               <TextBlock Text="MRVU 918204 1" Style="{StaticResource TypeMonoMedium14}" />
@@ -155,7 +155,7 @@
                            Foreground="{ThemeResource OrangeInkBrush}" />
               </Border>
             </Grid>
-            <ItemsControl ItemsSource="{x:Bind ViewModel.HeldChecks, Mode=OneWay}">
+            <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.HeldChecks, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space6}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
@@ -173,15 +173,15 @@
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Button Style="{StaticResource PrimaryButton}" Content="Open inspection →" Margin="{StaticResource GapTop4}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+            <Button AutomationProperties.Name="Open inspection" Style="{StaticResource PrimaryButton}" Content="Open inspection →" Margin="{StaticResource GapTop4}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                     Command="{x:Bind ViewModel.State.Navigation.OpenInspectionCommand, Mode=OneWay}" HorizontalAlignment="Left" Padding="{StaticResource Inset12x8}" />
           </StackPanel>
         </utu:CardContentControl>
 
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
+        <utu:CardContentControl AutomationProperties.Name="Security records today" Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
           <StackPanel Spacing="{StaticResource Space12}">
             <TextBlock Text="Records today" Style="{StaticResource PanelTitleText}" />
-            <ItemsControl ItemsSource="{x:Bind ViewModel.Records, Mode=OneWay}">
+            <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.Records, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space8}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
@@ -219,7 +219,7 @@
 
       <StackPanel Spacing="{StaticResource Space14}">
         <TextBlock Text="Personnel" Style="{StaticResource PanelTitleText}" Foreground="{ThemeResource TextMutedBrush}" />
-        <ItemsControl ItemsSource="{x:Bind ViewModel.People, Mode=OneWay}">
+        <ItemsControl IsTabStop="False" AutomationProperties.Name="Personnel" ItemsSource="{x:Bind ViewModel.People, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate><controls:TileGridPanel MinTileWidth="230" Gap="12" /></ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
@@ -252,7 +252,7 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
+        <utu:CardContentControl AutomationProperties.Name="{x:Bind ViewModel.ZoneHeading, Mode=OneWay}" Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
           <StackPanel Spacing="{StaticResource Space10}">
             <Grid ColumnSpacing="{StaticResource Space12}">
               <Grid.ColumnDefinitions>
@@ -272,7 +272,7 @@
                   Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}">
         <TextBlock Text="Vehicles at gates" Style="{StaticResource PanelTitleText}"
                    Foreground="{ThemeResource TextMutedBrush}" />
-        <ItemsControl ItemsSource="{x:Bind ViewModel.Vehicles, Mode=OneWay}">
+        <ItemsControl IsTabStop="False" AutomationProperties.Name="Vehicles at gates" ItemsSource="{x:Bind ViewModel.Vehicles, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space12}" /></ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
@@ -294,7 +294,7 @@
                           MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                           AutomationProperties.Name="{x:Bind local:SecurityView.VerifyName(Id)}" />
                   <controls:YardTruck Tint="{x:Bind local:SecurityView.Livery(Tint)}" Width="92" Height="38" VerticalAlignment="Center" />
-                  <ItemsControl Grid.Column="1" ItemsSource="{x:Bind Facts}">
+                  <ItemsControl IsTabStop="False" Grid.Column="1" ItemsSource="{x:Bind Facts}">
                     <ItemsControl.ItemsPanel>
                       <ItemsPanelTemplate><controls:TileGridPanel MinTileWidth="150" Gap="10" /></ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
@@ -326,7 +326,7 @@
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
-      <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest='16,16,16,14', Narrow='26,22,26,18'}">
+      <utu:CardContentControl AutomationProperties.Name="Inspection, MRVU 918204 1" Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest='16,16,16,14', Narrow='26,22,26,18'}">
         <StackPanel Spacing="{StaticResource Space6}">
           <Grid>
             <Grid.RowDefinitions>
@@ -361,10 +361,10 @@
           </StackPanel>
         </utu:CardContentControl>
 
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
+        <utu:CardContentControl AutomationProperties.Name="Inspection log" Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
           <StackPanel Spacing="{StaticResource Space12}">
             <TextBlock Text="Inspection log" Style="{StaticResource PanelTitleText}" />
-            <ItemsControl ItemsSource="{x:Bind ViewModel.InspectionLog, Mode=OneWay}">
+            <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.InspectionLog, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space10}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
@@ -396,9 +396,9 @@
 
         <!-- Each action is logged above and then stands done (disabled, relabelled) -->
         <controls:FlowPanel Spacing="{StaticResource Space8}" RowSpacing="{StaticResource Space8}">
-          <Button Style="{StaticResource PrimaryButton}" Content="{x:Bind ViewModel.AssignLabel, Mode=OneWay}" MinWidth="160" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+          <Button AutomationProperties.Name="{x:Bind ViewModel.AssignLabel, Mode=OneWay}" Style="{StaticResource PrimaryButton}" Content="{x:Bind ViewModel.AssignLabel, Mode=OneWay}" MinWidth="160" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Command="{x:Bind ViewModel.AssignInspectorCommand}" />
-          <Button Style="{StaticResource GhostButton}" Content="{x:Bind ViewModel.ReweighLabel, Mode=OneWay}" MinWidth="160" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+          <Button AutomationProperties.Name="{x:Bind ViewModel.ReweighLabel, Mode=OneWay}" Style="{StaticResource GhostButton}" Content="{x:Bind ViewModel.ReweighLabel, Mode=OneWay}" MinWidth="160" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Command="{x:Bind ViewModel.RequestReweighCommand}" />
         </controls:FlowPanel>
       </StackPanel>

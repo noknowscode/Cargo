@@ -46,7 +46,7 @@
                   Grid.Row="{utu:Responsive Narrowest=1, Narrow=0}" Grid.Column="{utu:Responsive Narrowest=1, Narrow=2}"
                   Grid.ColumnSpan="{utu:Responsive Narrowest=2, Narrow=1}"
                   Margin="{utu:Responsive Narrowest={StaticResource GapBottom8}, Narrow='0'}">
-        <Button Content="Review" Style="{StaticResource GhostButton}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}"
+        <Button AutomationProperties.Name="Review the vessel" Content="Review" Style="{StaticResource GhostButton}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}"
                 Command="{x:Bind ViewModel.ReviewCommand, Mode=OneWay}"
                 Visibility="{x:Bind ViewModel.CanReview, Mode=OneWay}" />
         <Button Style="{StaticResource PrimaryActionButton}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" MinWidth="148" Margin="{StaticResource GapStart4}"
@@ -59,7 +59,7 @@
             <TextBlock Text="{x:Bind ViewModel.ConfirmLabel, Mode=OneWay}" Style="{StaticResource ActionLabelText}" />
           </StackPanel>
         </Button>
-        <Button Content="Undo" Style="{StaticResource GhostButton}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" Margin="{StaticResource GapStart4}"
+        <Button AutomationProperties.Name="Undo the confirm" Content="Undo" Style="{StaticResource GhostButton}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" Margin="{StaticResource GapStart4}"
                 Command="{x:Bind ViewModel.UndoCommand, Mode=OneWay}"
                 Visibility="{x:Bind ViewModel.CanUndo, Mode=OneWay}" />
       </StackPanel>

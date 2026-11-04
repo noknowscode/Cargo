@@ -27,7 +27,7 @@
           <TextBlock Text="↑ 12% vs yesterday" Style="{StaticResource BodyStrongSmallText}"
                      Foreground="{ThemeResource SeaGreenInkBrush}" VerticalAlignment="Bottom" Margin="{StaticResource GapBottom4}" />
         </StackPanel>
-        <controls:VolumeChart Now="{x:Bind ViewModel.NowHours, Mode=OneWay}" Margin="{StaticResource GapTop8}" />
+        <controls:VolumeChart AutomationProperties.Name="Container moves per hour" Now="{x:Bind ViewModel.NowHours, Mode=OneWay}" Margin="{StaticResource GapTop8}" />
       </StackPanel>
     </Border>
 
@@ -47,7 +47,7 @@
             </StackPanel>
           </StackPanel>
         </Grid>
-        <controls:FlowChart Margin="{StaticResource GapTop14}" />
+        <controls:FlowChart AutomationProperties.Name="Cargo entering against leaving" Margin="{StaticResource GapTop14}" />
       </StackPanel>
     </Border>
   </Grid>

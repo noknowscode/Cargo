@@ -5,6 +5,9 @@ namespace Cargo.Controls;
 /// <summary>A donut of weighted slices (<see cref="Draw.Donut"/>), each a palette key, redrawn when the slices change.</summary>
 public sealed partial class DonutChart : ContentControl
 {
+    /// <summary>A picture of the composition beside its legend: read, not operated, so not a tab stop.</summary>
+    public DonutChart() => IsTabStop = false;
+
     public static readonly DependencyProperty SlicesProperty = DependencyProperty.Register(
         nameof(Slices), typeof(IReadOnlyList<(double Weight, string Tone)>), typeof(DonutChart),
         new PropertyMetadata(null, (d, _) => ((DonutChart)d).Redraw()));
@@ -34,6 +37,8 @@ public sealed partial class CompositionBar : ContentControl
 
     public CompositionBar()
     {
+        // Read, not operated: not a tab stop
+        IsTabStop = false;
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
     }
 

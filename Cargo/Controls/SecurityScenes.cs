@@ -39,6 +39,8 @@ public sealed partial class SecurityZoneMap : SceneHost
             }
 
             Scene.Place(box);
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(box,
+                string.IsNullOrEmpty(zone.Sub) ? zone.Label : $"{zone.Label}, {zone.Sub}");
             Scene.Place(Draw.Text(zone.Label, zone.X + 12, zone.Y + 8, 15, Tokens.Brush("InkBrush"), "BodyStrongFont"));
             if (!string.IsNullOrEmpty(zone.Sub))
             {
@@ -106,7 +108,8 @@ public sealed partial class SecurityTimeline : SceneHost
             var radius = item.Tone is "OrangeColor" or "RestrictedColor" ? 6 : 4.5;
 
             Scene.Place(Draw.Rule(x, 60, x, y, tone, 1));
-            Scene.Place(Draw.Dot(x, y, radius, tone, Tokens.Brush("SurfaceBrush"), 2));
+            var dot = Scene.Place(Draw.Dot(x, y, radius, tone, Tokens.Brush("SurfaceBrush"), 2));
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(dot, $"{ShiftClock.Format(item.Hour)} {item.Label}");
 
             var lane = 0;
             while (lanes[up].Any(p => p.Lane == lane && Math.Abs(p.X - x) < 130))
@@ -174,6 +177,7 @@ public sealed partial class AccessZoneMap : SceneHost
             }
 
             Scene.Place(box);
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(box, $"{zone.Label}, {(ok ? "authorized" : "not authorized")}");
             Scene.Place(Draw.Text(zone.Label, zone.X + 10, zone.Y + zone.H / 2 - 8, 10.5,
                 Tokens.Brush(ok ? "InkBrush" : "TextFaintBrush"), ok ? "BodyStrongFont" : "BodyFont"));
         }

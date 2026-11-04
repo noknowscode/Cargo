@@ -27,7 +27,7 @@
         <TextBlock Text="Containers" Style="{StaticResource SectionHeadText}" />
         <TextBlock Text="Find a box, follow its journey, release or inspect a hold" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
       </StackPanel>
-      <ItemsControl ItemsSource="{x:Bind ViewModel.Filters, Mode=OneWay}" VerticalAlignment="Bottom" IsTabStop="False"
+      <ItemsControl AutomationProperties.Name="Container filters" ItemsSource="{x:Bind ViewModel.Filters, Mode=OneWay}" VerticalAlignment="Bottom" IsTabStop="False"
                     Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
                     Margin="{utu:Responsive Narrowest={StaticResource GapTop10}, Wide='0'}">
         <ItemsControl.ItemsPanel>
@@ -64,12 +64,12 @@
       <!-- Empty: a filter that matches nothing says so, and how to get every box back -->
       <StackPanel Spacing="{StaticResource Space12}" Padding="{StaticResource InsetY24}" Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay}">
         <TextBlock Text="{x:Bind ViewModel.EmptyText, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap" />
-        <Button Style="{StaticResource GhostButton}" Content="Show all containers" HorizontalAlignment="Left"
+        <Button AutomationProperties.Name="Show all containers" Style="{StaticResource GhostButton}" Content="Show all containers" HorizontalAlignment="Left"
                 MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                 Command="{x:Bind ViewModel.FilterCommand}" CommandParameter="All" />
       </StackPanel>
 
-      <ItemsControl ItemsSource="{x:Bind ViewModel.Cards, Mode=OneWay}" VerticalAlignment="Top" IsTabStop="False">
+      <ItemsControl AutomationProperties.Name="Containers" ItemsSource="{x:Bind ViewModel.Cards, Mode=OneWay}" VerticalAlignment="Top" IsTabStop="False">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
             <controls:TileGridPanel MinTileWidth="240" Gap="14" />
@@ -119,7 +119,7 @@
       </ItemsControl>
 
       <!-- ── Selected container ───────────────────────────────── -->
-      <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest={StaticResource Inset16}, Narrow={StaticResource Inset22x20}}" VerticalAlignment="Top"
+      <utu:CardContentControl AutomationProperties.Name="Selected container" Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest={StaticResource Inset16}, Narrow={StaticResource Inset22x20}}" VerticalAlignment="Top"
                               Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                               Width="{utu:Responsive Narrowest=NaN, Normal=340, Wide=360}"
                               Margin="{utu:Responsive Narrowest={StaticResource GapTop18}, Normal={StaticResource GapStart18}}">
@@ -135,7 +135,7 @@
           <StackPanel Spacing="{StaticResource Space10}">
             <TextBlock Text="JOURNEY" Style="{StaticResource TypeStrong12}"
                        Foreground="{ThemeResource TextMutedBrush}" />
-            <ItemsControl ItemsSource="{x:Bind ViewModel.Journey, Mode=OneWay}">
+            <ItemsControl IsTabStop="False" AutomationProperties.Name="Container journey" ItemsSource="{x:Bind ViewModel.Journey, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate><controls:EvenRowPanel /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
@@ -165,7 +165,7 @@
           </StackPanel>
 
           <Border Height="1" Background="{ThemeResource HairlineBrush}" />
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Facts, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="Container facts" ItemsSource="{x:Bind ViewModel.Facts, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><controls:TwoColumnPanel ColumnSpacing="{StaticResource Space14}" RowSpacing="{StaticResource Space12}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -191,7 +191,7 @@
                          Foreground="{ThemeResource PaperBrush}" />
             </StackPanel>
           </Button>
-          <Button Style="{StaticResource GhostButton}" Content="Inspection record →"
+          <Button AutomationProperties.Name="Inspection record" Style="{StaticResource GhostButton}" Content="Inspection record →"
                   MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Command="{x:Bind ViewModel.State.Navigation.OpenInspectionCommand}" HorizontalAlignment="Stretch" />
         </StackPanel>

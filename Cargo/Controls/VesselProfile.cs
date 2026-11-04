@@ -131,6 +131,7 @@ public sealed partial class VesselProfile : SceneHost
             hit.PointerEntered += (_, _) => _state.HoveredBay = index;
             hit.PointerExited += (_, _) => _state.HoveredBay = null;
             hit.PointerPressed += (_, _) => _state.SelectedBay = index;
+            AutomationProperties.SetName(hit, $"Bay {i + 1:00} of {bays}" + (i == selected ? ", open" : string.Empty));
             Scene.Place(hit);
 
             var pill = Draw.Rect(x + bayWidth / 2 - 14, pillTop, 28, 18,

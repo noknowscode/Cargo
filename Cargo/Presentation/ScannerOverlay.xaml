@@ -101,7 +101,7 @@
         </Grid.RowDefinitions>
 
         <controls:FlowPanel Spacing="{StaticResource Space6}" RowSpacing="{StaticResource Space8}" VerticalAlignment="Center">
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Views, Mode=OneWay}" IsTabStop="False">
+          <ItemsControl AutomationProperties.Name="View presets" ItemsSource="{x:Bind ViewModel.Views, Mode=OneWay}" IsTabStop="False">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -154,7 +154,7 @@
                   Width="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
                   CornerRadius="{StaticResource RadiusGroup}" Padding="0" Background="{StaticResource HairlineOnDarkBrush}"
                   Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
-          <Button Style="{StaticResource GhostButton}" Content="Reset view" Command="{x:Bind ViewModel.ResetViewCommand, Mode=OneWay}"
+          <Button AutomationProperties.Name="Reset view" Style="{StaticResource GhostButton}" Content="Reset view" Command="{x:Bind ViewModel.ResetViewCommand, Mode=OneWay}"
                   Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
                   CornerRadius="{StaticResource RadiusGroup}" Padding="{StaticResource InsetX12}" Background="{StaticResource HairlineOnDarkBrush}"
                   Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
@@ -163,7 +163,7 @@
     </Grid>
 
     <!-- ── Scan result ──────────────────────────────────────────── -->
-    <ScrollViewer x:Name="Result" Background="{StaticResource InkDeepInvariantBrush}" VerticalScrollBarVisibility="Auto"
+    <ScrollViewer AutomationProperties.Name="Scan result" x:Name="Result" Background="{StaticResource InkDeepInvariantBrush}" VerticalScrollBarVisibility="Auto"
                   Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                   Grid.RowSpan="{utu:Responsive Narrowest=1, Normal=2}"
                   Width="{utu:Responsive Narrowest=NaN, Normal=360}" MaxHeight="{utu:Responsive Narrowest=200, Normal=820}"
@@ -187,8 +187,8 @@
         <StackPanel Spacing="{StaticResource Space12}">
           <TextBlock Text="DENSITY MAP" Style="{StaticResource TypeMonoMedium11}"
                      Foreground="{StaticResource AccentBrightInvariantBrush}" />
-          <controls:CompositionBar BarHeight="10" Slices="{x:Bind ViewModel.DensitySlices, Mode=OneWay}" />
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Density, Mode=OneWay}">
+          <controls:CompositionBar AutomationProperties.Name="Density map" BarHeight="10" Slices="{x:Bind ViewModel.DensitySlices, Mode=OneWay}" />
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="Density by material" ItemsSource="{x:Bind ViewModel.Density, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space8}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -211,7 +211,7 @@
         <Border Height="1" Background="{StaticResource HairlineOnDarkBrush}" />
         <StackPanel Spacing="{StaticResource Space12}">
           <TextBlock Text="{x:Bind ViewModel.ManifestHeading, Mode=OneWay}" Style="{StaticResource TypeMonoMedium11}" Foreground="{StaticResource AccentBrightInvariantBrush}" />
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Manifest, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="{x:Bind ViewModel.ManifestHeading, Mode=OneWay}" ItemsSource="{x:Bind ViewModel.Manifest, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space10}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -234,7 +234,7 @@
         </StackPanel>
 
         <Border Height="1" Background="{StaticResource HairlineOnDarkBrush}" />
-        <ItemsControl ItemsSource="{x:Bind ViewModel.ScanFacts, Mode=OneWay}">
+        <ItemsControl IsTabStop="False" AutomationProperties.Name="Scan facts" ItemsSource="{x:Bind ViewModel.ScanFacts, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate><StackPanel /></ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
@@ -251,10 +251,10 @@
         </ItemsControl>
 
         <controls:FlowPanel Spacing="{StaticResource Space8}" RowSpacing="{StaticResource Space8}">
-          <Button Style="{StaticResource GhostButton}" Content="Close" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+          <Button AutomationProperties.Name="Close scanner" Style="{StaticResource GhostButton}" Content="Close" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Background="Transparent" Foreground="{StaticResource TextOnDarkStrongBrush}"
                   BorderBrush="{StaticResource HairlineOnDarkBrush}" />
-          <Button Style="{StaticResource AccentButton}" Content="{x:Bind ViewModel.ScanAction, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+          <Button AutomationProperties.Name="{x:Bind ViewModel.ScanAction, Mode=OneWay}" Style="{StaticResource AccentButton}" Content="{x:Bind ViewModel.ScanAction, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Command="{x:Bind ViewModel.OpenInspectionCommand, Mode=OneWay}" />
         </controls:FlowPanel>
       </StackPanel>

@@ -190,6 +190,14 @@ public sealed partial class YardMap : SceneHost
 
     private void Bind(UIElement element, string key)
     {
+        // The slot for a screen reader: where it is and how high it stands (the map itself takes the arrows)
+        var slot = YardGrid.Slots.FirstOrDefault(s => s.Key == key);
+        if (slot.Key is not null)
+        {
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(element,
+                $"Slot {slot.Slot}, {slot.Zone.Name}, {_state.Yard.Height(key, slot.Base)} of 5 tiers");
+        }
+
         element.PointerPressed += (_, _) =>
             _state.Yard.SelectedStack = _state.Yard.SelectedStack == key ? null : key;
     }
