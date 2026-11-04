@@ -1,9 +1,6 @@
 using Cargo.Domain;
 using Cargo.Presentation;
 using Microsoft.Extensions.Logging;
-using Uno.Extensions;
-using Uno.Extensions.Navigation;
-using Uno.Extensions.Toolkit;
 
 namespace Cargo.Tests;
 

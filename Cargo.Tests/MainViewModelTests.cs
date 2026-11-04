@@ -1,7 +1,6 @@
 using Cargo.Domain;
 using Cargo.Presentation;
 using NUnit.Framework;
-using Uno.Extensions.Toolkit;
 
 namespace Cargo.Tests;
 

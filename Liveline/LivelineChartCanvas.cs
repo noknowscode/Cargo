@@ -2,7 +2,6 @@ using Liveline.Animation;
 using Liveline.Helpers;
 using Liveline.Models;
 using Liveline.Rendering;
-using Microsoft.UI.Xaml;
 using SkiaSharp;
 using Uno.WinUI.Graphics2DSK;
 using Windows.Foundation;
