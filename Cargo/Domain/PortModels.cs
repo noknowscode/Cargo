@@ -219,4 +219,4 @@ public sealed record InspectionLogDef(string Time, string Mark, string Text, str
 
 public sealed record ActivityDef(string Time, string Kind, string Title, string Detail);
 
-public sealed partial record NavSection(string Id, string Label, string Icon);
+public sealed partial record NavSection(string Id, string Label);

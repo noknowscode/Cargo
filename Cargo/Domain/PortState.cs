@@ -240,13 +240,6 @@ public sealed partial class PortState : ObservableObject
         Section = "security";
     }
 
-    [RelayCommand]
-    private void OpenSecurity()
-    {
-        SecurityTab = "zones";
-        Section = "security";
-    }
-
     // ── Shared harbour stage ──────────────────────────────────────────────────
 
     public bool ShowStage => Section is "overview" or "berths" or "cargo" or "security";
