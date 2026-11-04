@@ -83,6 +83,14 @@ adaptive icon's safe zone).
 Reason: the owner approved a simple custom icon for the apps that still shipped the template's (info file brief).
 Tradeoff: flat and generic; no wordmark, so it does not say "Westhaven".
 
+### D-C9 · The info file's icon and screenshot URLs point at the planned public home · proposed
+Decision: `.studiolive/sample.json` names its icon and screenshots by
+`https://raw.githubusercontent.com/unoplatform/Uno.Samples/master/studio/cargo/.studiolive/...`, as the format guide's
+example does, so they resolve only once the sample moves to Uno.Samples.
+Reason: the guide asks for absolute URLs; whether relative paths may be used instead is question 1 to the Studio team
+(uno-private#2444).
+Tradeoff: until the move, the gallery card's links are dead; the files themselves are in `.studiolive/`.
+
 ## Still open (owner questions, unchanged)
 
 - Should dragging the waiting arrival off her reserved berth settle the decision, or need a confirm on the new berth?

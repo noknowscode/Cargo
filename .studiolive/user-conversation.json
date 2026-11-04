@@ -1,0 +1,18 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Build a port operations dashboard for the evening dispatcher of Westhaven, a fictional container port:\n- an Overview with an orbitable 3D harbour, the headline figures over it, the shift's timeline, what needs the dispatcher and the next six hours\n- Berths: a berth map where an arriving vessel is dragged onto a berth, a 36-hour scrubber, conflict checks, an optimiser, and a vessel's side profile with its bays\n- Cargo: a filterable container explorer with each box's journey, the yard's block map, and a 3D inspection scanner with X-ray\n- Waterways: a 120 km river map with locks, gauges and notices, and a chat with each crew\n- Security: zones, access control per badge, and the inspection of a held container\n- Light and Dark, reduced motion, and layouts from phone to wide desktop\n\nUse MVVM with the CommunityToolkit, Uno Navigation, the Uno Toolkit and the Simple theme, and draw the harbour with SkiaSharp. Keep every figure in memory."
+    },
+    {
+      "role": "assistant",
+      "content": "Here's **Westhaven Port Authority**. It's built and running in the preview: the 3D harbour on Overview, berth planning, the container explorer and scanner, the river and its crews, and security, in Light and Dark."
+    }
+  ],
+  "suggestedPrompts": [
+    "Keep the berth plan, the logged scans and the crew messages across a relaunch",
+    "Let the dispatcher release the hold on MRVU 918204 1 once the inspection is done",
+    "Move the 3D ships to the berths the plan gives them",
+    "Add a French translation of every screen"
+  ]
+}
