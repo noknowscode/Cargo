@@ -1,6 +1,23 @@
 # HANDOFF — Cargo: production readiness, A pass
 Updated: 2026-11-04
 
+## Android emulator follow-up (branch `feat/production-readiness`, from 2e3cb44)
+The emulator job's window dump (CI run 21) found two defects; both fixed and re-read in run 22's dump
+(`docs/evidence/2026-11-04-android-safe-area.md`, COMPLETENESS "Fixed after the A pass").
+- **Safe area** (a245b3e): `utu:SafeArea` in Padding mode on a wrapper Border around the header (Left, Top, Right),
+  on the section region inside the scroll (Left, Right, Bottom) and on the inspection panel (VisibleBounds). The
+  wrapper is needed: SafeArea keeps the padding it found when it attached and writes it back on every layout, so on
+  the header itself it would undo the `{utu:Responsive}` padding at a breakpoint. Run 22: header nodes 128 px lower
+  (wordmark y 171-231, account button y 144-260, tabs y 275-391). The bottom inset pads the content's end, which the
+  launch dump does not reach; a desktop simulation (reflection on the internal `SafeAreaOverride`, not committed)
+  showed 24 px of padding there. Desktop (1440/999/390, Light and Dark, the overlay) and WebAssembly unchanged.
+- **Figures read once** (ad78135): every text in the phone tiles and the summary column is Raw (Raw on a panel hides
+  only the panel); the lanes' name reads the figures. Run 22's dump has none of the tile texts.
+- Not covered: the harbour stage takes no side insets (its HUD keeps 40 px margins from 600, so a phone on its side
+  with a cutout should clear them); landscape on a phone was not run.
+- uno-lab recipe (`RECIPE-android-emulator-ci.md`, not committed there): Cargo's marker `4 need you, show the queue`
+  (proven, run 41861290523).
+
 ## A pass (branch `feat/production-readiness`, from ac065f1)
 Brief: uno-lab `docs/production-readiness/A-GRADE-PLAN.md`. Decisions: `docs/DECISIONS.md` (owner O-1..O-8, proposed
 D-C1..D-C6). Completeness: `docs/COMPLETENESS.md` (Complete with gaps, 0 functional Majors).

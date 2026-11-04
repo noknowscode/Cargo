@@ -1,6 +1,7 @@
 # Completeness audit: Cargo / Westhaven Dispatch (2026-11-04, Uno.Sdk 7.0.0-dev.115, heads: desktop, WinAppSDK, wasm, android, ios)
 
-**Updated after the A pass** (`feat/production-readiness`, from ac065f1; the commits are listed under Fixed). The
+**Updated after the A pass** (`feat/production-readiness`, from ac065f1; the commits are listed under Fixed) and the
+Android emulator job's two findings (Fixed after the A pass). The
 first audit, at a6d1ce4, follows for the record; the Fixed table maps each of its findings to its fix. Runtime proof:
 Debug `net10.0-desktop` under Xvfb (CPU renderer), driven with xdotool and screenshots, and a Release
 `net10.0-browserwasm` build in headless Chromium (Playwright).
@@ -41,6 +42,17 @@ states, the views pick brushes, geometry and images (e2503c0); page-model tests 
 automation names 11.0 > 31.9 per 1,000 XAML lines and no invisible tab stops, keyboard walked at runtime on every
 section (bc72e6e).
 
+## Fixed after the A pass (Android emulator job)
+
+The emulator job's window dump of the first screen (run 21, job 126701803671) found two defects; run 22 (job
+126722827591) is after the fixes. Bounds are physical pixels at 2.625 px/dp. Method and numbers:
+`docs/evidence/2026-11-04-android-safe-area.md`.
+
+| Finding | Severity | Fix | Commit | Proof |
+|---|---|---|---|---|
+| No safe area on Android: the header started at y 0 (wordmark y 43-103, account button y 16-132, in the status bar's band) and the section scroll ran to y 2400 under the gesture bar | Major (Platform) | `utu:SafeArea` in Padding mode, so the surfaces still run edge to edge: the header through a wrapper Border (Left, Top, Right; its own responsive padding stays its own), the section region inside the scroll (Left, Right, Bottom: padding at the content's end), the inspection panel (VisibleBounds) | a245b3e | R (CI run 22 dump): every header node 128 px lower, wordmark [42,171][666,231], account button [938,144][1054,260], tabs y 275-391; the scroll still runs to y 2400. The content's end is below the launch dump; a desktop simulation of the insets padded the sections 24 at their end (`2026-11-04-safe-area-simulated.jpg`). Desktop 1440/999/390 Light and Dark and the inspection overlay: unchanged but for the clock and the harbour's animation; WebAssembly: header and greeting match desktop |
+| The phone figure tiles (and the summary column from 600) were read twice: Raw on their panel hid only the panel, so the texts stayed in the tree beside the lanes' name | Minor (Accessibility) | Each text in the tiles and the column is Raw; the lanes' name (the timeline summary) is the one reading | ad78135 | R (CI run 22 dump): none of run 21's tile texts ("3 of 7 done", "1.5 m", "2,447 today", "Net −34 / h", their labels and sub-lines) is in the tree; the lanes' node is below the first screen |
+
 ## Current findings
 
 ### Blockers
@@ -51,7 +63,8 @@ section (bc72e6e).
 
 ### Majors (head)
 - [Testing] WinAppSDK never run (CI builds it) - X
-- [Testing] Android never run (CI builds it; the emulator job is added separately) - X
+- [Testing] Android: the CI emulator job installs and launches the Release APK and reads its first screen (marker,
+  frame, no crash; run 22), but no workflow is driven there - R (launch only)
 - [Testing] iOS never run (CI builds it) - X
 
 ### Minors
