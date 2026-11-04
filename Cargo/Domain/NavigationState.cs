@@ -82,16 +82,5 @@ public sealed partial class NavigationState : ObservableObject
     [ObservableProperty]
     public partial string SecurityTab { get; set; } = Hook("CARGO_SECURITY_TAB") is { Length: > 0 } tab ? tab : "zones";
 
-    partial void OnSecurityTabChanged(string value)
-    {
-        OnPropertyChanged(nameof(SecurityTitle));
-        _signals.Structure();
-    }
-
-    public string SecurityTitle => SecurityTab switch
-    {
-        "access" => "Access control",
-        "inspection" => "Cargo inspection",
-        _ => "Port security zones"
-    };
+    partial void OnSecurityTabChanged(string value) => _signals.Structure();
 }

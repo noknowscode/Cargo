@@ -58,6 +58,9 @@ public partial class App : Application
                     // One store for the whole shift: every page model reads and writes the same port
                     services.AddSingleton(state);
 
+                    // The inspection scanner's view of the picked box: the explorer opens it, the shell's overlay shows it
+                    services.AddSingleton<ScannerCamera>();
+
                     // Section models, handed to MainViewModel: each section page is built ahead of its first visit
                     services.AddTransient<OverviewViewModel>();
                     services.AddTransient<BerthsViewModel>();

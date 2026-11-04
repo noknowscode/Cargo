@@ -19,7 +19,7 @@ public sealed partial class MainViewModel : ObservableObject
     // is not navigated a second time.
     private string? _routedSection;
 
-    public MainViewModel(PortState state, INavigator navigator, IRouteNotifier routeNotifier, IDispatcher dispatcher,
+    public MainViewModel(PortState state, ScannerCamera camera, INavigator navigator, IRouteNotifier routeNotifier, IDispatcher dispatcher,
         IThemeService themes, ILogger<MainViewModel> logger, OverviewViewModel overview, BerthsViewModel berths, CargoViewModel cargo,
         FleetViewModel fleet, SecurityViewModel security)
     {
@@ -38,7 +38,7 @@ public sealed partial class MainViewModel : ObservableObject
         // changed on the UI thread.
         dispatcher.TryEnqueue(() =>
         {
-            Scanner = new ScannerViewModel(state);
+            Scanner = new ScannerViewModel(state, camera);
             BuildNav();
             BuildLayers();
 

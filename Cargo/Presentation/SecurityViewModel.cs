@@ -95,6 +95,7 @@ public sealed partial class SecurityViewModel : ObservableObject
             {
                 if (e.PropertyName == nameof(NavigationState.SecurityTab))
                 {
+                    OnPropertyChanged(nameof(Title));
                     BuildTabs();
                     _ = ShowTabAsync(state.Navigation.SecurityTab);
                 }
@@ -113,6 +114,14 @@ public sealed partial class SecurityViewModel : ObservableObject
     public PortState State { get; }
 
     public ObservableCollection<PageTab> Tabs { get; } = new();
+
+    /// <summary>The page's title for the tab shown.</summary>
+    public string Title => State.Navigation.SecurityTab switch
+    {
+        "access" => "Access control",
+        "inspection" => "Cargo inspection",
+        _ => "Port security zones"
+    };
     public ObservableCollection<PersonCard> People { get; } = new();
 
     [ObservableProperty]

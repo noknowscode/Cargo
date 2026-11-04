@@ -80,10 +80,10 @@ public sealed class Desk
         var dispatcher = new InlineDispatcher();
         Overview = new OverviewViewModel(State, dispatcher);
         Berths = new BerthsViewModel(State, dispatcher);
-        Cargo = new CargoViewModel(State, dispatcher);
+        Cargo = new CargoViewModel(State, Camera, dispatcher);
         Fleet = new FleetViewModel(State, dispatcher);
         Security = new SecurityViewModel(State, Navigator, Routes, dispatcher, Log<SecurityViewModel>());
-        Main = new MainViewModel(State, Navigator, Routes, dispatcher, Themes, Log<MainViewModel>(),
+        Main = new MainViewModel(State, Camera, Navigator, Routes, dispatcher, Themes, Log<MainViewModel>(),
             Overview, Berths, Cargo, Fleet, Security);
     }
 
@@ -94,6 +94,7 @@ public sealed class Desk
 
     public ManualClock Clock { get; }
     public PortState State { get; }
+    public ScannerCamera Camera { get; } = new();
     public RecordingNavigator Navigator { get; } = new();
     public FakeRouteNotifier Routes { get; } = new();
     public FakeThemeService Themes { get; } = new();

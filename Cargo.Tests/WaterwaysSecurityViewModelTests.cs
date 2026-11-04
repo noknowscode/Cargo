@@ -92,6 +92,21 @@ public class WaterwaysSecurityViewModelTests
     }
 
     [Test]
+    public void Securitys_title_names_the_tab_shown()
+    {
+        var desk = new Desk();
+        var raised = new List<string?>();
+        desk.Security.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
+        Assert.That(desk.Security.Title, Is.EqualTo("Port security zones"));
+
+        desk.State.Navigation.OpenInspectionCommand.Execute(null);
+        Assert.That((desk.Security.Title, raised.Contains(nameof(SecurityViewModel.Title))), Is.EqualTo(("Cargo inspection", true)));
+
+        desk.State.Navigation.OpenAccessCommand.Execute(null);
+        Assert.That(desk.Security.Title, Is.EqualTo("Access control"));
+    }
+
+    [Test]
     public void Picking_a_badge_shows_its_zones()
     {
         var desk = new Desk();

@@ -11,10 +11,11 @@ public sealed partial class ScannerOverlay : UserControl
         InitializeComponent();
         DataContextChanged += (_, _) =>
         {
-            // xaml-lint: allow codebehind - the 3D scanner is a code-built panel that reads the store directly
+            // xaml-lint: allow codebehind - the 3D scanner is a code-built panel that takes the picked box and the camera
             if (ViewModel is { } vm)
             {
                 Scanner3D.State = vm.State;
+                Scanner3D.Camera = vm.Camera;
             }
 
             Bindings.Update();

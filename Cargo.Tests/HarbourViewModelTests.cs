@@ -62,8 +62,9 @@ public class HarbourViewModelTests
             Assert.That((harbour.HasSelectedTag, harbour.SelectedTag?.Id, harbour.SelectedLine), Is.EqualTo((true, "aurora", "B04 · discharging")));
         });
 
-        harbour.Tight = true;
-        Assert.That((harbour.HasSelectedTag, harbour.SelectedTag?.Id), Is.EqualTo((false, "aurora")), "the card fades out on its last vessel");
+        state.Stage.OverviewCondensed = true;
+        Assert.That((harbour.Tight, harbour.HasSelectedTag, harbour.SelectedTag?.Id), Is.EqualTo((true, false, "aurora")),
+            "the mini band has no room for the card, which fades out on its last vessel");
     }
 
     [Test]
@@ -216,5 +217,25 @@ public class HarbourViewModelTests
             Assert.That(HarbourCameraPose.ForStrip("berths", (10, 20)), Is.EqualTo(new HarbourCameraPose(-14 * Math.PI / 180, 26 * Math.PI / 180, 4.6, 10, 22)));
             Assert.That(HarbourCameraPose.ForStrip("berths", null), Is.EqualTo(overview with { Pitch = 26 * Math.PI / 180 }));
         });
+    }
+
+    [Test]
+    public void The_frame_moves_only_when_the_stage_does()
+    {
+        var state = new PortState(new ManualClock());
+        var harbour = new HarbourViewModel(state);
+        var raised = new List<string?>();
+        harbour.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
+
+        state.Stage.ToggleCommand.Execute(null);
+        Assert.That(raised, Does.Contain(nameof(HarbourViewModel.StageHeight)).And.Not.Contain(nameof(HarbourViewModel.Compact)));
+
+        raised.Clear();
+        state.Stage.ToggleCommand.Execute(null);
+        state.Stage.ToggleCommand.Execute(null);
+        Assert.That(raised.Count(r => r == nameof(HarbourViewModel.OverlayShown)), Is.Zero, "the overlay stays up while the band grows");
+
+        state.Navigation.Section = "cargo";
+        Assert.That((harbour.Compact, harbour.OverlayShown, double.IsNaN(harbour.StageHeight)), Is.EqualTo((true, false, true)));
     }
 }

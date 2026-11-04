@@ -6,7 +6,7 @@ namespace Cargo.Presentation;
 /// </summary>
 public sealed partial class CargoViewModel : ObservableObject
 {
-    public CargoViewModel(PortState state, IDispatcher dispatcher)
+    public CargoViewModel(PortState state, ScannerCamera camera, IDispatcher dispatcher)
     {
         State = state;
 
@@ -14,7 +14,7 @@ public sealed partial class CargoViewModel : ObservableObject
         // events there, so they are made on it.
         dispatcher.TryEnqueue(() =>
         {
-            Containers = new ContainersViewModel(state);
+            Containers = new ContainersViewModel(state, camera);
             Yard = new YardViewModel(state);
             RefreshMasthead();
             state.YardChanged += (_, _) => RefreshMasthead();

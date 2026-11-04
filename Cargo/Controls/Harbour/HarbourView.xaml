@@ -118,7 +118,7 @@
          container because a Style-supplied one never applies (Toolkit gotcha G36). -->
 
     <!-- Camera: the current preset, opening the four presets upward; a drag or zoom clears the check -->
-    <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}" Visibility="{x:Bind HudVisibility, Mode=OneWay}"
+    <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}" Visibility="{x:Bind harbour:HarbourView.Hud(ViewModel.Tight), Mode=OneWay}"
                          HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="{utu:Responsive Narrowest='16,0,0,12', Narrow='40,0,0,16'}">
       <utu:ShadowContainer.Shadows>
         <utu:ShadowCollection>
@@ -148,7 +148,7 @@
     </utu:ShadowContainer>
 
     <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="{utu:Responsive Narrowest='0,0,16,12', Narrow='0,0,40,16'}"
-                Visibility="{x:Bind HudVisibility, Mode=OneWay}">
+                Visibility="{x:Bind harbour:HarbourView.Hud(ViewModel.Tight), Mode=OneWay}">
       <!-- Key: what each mark on the map means -->
       <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}">
         <utu:ShadowContainer.Shadows>

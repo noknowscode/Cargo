@@ -26,7 +26,7 @@ public sealed class ScanViewOption
 
 /// <summary>
 /// The full-window container inspection: verdict, manifest, density and the 3D view's
-/// presets. The overlay stays in the shell behind <see cref="ScannerState.Open"/>, so
+/// presets. The overlay stays in the shell behind <see cref="ScannerCamera.Open"/>, so
 /// this model does its work only while the scanner is open. Created by
 /// <see cref="MainViewModel"/> on the UI thread.
 /// </summary>
@@ -39,18 +39,25 @@ public sealed partial class ScannerViewModel : ObservableObject
 
     private int _currentView = -2;
 
-    public ScannerViewModel(PortState state)
+    public ScannerViewModel(PortState state, ScannerCamera camera)
     {
         State = state;
+        Camera = camera;
         Refresh();
         state.Scanner.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName is nameof(ScannerState.Xray) or nameof(ScannerState.SelectedContainerId)
-                or nameof(ScannerState.Open))
+            if (e.PropertyName is nameof(ScannerState.SelectedContainerId))
             {
                 Refresh();
             }
-            else if (e.PropertyName is nameof(ScannerState.RotationX) or nameof(ScannerState.RotationY))
+        };
+        camera.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName is nameof(ScannerCamera.Xray) or nameof(ScannerCamera.Open))
+            {
+                Refresh();
+            }
+            else if (e.PropertyName is nameof(ScannerCamera.RotationX) or nameof(ScannerCamera.RotationY))
             {
                 // A drag changes the angles on every pointer move; only the preset highlight depends on them
                 RefreshViews();
@@ -59,6 +66,9 @@ public sealed partial class ScannerViewModel : ObservableObject
     }
 
     public PortState State { get; }
+
+    /// <summary>How the scanner looks at the box: open, X-ray, rotation and zoom.</summary>
+    public ScannerCamera Camera { get; }
 
     public ObservableCollection<Fact> ScanFacts { get; } = new();
     public ObservableCollection<ManifestRow> Manifest { get; } = new();
@@ -81,15 +91,15 @@ public sealed partial class ScannerViewModel : ObservableObject
     [ObservableProperty] public partial IReadOnlyList<(double Weight, string Tone)> DensitySlices { get; set; } = [];
 
     [RelayCommand]
-    private void Close() => State.Scanner.Open = false;
+    private void Close() => Camera.Open = false;
 
     [RelayCommand]
-    private void ToggleXray() => State.Scanner.Xray = !State.Scanner.Xray;
+    private void ToggleXray() => Camera.Xray = !Camera.Xray;
 
     [RelayCommand]
     private void OpenInspection()
     {
-        State.Scanner.Open = false;
+        Camera.Open = false;
         State.Navigation.OpenInspectionCommand.Execute(null);
     }
 
@@ -101,25 +111,25 @@ public sealed partial class ScannerViewModel : ObservableObject
             return;
         }
 
-        State.Scanner.Turn(view.Rx, view.Ry);
+        Camera.Turn(view.Rx, view.Ry);
     }
 
     [RelayCommand]
-    private void ZoomIn() => State.Scanner.ZoomIn();
+    private void ZoomIn() => Camera.ZoomIn();
 
     [RelayCommand]
-    private void ZoomOut() => State.Scanner.ZoomOut();
+    private void ZoomOut() => Camera.ZoomOut();
 
     [RelayCommand]
     private void ResetView()
     {
-        State.Scanner.ResetView();
+        Camera.ResetView();
     }
 
     public void Refresh()
     {
         // The overlay stays in the tree behind a Visibility flag, so skip the work while shut
-        if (!State.Scanner.Open)
+        if (!Camera.Open)
         {
             return;
         }
@@ -129,9 +139,9 @@ public sealed partial class ScannerViewModel : ObservableObject
         ContainerId = container.DisplayId;
         ContainerMeta = $"{container.Size} · {container.Carrier} · {container.Route}";
 
-        ScanMode = State.Scanner.Xray ? "X-RAY · 160 kV · SCANNING" : "OPTICAL · 3D INSPECTION";
-        IsXray = State.Scanner.Xray;
-        XrayName = State.Scanner.Xray ? "X-ray, on" : "X-ray, off";
+        ScanMode = Camera.Xray ? "X-RAY · 160 kV · SCANNING" : "OPTICAL · 3D INSPECTION";
+        IsXray = Camera.Xray;
+        XrayName = Camera.Xray ? "X-ray, on" : "X-ray, off";
 
         Verdict = container.Warn ? "Anomaly detected" : container.Stage == 3 ? "Under review" : "Clear";
         VerdictTone = container.SecurityToken;
@@ -183,13 +193,13 @@ public sealed partial class ScannerViewModel : ObservableObject
     /// <summary>Rebuilds the view presets only when the highlighted preset actually changes.</summary>
     private void RefreshViews()
     {
-        if (!State.Scanner.Open)
+        if (!Camera.Open)
         {
             return;
         }
 
         var current = Array.FindIndex(ViewAngles, v =>
-            Math.Abs(State.Scanner.RotationX - v.Rx) < 0.5 && Math.Abs(State.Scanner.RotationY - v.Ry) < 0.5);
+            Math.Abs(Camera.RotationX - v.Rx) < 0.5 && Math.Abs(Camera.RotationY - v.Ry) < 0.5);
         if (current == _currentView)
         {
             return;

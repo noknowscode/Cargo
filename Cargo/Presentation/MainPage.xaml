@@ -144,9 +144,7 @@
       </Border>
       <!-- One harbour for every harbour page: Overview's 340 px band (491 expanded), a strip framed by
            the section elsewhere -->
-      <harbour:HarbourView AutomationProperties.Name="Harbour" x:Name="Harbour" Grid.Row="1" Compact="{x:Bind ViewModel.State.Stage.Compact, Mode=OneWay}"
-                           OverlayShown="{x:Bind ViewModel.State.Stage.MastheadShown, Mode=OneWay}"
-                           StageHeight="{x:Bind ViewModel.State.Stage.Height, Mode=OneWay}" />
+      <harbour:HarbourView AutomationProperties.Name="Harbour" x:Name="Harbour" Grid.Row="1" />
       <!-- Layer switcher: centred on the HUD row from 1280; below it the centred switcher (370 px) would run into the
            Key and scale/zoom group, so it stacks above the camera menu (16 + 44 + 4 px up). 44 px tall below 1000 -->
       <!-- WORKAROUND(ShadowContainer keeps its paint when only its offset changes): the responsive
@@ -209,7 +207,7 @@
         </utu:ShadowContainer.Shadows>
         <Button Style="{StaticResource HudSummaryButton}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" Padding="12,0,14,0"
                 Command="{x:Bind ViewModel.State.Stage.ToggleCommand}"
-                AutomationProperties.Name="{x:Bind ViewModel.State.Stage.ToggleLabel, Mode=OneWay}">
+                AutomationProperties.Name="{x:Bind ViewModel.Harbour.ToggleLabel, Mode=OneWay}">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
             <Viewbox Width="{StaticResource IconSize}" Height="{StaticResource IconSize}" VerticalAlignment="Center">
               <Grid Width="24" Height="24">
@@ -219,7 +217,7 @@
                              Visibility="{x:Bind ViewModel.State.Stage.Expanded, Mode=OneWay}" />
               </Grid>
             </Viewbox>
-            <TextBlock Text="{x:Bind ViewModel.State.Stage.ToggleLabel, Mode=OneWay}" Style="{StaticResource TypeMedium13}"
+            <TextBlock Text="{x:Bind ViewModel.Harbour.ToggleLabel, Mode=OneWay}" Style="{StaticResource TypeMedium13}"
                        VerticalAlignment="Center" />
           </StackPanel>
         </Button>
@@ -255,6 +253,6 @@
 
   <!-- ══ CONTAINER INSPECTION ════════════════════════════════════════ -->
   <local:ScannerOverlay DataContext="{x:Bind ViewModel.Scanner, Mode=OneWay}"
-                        Visibility="{x:Bind ViewModel.State.Scanner.Open, Mode=OneWay, FallbackValue=Collapsed}" />
+                        Visibility="{x:Bind ViewModel.Scanner.Camera.Open, Mode=OneWay, FallbackValue=Collapsed}" />
   </Grid>
 </Page>

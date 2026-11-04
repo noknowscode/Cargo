@@ -3,9 +3,10 @@ using static Cargo.Domain.DebugHooks;
 namespace Cargo.Domain;
 
 /// <summary>
-/// The harbour stage every harbour section shares: full on Overview (340, 491 expanded, a 180 mini while scrolled), a
-/// strip elsewhere that opens to the full stage; its overlay layer, its own selection on Overview, and the linked
-/// hover between list rows, tags and the 3D berths. Follows <see cref="NavigationState.Section"/>.
+/// The harbour stage every harbour section shares: the full band on Overview (expanded, or condensed to its mini while
+/// scrolled), a strip elsewhere that opens to the full stage; its overlay layer, its own selection on Overview, and the
+/// linked hover between list rows, tags and the 3D berths. Follows <see cref="NavigationState.Section"/>. Its heights and
+/// its toggle's words are the presentation's (<c>HarbourViewModel</c>).
 /// </summary>
 public sealed partial class StageState : ObservableObject
 {
@@ -54,15 +55,15 @@ public sealed partial class StageState : ObservableObject
         _signals.Structure();
     }
 
-    /// <summary>Overview's harbour band at its expanded height (491 rather than 340).</summary>
+    /// <summary>Overview's harbour band at its expanded height.</summary>
     [ObservableProperty]
     public partial bool OverviewExpanded { get; set; }
 
     partial void OnOverviewExpandedChanged(bool value) => OnToggleChanged();
 
     /// <summary>
-    /// Overview scrolled: the masthead folds and the band snaps to its 180 px mini (SPEC-OVERVIEW-SCROLL). Set by the
-    /// page from its scroll offset; the band's own height (340 or 491) comes back when it clears.
+    /// Overview scrolled: the masthead folds and the band snaps to its mini (SPEC-OVERVIEW-SCROLL). Set by the
+    /// page from its scroll offset; the band's own height comes back when it clears.
     /// </summary>
     [ObservableProperty]
     public partial bool OverviewCondensed { get; set; }
@@ -82,20 +83,10 @@ public sealed partial class StageState : ObservableObject
     /// <summary>The layer switcher floats on the full band only: the mini band has no room for the HUD.</summary>
     public bool LayerSwitchShown => Full && !(Section == "overview" && OverviewCondensed);
 
-    /// <summary>
-    /// Overview's harbour band: 340, or 491 expanded (the design), or the 180 mini while scrolled. NaN elsewhere: the
-    /// stage sizes itself.
-    /// </summary>
-    public double Height => Section == "overview" ? (OverviewCondensed ? 180 : OverviewExpanded ? 491 : 340) : double.NaN;
-
     /// <summary>Whether the toggle would collapse: Overview's band is expanded, or another section's strip is open.</summary>
     public bool Expanded => Section == "overview" ? OverviewExpanded && !OverviewCondensed : Open;
 
     public bool Collapsed => !Expanded;
-
-    public string ToggleLabel => Section == "overview"
-        ? (OverviewCondensed ? "Show harbour" : OverviewExpanded ? "Collapse" : "Expand")
-        : (Open ? "Collapse harbour" : "Expand harbour");
 
     public bool ShowToggle => Shown;
 
@@ -119,10 +110,8 @@ public sealed partial class StageState : ObservableObject
 
     private void OnToggleChanged()
     {
-        OnPropertyChanged(nameof(Height));
         OnPropertyChanged(nameof(Expanded));
         OnPropertyChanged(nameof(Collapsed));
-        OnPropertyChanged(nameof(ToggleLabel));
     }
 
     // ── Layer and selection ───────────────────────────────────────────────────

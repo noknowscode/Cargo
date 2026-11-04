@@ -1,4 +1,5 @@
 using Cargo.Domain;
+using Cargo.Presentation;
 using NUnit.Framework;
 
 namespace Cargo.Tests;
@@ -63,10 +64,10 @@ public class StoreTests
         var state = Store();
 
         state.Navigation.OpenInspectionCommand.Execute(null);
-        Assert.That((state.Navigation.Section, state.Navigation.SecurityTab, state.Navigation.SecurityTitle), Is.EqualTo(("security", "inspection", "Cargo inspection")));
+        Assert.That((state.Navigation.Section, state.Navigation.SecurityTab), Is.EqualTo(("security", "inspection")));
 
         state.Navigation.OpenAccessCommand.Execute(null);
-        Assert.That((state.Navigation.Section, state.Navigation.SecurityTab, state.Navigation.SecurityTitle), Is.EqualTo(("security", "access", "Access control")));
+        Assert.That((state.Navigation.Section, state.Navigation.SecurityTab), Is.EqualTo(("security", "access")));
     }
 
     [Test]
@@ -100,24 +101,26 @@ public class StoreTests
     public void Overview_has_the_full_band_at_its_three_heights()
     {
         var state = Store();
+        var harbour = new HarbourViewModel(state);
 
         Assert.Multiple(() =>
         {
             Assert.That(state.Stage.Shown && state.Stage.Full && !state.Stage.Compact, Is.True);
-            Assert.That(state.Stage.Height, Is.EqualTo(340));
-            Assert.That(state.Stage.ToggleLabel, Is.EqualTo("Expand"));
+            Assert.That(harbour.StageHeight, Is.EqualTo(340));
+            Assert.That(harbour.ToggleLabel, Is.EqualTo("Expand"));
             Assert.That(state.Stage.MastheadShown && state.Stage.LayerSwitchShown, Is.True);
         });
 
         state.Stage.ToggleCommand.Execute(null);
-        Assert.That((state.Stage.Height, state.Stage.Expanded, state.Stage.ToggleLabel), Is.EqualTo((491d, true, "Collapse")));
+        Assert.That((harbour.StageHeight, state.Stage.Expanded, harbour.ToggleLabel), Is.EqualTo((491d, true, "Collapse")));
 
         state.Stage.OverviewCondensed = true;
         Assert.Multiple(() =>
         {
-            Assert.That(state.Stage.Height, Is.EqualTo(180));
+            Assert.That(harbour.StageHeight, Is.EqualTo(180));
+            Assert.That(harbour.Tight, Is.True);
             Assert.That(state.Stage.Collapsed, Is.True);
-            Assert.That(state.Stage.ToggleLabel, Is.EqualTo("Show harbour"));
+            Assert.That(harbour.ToggleLabel, Is.EqualTo("Show harbour"));
             Assert.That(state.Stage.MastheadShown || state.Stage.LayerSwitchShown, Is.False);
         });
     }
@@ -140,18 +143,19 @@ public class StoreTests
     public void Other_sections_open_their_strip_and_a_move_closes_it()
     {
         var state = Store();
+        var harbour = new HarbourViewModel(state);
         state.Navigation.GoCommand.Execute("berths");
 
         Assert.Multiple(() =>
         {
             Assert.That(state.Stage.Compact, Is.True);
-            Assert.That(double.IsNaN(state.Stage.Height), Is.True);
-            Assert.That(state.Stage.ToggleLabel, Is.EqualTo("Expand harbour"));
+            Assert.That((harbour.Compact, harbour.Tight, double.IsNaN(harbour.StageHeight)), Is.EqualTo((true, true, true)));
+            Assert.That(harbour.ToggleLabel, Is.EqualTo("Expand harbour"));
             Assert.That(state.Stage.LayerSwitchShown, Is.False);
         });
 
         state.Stage.ToggleCommand.Execute(null);
-        Assert.That((state.Stage.Open, state.Stage.Full, state.Stage.Compact, state.Stage.ToggleLabel),
+        Assert.That((state.Stage.Open, state.Stage.Full, harbour.Compact, harbour.ToggleLabel),
             Is.EqualTo((true, true, false, "Collapse harbour")));
 
         state.Navigation.GoCommand.Execute("cargo");
@@ -244,14 +248,15 @@ public class StoreTests
     public void The_scanner_starts_shut_on_the_first_container_at_the_iso_view()
     {
         var state = Store();
+        var camera = new ScannerCamera();
 
         Assert.Multiple(() =>
         {
-            Assert.That(state.Scanner.Open, Is.False);
-            Assert.That(state.Scanner.Xray, Is.False);
+            Assert.That(camera.Open, Is.False);
+            Assert.That(camera.Xray, Is.False);
             Assert.That(state.Scanner.Filter, Is.EqualTo("All"));
             Assert.That(state.Scanner.SelectedContainer.Id, Is.EqualTo("AVRU4821934"));
-            Assert.That((state.Scanner.RotationX, state.Scanner.RotationY, state.Scanner.Zoom), Is.EqualTo((-18d, -32d, 1d)));
+            Assert.That((camera.RotationX, camera.RotationY, camera.Zoom), Is.EqualTo((-18d, -32d, 1d)));
         });
     }
 
@@ -264,9 +269,8 @@ public class StoreTests
 
         state.Scanner.Filter = "Inspection";
         state.Scanner.SelectedContainerId = PortData.Containers[1].Id;
-        state.Scanner.Xray = true;
 
-        Assert.That(raised, Is.EqualTo(3));
+        Assert.That(raised, Is.EqualTo(2));
         Assert.That(state.Scanner.SelectedContainer, Is.SameAs(PortData.Containers[1]));
     }
 

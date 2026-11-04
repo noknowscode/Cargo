@@ -1,3 +1,5 @@
+using Cargo.Controls.Harbour;
+
 namespace Cargo.Presentation;
 
 /// <summary>One vessel's data tag on the harbour, bound by <c>HarbourTagTemplate</c>; states only, the view picks the chrome.</summary>
@@ -71,6 +73,7 @@ public sealed partial class HarbourViewModel : ObservableObject
         Tags = PortData.Vessels
             .Select(v => new HarbourTag(v, state.PickHullVesselCommand, state.OpenVesselCommand, state.Stage.HoverCommand))
             .ToArray();
+        FollowStage();
         Tick();
         Paint();
 
@@ -95,6 +98,11 @@ public sealed partial class HarbourViewModel : ObservableObject
         };
         state.Stage.PropertyChanged += (_, e) =>
         {
+            if (e.PropertyName is nameof(StageState.Compact) or nameof(StageState.Expanded) or nameof(StageState.MastheadShown))
+            {
+                FollowStage();
+            }
+
             if (e.PropertyName is nameof(StageState.Open))
             {
                 ReframeRequested?.Invoke(this, EventArgs.Empty);
@@ -124,18 +132,46 @@ public sealed partial class HarbourViewModel : ObservableObject
         _ => State.Stage.Layer
     };
 
-    /// <summary>A short frame (a section's strip, Overview's mini band): no facts card. The view sets it.</summary>
-    public bool Tight
+    // ── The stage's frame ────────────────────────────────────────────────────
+
+    /// <summary>The same harbour as a strip above a section: no HUD, no facts card, framed by the section.</summary>
+    [ObservableProperty]
+    public partial bool Compact { get; private set; }
+
+    /// <summary>
+    /// Overview's band height below its overlay: 340, or 491 expanded (the design), or the 180 mini while scrolled
+    /// (SPEC-OVERVIEW-SCROLL). NaN elsewhere: the stage sizes itself.
+    /// </summary>
+    [ObservableProperty]
+    public partial double StageHeight { get; private set; } = double.NaN;
+
+    /// <summary>The greeting and figures overlay the band's top (Overview at its top); folded, the band's reach goes with them.</summary>
+    [ObservableProperty]
+    public partial bool OverlayShown { get; private set; }
+
+    /// <summary>A short frame (a section's strip, Overview's mini band): no HUD, no facts card, tight tag insets.</summary>
+    public bool Tight => Compact || StageHeight <= HarbourBand.Mini;
+
+    /// <summary>The stage's toggle: Overview grows or restores its band, another section opens or closes its strip.</summary>
+    public string ToggleLabel => State.Navigation.Section == "overview"
+        ? State.Stage.OverviewCondensed ? "Show harbour" : State.Stage.OverviewExpanded ? "Collapse" : "Expand"
+        : State.Stage.Open ? "Collapse harbour" : "Expand harbour";
+
+    partial void OnCompactChanged(bool value) => OnPropertyChanged(nameof(Tight));
+
+    partial void OnStageHeightChanged(double value) => OnPropertyChanged(nameof(Tight));
+
+    /// <summary>The stage moved (a section, its strip, Overview's band): the frame, the toggle and the facts card follow.</summary>
+    private void FollowStage()
     {
-        get;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                Paint();
-            }
-        }
+        Compact = State.Stage.Compact;
+        StageHeight = State.Navigation.Section != "overview" ? double.NaN
+            : State.Stage.OverviewCondensed ? HarbourBand.Mini
+            : State.Stage.OverviewExpanded ? HarbourBand.Full
+            : HarbourBand.Collapsed;
+        OverlayShown = State.Stage.MastheadShown;
+        OnPropertyChanged(nameof(ToggleLabel));
+        Paint();
     }
 
     /// <summary>The vessel the docked facts card describes; kept while the card fades out so it never blanks.</summary>

@@ -26,7 +26,7 @@
       </Grid.RowDefinitions>
       <StackPanel Spacing="{StaticResource Space12}">
         <TextBlock Text="{x:Bind ViewModel.Eyebrow}" Style="{StaticResource EyebrowText}" TextWrapping="Wrap" />
-        <TextBlock Text="{x:Bind ViewModel.State.Navigation.SecurityTitle, Mode=OneWay}" Style="{StaticResource PageTitleText}" TextWrapping="Wrap" />
+        <TextBlock Text="{x:Bind ViewModel.Title, Mode=OneWay}" Style="{StaticResource PageTitleText}" TextWrapping="Wrap" />
       </StackPanel>
       <!-- xaml-lint: allow card - segmented tab strip; the Simple theme ships no segmented TabBar style -->
       <Border Background="{ThemeResource SurfaceSunkAltBrush}" CornerRadius="{StaticResource RadiusPanel}" Padding="{StaticResource Inset4}"

@@ -58,9 +58,13 @@ public sealed class JourneyStep
 /// </summary>
 public sealed partial class ContainersViewModel : ObservableObject
 {
-    public ContainersViewModel(PortState state)
+    private readonly ScannerCamera _camera;
+
+    /// <summary>The explorer over the store, opening its box in <paramref name="camera"/>, the app's scanner.</summary>
+    public ContainersViewModel(PortState state, ScannerCamera camera)
     {
         State = state;
+        _camera = camera;
         Refresh();
     }
 
@@ -93,11 +97,12 @@ public sealed partial class ContainersViewModel : ObservableObject
             return;
         }
 
-        State.Scanner.Inspect(id);
+        State.Scanner.SelectedContainerId = id;
+        _camera.Show();
     }
 
     [RelayCommand]
-    private void OpenScanner() => State.Scanner.Open = true;
+    private void OpenScanner() => _camera.Open = true;
 
     public void Refresh()
     {

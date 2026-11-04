@@ -7,6 +7,13 @@ namespace Cargo.Tests;
 /// <summary>Cargo: the masthead, the container explorer (filters, cards, journey), the yard's stack and the scanner.</summary>
 public class CargoViewModelTests
 {
+    /// <summary>Picks the box and opens the scanner on it, as the explorer's card does.</summary>
+    private static void Inspect(PortState state, ScannerCamera camera, string id)
+    {
+        state.Scanner.SelectedContainerId = id;
+        camera.Show();
+    }
+
     [Test]
     public void The_masthead_reads_the_data_and_the_yard()
     {
@@ -21,7 +28,8 @@ public class CargoViewModelTests
     public void A_filter_lights_its_chip_and_keeps_its_boxes()
     {
         var state = new PortState(new ManualClock());
-        var explorer = new ContainersViewModel(state);
+        var camera = new ScannerCamera();
+        var explorer = new ContainersViewModel(state, camera);
         Assert.That(explorer.Filters.Single(f => f.IsCurrent).Label, Is.EqualTo("All"));
         Assert.That(explorer.Cards, Has.Count.EqualTo(PortData.Containers.Count));
 
@@ -40,7 +48,7 @@ public class CargoViewModelTests
     [Test]
     public void A_card_says_whether_its_box_needs_attention()
     {
-        var explorer = new ContainersViewModel(new PortState(new ManualClock()));
+        var explorer = new ContainersViewModel(new PortState(new ManualClock()), new ScannerCamera());
 
         var held = explorer.Cards.Single(c => c.Id == "MRVU9182041");
         var ready = explorer.Cards.Single(c => c.Id == "AVRU4821934");
@@ -53,18 +61,19 @@ public class CargoViewModelTests
     public void Inspecting_a_box_opens_the_scanner_at_the_iso_view()
     {
         var state = new PortState(new ManualClock());
-        var explorer = new ContainersViewModel(state);
-        state.Scanner.Xray = true;
-        state.Scanner.Turn(0, -90);
+        var camera = new ScannerCamera();
+        var explorer = new ContainersViewModel(state, camera);
+        camera.Xray = true;
+        camera.Turn(0, -90);
 
         explorer.InspectCommand.Execute("MRVU9182041");
 
         Assert.Multiple(() =>
         {
-            Assert.That(state.Scanner.Open, Is.True);
-            Assert.That(state.Scanner.Xray, Is.False);
+            Assert.That(camera.Open, Is.True);
+            Assert.That(camera.Xray, Is.False);
             Assert.That(state.Scanner.SelectedContainerId, Is.EqualTo("MRVU9182041"));
-            Assert.That((state.Scanner.RotationX, state.Scanner.RotationY), Is.EqualTo((ScannerState.IsoX, ScannerState.IsoY)));
+            Assert.That((camera.RotationX, camera.RotationY), Is.EqualTo((ScannerCamera.IsoX, ScannerCamera.IsoY)));
         });
     }
 
@@ -72,7 +81,8 @@ public class CargoViewModelTests
     public void The_journey_marks_the_steps_behind_at_and_ahead_of_the_box()
     {
         var state = new PortState(new ManualClock());
-        var explorer = new ContainersViewModel(state);
+        var camera = new ScannerCamera();
+        var explorer = new ContainersViewModel(state, camera);
 
         // AVRU 482193 4 is in the yard (stage 2)
         Assert.That(explorer.Journey.Select(s => s.State), Is.EqualTo(new[]
@@ -118,7 +128,8 @@ public class CargoViewModelTests
     public void The_scanner_does_nothing_while_shut()
     {
         var state = new PortState(new ManualClock());
-        var scanner = new ScannerViewModel(state);
+        var camera = new ScannerCamera();
+        var scanner = new ScannerViewModel(state, camera);
 
         Assert.That(scanner.ContainerId, Is.Empty);
         Assert.That(scanner.Views, Is.Empty);
@@ -128,9 +139,10 @@ public class CargoViewModelTests
     public void The_scanner_reads_the_verdict_the_manifest_and_the_density()
     {
         var state = new PortState(new ManualClock());
-        var scanner = new ScannerViewModel(state);
+        var camera = new ScannerCamera();
+        var scanner = new ScannerViewModel(state, camera);
 
-        state.Scanner.Inspect("MRVU9182041");
+        Inspect(state, camera, "MRVU9182041");
 
         Assert.Multiple(() =>
         {
@@ -150,11 +162,12 @@ public class CargoViewModelTests
     public void The_presets_x_ray_and_zoom_turn_the_box()
     {
         var state = new PortState(new ManualClock());
-        var scanner = new ScannerViewModel(state);
-        state.Scanner.Inspect("AVRU4821934");
+        var camera = new ScannerCamera();
+        var scanner = new ScannerViewModel(state, camera);
+        Inspect(state, camera, "AVRU4821934");
 
         scanner.ShowViewCommand.Execute("Front");
-        Assert.That((state.Scanner.RotationX, state.Scanner.RotationY), Is.EqualTo((0d, 0d)));
+        Assert.That((camera.RotationX, camera.RotationY), Is.EqualTo((0d, 0d)));
         Assert.That(scanner.Views.Single(v => v.IsCurrent).AccessibleName, Is.EqualTo("Front view, current"));
 
         scanner.ToggleXrayCommand.Execute(null);
@@ -165,29 +178,30 @@ public class CargoViewModelTests
             scanner.ZoomInCommand.Execute(null);
         }
 
-        Assert.That(state.Scanner.Zoom, Is.EqualTo(ScannerState.MaxZoom));
+        Assert.That(camera.Zoom, Is.EqualTo(ScannerCamera.MaxZoom));
 
         scanner.ResetViewCommand.Execute(null);
-        Assert.That((state.Scanner.Zoom, state.Scanner.RotationX, state.Scanner.RotationY), Is.EqualTo((1d, ScannerState.IsoX, ScannerState.IsoY)));
+        Assert.That((camera.Zoom, camera.RotationX, camera.RotationY), Is.EqualTo((1d, ScannerCamera.IsoX, ScannerCamera.IsoY)));
 
         for (var i = 0; i < 10; i++)
         {
             scanner.ZoomOutCommand.Execute(null);
         }
 
-        Assert.That(state.Scanner.Zoom, Is.EqualTo(ScannerState.MinZoom).Within(1e-9));
+        Assert.That(camera.Zoom, Is.EqualTo(ScannerCamera.MinZoom).Within(1e-9));
     }
 
     [Test]
     public void Open_inspection_shuts_the_scanner_on_Securitys_inspection_tab()
     {
         var state = new PortState(new ManualClock());
-        var scanner = new ScannerViewModel(state);
-        state.Scanner.Inspect("MRVU9182041");
+        var camera = new ScannerCamera();
+        var scanner = new ScannerViewModel(state, camera);
+        Inspect(state, camera, "MRVU9182041");
 
         scanner.OpenInspectionCommand.Execute(null);
 
-        Assert.That(state.Scanner.Open, Is.False);
+        Assert.That(camera.Open, Is.False);
         Assert.That((state.Navigation.Section, state.Navigation.SecurityTab), Is.EqualTo(("security", "inspection")));
     }
 }

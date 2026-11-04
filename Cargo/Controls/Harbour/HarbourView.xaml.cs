@@ -86,8 +86,8 @@ public sealed partial class HarbourView : UserControl
             }
 
             var state = value.State;
-            value.Tight = Tight;
             _selection = value.Selection;
+            _stageHeight = value.StageHeight;
             SyncScene();
             BuildTags();
             this.RebuildWhenVisible(state, OnStructureChanged);
@@ -101,48 +101,48 @@ public sealed partial class HarbourView : UserControl
             _scene?.SetNeeds(state.PendingDecision, state.NeedsDecision);
             value.PendingChanged += (_, _) => _scene?.SetNeeds(state.PendingDecision, state.NeedsDecision);
             value.ReframeRequested += (_, _) => Reframe();
+            value.PropertyChanged += OnFrameChanged;
+            if (value.Compact)
+            {
+                OnModeChanged();
+            }
+
+            Retarget(animate: false);
             Bindings.Update();
         }
     }
 
-    public static readonly DependencyProperty CompactProperty = DependencyProperty.Register(
-        nameof(Compact), typeof(bool), typeof(HarbourView),
-        new PropertyMetadata(false, (d, _) => ((HarbourView)d).OnModeChanged()));
+    // The band height last framed, so a change knows whether it eases from one band to another
+    private double _stageHeight = double.NaN;
 
-    /// <summary>The same harbour as a strip above a section: no HUD, no facts cards, framed by the section.</summary>
-    public bool Compact
+    /// <summary>The stage moved: a strip and the full stage frame differently, and the band eases between its heights.</summary>
+    private void OnFrameChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        get => (bool)GetValue(CompactProperty);
-        set => SetValue(CompactProperty, value);
+        switch (e.PropertyName)
+        {
+            case nameof(HarbourViewModel.Compact):
+                OnModeChanged();
+                break;
+            case nameof(HarbourViewModel.StageHeight):
+                var from = _stageHeight;
+                _stageHeight = StageHeight;
+                Retarget(animate: !double.IsNaN(from) && !double.IsNaN(_stageHeight));
+                break;
+            case nameof(HarbourViewModel.OverlayShown):
+                Retarget(animate: true);
+                break;
+        }
     }
 
-    public static readonly DependencyProperty StageHeightProperty = DependencyProperty.Register(
-        nameof(StageHeight), typeof(double), typeof(HarbourView),
-        new PropertyMetadata(double.NaN, (d, e) => ((HarbourView)d).OnStageHeightChanged((double)e.OldValue, (double)e.NewValue)));
+    private bool Compact => _model?.Compact ?? false;
 
-    /// <summary>
-    /// A fixed band height (Overview: 340, or 491 expanded). NaN keeps the proportional stage of
-    /// <see cref="MeasureOverride"/>.
-    /// </summary>
-    public double StageHeight
-    {
-        get => (double)GetValue(StageHeightProperty);
-        set => SetValue(StageHeightProperty, value);
-    }
+    /// <summary>Overview's fixed band height; NaN keeps the proportional stage of <see cref="MeasureOverride"/>.</summary>
+    private double StageHeight => _model?.StageHeight ?? double.NaN;
 
-
-    /// <summary>Overview condensed to its mini band: no HUD, no facts card, tags kept clear of the edges only.</summary>
-    private bool Mini => !double.IsNaN(StageHeight) && StageHeight <= HarbourBand.Mini;
-
-    /// <summary>A short frame (the strip elsewhere, the mini band here): tight tag insets, no facts card.</summary>
-    private bool Tight => Compact || Mini;
+    private bool Tight => _model?.Tight ?? false;
 
     /// <summary>How far the view's top edge sits into the rendered scene right now, in band mode.</summary>
     private double _bandOffset;
-
-    public static readonly DependencyProperty OverlayHeightProperty = DependencyProperty.Register(
-        nameof(OverlayHeight), typeof(double), typeof(HarbourView),
-        new PropertyMetadata(0d, (d, _) => ((HarbourView)d).Retarget(animate: false)));
 
     /// <summary>
     /// The height of what overlays the band's top on Overview (the greeting, figures and duty card). The band
@@ -151,23 +151,16 @@ public sealed partial class HarbourView : UserControl
     /// </summary>
     public double OverlayHeight
     {
-        get => (double)GetValue(OverlayHeightProperty);
-        set => SetValue(OverlayHeightProperty, value);
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                Retarget(animate: false);
+            }
+        }
     }
-
-    public static readonly DependencyProperty OverlayShownProperty = DependencyProperty.Register(
-        nameof(OverlayShown), typeof(bool), typeof(HarbourView),
-        new PropertyMetadata(false, (d, _) => ((HarbourView)d).Retarget(animate: true)));
-
-    /// <summary>Whether the overlay is up (Overview at its top); folding it away takes the band's reach with it.</summary>
-    public bool OverlayShown
-    {
-        get => (bool)GetValue(OverlayShownProperty);
-        set => SetValue(OverlayShownProperty, value);
-    }
-
-    private void OnStageHeightChanged(double from, double to) =>
-        Retarget(animate: !double.IsNaN(from) && !double.IsNaN(to));
 
     /// <summary>
     /// Moves the band to its target (<see cref="HarbourBand"/>): the height below the overlay and the reach up behind
@@ -176,12 +169,6 @@ public sealed partial class HarbourView : UserControl
     private void Retarget(bool animate)
     {
         var band = !double.IsNaN(StageHeight);
-        HudVisibility = Tight ? Visibility.Collapsed : Visibility.Visible;
-        if (_model is not null)
-        {
-            _model.Tight = Tight;
-        }
-
         SceneHost.Height = TagLayer.Height = band ? HarbourBand.Full + OverlayHeight : double.NaN;
         SceneHost.VerticalAlignment = TagLayer.VerticalAlignment = band ? VerticalAlignment.Top : VerticalAlignment.Stretch;
         if (_scene is not null && _scene.Camera.TopInset != (band ? OverlayHeight : 0))
@@ -190,7 +177,7 @@ public sealed partial class HarbourView : UserControl
             _scene.RefreshStill();
         }
 
-        _band.MoveTo(StageHeight, band && OverlayShown ? OverlayHeight : 0, animate, DispatcherQueue);
+        _band.MoveTo(StageHeight, band && _model?.OverlayShown == true ? OverlayHeight : 0, animate, DispatcherQueue);
     }
 
     /// <summary>One band step: the height and the reach, then everything that follows them, in the same frame.</summary>
@@ -217,15 +204,6 @@ public sealed partial class HarbourView : UserControl
         // clips it in its own coordinates, before any offset, which left the band's bottom empty
         SceneHost.Margin = TagLayer.Margin = new Thickness(0, -_bandOffset, 0, -rest);
         _scene?.SetWindow(band ? _bandOffset : double.NaN, _bandOffset + visible, _band.Inset);
-    }
-
-    public static readonly DependencyProperty HudVisibilityProperty = DependencyProperty.Register(
-        nameof(HudVisibility), typeof(Visibility), typeof(HarbourView), new PropertyMetadata(Visibility.Visible));
-
-    public Visibility HudVisibility
-    {
-        get => (Visibility)GetValue(HudVisibilityProperty);
-        private set => SetValue(HudVisibilityProperty, value);
     }
 
     /// <summary>
@@ -262,12 +240,6 @@ public sealed partial class HarbourView : UserControl
 
     private void OnModeChanged()
     {
-        HudVisibility = Tight ? Visibility.Collapsed : Visibility.Visible;
-        if (_model is not null)
-        {
-            _model.Tight = Tight;
-        }
-
         InvalidateMeasure();
         RefreshTags();
         Frame(animate: true);
@@ -360,6 +332,9 @@ public sealed partial class HarbourView : UserControl
     public static Brush TagEdge(bool selected, bool lit) => selected || lit ? Tokens.Brush("InkBrush") : Tokens.Transparent;
 
     public static Thickness TagEdgeWidth(bool selected) => new(selected ? 2 : 1);
+
+    /// <summary>The HUD floats on the full stage only; a short frame has no room for it.</summary>
+    public static Visibility Hud(bool tight) => tight ? Visibility.Collapsed : Visibility.Visible;
 
     // ── Screen readers ─────────────────────────────────────────────────────────
 
