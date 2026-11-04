@@ -37,9 +37,12 @@
         </VisualState>
       </VisualStateGroup>
     </VisualStateManager.VisualStateGroups>
+  <!-- Where the panel reaches a phone's status bar, gesture bar or cutout (the window's edges), SafeArea pads its content
+       into the visible bounds and the ink runs on behind them; it pads nothing where the panel sits inside them -->
   <Grid x:Name="Panel" Background="{StaticResource InkDeepInvariantBrush}" MaxWidth="1320" MaxHeight="820"
         CornerRadius="{utu:Responsive Narrowest='0', Narrow={StaticResource RadiusCard}}"
-        Margin="{utu:Responsive Narrowest='0', Narrow={StaticResource Inset24}, Normal='48'}">
+        Margin="{utu:Responsive Narrowest='0', Narrow={StaticResource Inset24}, Normal='48'}"
+        utu:SafeArea.Insets="VisibleBounds">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*" />
       <ColumnDefinition Width="Auto" />
