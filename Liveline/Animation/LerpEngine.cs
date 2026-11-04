@@ -16,7 +16,6 @@ public class LerpEngine
     public double CurrentMinY => _currentMinY;
     public double CurrentMaxY => _currentMaxY;
     public double CurrentBadgeY => _currentBadgeY;
-    public bool HasTargets => _targetY.Length > 0;
 
     public void SeedFlatLine(int pointCount, double centerValue)
     {

@@ -33,9 +33,6 @@ public partial class LivelineChart : UserControl
         Unloaded += OnUnloaded;
     }
 
-    /// <summary>True while the chart is subscribed to frame callbacks.</summary>
-    public bool IsAnimating => _animationAttached;
-
     public static readonly DependencyProperty DataProperty =
         DependencyProperty.Register(nameof(Data), typeof(IList<LivelinePoint>), typeof(LivelineChart),
             new PropertyMetadata(null, OnRenderPropertyChanged));

@@ -50,8 +50,11 @@ public sealed partial class OverviewView : Page
         },
     };
 
-    /// <summary>Liveline eases toward each push; under reduced motion it snaps. Read on each tick, so the choice applies at once.</summary>
-    public static double TideLerp(double now) => Motion.Reduced ? 1 : .04;
+    /// <summary>
+    /// Liveline eases toward each push; under reduced motion it snaps. x:Bind passes the clock only so the function is
+    /// read again on each tick and the choice applies at once.
+    /// </summary>
+    public static double TideLerp(double _) => Motion.Reduced ? 1 : .04;
 
     // xaml-lint: allow codebehind - the clock reaches the page's charts only while Overview is on screen (Live), like
     // every other section; the page stays alive once visited
