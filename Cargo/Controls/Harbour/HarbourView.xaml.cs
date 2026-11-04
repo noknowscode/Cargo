@@ -116,6 +116,7 @@ public sealed partial class HarbourView : UserControl
     private double _stageHeight = double.NaN;
 
     /// <summary>The stage moved: a strip and the full stage frame differently, and the band eases between its heights.</summary>
+    // xaml-lint: allow codebehind - the Skia band's tween and camera framing follow the view model's stage; no XAML surface drives them
     private void OnFrameChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
