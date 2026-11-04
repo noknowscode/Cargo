@@ -242,6 +242,15 @@ public sealed partial class BerthMap : SceneHost
         }
     }
 
+    /// <summary>
+    /// The arrival still waiting on her berth decision (<see cref="PortState.PendingDecision"/>) is drawn in the
+    /// approach lane, off her berth, until the berth is confirmed or she is moved to a berth that needs no decision.
+    /// </summary>
+    public static bool WaitsInApproach(PortState state, string vesselId, double planHour) =>
+        state.PendingDecision == vesselId
+        && PortData.BerthIndex(state.BerthOf(vesselId)) is not null
+        && PortData.Schedule[vesselId].Start > planHour;
+
     private static string StatusToken(BerthState status) => status switch
     {
         BerthState.Occupied => "NavyColor",
@@ -273,7 +282,7 @@ public sealed partial class BerthMap : SceneHost
                 x = BerthX(index) - 14;
                 y = 160;
             }
-            else if (index >= 0 && upcoming && vessel.Id == "nordic" && !_state.IsAssigned(vessel.Id))
+            else if (WaitsInApproach(_state, vessel.Id, planHour))
             {
                 x = 700;
                 y = 372;

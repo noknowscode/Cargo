@@ -103,4 +103,22 @@ public class PlanFollowTests
         Assert.That(detail.Note, Is.EqualTo("Assigned to Berth 05 · pilots and mooring gang notified"));
         Assert.That(detail.Where, Is.EqualTo("Berth 05"));
     }
+
+    [Test]
+    public void The_berth_map_holds_the_waiting_arrival_in_the_approach_lane_until_her_berth_is_settled()
+    {
+        var state = new PortState(new ManualClock());
+        bool Waits(string id) => Cargo.Controls.BerthMap.WaitsInApproach(state, id, state.NowHours);
+
+        Assert.That((Waits("nordic"), Waits("levant"), Waits("aurora")), Is.EqualTo((true, false, false)));
+
+        state.Assign("nordic", Index("08"));
+        Assert.That(Waits("nordic"), Is.False, "moved to a berth that needs no decision");
+
+        state.Assign("nordic", Index("07"));
+        Assert.That(Waits("nordic"), Is.True, "back on her reservation, the decision waits again");
+
+        state.Confirm("nordic");
+        Assert.That(Waits("nordic"), Is.False, "confirmed");
+    }
 }
