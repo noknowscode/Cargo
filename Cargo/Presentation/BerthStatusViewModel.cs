@@ -18,7 +18,14 @@ public sealed partial class BerthStatusRow : ObservableObject
     /// <summary>What the row stands for on the harbour: its vessel, else its berth.</summary>
     [ObservableProperty] public partial string LinkKey { get; set; } = string.Empty;
 
-    internal RowKind Kind { get; set; }
+    /// <summary>What the row stands for: a vessel, the one waiting on you, a free berth or a closed one.</summary>
+    [ObservableProperty] public partial BerthRowKind Kind { get; set; }
+
+    /// <summary>The row is the vessel or berth being worked: an ink outline.</summary>
+    [ObservableProperty] public partial bool IsCurrent { get; set; }
+
+    /// <summary>Its vessel or berth is hovered elsewhere (a tag, the harbour, the bar): the hover ground.</summary>
+    [ObservableProperty] public partial bool IsLinked { get; set; }
 
     /// <summary>The vessel on or bound for this berth; null for a free or closed berth.</summary>
     [ObservableProperty] public partial string? VesselId { get; set; }
@@ -28,14 +35,6 @@ public sealed partial class BerthStatusRow : ObservableObject
     [ObservableProperty] public partial string Meta { get; set; } = string.Empty;
     [ObservableProperty] public partial string When { get; set; } = string.Empty;
     [ObservableProperty] public partial string AccessibleName { get; set; } = string.Empty;
-    [ObservableProperty] public partial Brush? RowBackground { get; set; }
-    [ObservableProperty] public partial Brush? Outline { get; set; }
-    [ObservableProperty] public partial Brush? PlateBackground { get; set; }
-    [ObservableProperty] public partial Brush? PlateForeground { get; set; }
-    [ObservableProperty] public partial Brush? PlateBorder { get; set; }
-    [ObservableProperty] public partial Brush? StateForeground { get; set; }
-    [ObservableProperty] public partial Brush? NameForeground { get; set; }
-    [ObservableProperty] public partial Brush? WhenForeground { get; set; }
 }
 
 /// <summary>
@@ -122,7 +121,7 @@ public sealed partial class BerthStatusViewModel : ObservableObject
             row.When = BerthFacts.When(_state, vessel);
             row.AccessibleName = $"Berth {berth.Number}, {vessel.Name}, {BerthFacts.State(_state, vessel)}, {row.When}"
                 + (needs ? ", needs confirming" : string.Empty);
-            row.Kind = needs ? RowKind.Needs : RowKind.Vessel;
+            row.Kind = needs ? BerthRowKind.Needs : BerthRowKind.Vessel;
             Paint(row);
             return;
         }
@@ -135,7 +134,7 @@ public sealed partial class BerthStatusViewModel : ObservableObject
             : $"Depth {berth.Depth:0.0} m";
         row.When = string.Empty;
         row.AccessibleName = $"Berth {berth.Number}, {row.Name.ToLowerInvariant()}, {row.Meta}";
-        row.Kind = closed ? RowKind.Restricted : RowKind.Free;
+        row.Kind = closed ? BerthRowKind.Restricted : BerthRowKind.Free;
         Paint(row);
     }
 
@@ -148,7 +147,7 @@ public sealed partial class BerthStatusViewModel : ObservableObject
         row.Meta = BerthFacts.FitsLine(_state, vessel);
         row.When = BerthFacts.Clock(vessel.Eta);
         row.AccessibleName = $"Anchorage, {vessel.Name}, at anchor, arrival window {row.When}, {row.Meta}";
-        row.Kind = RowKind.Vessel;
+        row.Kind = BerthRowKind.Vessel;
         Paint(row);
     }
 
@@ -163,50 +162,17 @@ public sealed partial class BerthStatusViewModel : ObservableObject
 
     private void Paint(BerthStatusRow row)
     {
-        var kind = row.Kind;
-        var current = _state.SelectedBerth is { } picked
+        row.IsCurrent = _state.SelectedBerth is { } picked
             ? row.VesselId is null && picked == row.Slot
             : row.VesselId is not null && row.VesselId == _state.SelectedVesselId;
         var hoveredBerth = _state.Stage.HoveredBerth is { } i ? PortData.Berths[i].Number : null;
-        var linked = row.VesselId is not null ? _state.Stage.HoveredVessel == row.VesselId : hoveredBerth == row.Slot;
+        row.IsLinked = row.VesselId is not null ? _state.Stage.HoveredVessel == row.VesselId : hoveredBerth == row.Slot;
         row.LinkKey = row.VesselId ?? row.Slot;
-
-        var ink = Tokens.Brush("InkBrush");
-        var muted = Tokens.Brush("TextMutedBrush");
-        var transparent = Tokens.Brush("InkBrush", 0);
-
-        // Linked: the hover ground; the needs row keeps its alert tint and takes a thin alert edge instead
-        row.Outline = current ? ink : linked && kind == RowKind.Needs ? Tokens.Brush("AlertBrush") : transparent;
-        // Alpha in the colour, not the brush: the row ground fades through a BrushTransition
-        row.RowBackground = kind == RowKind.Needs ? Tokens.Tint("AlertBrush", .05)
-            : linked ? Tokens.Tint("InkBrush", .06)
-            : Tokens.Tint("InkBrush", 0);
-        // The needs plate is the count badge: white on alert ink (5.6:1)
-        row.PlateBackground = kind == RowKind.Needs ? Tokens.Brush("AlertInkBrush") : Tokens.Brush("SurfaceSunkBrush");
-        row.PlateForeground = kind switch
-        {
-            RowKind.Needs => Tokens.Brush("OnAccentBrush"),
-            RowKind.Restricted => Tokens.Brush("RestrictedBrush"),
-            _ => ink
-        };
-        row.PlateBorder = kind switch
-        {
-            RowKind.Needs => transparent,
-            RowKind.Restricted => Tokens.Brush("RestrictedBrush"),
-            _ => Tokens.Brush("HairlineStrongBrush")
-        };
-        row.StateForeground = kind switch
-        {
-            RowKind.Needs => Tokens.Brush("AlertInkBrush"),
-            RowKind.Restricted => Tokens.Brush("RestrictedBrush"),
-            _ => muted
-        };
-        row.NameForeground = kind == RowKind.Free ? muted : ink;
-        row.WhenForeground = kind == RowKind.Needs ? Tokens.Brush("AlertInkBrush") : ink;
     }
 }
 
-internal enum RowKind { Vessel, Needs, Free, Restricted }
+/// <summary>What a Berths status row stands for; the view picks its ground, plate and inks from it.</summary>
+public enum BerthRowKind { Vessel, Needs, Free, Restricted }
 
 /// <summary>The wording the status list, the vessel detail and the needs-you bar share.</summary>
 internal static class BerthFacts

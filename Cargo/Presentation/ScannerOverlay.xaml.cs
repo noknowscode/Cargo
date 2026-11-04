@@ -42,4 +42,17 @@ public sealed partial class ScannerOverlay : UserControl
     }
 
     public ScannerViewModel? ViewModel => DataContext as ScannerViewModel;
+
+    // The scanner's stage is dark in both themes, so its chrome takes the invariant on-dark tokens
+
+    public static Brush XrayGround(bool xray) => xray ? Tokens.Brush("AccentBrightColor", 0.2) : Tokens.Transparent;
+
+    public static Brush XrayEdge(bool xray) => Tokens.Brush(xray ? "AccentBrightInvariantBrush" : "HairlineOnDarkBrush");
+
+    public static Brush XrayInk(bool xray) => Tokens.Brush(xray ? "AccentPaleInvariantBrush" : "TextOnDarkBrush");
+
+    /// <summary>The preset the box is turned to is lit.</summary>
+    public static Brush PresetGround(bool current) => current ? Tokens.Brush("DeckWhiteColor", 0.16) : Tokens.Transparent;
+
+    public static Brush FlagInk(bool flagged) => Tokens.Brush(flagged ? "ScanAnomalyColor" : "SeaGreenColor");
 }

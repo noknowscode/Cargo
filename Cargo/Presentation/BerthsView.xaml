@@ -45,7 +45,7 @@
             <TextBlock Text="at anchor" Style="{StaticResource MetricLabelText}" />
           </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-            <TextBlock Text="{x:Bind ViewModel.Conflicts, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{x:Bind ViewModel.ConflictInk, Mode=OneWay}" />
+            <TextBlock Text="{x:Bind ViewModel.Conflicts, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{x:Bind local:BerthsView.ConflictInk(ViewModel.HasConflicts), Mode=OneWay}" />
             <TextBlock Text="conflicts in 36 h" Style="{StaticResource MetricLabelText}" />
           </StackPanel>
         </controls:FlowPanel>
@@ -89,7 +89,7 @@
                           AutomationProperties.Name="{x:Bind AccessibleName, Mode=OneWay}">
                     <!-- xaml-lint: allow card - a list row whose ground and outline carry its state (needs you, selected) -->
                     <Border Padding="{StaticResource Inset10}" CornerRadius="{StaticResource RadiusRow}" BorderThickness="2"
-                            Background="{x:Bind RowBackground, Mode=OneWay}" BorderBrush="{x:Bind Outline, Mode=OneWay}">
+                            Background="{x:Bind local:BerthsView.RowGround(Kind, IsLinked), Mode=OneWay}" BorderBrush="{x:Bind local:BerthsView.RowOutline(Kind, IsCurrent, IsLinked), Mode=OneWay}">
                       <!-- Linked hover and the confirm recolour fade rather than switch -->
                       <Border.BackgroundTransition>
                         <BrushTransition Duration="0:0:0.15" />
@@ -104,22 +104,22 @@
 
                         <!-- xaml-lint: allow card - the berth chip, the list's version of the harbour's painted number -->
                         <Border Width="34" Height="30" CornerRadius="{StaticResource RadiusTag}" BorderThickness="1"
-                                Background="{x:Bind PlateBackground, Mode=OneWay}" BorderBrush="{x:Bind PlateBorder, Mode=OneWay}">
+                                Background="{x:Bind local:BerthsView.PlateGround(Kind), Mode=OneWay}" BorderBrush="{x:Bind local:BerthsView.PlateEdge(Kind), Mode=OneWay}">
                           <TextBlock Text="{x:Bind Plate, Mode=OneWay}" Style="{StaticResource PlateText}"
-                                     Foreground="{x:Bind PlateForeground, Mode=OneWay}" />
+                                     Foreground="{x:Bind local:BerthsView.PlateInk(Kind), Mode=OneWay}" />
                         </Border>
 
                         <StackPanel Grid.Column="1" Spacing="{StaticResource Space2}" VerticalAlignment="Center">
                           <TextBlock Text="{x:Bind StateLabel, Mode=OneWay}" Style="{StaticResource ListStateText}"
-                                     Foreground="{x:Bind StateForeground, Mode=OneWay}" />
+                                     Foreground="{x:Bind local:BerthsView.StateInk(Kind), Mode=OneWay}" />
                           <TextBlock Text="{x:Bind Name, Mode=OneWay}" Style="{StaticResource ListNameText}"
-                                     Foreground="{x:Bind NameForeground, Mode=OneWay}" />
+                                     Foreground="{x:Bind local:BerthsView.NameInk(Kind), Mode=OneWay}" />
                           <TextBlock Text="{x:Bind Meta, Mode=OneWay}" Style="{StaticResource ListMetaText}" />
                         </StackPanel>
 
                         <!-- Countdowns roll each minute rather than swap -->
                         <controls:RollingText Grid.Column="2" Text="{x:Bind When, Mode=OneWay}" Style="{StaticResource ListTimeFigure}"
-                                              Foreground="{x:Bind WhenForeground, Mode=OneWay}" VerticalAlignment="Center" />
+                                              Foreground="{x:Bind local:BerthsView.WhenInk(Kind), Mode=OneWay}" VerticalAlignment="Center" />
 
                         <FontIcon Grid.Column="3" Glyph="&#xE76C;" FontSize="{StaticResource GlyphSizeSmall}" Foreground="{ThemeResource TextMutedBrush}"
                                   VerticalAlignment="Center" AutomationProperties.AccessibilityView="Raw" />
@@ -147,10 +147,10 @@
 
           <StackPanel Spacing="{StaticResource Space8}">
             <TextBlock Text="{x:Bind ViewModel.Detail.StateLabel, Mode=OneWay}" Style="{StaticResource ListStateText}"
-                       Foreground="{x:Bind ViewModel.Detail.Accent, Mode=OneWay}" />
+                       Foreground="{x:Bind local:BerthsView.DetailInk(ViewModel.Detail.NeedsYou, ViewModel.Detail.IsRestricted), Mode=OneWay}" />
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
               <controls:RollingText Text="{x:Bind ViewModel.Detail.Big, Mode=OneWay}" Style="{StaticResource DetailFigure}"
-                                    Foreground="{x:Bind ViewModel.Detail.Accent, Mode=OneWay}" />
+                                    Foreground="{x:Bind local:BerthsView.DetailInk(ViewModel.Detail.NeedsYou, ViewModel.Detail.IsRestricted), Mode=OneWay}" />
               <TextBlock Text="{x:Bind ViewModel.Detail.BigSub, Mode=OneWay}" Style="{StaticResource LeadText}"
                          VerticalAlignment="Bottom" Margin="{StaticResource GapBottom6}" />
             </StackPanel>
@@ -160,7 +160,7 @@
           <!-- The cargo block collapses for a free berth; it sits with the facts in an unspaced
                panel and carries its own gap, since Spacing would still charge for it on Uno -->
           <StackPanel>
-          <StackPanel Spacing="{StaticResource Space6}" Margin="{StaticResource GapBottom16}" Visibility="{x:Bind ViewModel.Detail.CargoVisibility, Mode=OneWay}">
+          <StackPanel Spacing="{StaticResource Space6}" Margin="{StaticResource GapBottom16}" Visibility="{x:Bind ViewModel.Detail.HasCargo, Mode=OneWay}">
             <!-- Slides between ships (300 ms EaseSmooth) -->
             <ProgressBar controls:Slide.Value="{x:Bind ViewModel.Detail.CargoPercent, Mode=OneWay}" Maximum="100" Height="6" MinHeight="6" CornerRadius="{StaticResource RadiusTag}"
                          Foreground="{ThemeResource TextMutedBrush}" Background="{ThemeResource HairlineBrush}"
@@ -176,7 +176,7 @@
               <DataTemplate x:DataType="local:Fact">
                 <StackPanel Spacing="{StaticResource Space2}">
                   <TextBlock Text="{x:Bind Key}" Style="{StaticResource FactKeyText}" />
-                  <TextBlock Text="{x:Bind Value}" Style="{StaticResource FactValueText}" Foreground="{x:Bind Tone}" />
+                  <TextBlock Text="{x:Bind Value}" Style="{StaticResource FactValueText}" Foreground="{x:Bind local:Paint.Ink(Tone)}" />
                 </StackPanel>
               </DataTemplate>
             </ItemsRepeater.ItemTemplate>

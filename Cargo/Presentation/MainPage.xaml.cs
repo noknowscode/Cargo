@@ -29,6 +29,12 @@ public sealed partial class MainPage : Page
 
     public MainViewModel? ViewModel => DataContext as MainViewModel;
 
+    // The layer switcher's segments: paper on the ink indicator for the current layer
+
+    public static Brush LayerInk(bool current) => Tokens.Brush(current ? "PaperBrush" : "InkBrush");
+
+    public static Brush LayerIconInk(bool current) => Tokens.Brush(current ? "PaperBrush" : "TextMutedBrush");
+
     // xaml-lint: allow codebehind - the harbour scene is a code-built control that takes the store directly
     private void Attach()
     {

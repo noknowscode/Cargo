@@ -85,7 +85,7 @@
                 <Button Style="{StaticResource BareButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Label}"
                         AutomationProperties.Name="{x:Bind AccessibleName}">
                   <!-- xaml-lint: allow card - a view-preset toggle; the Simple theme ships no segmented style -->
-                  <Border Background="{x:Bind Background}" BorderBrush="{StaticResource HairlineOnDarkBrush}"
+                  <Border Background="{x:Bind local:ScannerOverlay.PresetGround(IsCurrent)}" BorderBrush="{StaticResource HairlineOnDarkBrush}"
                           BorderThickness="1" CornerRadius="{StaticResource RadiusControl}" Padding="{StaticResource Inset12x7}"
                           MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=0}">
                     <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium12}" VerticalAlignment="Center"
@@ -102,14 +102,14 @@
           <Button Style="{StaticResource BareButton}" Command="{x:Bind ViewModel.ToggleXrayCommand, Mode=OneWay}"
                   AutomationProperties.Name="{x:Bind ViewModel.XrayName, Mode=OneWay}">
             <!-- xaml-lint: allow card - the X-ray toggle face -->
-            <Border Background="{x:Bind ViewModel.XrayBackground, Mode=OneWay}" BorderBrush="{x:Bind ViewModel.XrayBorder, Mode=OneWay}"
+            <Border Background="{x:Bind local:ScannerOverlay.XrayGround(ViewModel.IsXray), Mode=OneWay}" BorderBrush="{x:Bind local:ScannerOverlay.XrayEdge(ViewModel.IsXray), Mode=OneWay}"
                     BorderThickness="1" CornerRadius="{StaticResource RadiusControl}" Padding="{StaticResource Inset14x7}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}">
               <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" VerticalAlignment="Center">
                 <shapes:Path Data="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"
-                             Stroke="{x:Bind ViewModel.XrayForeground, Mode=OneWay}" StrokeThickness="2"
+                             Stroke="{x:Bind local:ScannerOverlay.XrayInk(ViewModel.IsXray), Mode=OneWay}" StrokeThickness="2"
                              Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" />
                 <TextBlock Text="X-ray" Style="{StaticResource TypeMedium12}"
-                           Foreground="{x:Bind ViewModel.XrayForeground, Mode=OneWay}" />
+                           Foreground="{x:Bind local:ScannerOverlay.XrayInk(ViewModel.IsXray), Mode=OneWay}" />
               </StackPanel>
             </Border>
           </Button>
@@ -150,7 +150,7 @@
           <TextBlock Text="SCAN RESULT" Style="{StaticResource TypeMonoMedium11}"
                      Foreground="{StaticResource AccentBrightInvariantBrush}" />
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space10}">
-            <Ellipse Width="10" Height="10" Fill="{x:Bind ViewModel.VerdictTone, Mode=OneWay}" VerticalAlignment="Center" />
+            <Ellipse Width="10" Height="10" Fill="{x:Bind local:Paint.Tone(ViewModel.VerdictTone), Mode=OneWay}" VerticalAlignment="Center" />
             <TextBlock Text="{x:Bind ViewModel.Verdict, Mode=OneWay}" Style="{StaticResource TypeStrong18}"
                        Foreground="{StaticResource TextOnDarkStrongBrush}" />
           </StackPanel>
@@ -171,7 +171,7 @@
               <DataTemplate x:DataType="local:CompositionSlice">
                 <Grid>
                   <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-                    <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Fill}" VerticalAlignment="Center" />
+                    <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:Paint.Tone(Fill)}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind Label}" Style="{StaticResource BodyText}"
                                Foreground="{StaticResource TextOnDarkStrongBrush}" />
                   </StackPanel>
@@ -198,10 +198,10 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                   </Grid.ColumnDefinitions>
-                  <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
+                  <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:Paint.Tone(Tone)}" VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1" Text="{x:Bind Name}" Style="{StaticResource BodyText}"
                              Foreground="{StaticResource TextOnDarkStrongBrush}" TextWrapping="Wrap" />
-                  <TextBlock Grid.Column="2" Text="{x:Bind Flag}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind FlagTone}" />
+                  <TextBlock Grid.Column="2" Text="{x:Bind Flag}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind local:ScannerOverlay.FlagInk(Flagged)}" />
                 </Grid>
               </DataTemplate>
             </ItemsControl.ItemTemplate>

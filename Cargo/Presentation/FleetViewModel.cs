@@ -8,8 +8,7 @@ public sealed class LockingRow
     public required string Lock { get; init; }
     public required string Vessel { get; init; }
     public required string State { get; init; }
-    public required Brush Tone { get; init; }
-    public required Brush Ink { get; init; }
+    public required Standing Standing { get; init; }
 }
 
 public sealed class GaugeRow
@@ -17,16 +16,24 @@ public sealed class GaugeRow
     public required string Name { get; init; }
     public required string Chainage { get; init; }
     public required string Level { get; init; }
-    public required Geometry Spark { get; init; }
-    public required Geometry SparkArea { get; init; }
-    public required Brush Ink { get; init; }
+
+    /// <summary>The trace through the last twelve readings, in the gauge's 80 x 22 frame.</summary>
+    public required IReadOnlyList<Point> Spark { get; init; }
+
+    /// <summary>The area under the trace, closed along the frame's foot.</summary>
+    public required IReadOnlyList<Point> SparkArea { get; init; }
+
+    /// <summary>The gauge's status, as its palette key; the reading takes its ink variant.</summary>
+    public required string Tone { get; init; }
 }
 
 public sealed class NoticeRow
 {
     public required string Title { get; init; }
     public required string Detail { get; init; }
-    public required Brush Tone { get; init; }
+
+    /// <summary>The notice's status, as its palette key.</summary>
+    public required string Tone { get; init; }
 }
 
 public sealed class FleetRow
@@ -36,9 +43,12 @@ public sealed class FleetRow
     public required string Detail { get; init; }
     public required string Eta { get; init; }
     public required string Slip { get; init; }
-    public required Brush Tone { get; init; }
-    public required Brush SlipInk { get; init; }
-    public required Brush Background { get; init; }
+
+    /// <summary>Running behind her order: orange, else sea green.</summary>
+    public required bool IsLate { get; init; }
+
+    /// <summary>The vessel the crew channel is open to: a sunk ground.</summary>
+    public required bool IsCurrent { get; init; }
     public required ICommand Select { get; init; }
 }
 
@@ -46,9 +56,9 @@ public sealed class ChatBubble
 {
     public required string Text { get; init; }
     public required string Meta { get; init; }
-    public required HorizontalAlignment Align { get; init; }
-    public required Brush Background { get; init; }
-    public required Brush Foreground { get; init; }
+
+    /// <summary>The crew's message, on the left in a sunk bubble; dispatch's sit on the right in ink.</summary>
+    public required bool FromCrew { get; init; }
 }
 
 public sealed class QuickMessage
@@ -69,8 +79,7 @@ public sealed partial class FleetViewModel : ObservableObject
     {
         State = state;
 
-        // The router builds models off the UI thread; the rows carry brushes and geometries,
-        // which must be created on it.
+        // The router builds models off the UI thread; the rows are bound to the views, so they are built on it.
         dispatcher.TryEnqueue(() =>
         {
             BuildStatic();
@@ -129,11 +138,9 @@ public sealed partial class FleetViewModel : ObservableObject
     [ObservableProperty]
     public partial string SlipLabel { get; set; } = string.Empty;
 
+    /// <summary>The vessel the channel is open to runs late.</summary>
     [ObservableProperty]
-    public partial Brush? SlipTone { get; set; }
-
-    [ObservableProperty]
-    public partial Brush? SlipInk { get; set; }
+    public partial bool IsLate { get; set; }
 
     private RiverVessel Selected =>
         PortData.RiverFleet.FirstOrDefault(v => v.Id == State.Chat.Selection) ?? PortData.RiverFleet[0];
@@ -153,22 +160,11 @@ public sealed partial class FleetViewModel : ObservableObject
         Refresh();
     }
 
-    /// <summary>Status colours are fills; the text beside them takes the darker ink variant.</summary>
-    private static string InkFor(string tone) => tone switch
-    {
-        var t when t.StartsWith("Orange") => "OrangeInkBrush",
-        var t when t.StartsWith("Amber") => "AmberInkBrush",
-        var t when t.StartsWith("SeaGreen") => "SeaGreenInkBrush",
-        var t when t.StartsWith("Accent") => "AccentDarkBrush",
-        var t when t.StartsWith("Alert") => "AlertInkBrush",
-        _ => "InkBrush"
-    };
-
     /// <summary>
     /// A 12-point trace that drifts with the gauge's trend arrow, as the line and the area under
     /// it, both in the gauge's real 80 x 22 frame so they register without stretching.
     /// </summary>
-    private static (Geometry Line, Geometry Area) Spark(GaugeDef gauge, int index)
+    public static (IReadOnlyList<Point> Line, IReadOnlyList<Point> Area) Spark(GaugeDef gauge, int index)
     {
         var drift = gauge.Trend == "↓" ? -0.02 : gauge.Trend == "↑" ? 0.02 : 0;
         var values = Enumerable.Range(0, 12)
@@ -188,38 +184,32 @@ public sealed partial class FleetViewModel : ObservableObject
             .Select((v, j) => new Point(j * width / 11d, height - pad - (v - min) / span * (height - pad * 2 - 2)))
             .ToList();
         var area = points.Prepend(new Point(0, height)).Append(new Point(width, height)).ToList();
-        return (Geo.Polyline(points), Geo.Polyline(area, close: true));
+        return (points, area);
     }
 
     private void BuildStatic()
     {
         Legend = new[]
         {
-            new LegendItem { Label = "On time", Swatch = Tokens.Brush("SeaGreenBrush") },
-            new LegendItem { Label = "Running late", Swatch = Tokens.Brush("OrangeBrush") },
-            new LegendItem { Label = "Lock", Swatch = Tokens.Brush("InkBrush") },
-            new LegendItem { Label = "Warning", Swatch = Tokens.Brush("AlertBrush") }
+            new LegendItem { Label = "On time", Swatch = "SeaGreenBrush" },
+            new LegendItem { Label = "Running late", Swatch = "OrangeBrush" },
+            new LegendItem { Label = "Lock", Swatch = "InkBrush" },
+            new LegendItem { Label = "Warning", Swatch = "AlertBrush" }
         };
 
-        Lockings = PortData.Lockings.Select(l =>
+        Lockings = PortData.Lockings.Select(l => new LockingRow
         {
-            var (tone, ink) = l.State switch
+            Time = l.Time,
+            Lock = l.Lock,
+            Vessel = l.Vessel,
+            State = l.State,
+            Standing = l.State switch
             {
-                "Done" => ("TextFaintBrush", "TextMutedBrush"),
-                "Queued" or "At risk" => ("OrangeBrush", "OrangeInkBrush"),
-                "After maintenance" => ("AlertBrush", "AlertBrush"),
-                _ => ("SeaGreenBrush", "SeaGreenInkBrush")
-            };
-
-            return new LockingRow
-            {
-                Time = l.Time,
-                Lock = l.Lock,
-                Vessel = l.Vessel,
-                State = l.State,
-                Tone = Tokens.Brush(tone),
-                Ink = Tokens.Brush(ink)
-            };
+                "Done" => Standing.Done,
+                "Queued" or "At risk" => Standing.Late,
+                "After maintenance" => Standing.Blocked,
+                _ => Standing.OnTime
+            }
         }).ToList();
 
         // Every trace is water, in the river's colour; the gauge's status stays on its reading
@@ -233,7 +223,7 @@ public sealed partial class FleetViewModel : ObservableObject
                 Level = $"{g.Level:0.0} m {g.Trend}",
                 Spark = line,
                 SparkArea = area,
-                Ink = Tokens.Brush(InkFor(g.Tone))
+                Tone = g.Tone
             };
         }).ToList();
 
@@ -241,7 +231,7 @@ public sealed partial class FleetViewModel : ObservableObject
         {
             Title = n.Title,
             Detail = n.Detail,
-            Tone = Tokens.Brush(n.Tone)
+            Tone = n.Tone
         }).ToList();
     }
 
@@ -262,9 +252,8 @@ public sealed partial class FleetViewModel : ObservableObject
                 Detail = $"Order {vessel.Order} · km {vessel.Km:0.0} · {vessel.Speed} kn",
                 Eta = $"ETA {ShiftClock.Format(vessel.Eta + vessel.SlipMinutes / 60d)}",
                 Slip = late ? $"+{vessel.SlipMinutes} min" : "On time",
-                Tone = Tokens.Brush(late ? "OrangeBrush" : "SeaGreenBrush"),
-                SlipInk = Tokens.Brush(late ? "OrangeInkBrush" : "SeaGreenInkBrush"),
-                Background = current ? Tokens.Brush("SurfaceSunkAltBrush") : Tokens.Transparent,
+                IsLate = late,
+                IsCurrent = current,
                 Select = SelectCommand
             });
         }
@@ -274,8 +263,7 @@ public sealed partial class FleetViewModel : ObservableObject
         CrewSubtitle = $"{selected.Master} · VHF 12 · " +
                        (selected.Direction > 0 ? "upbound · " : "downbound · ") + selected.Next;
         SlipLabel = isLate ? $"+{selected.SlipMinutes} min" : "On time";
-        SlipTone = Tokens.Brush(isLate ? "OrangeBrush" : "SeaGreenBrush");
-        SlipInk = Tokens.Brush(isLate ? "OrangeInkBrush" : "SeaGreenInkBrush");
+        IsLate = isLate;
 
         Thread.Clear();
         foreach (var line in State.Chat.ThreadFor(selected.Id))
@@ -285,9 +273,7 @@ public sealed partial class FleetViewModel : ObservableObject
             {
                 Text = line.Text,
                 Meta = $"{(fromCrew ? selected.Master.Split(' ').Last() : "Dispatch")} · {ShiftClock.Format(line.Hour)}",
-                Align = fromCrew ? HorizontalAlignment.Left : HorizontalAlignment.Right,
-                Background = fromCrew ? Tokens.Brush("SurfaceSunkAltBrush") : Tokens.Brush("InkBrush"),
-                Foreground = fromCrew ? Tokens.Brush("InkBrush") : Tokens.Brush("PaperBrush")
+                FromCrew = fromCrew
             });
         }
 

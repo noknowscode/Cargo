@@ -15,15 +15,14 @@ public sealed partial class NextSixRow : ObservableObject
     public required System.Windows.Input.ICommand Open { get; init; }
     public required System.Windows.Input.ICommand Hover { get; init; }
 
-    /// <summary>The linked-hover tint (accent at 7%) while this vessel is lit anywhere.</summary>
-    [ObservableProperty] public partial Brush? Ground { get; set; }
+    /// <summary>The vessel is lit anywhere (a tag, a row, the chart): the linked-hover tint.</summary>
+    [ObservableProperty] public partial bool IsLinked { get; set; }
 
     [ObservableProperty] public partial bool Happened { get; set; }
     [ObservableProperty] public partial string Countdown { get; set; } = string.Empty;
-    [ObservableProperty] public partial Brush? CountdownInk { get; set; }
-    [ObservableProperty] public partial Brush? DotFill { get; set; }
-    [ObservableProperty] public partial Brush? DotRing { get; set; }
-    [ObservableProperty] public partial double DotRingWidth { get; set; }
+
+    /// <summary>Under an hour to go: the countdown reads in ink rather than muted.</summary>
+    [ObservableProperty] public partial bool IsSoon { get; set; }
     [ObservableProperty] public partial bool Departing { get; set; }
 }
 
@@ -51,7 +50,7 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
     {
         foreach (var row in Past.Concat(Upcoming))
         {
-            row.Ground = Tokens.Tint("AccentBrush", row.Id == _state.Stage.HoveredVessel ? .07 : 0);
+            row.IsLinked = row.Id == _state.Stage.HoveredVessel;
         }
     }
 
@@ -62,7 +61,8 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
     public ObservableCollection<NextSixRow> Upcoming { get; } = new();
 
     [ObservableProperty] public partial string Sub { get; set; } = string.Empty;
-    [ObservableProperty] public partial Visibility EmptyVisibility { get; set; }
+    /// <summary>Nothing moves in the next six hours: the list says so.</summary>
+    [ObservableProperty] public partial bool IsEmpty { get; set; }
 
     public void Refresh()
     {
@@ -90,7 +90,7 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
 
         var count = inWindow.Length;
         Sub = $"{ShiftClock.Format(now)} → {ShiftClock.Format(now + Ahead)} · {(count == 1 ? "1 movement" : $"{count} movements")} · ships to scale";
-        EmptyVisibility = count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        IsEmpty = count == 0;
     }
 
     private NextSixRow Row(TimelineEvent e)
@@ -122,9 +122,6 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
         row.Happened = row.Hour <= _state.NowHours;
         row.Departing = row.Happened && !row.Arrival;
         row.Countdown = row.Happened ? (row.Arrival ? "arrived" : "departing") : _state.Countdown(row.Hour);
-        row.CountdownInk = Tokens.Brush(_state.MinutesUntil(row.Hour) < 60 ? "InkBrush" : "TextMutedBrush");
-        row.DotFill = Tokens.Brush(row.Happened ? "NavyBrush" : "SurfaceBrush");
-        row.DotRing = Tokens.Brush(row.Happened ? "SurfaceBrush" : "NavyBrush");
-        row.DotRingWidth = row.Happened ? 2 : 1.6;
+        row.IsSoon = _state.MinutesUntil(row.Hour) < 60;
     }
 }

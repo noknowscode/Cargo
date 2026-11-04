@@ -91,7 +91,7 @@
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:LegendItem">
                   <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-                    <Ellipse Width="7" Height="7" Fill="{x:Bind Swatch}" VerticalAlignment="Center" />
+                    <Ellipse Width="7" Height="7" Fill="{x:Bind local:Paint.Swatch(Swatch, Strength)}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind Label}" Style="{StaticResource CaptionText}" />
                   </StackPanel>
                 </DataTemplate>
@@ -124,7 +124,7 @@
                 <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Id}"
                         AutomationProperties.Name="{x:Bind Name}">
                   <!-- xaml-lint: allow card - the selected-row highlight, not a card -->
-                  <Border Background="{x:Bind Background}" CornerRadius="{StaticResource RadiusControl}" Padding="{StaticResource Inset10x8}">
+                  <Border Background="{x:Bind local:FleetView.RowGround(IsCurrent)}" CornerRadius="{StaticResource RadiusControl}" Padding="{StaticResource Inset10x8}">
                     <Grid ColumnSpacing="{StaticResource Space10}" RowSpacing="{StaticResource Space4}">
                       <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -135,10 +135,10 @@
                         <RowDefinition Height="Auto" />
                       </Grid.RowDefinitions>
                       <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-                        <Ellipse Width="6" Height="6" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
+                        <Ellipse Width="6" Height="6" Fill="{x:Bind local:Paint.LateFill(IsLate)}" VerticalAlignment="Center" />
                         <TextBlock Text="{x:Bind Name}" Style="{StaticResource BodyStrongText}" TextTrimming="CharacterEllipsis" />
                       </StackPanel>
-                      <TextBlock Grid.Column="1" Text="{x:Bind Slip}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind SlipInk}" />
+                      <TextBlock Grid.Column="1" Text="{x:Bind Slip}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind local:Paint.LateInk(IsLate)}" />
                       <TextBlock Grid.Row="1" Text="{x:Bind Detail}" Style="{StaticResource CaptionText}"
                                  TextTrimming="CharacterEllipsis" />
                       <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind Eta}" Style="{StaticResource CaptionText}"
@@ -183,8 +183,8 @@
                     <Run Text="{x:Bind Lock}" FontFamily="{StaticResource BodyStrongFont}" /><Run Text=" · " /><Run Text="{x:Bind Vessel}" />
                   </TextBlock>
                   <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{StaticResource Space6}">
-                    <Ellipse Width="6" Height="6" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
-                    <TextBlock Text="{x:Bind State}" Style="{StaticResource StatusText}" Foreground="{x:Bind Ink}" />
+                    <Ellipse Width="6" Height="6" Fill="{x:Bind local:Paint.StatusFill(Standing)}" VerticalAlignment="Center" />
+                    <TextBlock Text="{x:Bind State}" Style="{StaticResource StatusText}" Foreground="{x:Bind local:Paint.StatusInk(Standing)}" />
                   </StackPanel>
                 </Grid>
               </DataTemplate>
@@ -217,11 +217,11 @@
                   </StackPanel>
                   <!-- Water level: the river's colour over a fade to the baseline -->
                   <Grid Grid.Column="1" Width="80" Height="22" VerticalAlignment="Center">
-                    <shapes:Path Data="{x:Bind SparkArea}" Fill="{ThemeResource WaterFadeBrush}" />
-                    <shapes:Path Data="{x:Bind Spark}" Stroke="{ThemeResource WaterLineBrush}" StrokeThickness="1.6"
+                    <shapes:Path Data="{x:Bind local:Paint.Polygon(SparkArea)}" Fill="{ThemeResource WaterFadeBrush}" />
+                    <shapes:Path Data="{x:Bind local:Paint.Polyline(Spark)}" Stroke="{ThemeResource WaterLineBrush}" StrokeThickness="1.6"
                                  StrokeLineJoin="Round" />
                   </Grid>
-                  <TextBlock Grid.Column="2" Text="{x:Bind Level}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind Ink}" VerticalAlignment="Center" TextAlignment="Right" />
+                  <TextBlock Grid.Column="2" Text="{x:Bind Level}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind local:Paint.TextInk(Tone)}" VerticalAlignment="Center" TextAlignment="Right" />
                 </Grid>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -246,7 +246,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                   </Grid.ColumnDefinitions>
-                  <Ellipse Width="6" Height="6" Fill="{x:Bind Tone}" VerticalAlignment="Top" Margin="{StaticResource GapTop6}" />
+                  <Ellipse Width="6" Height="6" Fill="{x:Bind local:Paint.Tone(Tone)}" VerticalAlignment="Top" Margin="{StaticResource GapTop6}" />
                   <StackPanel Grid.Column="1" Spacing="{StaticResource Space2}">
                     <TextBlock Text="{x:Bind Title}" Style="{StaticResource BodyStrongText}" TextWrapping="Wrap" />
                     <TextBlock Text="{x:Bind Detail}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" LineHeight="17" />
@@ -273,9 +273,9 @@
                          TextWrapping="Wrap" />
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource Space6}" VerticalAlignment="Top" Margin="{StaticResource GapTop4}">
-              <Ellipse Width="6" Height="6" Fill="{x:Bind ViewModel.SlipTone, Mode=OneWay}" VerticalAlignment="Center" />
+              <Ellipse Width="6" Height="6" Fill="{x:Bind local:Paint.LateFill(ViewModel.IsLate), Mode=OneWay}" VerticalAlignment="Center" />
               <TextBlock Text="{x:Bind ViewModel.SlipLabel, Mode=OneWay}" Style="{StaticResource StatusText}"
-                         Foreground="{x:Bind ViewModel.SlipInk, Mode=OneWay}" />
+                         Foreground="{x:Bind local:Paint.LateInk(ViewModel.IsLate), Mode=OneWay}" />
             </StackPanel>
           </Grid>
 
@@ -288,14 +288,14 @@
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:ChatBubble">
-                  <StackPanel HorizontalAlignment="{x:Bind Align}" Spacing="{StaticResource Space4}">
+                  <StackPanel HorizontalAlignment="{x:Bind local:FleetView.BubbleSide(FromCrew)}" Spacing="{StaticResource Space4}">
                     <!-- xaml-lint: allow card - a chat bubble, not a card -->
-                    <Border Background="{x:Bind Background}" CornerRadius="{StaticResource RadiusPanel}" Padding="11,8" MaxWidth="240">
-                      <TextBlock Text="{x:Bind Text}" Style="{StaticResource BodyText}" Foreground="{x:Bind Foreground}"
+                    <Border Background="{x:Bind local:FleetView.BubbleGround(FromCrew)}" CornerRadius="{StaticResource RadiusPanel}" Padding="11,8" MaxWidth="240">
+                      <TextBlock Text="{x:Bind Text}" Style="{StaticResource BodyText}" Foreground="{x:Bind local:FleetView.BubbleInk(FromCrew)}"
                                  TextWrapping="Wrap" LineHeight="18" />
                     </Border>
                     <TextBlock Text="{x:Bind Meta}" Style="{StaticResource TypeMono11}"
-                               Foreground="{ThemeResource TextMutedBrush}" HorizontalAlignment="{x:Bind Align}" />
+                               Foreground="{ThemeResource TextMutedBrush}" HorizontalAlignment="{x:Bind local:FleetView.BubbleSide(FromCrew)}" />
                   </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>

@@ -53,7 +53,7 @@
               <TextBlock Text="{x:Bind Time}" Style="{StaticResource TypeMono13}" Foreground="{ThemeResource TextMutedBrush}" />
               <Viewbox Grid.Column="1" Width="{StaticResource IconSize}" Height="{StaticResource IconSize}" VerticalAlignment="Top" Margin="0,1,0,0" AutomationProperties.AccessibilityView="Raw">
                 <Grid Width="24" Height="24">
-                  <shapes:Path Data="{x:Bind Icon}" Stroke="{x:Bind Tone}" Style="{StaticResource StrokeIcon}" />
+                  <shapes:Path Data="{x:Bind local:ActivityView.Icon(IconData, About)}" Stroke="{x:Bind local:ActivityView.Tone(NeedsAction)}" Style="{StaticResource StrokeIcon}" />
                 </Grid>
               </Viewbox>
               <StackPanel Grid.Column="2" Spacing="{StaticResource Space2}">
@@ -61,7 +61,7 @@
                   <TextBlock Text="{x:Bind Title}" Style="{StaticResource TypeMedium15}" Foreground="{ThemeResource InkBrush}" />
                   <!-- xaml-lint: allow card - the NEEDS ACTION chip, a caps label on an alert tint -->
                   <Border Background="{ThemeResource AlertChipBrush}" CornerRadius="{StaticResource RadiusTag}" Padding="6,3" VerticalAlignment="Center"
-                          Visibility="{x:Bind ChipVisibility}">
+                          Visibility="{x:Bind NeedsAction}">
                     <TextBlock Text="NEEDS ACTION" Style="{StaticResource TypeStrong11}" Foreground="{ThemeResource InkBrush}" />
                   </Border>
                 </StackPanel>
@@ -76,7 +76,7 @@
           <StackPanel Grid.Row="1" Margin="92,0,0,14" Spacing="{StaticResource Space10}" Opacity="0" Visibility="Collapsed"
                       controls:Reveal.IsOn="{x:Bind IsExpanded, Mode=OneWay}" controls:Reveal.Grow="True">
             <TextBlock Text="{x:Bind Logged, Mode=OneWay}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextMutedBrush}" />
-            <Grid ColumnSpacing="{StaticResource Space12}" Visibility="{x:Bind AboutVisibility}">
+            <Grid ColumnSpacing="{StaticResource Space12}" Visibility="{x:Bind NeedsAction}">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -118,7 +118,7 @@
         <TextBlock Text="Activity" Style="{StaticResource PanelHeadingText}" AutomationProperties.HeadingLevel="Level2" />
         <TextBlock Text="{x:Bind ViewModel.Sub, Mode=OneWay}" Style="{StaticResource SubtitleText}" />
       </StackPanel>
-      <TextBlock Text="No activity yet today" Style="{StaticResource SubtitleText}" Visibility="{x:Bind ViewModel.EmptyVisibility, Mode=OneWay}" />
+      <TextBlock Text="No activity yet today" Style="{StaticResource SubtitleText}" Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay}" />
       <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Normal={StaticResource Space24}}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />

@@ -23,8 +23,14 @@ public sealed partial class VesselDetailViewModel : ObservableObject
     [ObservableProperty] public partial string Note { get; set; } = string.Empty;
     [ObservableProperty] public partial double CargoPercent { get; set; }
     [ObservableProperty] public partial string CargoLabel { get; set; } = string.Empty;
-    [ObservableProperty] public partial Visibility CargoVisibility { get; set; }
-    [ObservableProperty] public partial Brush? Accent { get; set; }
+    /// <summary>A vessel is shown (a berth has no cargo bar).</summary>
+    [ObservableProperty] public partial bool HasCargo { get; set; }
+
+    /// <summary>The vessel waiting on you: her state and figure read in alert ink.</summary>
+    [ObservableProperty] public partial bool NeedsYou { get; set; }
+
+    /// <summary>A closed berth: its state and depth read in the restricted ink.</summary>
+    [ObservableProperty] public partial bool IsRestricted { get; set; }
     [ObservableProperty] public partial IReadOnlyList<Fact> Facts { get; set; } = [];
 
     [RelayCommand]
@@ -56,12 +62,12 @@ public sealed partial class VesselDetailViewModel : ObservableObject
         var berthNumber = _state.BerthOf(vessel.Id);
         var berth = PortData.Berths.FirstOrDefault(b => b.Number == berthNumber);
         var needs = _state.PendingDecision == vessel.Id;
-        var ink = Tokens.Brush("InkBrush");
 
         Name = vessel.Name;
         Where = berth is null ? "Anchorage" : $"Berth {berth.Number}";
         StateLabel = BerthFacts.State(_state, vessel).ToUpperInvariant();
-        Accent = needs ? Tokens.Brush("AlertInkBrush") : ink;
+        NeedsYou = needs;
+        IsRestricted = false;
         Note = BerthFacts.Note(vessel);
 
         (Big, BigSub) = vessel.Status switch
@@ -80,7 +86,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
             _ when vessel.UnloadPercent is > 0 and < 100 => (vessel.UnloadPercent, $"Discharged {vessel.UnloadPercent}%"),
             _ => (vessel.LoadPercent, $"Loaded {vessel.LoadPercent}%")
         };
-        CargoVisibility = Visibility.Visible;
+        HasCargo = true;
 
         var facts = new List<Fact>
         {
@@ -113,7 +119,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
     }
 
     private static Fact Fact(string key, string value, string? tone = null) =>
-        new() { Key = key, Value = value, Tone = Tokens.Brush(tone ?? "InkBrush") };
+        new() { Key = key, Value = value, Tone = tone };
 
     private void ShowBerth(BerthDef berth)
     {
@@ -123,13 +129,14 @@ public sealed partial class VesselDetailViewModel : ObservableObject
         Name = $"Berth {berth.Number}";
         Where = "North Quay";
         StateLabel = restricted ? "RESTRICTED" : "AVAILABLE";
-        Accent = restricted ? Tokens.Brush("RestrictedBrush") : Tokens.Brush("InkBrush");
+        NeedsYou = false;
+        IsRestricted = restricted;
         Big = $"{berth.Depth:0.0} m";
         BigSub = "alongside depth";
         Note = restricted
             ? BerthFacts.Restriction(berth)
             : next is null ? "No vessel booked in the next 36 h" : $"{next.Name} booked from {BerthFacts.Clock(next.Eta)}";
-        CargoVisibility = Visibility.Collapsed;
+        HasCargo = false;
         // An array, not a collection expression: one typed as IReadOnlyList has no concrete type under WinRT AOT (CsWinRT1032)
         SetFacts(new[]
         {

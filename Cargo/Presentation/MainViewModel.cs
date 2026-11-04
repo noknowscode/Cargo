@@ -33,8 +33,8 @@ public sealed partial class MainViewModel : ObservableObject
         _themes = themes;
         _logger = logger;
 
-        // The router builds models off the UI thread, and the header items carry brushes and
-        // geometries, which must be created on it.
+        // The router builds models off the UI thread; the header items are bound to the views, so they are made and
+        // changed on the UI thread.
         dispatcher.TryEnqueue(() =>
         {
             Scanner = new ScannerViewModel(state);
@@ -219,11 +219,8 @@ public sealed partial class MainViewModel : ObservableObject
 
             item.Tooltip = $"{item.Label} · {subs[item.Id]}";
             item.AutomationName = needs ? $"{item.Label}, needs you" : item.Label;
-            item.LabelForeground = current ? Tokens.Brush("InkBrush") : Tokens.Brush("TextMutedBrush");
-            item.NeedsVisibility = needs ? Visibility.Visible : Visibility.Collapsed;
-            item.UnderlineOpacity = current ? 1 : 0;
-            item.CurrentVisibility = current ? Visibility.Visible : Visibility.Collapsed;
-            item.OtherVisibility = current ? Visibility.Collapsed : Visibility.Visible;
+            item.IsCurrent = current;
+            item.NeedsYou = needs;
         }
     }
 
@@ -246,15 +243,14 @@ public sealed partial class MainViewModel : ObservableObject
         {
             foreach (var (id, label, icon) in LayerDefinitions)
             {
-                Layers.Add(new LayerItem { Id = id, Label = label, Icon = Geo.Path(icon), Command = State.Stage.SetLayerCommand });
+                Layers.Add(new LayerItem { Id = id, Label = label, IconData = icon, Command = State.Stage.SetLayerCommand });
             }
         }
 
         for (var i = 0; i < Layers.Count; i++)
         {
             var current = State.Stage.Layer == Layers[i].Id;
-            Layers[i].Foreground = current ? Tokens.Brush("PaperBrush") : Tokens.Brush("InkBrush");
-            Layers[i].IconForeground = current ? Tokens.Brush("PaperBrush") : Tokens.Brush("TextMutedBrush");
+            Layers[i].IsCurrent = current;
             if (current)
             {
                 SelectedLayerIndex = i;

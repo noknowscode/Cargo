@@ -1,12 +1,12 @@
-using Windows.UI;
-
 namespace Cargo.Presentation;
 
 public sealed class RecordRow
 {
     public required string Label { get; init; }
     public required string Count { get; init; }
-    public required Brush Tone { get; init; }
+
+    /// <summary>The record's status, as its palette key.</summary>
+    public required string Tone { get; init; }
 }
 
 public sealed class PersonCard
@@ -16,8 +16,12 @@ public sealed class PersonCard
     public required string Role { get; init; }
     public required string Credential { get; init; }
     public required string Initials { get; init; }
-    public required Brush Avatar { get; init; }
-    public required Brush Border { get; init; }
+
+    /// <summary>The avatar's ground, as its palette key.</summary>
+    public required string Avatar { get; init; }
+
+    /// <summary>The badge whose zones the map shows: an ink edge.</summary>
+    public required bool IsSelected { get; init; }
     public required ICommand Select { get; init; }
 
     /// <summary>The card for a screen reader: who, their role, and whether their zones are the ones on the map.</summary>
@@ -26,7 +30,8 @@ public sealed class PersonCard
 
 public sealed class VehicleCard
 {
-    public required Color Tint { get; init; }
+    /// <summary>The container's livery, as its palette key (paint, the same in both themes).</summary>
+    public required string Tint { get; init; }
     public required IReadOnlyList<Fact> Facts { get; init; }
 }
 
@@ -35,8 +40,9 @@ public sealed class PageTab
 {
     public required string Label { get; init; }
     public required string Route { get; init; }
-    public required Brush Background { get; init; }
-    public required Brush Foreground { get; init; }
+
+    /// <summary>The tab shown: a raised ground and ink.</summary>
+    public required bool IsCurrent { get; init; }
 
     /// <summary>The tab for a screen reader, with "current" on the one shown (the strip shows it by its raised ground).</summary>
     public required string AccessibleName { get; init; }
@@ -68,8 +74,7 @@ public sealed partial class SecurityViewModel : ObservableObject
         _navigator = navigator;
         _logger = logger;
 
-        // The router builds models off the UI thread; the rows carry brushes, which must be
-        // created on it.
+        // The router builds models off the UI thread; the rows are bound to the views, so they are built on it.
         dispatcher.TryEnqueue(() =>
         {
             BuildStatic();
@@ -167,7 +172,7 @@ public sealed partial class SecurityViewModel : ObservableObject
 
     private void Log(string mark, string text) =>
         InspectionLog = InspectionLog
-            .Append(new CheckRow { Mark = mark, Label = text, Time = ShiftClock.Format(State.NowHours % 24), Tone = Tokens.Brush("AccentBrush") })
+            .Append(new CheckRow { Mark = mark, Label = text, Time = ShiftClock.Format(State.NowHours % 24), Tone = "AccentBrush" })
             .ToList();
 
     private void OnRouteChanged(RouteChangedEventArgs e)
@@ -210,8 +215,7 @@ public sealed partial class SecurityViewModel : ObservableObject
             {
                 Label = label,
                 Route = $"./{id}",
-                Background = current ? Tokens.Brush("SurfaceBrush") : Tokens.Transparent,
-                Foreground = current ? Tokens.Brush("InkBrush") : Tokens.Brush("TextMutedBrush"),
+                IsCurrent = current,
                 AccessibleName = current ? $"{label}, current tab" : label
             });
         }
@@ -230,8 +234,8 @@ public sealed partial class SecurityViewModel : ObservableObject
                 Role = person.Role,
                 Credential = person.Credential,
                 Initials = string.Concat(person.Name.Split(' ').Select(part => part[0])),
-                Avatar = Tokens.Brush(person.AvatarToken),
-                Border = State.SelectedPerson == i ? Tokens.Brush("InkBrush") : Tokens.Brush("HairlineBrush"),
+                Avatar = person.AvatarToken,
+                IsSelected = State.SelectedPerson == i,
                 Select = SelectPersonCommand,
                 AccessibleName = $"{person.Name}, {person.Role}" + (State.SelectedPerson == i ? ", zones shown" : string.Empty)
             });
@@ -253,7 +257,7 @@ public sealed partial class SecurityViewModel : ObservableObject
             Mark = "✓",
             Label = label,
             Time = string.Empty,
-            Tone = Tokens.Brush("AccentBrush")
+            Tone = "AccentBrush"
         }).ToList();
 
         HeldChecks = new[]
@@ -266,28 +270,28 @@ public sealed partial class SecurityViewModel : ObservableObject
             Mark = entry.Item1,
             Label = entry.Item2,
             Time = string.Empty,
-            Tone = Tokens.Brush(entry.Item3)
+            Tone = entry.Item3
         }).ToList();
 
         Records = PortData.SecurityRecords
-            .Select(r => new RecordRow { Label = r.Label, Count = r.Count, Tone = Tokens.Brush(r.Tone) })
+            .Select(r => new RecordRow { Label = r.Label, Count = r.Count, Tone = r.Tone })
             .ToList();
 
         // The marks are text: a status colour that is too light for text takes its ink variant
         InspectionLog = PortData.InspectionLog
-            .Select(l => new CheckRow { Mark = l.Mark, Label = l.Text, Time = l.Time, Tone = Tokens.Brush(l.Tone == "OrangeColor" ? "OrangeInkBrush" : l.Tone) })
+            .Select(l => new CheckRow { Mark = l.Mark, Label = l.Text, Time = l.Time, Tone = l.Tone == "OrangeColor" ? "OrangeInkBrush" : l.Tone })
             .ToList();
 
         Vehicles = PortData.Vehicles.Select(v => new VehicleCard
         {
-            Tint = Tokens.Paint(v.TintToken),
+            Tint = v.TintToken,
             Facts = new[]
             {
                 new Fact { Key = "Truck", Value = v.Id },
                 new Fact { Key = "Driver", Value = v.Driver },
                 new Fact { Key = "Container", Value = v.Container },
                 new Fact { Key = "Gate", Value = v.Gate },
-                new Fact { Key = "Authorization", Value = v.Authorization, Tone = Tokens.Brush(v.AuthToken) },
+                new Fact { Key = "Authorization", Value = v.Authorization },
                 new Fact { Key = "Entry", Value = v.Entry }
             }
         }).ToList();

@@ -75,11 +75,11 @@ public sealed partial class TimelineViewModel : ObservableObject
 
     // ── Chart / Table ───────────────────────────────────────────────────
 
-    [ObservableProperty] public partial Visibility ChartVisibility { get; set; }
-    [ObservableProperty] public partial Visibility TableVisibility { get; set; }
+    /// <summary>The Table view is up (the chart's non-visual alternative); otherwise the Chart.</summary>
+    [ObservableProperty] public partial bool IsTable { get; set; }
+
+    /// <summary>The segmented toggle's indicator: 0 Chart, 1 Table.</summary>
     [ObservableProperty] public partial int ViewIndex { get; set; }
-    [ObservableProperty] public partial Brush? ChartLabel { get; set; }
-    [ObservableProperty] public partial Brush? TableLabel { get; set; }
 
     [RelayCommand]
     private void ShowChart() => SetView(table: false);
@@ -90,10 +90,7 @@ public sealed partial class TimelineViewModel : ObservableObject
     private void SetView(bool table)
     {
         ViewIndex = table ? 1 : 0;
-        ChartVisibility = table ? Visibility.Collapsed : Visibility.Visible;
-        TableVisibility = table ? Visibility.Visible : Visibility.Collapsed;
-        ChartLabel = Tokens.Brush(table ? "InkBrush" : "PaperBrush");
-        TableLabel = Tokens.Brush(table ? "PaperBrush" : "InkBrush");
+        IsTable = table;
     }
 
     // ── Tide lane typefaces ─────────────────────────────────────────────

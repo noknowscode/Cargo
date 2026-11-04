@@ -40,10 +40,10 @@
                     MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=0}"
                     AutomationProperties.Name="{x:Bind AccessibleName}">
               <!-- xaml-lint: allow card - a filter pill, not a card; half-height radius (99 draws an oval on Skia) -->
-              <Border Background="{x:Bind Background}" BorderBrush="{x:Bind Border}" BorderThickness="1"
+              <Border Background="{x:Bind local:ContainersView.ChipGround(IsCurrent)}" BorderBrush="{x:Bind local:ContainersView.ChipEdge(IsCurrent)}" BorderThickness="1"
                       CornerRadius="15" Padding="13,7" VerticalAlignment="Center">
                 <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium12}"
-                           Foreground="{x:Bind Foreground}" />
+                           Foreground="{x:Bind local:ContainersView.ChipInk(IsCurrent)}" />
               </Border>
             </Button>
           </DataTemplate>
@@ -79,7 +79,7 @@
           <DataTemplate x:DataType="local:ContainerCard">
             <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Id}"
                     AutomationProperties.Name="{x:Bind AccessibleName}">
-              <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind Border}" Padding="{StaticResource Inset16x14}">
+              <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind local:Paint.SelectedEdge(IsSelected)}" Padding="{StaticResource Inset16x14}">
                 <StackPanel Spacing="{StaticResource Space6}">
                   <Grid>
                     <!-- xaml-lint: allow card - the image well inside a container card -->
@@ -90,7 +90,7 @@
                           <GradientStop Offset="1" Color="{ThemeResource SeaLightColor}" />
                         </LinearGradientBrush>
                       </Border.Background>
-                      <Image Source="{x:Bind Render}" Height="72" Stretch="Uniform" />
+                      <Image Source="{x:Bind local:Paint.Sprite(Render)}" Height="72" Stretch="Uniform" />
                     </Border>
                     <!-- xaml-lint: allow card - container id tag over the image -->
                     <Border Background="{ThemeResource SurfaceBrush}" CornerRadius="{StaticResource RadiusTag}" Padding="7,2"
@@ -107,9 +107,9 @@
                   <TextBlock Text="{x:Bind Route}" Style="{StaticResource BodyStrongText}"
                              TextTrimming="CharacterEllipsis" Margin="{StaticResource GapTop4}" />
                   <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-                    <Ellipse Width="7" Height="7" Fill="{x:Bind StateTone}" VerticalAlignment="Center" />
+                    <Ellipse Width="7" Height="7" Fill="{x:Bind local:ContainersView.StateFill(Warn)}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind State}" Style="{StaticResource BodySmallText}"
-                               Foreground="{x:Bind StateInk}" />
+                               Foreground="{x:Bind local:ContainersView.StateInk(Warn)}" />
                   </StackPanel>
                 </StackPanel>
               </utu:CardContentControl>
@@ -130,7 +130,7 @@
                        TextWrapping="Wrap" />
           </StackPanel>
 
-          <Image Source="{x:Bind ViewModel.SelectedIso, Mode=OneWay}" Height="150" Stretch="Uniform" />
+          <Image Source="{x:Bind local:Paint.Sprite(ViewModel.SelectedIso), Mode=OneWay}" Height="150" Stretch="Uniform" />
 
           <StackPanel Spacing="{StaticResource Space10}">
             <TextBlock Text="JOURNEY" Style="{StaticResource TypeStrong12}"
@@ -148,15 +148,15 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Spacing="{StaticResource Space6}" HorizontalAlignment="Center">
                       <!-- xaml-lint: allow card - journey step icon disc -->
-                      <Border Width="30" Height="30" CornerRadius="15" Background="{x:Bind Background}"
-                              BorderBrush="{x:Bind Border}" BorderThickness="1.5">
-                        <shapes:Path Data="{x:Bind Icon}" Stroke="{x:Bind Foreground}" StrokeThickness="1.8"
+                      <Border Width="30" Height="30" CornerRadius="15" Background="{x:Bind local:ContainersView.StepGround(State)}"
+                              BorderBrush="{x:Bind local:ContainersView.StepEdge(State)}" BorderThickness="1.5">
+                        <shapes:Path Data="{x:Bind local:Paint.Icon(IconData)}" Stroke="{x:Bind local:ContainersView.StepIconInk(State)}" StrokeThickness="1.8"
                                      Width="15" Height="15" Stretch="Uniform" />
                       </Border>
                       <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium11}"
-                                 Foreground="{x:Bind LabelTone}" HorizontalAlignment="Center" />
+                                 Foreground="{x:Bind local:ContainersView.StepInk(State)}" HorizontalAlignment="Center" />
                     </StackPanel>
-                    <Rectangle Grid.Column="1" Height="1.5" Fill="{x:Bind Connector}" Margin="4,0,4,20"
+                    <Rectangle Grid.Column="1" Height="1.5" Fill="{x:Bind local:ContainersView.StepLine(State, IsLast)}" Margin="4,0,4,20"
                                VerticalAlignment="Center" />
                   </Grid>
                 </DataTemplate>

@@ -8,9 +8,14 @@ public sealed class VesselRow
     public required string Name { get; init; }
     public required string Line1 { get; init; }
     public required string Line2 { get; init; }
-    public required Brush Tone { get; init; }
-    public required Brush Border { get; init; }
-    public required ImageSource Silhouette { get; init; }
+    /// <summary>The vessel's accent, as its palette key.</summary>
+    public required string Tone { get; init; }
+
+    /// <summary>The vessel being worked: an accent edge.</summary>
+    public required bool IsSelected { get; init; }
+
+    /// <summary>Her side render, by sprite name (Assets/Sprites).</summary>
+    public required string Silhouette { get; init; }
     public required ICommand Select { get; init; }
 }
 
@@ -18,8 +23,12 @@ public sealed class VesselRow
 public sealed partial class MiniCard : ObservableObject
 {
     public required string Key { get; init; }
-    public required Brush Tone { get; init; }
-    public required Geometry Icon { get; init; }
+
+    /// <summary>The card's icon ink, as its palette key.</summary>
+    public required string Tone { get; init; }
+
+    /// <summary>The card's 24-unit stroke icon, as SVG path data.</summary>
+    public required string IconData { get; init; }
 
     [ObservableProperty]
     public partial string Value { get; set; } = string.Empty;
@@ -33,7 +42,9 @@ public sealed class CheckRow
     public required string Mark { get; init; }
     public required string Label { get; init; }
     public required string Time { get; init; }
-    public required Brush Tone { get; init; }
+
+    /// <summary>The mark's ink, as its palette key.</summary>
+    public required string Tone { get; init; }
 }
 
 /// <summary>
@@ -48,8 +59,8 @@ public sealed partial class VesselsViewModel : ObservableObject
     {
         State = state;
         CargoLegend = Enum.GetValues<CargoClass>()
-            .Select(c => new LegendItem { Label = c.Label(), Swatch = Tokens.Brush(c.Token()) })
-            .Append(new LegendItem { Label = "Already ashore", Swatch = Tokens.Brush("TextFaintBrush") })
+            .Select(c => new LegendItem { Label = c.Label(), Swatch = c.Token() })
+            .Append(new LegendItem { Label = "Already ashore", Swatch = "TextFaintBrush" })
             .ToList();
 
         Refresh();
@@ -76,21 +87,21 @@ public sealed partial class VesselsViewModel : ObservableObject
     public partial BayView? Bay { get; set; }
 
     [ObservableProperty]
-    public partial IReadOnlyList<(double Weight, Brush Fill)> CompositionSlices { get; set; } = [];
+    public partial IReadOnlyList<(double Weight, string Tone)> CompositionSlices { get; set; } = [];
 
     [ObservableProperty]
-    public partial IReadOnlyList<(double Weight, Brush Fill)> BaySlices { get; set; } = [];
+    public partial IReadOnlyList<(double Weight, string Tone)> BaySlices { get; set; } = [];
 
     [ObservableProperty]
-    public partial ImageSource? BayContainerImage { get; set; }
+    public partial string BayContainerImage { get; set; } = string.Empty;
 
     [ObservableProperty] public partial string VesselName { get; set; } = string.Empty;
     [ObservableProperty] public partial string ProfileHint { get; set; } = string.Empty;
     [ObservableProperty] public partial string BayLabel { get; set; } = string.Empty;
     [ObservableProperty] public partial string Voyage { get; set; } = string.Empty;
     [ObservableProperty] public partial string Security { get; set; } = string.Empty;
-    [ObservableProperty] public partial Brush? SecurityBackground { get; set; }
-    [ObservableProperty] public partial Brush? SecurityForeground { get; set; }
+    /// <summary>Her security is cleared: a navy chip, else an amber one.</summary>
+    [ObservableProperty] public partial bool IsCleared { get; set; }
     [ObservableProperty] public partial string TeuLabel { get; set; } = string.Empty;
     [ObservableProperty] public partial string OpsNote { get; set; } = string.Empty;
     [ObservableProperty] public partial string MovesLabel { get; set; } = string.Empty;
@@ -124,9 +135,7 @@ public sealed partial class VesselsViewModel : ObservableObject
         Voyage = vessel.Voyage;
         Security = vessel.Security;
 
-        var cleared = vessel.Security == "Cleared";
-        SecurityBackground = cleared ? Tokens.Brush("NavyColor", 0.12) : Tokens.Brush("AmberDeepColor", 0.16);
-        SecurityForeground = cleared ? Tokens.Brush("AccentBrush") : Tokens.Brush("OrangeInkBrush");
+        IsCleared = vessel.Security == "Cleared";
 
         TeuLabel = vessel.Containers.ToString("N0");
         OpsNote = vessel.OpsNote;
@@ -156,9 +165,9 @@ public sealed partial class VesselsViewModel : ObservableObject
                 Name = vessel.Name,
                 Line1 = string.Join(" · ", parts.Take(2)),
                 Line2 = SecondLine(vessel, parts),
-                Tone = Tokens.Brush(vessel.AccentToken),
-                Border = selected ? Tokens.Brush("AccentBrush") : Tokens.Brush("HairlineBrush"),
-                Silhouette = Sprites.Source(Sprites.Side(vessel.Id)),
+                Tone = vessel.AccentToken,
+                IsSelected = selected,
+                Silhouette = Sprites.Side(vessel.Id),
                 Select = State.PickHullVesselCommand
             });
         }
@@ -211,7 +220,7 @@ public sealed partial class VesselsViewModel : ObservableObject
                 Mark = check.Mark,
                 Label = check.Label,
                 Time = check.Time,
-                Tone = Tokens.Brush(check.Tone)
+                Tone = check.Tone
             });
         }
     }
@@ -219,18 +228,17 @@ public sealed partial class VesselsViewModel : ObservableObject
     private void BuildComposition(Vessel vessel)
     {
         Composition.Clear();
-        var slices = new List<(double, Brush)>();
+        var slices = new List<(double, string)>();
 
         foreach (var (cargo, percent) in vessel.Mix.Parts())
         {
-            var brush = Tokens.Brush(cargo.Token());
             Composition.Add(new CompositionSlice
             {
                 Label = cargo.Label(),
-                Fill = brush,
+                Fill = cargo.Token(),
                 Count = $"{percent}%"
             });
-            slices.Add((percent, brush));
+            slices.Add((percent, cargo.Token()));
         }
 
         CompositionSlices = slices;
@@ -255,20 +263,19 @@ public sealed partial class VesselsViewModel : ObservableObject
         BayContainerType = view.ContainerType;
         BayContainerWeight = view.Weight;
         BayContainerStatus = view.Status;
-        BayContainerImage = Sprites.Source(Sprites.Container(view.ContainerClass));
+        BayContainerImage = Sprites.Container(view.ContainerClass);
 
         BayComposition.Clear();
-        var slices = new List<(double, Brush)>();
+        var slices = new List<(double, string)>();
         foreach (var (cargo, count, percent) in view.Composition)
         {
-            var brush = Tokens.Brush(cargo.Token());
             BayComposition.Add(new CompositionSlice
             {
                 Label = cargo.Label(),
-                Fill = brush,
+                Fill = cargo.Token(),
                 Count = $"{count} ({percent}%)"
             });
-            slices.Add((count, brush));
+            slices.Add((count, cargo.Token()));
         }
 
         BaySlices = slices;
@@ -320,8 +327,8 @@ public sealed partial class VesselsViewModel : ObservableObject
                 MiniCards.Add(new MiniCard
                 {
                     Key = card.Key,
-                    Tone = Tokens.Brush(card.Tone),
-                    Icon = Geo.Path(card.Icon)
+                    Tone = card.Tone,
+                    IconData = card.Icon
                 });
             }
         }

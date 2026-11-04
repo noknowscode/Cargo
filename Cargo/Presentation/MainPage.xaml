@@ -54,7 +54,7 @@
             <!-- Phones: a 44 px row of their own, 13 px labels 10 px apart, so all five fit from 360 (narrower, the row scrolls) -->
             <Button Style="{StaticResource NavTabButton}" uen:Navigation.Request="{x:Bind Route}"
                     Height="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=44, Normal=56}"
-                    Foreground="{x:Bind LabelForeground, Mode=OneWay}"
+                    Foreground="{x:Bind local:Paint.CurrentInk(IsCurrent), Mode=OneWay}"
                     AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind Tooltip, Mode=OneWay}">
               <Grid>
@@ -62,15 +62,15 @@
                             Margin="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource InsetX6}, Normal={StaticResource InsetX12}}">
                   <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeStrong14}"
                              FontSize="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=13, Normal=14}"
-                             Visibility="{x:Bind CurrentVisibility, Mode=OneWay}" />
+                             Visibility="{x:Bind IsCurrent, Mode=OneWay}" />
                   <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium14}"
                              FontSize="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=13, Normal=14}"
-                             Visibility="{x:Bind OtherVisibility, Mode=OneWay}" />
+                             Visibility="{x:Bind local:Paint.Unless(IsCurrent), Mode=OneWay}" />
                   <Ellipse Width="6" Height="6" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Top"
-                           Margin="0,1,0,0" Visibility="{x:Bind NeedsVisibility, Mode=OneWay}" />
+                           Margin="0,1,0,0" Visibility="{x:Bind NeedsYou, Mode=OneWay}" />
                 </StackPanel>
                 <Rectangle Height="2" VerticalAlignment="Bottom" Fill="{ThemeResource AccentBrush}"
-                           Opacity="{x:Bind UnderlineOpacity, Mode=OneWay}" />
+                           Opacity="{x:Bind local:Paint.Shown(IsCurrent), Mode=OneWay}" />
               </Grid>
             </Button>
           </DataTemplate>
@@ -177,11 +177,11 @@
                   <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" VerticalAlignment="Center">
                     <Viewbox Width="{StaticResource IconSize}" Height="{StaticResource IconSize}" VerticalAlignment="Center">
                       <Grid Width="24" Height="24">
-                        <shapes:Path Data="{x:Bind Icon}" Stroke="{x:Bind IconForeground, Mode=OneWay}" StrokeThickness="1.6"
+                        <shapes:Path Data="{x:Bind local:Paint.Icon(IconData)}" Stroke="{x:Bind local:MainPage.LayerIconInk(IsCurrent), Mode=OneWay}" StrokeThickness="1.6"
                                      StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                       </Grid>
                     </Viewbox>
-                    <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium14}" Foreground="{x:Bind Foreground, Mode=OneWay}"
+                    <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium14}" Foreground="{x:Bind local:MainPage.LayerInk(IsCurrent), Mode=OneWay}"
                                Visibility="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=Collapsed, Narrow=Visible}" />
                   </StackPanel>
                 </Button>

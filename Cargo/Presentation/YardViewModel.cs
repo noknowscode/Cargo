@@ -4,7 +4,8 @@ public sealed class TierRow
 {
     public required string Id { get; init; }
     public required string Detail { get; init; }
-    public required Brush Tone { get; init; }
+    /// <summary>The box's cargo class, as its palette key.</summary>
+    public required string Tone { get; init; }
 }
 
 /// <summary>
@@ -18,12 +19,12 @@ public sealed partial class YardViewModel : ObservableObject
         State = state;
         Legend = new[]
         {
-            new LegendItem { Label = "Standard", Swatch = Tokens.Brush("CargoStandardInvariantBrush") },
-            new LegendItem { Label = "Refrigerated", Swatch = Tokens.Brush("CargoReeferInvariantBrush") },
-            new LegendItem { Label = "Hazardous", Swatch = Tokens.Brush("CargoHazardInvariantBrush") },
-            new LegendItem { Label = "Inspection", Swatch = Tokens.Brush("CargoOversizeInvariantBrush") },
-            new LegendItem { Label = "Restricted", Swatch = Tokens.Brush("RestrictedBrush") },
-            new LegendItem { Label = "Available slot", Swatch = Tokens.Brush("InkColor", 0.12) }
+            new LegendItem { Label = "Standard", Swatch = "CargoStandardInvariantBrush" },
+            new LegendItem { Label = "Refrigerated", Swatch = "CargoReeferInvariantBrush" },
+            new LegendItem { Label = "Hazardous", Swatch = "CargoHazardInvariantBrush" },
+            new LegendItem { Label = "Inspection", Swatch = "CargoOversizeInvariantBrush" },
+            new LegendItem { Label = "Restricted", Swatch = "RestrictedBrush" },
+            new LegendItem { Label = "Available slot", Swatch = "InkColor", Strength = 0.12 }
         };
 
         Refresh();
@@ -103,7 +104,7 @@ public sealed partial class YardViewModel : ObservableObject
             {
                 Id = id,
                 Detail = $"Tier {i + 1} · {tag}",
-                Tone = Tokens.Brush(token)
+                Tone = token
             });
         }
 

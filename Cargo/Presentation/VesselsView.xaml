@@ -42,7 +42,7 @@
             <DataTemplate x:DataType="local:VesselRow">
               <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Id}"
                       AutomationProperties.Name="{x:Bind Name}">
-                <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind Border}" BorderThickness="1.5" Padding="{StaticResource Inset14}">
+                <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind local:VesselsView.RowEdge(IsSelected)}" BorderThickness="1.5" Padding="{StaticResource Inset14}">
                   <Grid ColumnSpacing="{StaticResource Space10}">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="*" />
@@ -50,7 +50,7 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Spacing="{StaticResource Space6}">
                       <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-                        <Ellipse Width="7" Height="7" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
+                        <Ellipse Width="7" Height="7" Fill="{x:Bind local:Paint.Tone(Tone)}" VerticalAlignment="Center" />
                         <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" TextTrimming="CharacterEllipsis" />
                       </StackPanel>
                       <TextBlock Text="{x:Bind Line1}" Style="{StaticResource CaptionText}" Margin="{StaticResource GapStart16}"
@@ -58,7 +58,7 @@
                       <TextBlock Text="{x:Bind Line2}" Style="{StaticResource CaptionText}" Margin="{StaticResource GapStart16}"
                                  TextTrimming="CharacterEllipsis" />
                     </StackPanel>
-                    <Image Grid.Column="1" Source="{x:Bind Silhouette}" Width="84" Height="30"
+                    <Image Grid.Column="1" Source="{x:Bind local:Paint.Sprite(Silhouette)}" Width="84" Height="30"
                            Stretch="Uniform" VerticalAlignment="Center" />
                   </Grid>
                 </utu:CardContentControl>
@@ -115,7 +115,7 @@
                 <ItemsControl.ItemTemplate>
                   <DataTemplate x:DataType="local:LegendItem">
                     <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-                      <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Swatch}"
+                      <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:Paint.Swatch(Swatch, Strength)}"
                                  VerticalAlignment="Center" />
                       <TextBlock Text="{x:Bind Label}" Style="{StaticResource CaptionText}" />
                     </StackPanel>
@@ -138,12 +138,12 @@
                       <!-- xaml-lint: allow card - icon disc -->
                       <Border Width="22" Height="22" CornerRadius="11" BorderThickness="1" Margin="{StaticResource GapBottom6}"
                               BorderBrush="{ThemeResource HairlineStrongBrush}">
-                        <shapes:Path Data="{x:Bind Icon}" Stroke="{ThemeResource InkBrush}"
+                        <shapes:Path Data="{x:Bind local:Paint.Icon(IconData)}" Stroke="{ThemeResource InkBrush}"
                                    StrokeThickness="2" Width="11" Height="11" Stretch="Uniform" />
                       </Border>
                       <TextBlock Text="{x:Bind Key}" Style="{StaticResource MicroText}" />
                       <TextBlock Text="{x:Bind Value, Mode=OneWay}" Style="{StaticResource TypeDisplay15}"
-                                 Foreground="{x:Bind Tone}" />
+                                 Foreground="{x:Bind local:Paint.Tone(Tone)}" />
                       <TextBlock Text="{x:Bind Detail, Mode=OneWay}" Style="{StaticResource MicroText}" />
                     </StackPanel>
                   </utu:CardContentControl>
@@ -220,7 +220,7 @@
                     <DataTemplate x:DataType="local:CompositionSlice">
                       <Grid>
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-                          <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Fill}"
+                          <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:Paint.Tone(Fill)}"
                                      VerticalAlignment="Center" />
                           <TextBlock Text="{x:Bind Label}" Style="{StaticResource BodyText}" />
                         </StackPanel>
@@ -252,9 +252,9 @@
           <Grid>
             <TextBlock Text="Voyage" Style="{StaticResource TitleText}" VerticalAlignment="Center" />
             <!-- xaml-lint: allow card - status pill; half-height radius (99 draws an oval on Skia) -->
-            <Border Background="{x:Bind ViewModel.SecurityBackground, Mode=OneWay}" CornerRadius="11" Padding="{StaticResource Inset10x4}"
+            <Border Background="{x:Bind local:VesselsView.SecurityGround(ViewModel.IsCleared), Mode=OneWay}" CornerRadius="11" Padding="{StaticResource Inset10x4}"
                     HorizontalAlignment="Right">
-              <TextBlock Text="{x:Bind ViewModel.Security, Mode=OneWay}" Style="{StaticResource TypeMedium11}" Foreground="{x:Bind ViewModel.SecurityForeground, Mode=OneWay}" />
+              <TextBlock Text="{x:Bind ViewModel.Security, Mode=OneWay}" Style="{StaticResource TypeMedium11}" Foreground="{x:Bind local:VesselsView.SecurityInk(ViewModel.IsCleared), Mode=OneWay}" />
             </Border>
           </Grid>
           <TextBlock Text="{x:Bind ViewModel.Voyage, Mode=OneWay}" Style="{StaticResource BodyLargeText}"
@@ -290,7 +290,7 @@
                       <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{x:Bind Mark}" Style="{StaticResource TypeStrong13}"
-                               Foreground="{x:Bind Tone}" />
+                               Foreground="{x:Bind local:Paint.Tone(Tone)}" />
                     <TextBlock Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyText}" />
                     <TextBlock Grid.Column="2" Text="{x:Bind Time}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextFaintBrush}" />
                   </Grid>
@@ -384,7 +384,7 @@
                   <DataTemplate x:DataType="local:CompositionSlice">
                     <Grid ColumnSpacing="{StaticResource Space8}">
                       <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-                        <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Fill}"
+                        <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:Paint.Tone(Fill)}"
                                    VerticalAlignment="Center" />
                         <TextBlock Text="{x:Bind Label}" Style="{StaticResource BodySmallText}" />
                       </StackPanel>
@@ -406,7 +406,7 @@
               <ColumnDefinition Width="110" />
               <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Image Source="{x:Bind ViewModel.BayContainerImage, Mode=OneWay}" Width="110" Height="80" Stretch="Uniform"
+            <Image Source="{x:Bind local:Paint.Sprite(ViewModel.BayContainerImage), Mode=OneWay}" Width="110" Height="80" Stretch="Uniform"
                    VerticalAlignment="Top" Margin="{StaticResource GapTop6}" />
             <StackPanel Grid.Column="1" Spacing="{StaticResource Space4}">
               <TextBlock Text="{x:Bind ViewModel.BayContainerId, Mode=OneWay}" Style="{StaticResource TypeMonoMedium14}" />

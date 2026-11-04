@@ -50,8 +50,9 @@ public sealed partial class BerthsViewModel : ObservableObject
     [ObservableProperty]
     public partial string Conflicts { get; set; } = "0";
 
+    /// <summary>Two vessels share a berth somewhere in the next 36 h: the figure reads in alert ink.</summary>
     [ObservableProperty]
-    public partial Brush? ConflictInk { get; set; }
+    public partial bool HasConflicts { get; set; }
 
     /// <summary>The decision, status and detail panels; the page runs this only while it is shown.</summary>
     public void RefreshPanels()
@@ -67,6 +68,6 @@ public sealed partial class BerthsViewModel : ObservableObject
     {
         var count = State.Conflicts().Count;
         Conflicts = count.ToString();
-        ConflictInk = count > 0 ? Tokens.Brush("AlertInkBrush") : Tokens.Brush("InkBrush");
+        HasConflicts = count > 0;
     }
 }

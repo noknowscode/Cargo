@@ -41,10 +41,10 @@
               <Button Style="{StaticResource BareButton}" uen:Navigation.Request="{x:Bind Route}"
                       AutomationProperties.Name="{x:Bind AccessibleName}">
                 <!-- xaml-lint: allow card - the current-tab highlight inside the segmented strip; 44 px tall below 1000 -->
-                <Border Background="{x:Bind Background}" CornerRadius="{StaticResource RadiusGroup}" Padding="{StaticResource Inset14x7}"
+                <Border Background="{x:Bind local:SecurityView.TabGround(IsCurrent)}" CornerRadius="{StaticResource RadiusGroup}" Padding="{StaticResource Inset14x7}"
                         MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=0}">
                   <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium13}"
-                             Foreground="{x:Bind Foreground}" VerticalAlignment="Center" />
+                             Foreground="{x:Bind local:Paint.CurrentInk(IsCurrent)}" VerticalAlignment="Center" />
                 </Border>
               </Button>
             </DataTemplate>
@@ -135,7 +135,7 @@
                       <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{x:Bind Mark}" Style="{StaticResource TypeStrong13}"
-                               Foreground="{x:Bind Tone}" />
+                               Foreground="{x:Bind local:Paint.Tone(Tone)}" />
                     <TextBlock Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyText}" TextWrapping="Wrap" />
                   </Grid>
                 </DataTemplate>
@@ -167,7 +167,7 @@
                       <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{x:Bind Mark}" Style="{StaticResource TypeStrong13}"
-                               Foreground="{x:Bind Tone}" />
+                               Foreground="{x:Bind local:Paint.Tone(Tone)}" />
                     <TextBlock Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyText}" TextWrapping="Wrap" />
                   </Grid>
                 </DataTemplate>
@@ -193,7 +193,7 @@
                       <ColumnDefinition Width="*" />
                       <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <Ellipse Width="8" Height="8" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
+                    <Ellipse Width="8" Height="8" Fill="{x:Bind local:Paint.Tone(Tone)}" VerticalAlignment="Center" />
                     <TextBlock Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyText}" />
                     <TextBlock Grid.Column="2" Text="{x:Bind Count}" Style="{StaticResource TypeMonoMedium12}" Foreground="{ThemeResource TextMutedBrush}" />
                   </Grid>
@@ -227,14 +227,14 @@
             <DataTemplate x:DataType="local:PersonCard">
               <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Index}"
                       AutomationProperties.Name="{x:Bind AccessibleName}">
-                <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind Border}" Padding="{StaticResource Inset14}">
+                <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind local:Paint.SelectedEdge(IsSelected)}" Padding="{StaticResource Inset14}">
                   <Grid ColumnSpacing="{StaticResource Space12}">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="46" />
                       <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <!-- xaml-lint: allow card - avatar swatch -->
-                    <Border Width="46" Height="46" CornerRadius="{StaticResource RadiusPanel}" Background="{x:Bind Avatar}">
+                    <Border Width="46" Height="46" CornerRadius="{StaticResource RadiusPanel}" Background="{x:Bind local:Paint.Tone(Avatar)}">
                       <TextBlock Text="{x:Bind Initials}" Style="{StaticResource TypeStrong14}"
                                  Foreground="{ThemeResource SurfaceBrush}"
                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -284,7 +284,7 @@
                     <ColumnDefinition Width="92" />
                     <ColumnDefinition Width="*" />
                   </Grid.ColumnDefinitions>
-                  <controls:YardTruck Tint="{x:Bind Tint}" Width="92" Height="38" VerticalAlignment="Center" />
+                  <controls:YardTruck Tint="{x:Bind local:SecurityView.Livery(Tint)}" Width="92" Height="38" VerticalAlignment="Center" />
                   <ItemsControl Grid.Column="1" ItemsSource="{x:Bind Facts}">
                     <ItemsControl.ItemsPanel>
                       <ItemsPanelTemplate><controls:TileGridPanel MinTileWidth="150" Gap="10" /></ItemsPanelTemplate>
@@ -374,7 +374,7 @@
                         <ColumnDefinition Width="*" />
                       </Grid.ColumnDefinitions>
                       <TextBlock Text="{x:Bind Mark}" Style="{StaticResource TypeStrong13}"
-                                 Foreground="{x:Bind Tone}" />
+                                 Foreground="{x:Bind local:Paint.Tone(Tone)}" />
                       <TextBlock Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyText}" TextWrapping="Wrap"
                                  LineHeight="18" />
                     </Grid>

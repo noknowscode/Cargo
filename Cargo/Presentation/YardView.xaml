@@ -43,7 +43,7 @@
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="local:LegendItem">
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-              <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Swatch}" VerticalAlignment="Center" />
+              <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:Paint.Swatch(Swatch, Strength)}" VerticalAlignment="Center" />
               <TextBlock Text="{x:Bind Label}" Style="{StaticResource CaptionText}" />
             </StackPanel>
           </DataTemplate>
@@ -94,7 +94,7 @@
               <DataTemplate x:DataType="local:TierRow">
                 <Grid>
                   <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-                    <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
+                    <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:Paint.Tone(Tone)}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind Id}" Style="{StaticResource TypeMonoMedium12}" />
                   </StackPanel>
                   <TextBlock Text="{x:Bind Detail}" Style="{StaticResource CaptionText}" HorizontalAlignment="Right" />
