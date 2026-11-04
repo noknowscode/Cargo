@@ -81,6 +81,12 @@ public class ScheduleTests
     public void A_berth_number_finds_its_place_on_the_quay(string? number, int? index) =>
         Assert.That(PortData.BerthIndex(number), Is.EqualTo(index));
 
+    [TestCase("07", 13.4)]
+    [TestCase("09", null)]
+    [TestCase(null, null)]
+    public void A_berth_number_finds_the_berth(string? number, double? depth) =>
+        Assert.That(PortData.Berth(number)?.Depth, Is.EqualTo(depth));
+
     [Test]
     public void The_operator_shift_reads_in_clock_time() =>
         Assert.That((PortData.Operator.ClockedInText, PortData.Operator.ShiftEndText), Is.EqualTo(("18:00", "06:00")));

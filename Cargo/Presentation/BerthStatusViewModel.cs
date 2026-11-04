@@ -88,7 +88,7 @@ public sealed partial class BerthStatusViewModel : ObservableObject
 
         foreach (var row in Rows)
         {
-            if (PortData.Berths.FirstOrDefault(b => b.Number == row.Slot) is { } berth)
+            if (PortData.Berth(row.Slot) is { } berth)
             {
                 FillBerth(row, berth);
             }

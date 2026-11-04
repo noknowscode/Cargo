@@ -151,6 +151,9 @@ public static class PortData
         return null;
     }
 
+    /// <summary>The berth numbered <paramref name="number"/> ("07"); null for no berth or one the quay does not have.</summary>
+    public static BerthDef? Berth(string? number) => BerthIndex(number) is { } index ? Berths[index] : null;
+
     /// <summary>
     /// Occupation window per vessel, in hours on the app clock (may run past 24): from her ETA to her ETD, read
     /// through <see cref="ShiftClock.ClockHours"/>, so the plan, the conflict check and the berth list agree with the

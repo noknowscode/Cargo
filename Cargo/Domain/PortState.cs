@@ -262,7 +262,7 @@ public sealed partial class PortState : ObservableObject
     /// </summary>
     public string? PendingDecision => PortData.Vessels
         .Where(v => v.Status == VesselStatus.Arriving && !_confirmed.Contains(v.Id))
-        .FirstOrDefault(v => BerthOf(v.Id) is { } berth && PortData.Berths.Any(b => b.Number == berth && b.State == BerthState.Reserved))
+        .FirstOrDefault(v => PortData.Berth(BerthOf(v.Id))?.State == BerthState.Reserved)
         ?.Id;
 
     public bool NeedsDecision => PendingDecision is not null;

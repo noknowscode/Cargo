@@ -47,7 +47,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
     /// <summary>Called by the page while it is on screen, on structure changes and each tick.</summary>
     public void Refresh()
     {
-        if (_state.SelectedBerth is { } number && PortData.Berths.FirstOrDefault(b => b.Number == number) is { } berth)
+        if (PortData.Berth(_state.SelectedBerth) is { } berth)
         {
             ShowBerth(berth);
         }
@@ -59,8 +59,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
 
     private void ShowVessel(Vessel vessel)
     {
-        var berthNumber = _state.BerthOf(vessel.Id);
-        var berth = PortData.Berths.FirstOrDefault(b => b.Number == berthNumber);
+        var berth = PortData.Berth(_state.BerthOf(vessel.Id));
         var needs = _state.PendingDecision == vessel.Id;
 
         Name = vessel.Name;

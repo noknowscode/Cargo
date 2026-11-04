@@ -127,8 +127,7 @@ public sealed partial class NeedsYouViewModel : ObservableObject
         else if (pending is { } id)
         {
             var vessel = PortData.Vessel(id);
-            var berthNumber = _state.BerthOf(id);
-            var berth = PortData.Berths.First(b => b.Number == berthNumber);
+            var berth = PortData.Berth(_state.BerthOf(id)) ?? throw new InvalidOperationException($"{id} waits on no berth");
             Title = $"{vessel.Name} needs berth {berth.Number} confirmed";
             Meta = _error ?? $"Arrives {ShiftClock.Display(vessel.Eta)} · under-keel {BerthFacts.UnderKeel(vessel, berth):0.0} m · pilot aboard";
             ConfirmLabel = IsBusy ? "Confirming" : $"Confirm berth {berth.Number}";
