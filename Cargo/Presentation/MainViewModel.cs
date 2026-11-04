@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using Uno.Extensions.Toolkit;
 
 namespace Cargo.Presentation;
 
@@ -33,7 +32,6 @@ public sealed partial class MainViewModel : ObservableObject
         _navigator = navigator;
         _themes = themes;
         _logger = logger;
-
 
         // The router builds models off the UI thread, and the header items carry brushes and
         // geometries, which must be created on it.

@@ -1,5 +1,3 @@
-using Microsoft.UI.Xaml.Media;
-
 namespace Cargo.Presentation;
 
 // Flat, already-resolved shapes for the lists in the UI. Most are rebuilt wholesale when
