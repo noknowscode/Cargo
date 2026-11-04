@@ -26,7 +26,7 @@ public class CultureTests
         try
         {
             Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(culture);
-            Assert.That(PortState.ClockHours("Thu 02:30"), Is.EqualTo(26.5));
+            Assert.That(ShiftClock.ClockHours("Thu 02:30"), Is.EqualTo(26.5));
             Assert.That(PortData.Schedule["levant"], Is.EqualTo((26.5, 58d)));
         }
         finally

@@ -52,7 +52,7 @@ public sealed partial class ContainerScanner : Panel
             if (_state is not null)
             {
                 _state.StructureChanged -= OnChanged;
-                _state.PropertyChanged -= OnPropertyChanged;
+                _state.Scanner.PropertyChanged -= OnPropertyChanged;
             }
 
             _state = value;
@@ -60,7 +60,7 @@ public sealed partial class ContainerScanner : Panel
             if (_state is not null)
             {
                 _state.StructureChanged += OnChanged;
-                _state.PropertyChanged += OnPropertyChanged;
+                _state.Scanner.PropertyChanged += OnPropertyChanged;
             }
 
             Render();
@@ -71,8 +71,8 @@ public sealed partial class ContainerScanner : Panel
 
     private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(PortState.ScanRotationX) or nameof(PortState.ScanRotationY)
-            or nameof(PortState.ScanZoom) or nameof(PortState.Xray))
+        if (e.PropertyName is nameof(ScannerState.RotationX) or nameof(ScannerState.RotationY)
+            or nameof(ScannerState.Zoom) or nameof(ScannerState.Xray))
         {
             QueueRender();
         }
@@ -116,8 +116,8 @@ public sealed partial class ContainerScanner : Panel
     private Point Project(double x, double y, double z, double centreX, double centreY, double zoom)
     {
         var state = _state!;
-        var ry = state.ScanRotationY * Math.PI / 180;
-        var rx = state.ScanRotationX * Math.PI / 180;
+        var ry = state.Scanner.RotationY * Math.PI / 180;
+        var rx = state.Scanner.RotationX * Math.PI / 180;
 
         // Yaw about the vertical, then pitch towards the viewer
         var x1 = x * Math.Cos(ry) + z * Math.Sin(ry);
@@ -132,8 +132,8 @@ public sealed partial class ContainerScanner : Panel
     private double DepthOf(double x, double y, double z)
     {
         var state = _state!;
-        var ry = state.ScanRotationY * Math.PI / 180;
-        var rx = state.ScanRotationX * Math.PI / 180;
+        var ry = state.Scanner.RotationY * Math.PI / 180;
+        var rx = state.Scanner.RotationX * Math.PI / 180;
 
         var z1 = -x * Math.Sin(ry) + z * Math.Cos(ry);
         return y * Math.Sin(rx) + z1 * Math.Cos(rx);
@@ -150,13 +150,13 @@ public sealed partial class ContainerScanner : Panel
             return;
         }
 
-        var container = _state.SelectedContainer;
+        var container = _state.Scanner.SelectedContainer;
         // The box's paint on a stage that is dark in both themes: the daylight value, whatever the theme
         var tint = Tokens.Paint(container.TintToken);
-        var xray = _state.Xray;
+        var xray = _state.Scanner.Xray;
         // The box is 520 units long, drawn at full size on the design's stage (760 x 440 or more); a smaller stage (a
         // laptop's, or the phone sheet's) shrinks it to fit rather than cropping it
-        var zoom = _state.ScanZoom * Math.Min(1, Math.Min(ActualWidth / 760, ActualHeight / 440));
+        var zoom = _state.Scanner.Zoom * Math.Min(1, Math.Min(ActualWidth / 760, ActualHeight / 440));
 
         var cx = ActualWidth / 2;
         var cy = ActualHeight / 2;
@@ -299,8 +299,8 @@ public sealed partial class ContainerScanner : Panel
 
         _dragging = true;
         _dragOrigin = e.GetCurrentPoint(this).Position;
-        _dragRx = _state.ScanRotationX;
-        _dragRy = _state.ScanRotationY;
+        _dragRx = _state.Scanner.RotationX;
+        _dragRy = _state.Scanner.RotationY;
         CapturePointer(e.Pointer);
     }
 
@@ -312,7 +312,7 @@ public sealed partial class ContainerScanner : Panel
         }
 
         var point = e.GetCurrentPoint(this).Position;
-        _state.ScanRotationY = _dragRy + (point.X - _dragOrigin.X) * 0.4;
-        _state.ScanRotationX = Math.Clamp(_dragRx - (point.Y - _dragOrigin.Y) * 0.4, -90, 90);
+        _state.Scanner.RotationY = _dragRy + (point.X - _dragOrigin.X) * 0.4;
+        _state.Scanner.RotationX = Math.Clamp(_dragRx - (point.Y - _dragOrigin.Y) * 0.4, -90, 90);
     }
 }

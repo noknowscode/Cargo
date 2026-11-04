@@ -18,14 +18,14 @@ public class StoreTests
     {
         var state = Store();
 
-        state.GoCommand.Execute("vessels");
-        Assert.That(state.Section, Is.EqualTo("berths"));
+        state.Navigation.GoCommand.Execute("vessels");
+        Assert.That(state.Navigation.Section, Is.EqualTo("berths"));
 
-        state.GoCommand.Execute("yard");
-        Assert.That(state.Section, Is.EqualTo("cargo"));
+        state.Navigation.GoCommand.Execute("yard");
+        Assert.That(state.Navigation.Section, Is.EqualTo("cargo"));
 
-        state.GoCommand.Execute("activity");
-        Assert.That(state.Section, Is.EqualTo("overview"));
+        state.Navigation.GoCommand.Execute("activity");
+        Assert.That(state.Navigation.Section, Is.EqualTo("overview"));
     }
 
     [Test]
@@ -38,7 +38,7 @@ public class StoreTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(state.Section, Is.EqualTo("berths"));
+            Assert.That(state.Navigation.Section, Is.EqualTo("berths"));
             Assert.That(state.SelectedVesselId, Is.EqualTo("kaida"));
             Assert.That(state.SelectedBay, Is.Null);
         });
@@ -49,11 +49,11 @@ public class StoreTests
     {
         var state = Store();
         state.OpenVesselCommand.Execute("levant");
-        state.GoCommand.Execute("overview");
+        state.Navigation.GoCommand.Execute("overview");
 
         state.OpenDockingCommand.Execute(null);
 
-        Assert.That(state.Section, Is.EqualTo("berths"));
+        Assert.That(state.Navigation.Section, Is.EqualTo("berths"));
         Assert.That(state.DockSelection, Is.EqualTo("levant"));
     }
 
@@ -62,24 +62,24 @@ public class StoreTests
     {
         var state = Store();
 
-        state.OpenInspectionCommand.Execute(null);
-        Assert.That((state.Section, state.SecurityTab, state.SecurityTitle), Is.EqualTo(("security", "inspection", "Cargo inspection")));
+        state.Navigation.OpenInspectionCommand.Execute(null);
+        Assert.That((state.Navigation.Section, state.Navigation.SecurityTab, state.Navigation.SecurityTitle), Is.EqualTo(("security", "inspection", "Cargo inspection")));
 
-        state.OpenAccessCommand.Execute(null);
-        Assert.That((state.Section, state.SecurityTab, state.SecurityTitle), Is.EqualTo(("security", "access", "Access control")));
+        state.Navigation.OpenAccessCommand.Execute(null);
+        Assert.That((state.Navigation.Section, state.Navigation.SecurityTab, state.Navigation.SecurityTitle), Is.EqualTo(("security", "access", "Access control")));
     }
 
     [Test]
     public void Revealing_needs_you_goes_to_Overview_and_bumps_the_reveal()
     {
         var state = Store();
-        state.GoCommand.Execute("fleet");
+        state.Navigation.GoCommand.Execute("fleet");
 
-        state.RevealNeedsYouCommand.Execute(null);
-        state.RevealNeedsYouCommand.Execute(null);
+        state.Navigation.RevealNeedsYouCommand.Execute(null);
+        state.Navigation.RevealNeedsYouCommand.Execute(null);
 
-        Assert.That(state.Section, Is.EqualTo("overview"));
-        Assert.That(state.NeedsYouReveal, Is.EqualTo(2));
+        Assert.That(state.Navigation.Section, Is.EqualTo("overview"));
+        Assert.That(state.Navigation.NeedsYouReveal, Is.EqualTo(2));
     }
 
     [Test]
@@ -89,7 +89,7 @@ public class StoreTests
         var raised = 0;
         state.StructureChanged += (_, _) => raised++;
 
-        state.GoCommand.Execute("cargo");
+        state.Navigation.GoCommand.Execute("cargo");
 
         Assert.That(raised, Is.EqualTo(1));
     }
@@ -103,22 +103,22 @@ public class StoreTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(state.ShowStage && state.StageFull && !state.StageCompact, Is.True);
-            Assert.That(state.StageHeight, Is.EqualTo(340));
-            Assert.That(state.StageToggleLabel, Is.EqualTo("Expand"));
-            Assert.That(state.MastheadShown && state.LayerSwitchShown, Is.True);
+            Assert.That(state.Stage.Shown && state.Stage.Full && !state.Stage.Compact, Is.True);
+            Assert.That(state.Stage.Height, Is.EqualTo(340));
+            Assert.That(state.Stage.ToggleLabel, Is.EqualTo("Expand"));
+            Assert.That(state.Stage.MastheadShown && state.Stage.LayerSwitchShown, Is.True);
         });
 
-        state.ToggleStageCommand.Execute(null);
-        Assert.That((state.StageHeight, state.StageExpanded, state.StageToggleLabel), Is.EqualTo((491d, true, "Collapse")));
+        state.Stage.ToggleCommand.Execute(null);
+        Assert.That((state.Stage.Height, state.Stage.Expanded, state.Stage.ToggleLabel), Is.EqualTo((491d, true, "Collapse")));
 
-        state.OverviewCondensed = true;
+        state.Stage.OverviewCondensed = true;
         Assert.Multiple(() =>
         {
-            Assert.That(state.StageHeight, Is.EqualTo(180));
-            Assert.That(state.StageCollapsed, Is.True);
-            Assert.That(state.StageToggleLabel, Is.EqualTo("Show harbour"));
-            Assert.That(state.MastheadShown || state.LayerSwitchShown, Is.False);
+            Assert.That(state.Stage.Height, Is.EqualTo(180));
+            Assert.That(state.Stage.Collapsed, Is.True);
+            Assert.That(state.Stage.ToggleLabel, Is.EqualTo("Show harbour"));
+            Assert.That(state.Stage.MastheadShown || state.Stage.LayerSwitchShown, Is.False);
         });
     }
 
@@ -126,57 +126,57 @@ public class StoreTests
     public void The_toggle_on_a_condensed_Overview_asks_for_the_top()
     {
         var state = Store();
-        state.OverviewCondensed = true;
+        state.Stage.OverviewCondensed = true;
         var asked = 0;
-        state.ScrollToTopRequested += (_, _) => asked++;
+        state.Stage.ScrollToTopRequested += (_, _) => asked++;
 
-        state.ToggleStageCommand.Execute(null);
+        state.Stage.ToggleCommand.Execute(null);
 
         Assert.That(asked, Is.EqualTo(1));
-        Assert.That(state.OverviewExpanded, Is.False);
+        Assert.That(state.Stage.OverviewExpanded, Is.False);
     }
 
     [Test]
     public void Other_sections_open_their_strip_and_a_move_closes_it()
     {
         var state = Store();
-        state.GoCommand.Execute("berths");
+        state.Navigation.GoCommand.Execute("berths");
 
         Assert.Multiple(() =>
         {
-            Assert.That(state.StageCompact, Is.True);
-            Assert.That(double.IsNaN(state.StageHeight), Is.True);
-            Assert.That(state.StageToggleLabel, Is.EqualTo("Expand harbour"));
-            Assert.That(state.LayerSwitchShown, Is.False);
+            Assert.That(state.Stage.Compact, Is.True);
+            Assert.That(double.IsNaN(state.Stage.Height), Is.True);
+            Assert.That(state.Stage.ToggleLabel, Is.EqualTo("Expand harbour"));
+            Assert.That(state.Stage.LayerSwitchShown, Is.False);
         });
 
-        state.ToggleStageCommand.Execute(null);
-        Assert.That((state.StageOpen, state.StageFull, state.StageCompact, state.StageToggleLabel),
+        state.Stage.ToggleCommand.Execute(null);
+        Assert.That((state.Stage.Open, state.Stage.Full, state.Stage.Compact, state.Stage.ToggleLabel),
             Is.EqualTo((true, true, false, "Collapse harbour")));
 
-        state.GoCommand.Execute("cargo");
-        Assert.That(state.StageOpen, Is.False);
-        Assert.That(state.StageCompact, Is.True);
+        state.Navigation.GoCommand.Execute("cargo");
+        Assert.That(state.Stage.Open, Is.False);
+        Assert.That(state.Stage.Compact, Is.True);
     }
 
     [Test]
     public void Waterways_has_no_stage()
     {
         var state = Store();
-        state.GoCommand.Execute("fleet");
+        state.Navigation.GoCommand.Execute("fleet");
 
-        Assert.That((state.ShowStage, state.ShowStageToggle, state.StageCompact), Is.EqualTo((false, false, false)));
+        Assert.That((state.Stage.Shown, state.Stage.ShowToggle, state.Stage.Compact), Is.EqualTo((false, false, false)));
     }
 
     [Test]
     public void Leaving_Overview_clears_its_condensed_band()
     {
         var state = Store();
-        state.OverviewCondensed = true;
+        state.Stage.OverviewCondensed = true;
 
-        state.GoCommand.Execute("berths");
+        state.Navigation.GoCommand.Execute("berths");
 
-        Assert.That(state.OverviewCondensed, Is.False);
+        Assert.That(state.Stage.OverviewCondensed, Is.False);
     }
 
     [Test]
@@ -186,9 +186,9 @@ public class StoreTests
         var raised = 0;
         state.StructureChanged += (_, _) => raised++;
 
-        state.SetLayerCommand.Execute("yard");
+        state.Stage.SetLayerCommand.Execute("yard");
 
-        Assert.That(state.HarbourLayer, Is.EqualTo("yard"));
+        Assert.That(state.Stage.Layer, Is.EqualTo("yard"));
         Assert.That(raised, Is.EqualTo(1));
     }
 
@@ -201,18 +201,18 @@ public class StoreTests
         state.HoverChanged += (_, _) => hovers++;
         state.StructureChanged += (_, _) => structures++;
 
-        state.HoverCommand.Execute("nordic");
-        Assert.That((state.HoveredVessel, state.HoveredBerth), Is.EqualTo(("nordic", (int?)null)));
+        state.Stage.HoverCommand.Execute("nordic");
+        Assert.That((state.Stage.HoveredVessel, state.Stage.HoveredBerth), Is.EqualTo(("nordic", (int?)null)));
 
-        state.HoverCommand.Execute("07");
-        Assert.That((state.HoveredVessel, state.HoveredBerth), Is.EqualTo(((string?)null, (int?)6)));
+        state.Stage.HoverCommand.Execute("07");
+        Assert.That((state.Stage.HoveredVessel, state.Stage.HoveredBerth), Is.EqualTo(((string?)null, (int?)6)));
 
         // The previous row's leave arrives after the next row's enter: it must not clear the new hover
-        state.HoverCommand.Execute("-nordic");
-        Assert.That(state.HoveredBerth, Is.EqualTo(6));
+        state.Stage.HoverCommand.Execute("-nordic");
+        Assert.That(state.Stage.HoveredBerth, Is.EqualTo(6));
 
-        state.HoverCommand.Execute("-07");
-        Assert.That((state.HoveredVessel, state.HoveredBerth), Is.EqualTo(((string?)null, (int?)null)));
+        state.Stage.HoverCommand.Execute("-07");
+        Assert.That((state.Stage.HoveredVessel, state.Stage.HoveredBerth), Is.EqualTo(((string?)null, (int?)null)));
 
         Assert.That(hovers, Is.GreaterThan(0));
         Assert.That(structures, Is.Zero, "a hover repaints, it never rebuilds");
@@ -224,18 +224,18 @@ public class StoreTests
         var state = Store();
 
         state.PickHullVesselCommand.Execute("baltic");
-        Assert.That(state.HarbourSelection, Is.EqualTo("baltic"), "Overview selects on the harbour");
+        Assert.That(state.Stage.Selection, Is.EqualTo("baltic"), "Overview selects on the harbour");
         state.PickHullVesselCommand.Execute("baltic");
-        Assert.That(state.HarbourSelection, Is.Null, "a second pick clears it");
+        Assert.That(state.Stage.Selection, Is.Null, "a second pick clears it");
 
-        state.GoCommand.Execute("berths");
+        state.Navigation.GoCommand.Execute("berths");
         state.SelectedBay = 2;
         state.PickHullVesselCommand.Execute("kaida");
         Assert.That((state.SelectedVesselId, state.SelectedBay), Is.EqualTo(("kaida", (int?)null)), "Berths works the vessel");
 
-        state.GoCommand.Execute("security");
+        state.Navigation.GoCommand.Execute("security");
         state.PickHullVesselCommand.Execute("aurora");
-        Assert.That((state.Section, state.SelectedVesselId), Is.EqualTo(("berths", "aurora")), "Security opens her on Berths");
+        Assert.That((state.Navigation.Section, state.SelectedVesselId), Is.EqualTo(("berths", "aurora")), "Security opens her on Berths");
     }
 
     // ── Scanner ─────────────────────────────────────────────────────────────
@@ -247,11 +247,11 @@ public class StoreTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(state.ScannerOpen, Is.False);
-            Assert.That(state.Xray, Is.False);
-            Assert.That(state.ContainerFilter, Is.EqualTo("All"));
-            Assert.That(state.SelectedContainer.Id, Is.EqualTo("AVRU4821934"));
-            Assert.That((state.ScanRotationX, state.ScanRotationY, state.ScanZoom), Is.EqualTo((-18d, -32d, 1d)));
+            Assert.That(state.Scanner.Open, Is.False);
+            Assert.That(state.Scanner.Xray, Is.False);
+            Assert.That(state.Scanner.Filter, Is.EqualTo("All"));
+            Assert.That(state.Scanner.SelectedContainer.Id, Is.EqualTo("AVRU4821934"));
+            Assert.That((state.Scanner.RotationX, state.Scanner.RotationY, state.Scanner.Zoom), Is.EqualTo((-18d, -32d, 1d)));
         });
     }
 
@@ -262,12 +262,12 @@ public class StoreTests
         var raised = 0;
         state.StructureChanged += (_, _) => raised++;
 
-        state.ContainerFilter = "Inspection";
-        state.SelectedContainerId = PortData.Containers[1].Id;
-        state.Xray = true;
+        state.Scanner.Filter = "Inspection";
+        state.Scanner.SelectedContainerId = PortData.Containers[1].Id;
+        state.Scanner.Xray = true;
 
         Assert.That(raised, Is.EqualTo(3));
-        Assert.That(state.SelectedContainer, Is.SameAs(PortData.Containers[1]));
+        Assert.That(state.Scanner.SelectedContainer, Is.SameAs(PortData.Containers[1]));
     }
 
     // ── Yard ────────────────────────────────────────────────────────────────
@@ -277,18 +277,18 @@ public class StoreTests
     {
         var clock = new ManualClock();
         var state = new PortState(clock);
-        var moves = state.YardMoves;
+        var moves = state.Yard.Moves;
         var raised = 0;
         state.YardChanged += (_, _) => raised++;
 
         clock.Advance(TimeSpan.FromSeconds(1));
         clock.Advance(TimeSpan.FromSeconds(1));
-        Assert.That(state.YardMoves, Is.EqualTo(moves + 1), "the first beat works a stack, the next waits");
+        Assert.That(state.Yard.Moves, Is.EqualTo(moves + 1), "the first beat works a stack, the next waits");
 
         clock.Advance(TimeSpan.FromSeconds(4));
-        Assert.That(state.YardMoves, Is.EqualTo(moves + 2));
+        Assert.That(state.Yard.Moves, Is.EqualTo(moves + 2));
         Assert.That(raised, Is.EqualTo(2));
-        Assert.That(state.YardOccupancy, Is.InRange(0, 100));
+        Assert.That(state.Yard.Occupancy, Is.InRange(0, 100));
     }
 
     [Test]
@@ -298,7 +298,7 @@ public class StoreTests
         var raised = 0;
         state.StructureChanged += (_, _) => raised++;
 
-        state.SelectedStack = "A-0-0";
+        state.Yard.SelectedStack = "A-0-0";
 
         Assert.That(raised, Is.EqualTo(1));
     }
@@ -311,21 +311,21 @@ public class StoreTests
         var clock = new ManualClock();
         var state = new PortState(clock);
         var vessel = PortData.RiverFleet[0];
-        var seeded = state.ThreadFor(vessel.Id).Count;
-        state.ChatDraft = "Hold at the lock";
+        var seeded = state.Chat.ThreadFor(vessel.Id).Count;
+        state.Chat.Draft = "Hold at the lock";
         clock.Advance(TimeSpan.FromMinutes(3));
 
-        state.Send(vessel.Id, "  Hold at the lock ");
+        state.Chat.Send(vessel.Id, "  Hold at the lock ");
 
-        var thread = state.ThreadFor(vessel.Id);
+        var thread = state.Chat.ThreadFor(vessel.Id);
         Assert.Multiple(() =>
         {
             Assert.That(thread, Has.Count.EqualTo(seeded + 1));
             Assert.That(thread[^1].Who, Is.EqualTo("dispatch"));
             Assert.That(thread[^1].Text, Is.EqualTo("Hold at the lock"));
-            Assert.That(PortState.Format(thread[^1].Hour), Is.EqualTo("21:01"));
-            Assert.That(state.ChatDraft, Is.Empty);
-            Assert.That(state.ThreadFor(PortData.RiverFleet[1].Id), Has.Count.EqualTo(PortData.RiverFleet[1].Thread.Count));
+            Assert.That(ShiftClock.Format(thread[^1].Hour), Is.EqualTo("21:01"));
+            Assert.That(state.Chat.Draft, Is.Empty);
+            Assert.That(state.Chat.ThreadFor(PortData.RiverFleet[1].Id), Has.Count.EqualTo(PortData.RiverFleet[1].Thread.Count));
         });
     }
 
@@ -334,12 +334,12 @@ public class StoreTests
     {
         var state = Store();
         var vessel = PortData.RiverFleet[0];
-        var seeded = state.ThreadFor(vessel.Id).Count;
-        state.ChatDraft = "   ";
+        var seeded = state.Chat.ThreadFor(vessel.Id).Count;
+        state.Chat.Draft = "   ";
 
-        state.Send(vessel.Id, "   ");
+        state.Chat.Send(vessel.Id, "   ");
 
-        Assert.That(state.ThreadFor(vessel.Id), Has.Count.EqualTo(seeded));
-        Assert.That(state.ChatDraft, Is.EqualTo("   "));
+        Assert.That(state.Chat.ThreadFor(vessel.Id), Has.Count.EqualTo(seeded));
+        Assert.That(state.Chat.Draft, Is.EqualTo("   "));
     }
 }

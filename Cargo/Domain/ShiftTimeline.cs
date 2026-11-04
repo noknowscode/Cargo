@@ -50,8 +50,8 @@ public static class ShiftTimeline
 
         foreach (var vessel in PortData.Vessels)
         {
-            Add(vessel.Name, PortState.ClockHours(vessel.Eta), arrival: true);
-            Add(vessel.Name, PortState.ClockHours(vessel.Etd), arrival: false);
+            Add(vessel.Name, ShiftClock.ClockHours(vessel.Eta), arrival: true);
+            Add(vessel.Name, ShiftClock.ClockHours(vessel.Etd), arrival: false);
         }
 
         foreach (var (name, hour, arrival) in PortData.Movements)
@@ -65,11 +65,23 @@ public static class ShiftTimeline
     /// <summary>The planned moves in the hour starting at <paramref name="hour"/> (the plan stops at midnight's figure).</summary>
     public static double Volume(int hour) => PortData.Volume[Math.Clamp(hour, 0, 24)];
 
+    /// <summary>
+    /// Container moves in the hour so far: the hour's planned volume scaled by how far into it we are, with a little
+    /// crane-to-crane jitter.
+    /// </summary>
+    public static int MovesAt(double hours)
+    {
+        var hour = (int)Math.Floor(hours);
+        var fraction = hours - hour;
+        var moves = (int)Math.Round(PortData.Volume[Math.Clamp(hour, 0, 24)] * fraction + Math.Sin(hours * 97) * 3);
+        return Math.Max(0, moves);
+    }
+
     /// <summary>Container moves from 06:00 to <paramref name="now"/>: the whole hours, then the current hour so far.</summary>
     public static double MovesToday(double now)
     {
         var hour = (int)Math.Floor(now);
-        return Enumerable.Range((int)Start, Math.Max(0, hour - (int)Start)).Sum(Volume) + PortState.MovesAt(now);
+        return Enumerable.Range((int)Start, Math.Max(0, hour - (int)Start)).Sum(Volume) + MovesAt(now);
     }
 
     /// <summary>The busiest whole hour from 06:00 up to the hour <paramref name="now"/> falls in, and its moves; the first wins a tie.</summary>

@@ -51,7 +51,7 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
     {
         foreach (var row in Past.Concat(Upcoming))
         {
-            row.Ground = Tokens.Tint("AccentBrush", row.Id == _state.HoveredVessel ? .07 : 0);
+            row.Ground = Tokens.Tint("AccentBrush", row.Id == _state.Stage.HoveredVessel ? .07 : 0);
         }
     }
 
@@ -89,7 +89,7 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
         }
 
         var count = inWindow.Length;
-        Sub = $"{PortState.Format(now)} → {PortState.Format(now + Ahead)} · {(count == 1 ? "1 movement" : $"{count} movements")} · ships to scale";
+        Sub = $"{ShiftClock.Format(now)} → {ShiftClock.Format(now + Ahead)} · {(count == 1 ? "1 movement" : $"{count} movements")} · ships to scale";
         EmptyVisibility = count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
@@ -107,13 +107,13 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
         {
             Id = e.Id,
             Hour = e.Hour,
-            Time = PortState.Format(e.Hour),
+            Time = ShiftClock.Format(e.Hour),
             Name = e.Name,
             Sub = sub,
             Arrival = e.Arrival,
             Length = vessel?.Length ?? 250,
             Open = _state.OpenVesselCommand,
-            Hover = _state.HoverCommand
+            Hover = _state.Stage.HoverCommand
         };
     }
 

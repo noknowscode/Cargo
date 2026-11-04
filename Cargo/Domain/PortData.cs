@@ -125,11 +125,11 @@ public static class PortData
 
     /// <summary>
     /// Occupation window per vessel, in hours on the app clock (may run past 24): from her ETA to her ETD, read
-    /// through <see cref="PortState.ClockHours"/>, so the plan, the conflict check and the berth list agree with the
+    /// through <see cref="ShiftClock.ClockHours"/>, so the plan, the conflict check and the berth list agree with the
     /// times every panel shows.
     /// </summary>
     public static readonly IReadOnlyDictionary<string, (double Start, double End)> Schedule =
-        Vessels.ToDictionary(v => v.Id, v => (PortState.ClockHours(v.Eta), PortState.ClockHours(v.Etd)));
+        Vessels.ToDictionary(v => v.Id, v => (ShiftClock.ClockHours(v.Eta), ShiftClock.ClockHours(v.Etd)));
 
     /// <summary>
     /// What else the 36 h timeline draws behind the vessels' own windows: the berths' earlier calls today ("prev")

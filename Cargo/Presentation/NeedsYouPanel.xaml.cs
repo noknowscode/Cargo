@@ -23,13 +23,13 @@ public sealed partial class NeedsYouPanel : UserControl
     {
         if (_state is not null)
         {
-            _state.PropertyChanged -= OnStateChanged;
+            _state.Navigation.PropertyChanged -= OnStateChanged;
         }
 
         _state = ViewModel;
         if (_state is not null)
         {
-            _state.PropertyChanged += OnStateChanged;
+            _state.Navigation.PropertyChanged += OnStateChanged;
         }
 
         Bindings.Update();
@@ -39,7 +39,7 @@ public sealed partial class NeedsYouPanel : UserControl
     // focuses its heading; bringing an element into view has no XAML surface
     private void OnStateChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(PortState.NeedsYouReveal))
+        if (e.PropertyName == nameof(NavigationState.NeedsYouReveal))
         {
             Section.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = !Motion.Reduced, VerticalOffset = 24 });
             Heading.Focus(FocusState.Programmatic);

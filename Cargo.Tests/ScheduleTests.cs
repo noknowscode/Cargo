@@ -15,8 +15,8 @@ public class ScheduleTests
         foreach (var vessel in PortData.Vessels)
         {
             var (start, end) = PortData.Schedule[vessel.Id];
-            Assert.That(start, Is.EqualTo(PortState.ClockHours(vessel.Eta)), vessel.Name);
-            Assert.That(end, Is.EqualTo(PortState.ClockHours(vessel.Etd)), vessel.Name);
+            Assert.That(start, Is.EqualTo(ShiftClock.ClockHours(vessel.Eta)), vessel.Name);
+            Assert.That(end, Is.EqualTo(ShiftClock.ClockHours(vessel.Etd)), vessel.Name);
             Assert.That(end, Is.GreaterThan(start), vessel.Name);
         }
 
@@ -48,7 +48,7 @@ public class ScheduleTests
     {
         var clock = new ManualClock();
         var state = new PortState(clock);
-        var nordic = PortState.ClockHours("Today 21:40");
+        var nordic = ShiftClock.ClockHours("Today 21:40");
 
         Assert.That(state.Countdown(nordic), Is.EqualTo("in 42 min"), "exactly 42 minutes reads 42, not 43");
         Assert.That(state.MinutesUntil(nordic), Is.EqualTo(42));
@@ -59,7 +59,7 @@ public class ScheduleTests
         clock.Advance(TimeSpan.FromSeconds(30));
         Assert.That(state.Countdown(nordic), Is.EqualTo("in 41 min"));
 
-        Assert.That(state.Countdown(PortState.ClockHours("Thu 00:01")), Is.EqualTo("in 3 h 02"));
+        Assert.That(state.Countdown(ShiftClock.ClockHours("Thu 00:01")), Is.EqualTo("in 3 h 02"));
 
         clock.Advance(TimeSpan.FromMinutes(41));
         Assert.That(state.Countdown(nordic), Is.EqualTo("now"));

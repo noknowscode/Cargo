@@ -304,7 +304,7 @@ public sealed class HarbourScene : SKCanvasElement
 
     protected override void RenderOverride(SKCanvas canvas, Size area)
     {
-        var frame = new HarbourFrameState(_selectedVessel, _state?.HoveredVessel, _state?.HoveredBerth, _layer, Animate,
+        var frame = new HarbourFrameState(_selectedVessel, _state?.Stage.HoveredVessel, _state?.Stage.HoveredBerth, _layer, Animate,
             _needsVessel, _needs, Creep: Animate && _state?.NeedsDecision == true);
         _renderer.Render(canvas, (float)area.Width, (float)area.Height, (DateTimeOffset.Now - _started).TotalSeconds, frame);
     }
@@ -429,8 +429,8 @@ public sealed class HarbourScene : SKCanvasElement
             return;
         }
 
-        _state.HoveredVessel = vessel;
-        _state.HoveredBerth = berth;
+        _state.Stage.HoveredVessel = vessel;
+        _state.Stage.HoveredBerth = berth;
     }
 
     private string? HitVessel(Point point)

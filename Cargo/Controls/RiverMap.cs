@@ -229,7 +229,7 @@ public sealed partial class RiverMap : SceneHost
         _boats.Clear();
         foreach (var vessel in PortData.RiverFleet)
         {
-            var selected = _state.FleetSelection == vessel.Id;
+            var selected = _state.Chat.Selection == vessel.Id;
             var late = vessel.SlipMinutes > 0;
             var heading = new RotateTransform();
 
@@ -267,7 +267,7 @@ public sealed partial class RiverMap : SceneHost
                 Content = host,
                 Width = 96,
                 Height = 28,
-                Command = new RelayCommand(() => _state.FleetSelection = vessel.Id)
+                Command = new RelayCommand(() => _state.Chat.Selection = vessel.Id)
             };
             AutomationProperties.SetName(button, vessel.Name);
             Scene.Place(button);

@@ -104,8 +104,8 @@
           <Grid Height="580">
             <controls:TimelineLanes Frame="{x:Bind ViewModel.Timeline.Frame, Mode=OneWay}"
                                     PlotLeft="{utu:Responsive Narrowest=0, Narrow=168}"
-                                    HoverCommand="{x:Bind ViewModel.State.HoverCommand}"
-                                    Lit="{x:Bind ViewModel.State.HoveredVessel, Mode=OneWay}"
+                                    HoverCommand="{x:Bind ViewModel.State.Stage.HoverCommand}"
+                                    Lit="{x:Bind ViewModel.State.Stage.HoveredVessel, Mode=OneWay}"
                                     AutomationProperties.Name="{x:Bind ViewModel.Timeline.Summary, Mode=OneWay}"
                                     AutomationProperties.LiveSetting="Polite" />
             <!-- Tide: y = 284 - 35 m in the design, so the band 164-300 holds 0 to 3.43 m over 16 px of floor -->

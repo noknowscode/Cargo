@@ -46,20 +46,20 @@ public sealed partial class YardViewModel : ObservableObject
     public partial bool HasStack { get; set; }
 
     [RelayCommand]
-    private void CloseStack() => State.SelectedStack = null;
+    private void CloseStack() => State.Yard.SelectedStack = null;
 
     public void Refresh()
     {
-        LiveLine = $"Live · {State.YardMoves:N0} moves today · 3 RTGs ·";
-        OccupancyLine = $"{State.YardOccupancy}% occupied";
-        Occupancy = State.YardOccupancy;
+        LiveLine = $"Live · {State.Yard.Moves:N0} moves today · 3 RTGs ·";
+        OccupancyLine = $"{State.Yard.Occupancy}% occupied";
+        Occupancy = State.Yard.Occupancy;
 
         BuildStack();
     }
 
     private void BuildStack()
     {
-        if (State.SelectedStack is not { } key)
+        if (State.Yard.SelectedStack is not { } key)
         {
             HasStack = false;
             return;
@@ -71,7 +71,7 @@ public sealed partial class YardViewModel : ObservableObject
             return;
         }
 
-        var height = State.YardHeight(key, slot.Base);
+        var height = State.Yard.Height(key, slot.Base);
 
         HasStack = true;
 

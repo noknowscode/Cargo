@@ -35,7 +35,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
             _state.PickVessel(_state.SelectedVesselId);
         }
 
-        _state.StageOpen = true;
+        _state.Stage.Open = true;
     }
 
     /// <summary>Called by the page while it is on screen, on structure changes and each tick.</summary>
@@ -66,7 +66,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
 
         (Big, BigSub) = vessel.Status switch
         {
-            VesselStatus.Arriving => (BerthFacts.MinutesTo(_state, PortState.ClockHours(vessel.Eta)), $"ETA {BerthFacts.Clock(vessel.Eta)}"),
+            VesselStatus.Arriving => (BerthFacts.MinutesTo(_state, ShiftClock.ClockHours(vessel.Eta)), $"ETA {BerthFacts.Clock(vessel.Eta)}"),
             VesselStatus.AtAnchor => ("Unassigned", $"arrival window {BerthFacts.Clock(vessel.Eta)}"),
             VesselStatus.Departing => (BerthFacts.Clock(vessel.Etd), "departure"),
             _ when vessel.UnloadPercent is > 0 and < 100 => ($"{vessel.UnloadPercent}%", $"discharged · departs {BerthFacts.Clock(vessel.Etd)}"),

@@ -90,9 +90,9 @@ public sealed partial class YardMap : SceneHost
 
         foreach (var (key, zone, _, baseHeight, x, y) in _slots)
         {
-            var height = _state.YardHeight(key, baseHeight);
-            var selected = _state.SelectedStack == key;
-            var moved = _state.YardRecentlyMoved(key);
+            var height = _state.Yard.Height(key, baseHeight);
+            var selected = _state.Yard.SelectedStack == key;
+            var moved = _state.Yard.RecentlyMoved(key);
 
             if (_drawn.TryGetValue(key, out var drawn)
                 && drawn.Height == height && drawn.Selected == selected && drawn.Moved == moved)
@@ -158,9 +158,9 @@ public sealed partial class YardMap : SceneHost
             return;
         }
 
-        if (e.Key == Windows.System.VirtualKey.Escape && _state.SelectedStack is not null)
+        if (e.Key == Windows.System.VirtualKey.Escape && _state.Yard.SelectedStack is not null)
         {
-            _state.SelectedStack = null;
+            _state.Yard.SelectedStack = null;
             e.Handled = true;
             return;
         }
@@ -176,7 +176,7 @@ public sealed partial class YardMap : SceneHost
 
         if (rows != 0 || columns != 0)
         {
-            _state.SelectedStack = YardGrid.Step(_slots.Select(s => s.Key).ToList(), _state.SelectedStack, rows, columns);
+            _state.Yard.SelectedStack = YardGrid.Step(_slots.Select(s => s.Key).ToList(), _state.Yard.SelectedStack, rows, columns);
             e.Handled = true;
         }
     }
@@ -191,7 +191,7 @@ public sealed partial class YardMap : SceneHost
     private void Bind(UIElement element, string key)
     {
         element.PointerPressed += (_, _) =>
-            _state.SelectedStack = _state.SelectedStack == key ? null : key;
+            _state.Yard.SelectedStack = _state.Yard.SelectedStack == key ? null : key;
     }
 
     private void AddRtg(TranslateTransform transform, double x)

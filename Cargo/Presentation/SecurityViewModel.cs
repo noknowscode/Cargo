@@ -45,7 +45,7 @@ public sealed class PageTab
 /// <summary>
 /// Security: zones, access control and inspection, each a nested route in the page's
 /// Visibility region. The tab buttons navigate declaratively; the route they land on is written
-/// back to <see cref="PortState.SecurityTab"/>, and a tab set from elsewhere in the store (the
+/// back to <see cref="NavigationState.SecurityTab"/>, and a tab set from elsewhere in the store (the
 /// "Open inspection" deep link) navigates the region to match.
 /// </summary>
 public sealed partial class SecurityViewModel : ObservableObject
@@ -76,17 +76,19 @@ public sealed partial class SecurityViewModel : ObservableObject
             BuildTabs();
             BuildPeople();
 
+            state.Navigation.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(NavigationState.SecurityTab))
+                {
+                    BuildTabs();
+                    _ = ShowTabAsync(state.Navigation.SecurityTab);
+                }
+            };
             state.PropertyChanged += (_, e) =>
             {
-                switch (e.PropertyName)
+                if (e.PropertyName == nameof(PortState.SelectedPerson))
                 {
-                    case nameof(PortState.SecurityTab):
-                        BuildTabs();
-                        _ = ShowTabAsync(state.SecurityTab);
-                        break;
-                    case nameof(PortState.SelectedPerson):
-                        BuildPeople();
-                        break;
+                    BuildPeople();
                 }
             };
             routeNotifier.RouteChanged += (_, e) => dispatcher.TryEnqueue(() => OnRouteChanged(e));
@@ -165,7 +167,7 @@ public sealed partial class SecurityViewModel : ObservableObject
 
     private void Log(string mark, string text) =>
         InspectionLog = InspectionLog
-            .Append(new CheckRow { Mark = mark, Label = text, Time = PortState.Format(State.NowHours % 24), Tone = Tokens.Brush("AccentBrush") })
+            .Append(new CheckRow { Mark = mark, Label = text, Time = ShiftClock.Format(State.NowHours % 24), Tone = Tokens.Brush("AccentBrush") })
             .ToList();
 
     private void OnRouteChanged(RouteChangedEventArgs e)
@@ -176,7 +178,7 @@ public sealed partial class SecurityViewModel : ObservableObject
         }
 
         _routedTab = tab;
-        State.SecurityTab = tab;
+        State.Navigation.SecurityTab = tab;
     }
 
     private async Task ShowTabAsync(string tab)
@@ -203,7 +205,7 @@ public sealed partial class SecurityViewModel : ObservableObject
         Tabs.Clear();
         foreach (var (id, label) in TabDefinitions)
         {
-            var current = State.SecurityTab == id;
+            var current = State.Navigation.SecurityTab == id;
             Tabs.Add(new PageTab
             {
                 Label = label,

@@ -51,16 +51,16 @@ public sealed partial class MainPage : Page
         };
         // Each section opens at its top: one ScrollViewer hosts them all, and a carried offset would open
         // Berths halfway down and bring Overview back scrolled under its full chrome
-        vm.State.PropertyChanged += (_, e) =>
+        vm.State.Navigation.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(PortState.Section))
+            if (e.PropertyName == nameof(NavigationState.Section))
             {
                 _returning = false;
                 SectionScroll.ChangeView(null, 0, null, true);
                 ShowCurrentTab();
             }
         };
-        vm.State.ScrollToTopRequested += (_, _) =>
+        vm.State.Stage.ScrollToTopRequested += (_, _) =>
         {
             _returning = true;
             SectionScroll.ChangeView(null, 0, null, Motion.Reduced);
@@ -79,7 +79,7 @@ public sealed partial class MainPage : Page
             return;
         }
 
-        var index = PortData.Sections.Select(s => s.Id).ToList().IndexOf(state.Section);
+        var index = PortData.Sections.Select(s => s.Id).ToList().IndexOf(state.Navigation.Section);
         if (SectionTabs.ContainerFromIndex(index) is UIElement tab)
         {
             tab.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = !Motion.Reduced });
@@ -113,7 +113,7 @@ public sealed partial class MainPage : Page
     // xaml-lint: allow codebehind - the scroll offset drives page-chrome state; ViewChanged has no Command surface
     private void OnSectionScrolled(object? sender, ScrollViewerViewChangedEventArgs e)
     {
-        if (ViewModel?.State is not { Section: "overview" } state)
+        if (ViewModel?.State is not { Navigation.Section: "overview" } state)
         {
             return;
         }
@@ -122,11 +122,11 @@ public sealed partial class MainPage : Page
         if (y <= 4)
         {
             _returning = false;
-            state.OverviewCondensed = false;
+            state.Stage.OverviewCondensed = false;
         }
-        else if (y > 48 && !_returning && !state.OverviewCondensed && SectionScroll.ScrollableHeight > CondenseFrees + 48)
+        else if (y > 48 && !_returning && !state.Stage.OverviewCondensed && SectionScroll.ScrollableHeight > CondenseFrees + 48)
         {
-            state.OverviewCondensed = true;
+            state.Stage.OverviewCondensed = true;
             SnapToFirstSection(y);
         }
     }

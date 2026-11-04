@@ -37,7 +37,7 @@ public sealed partial class CargoViewModel : ObservableObject
 
     private void RefreshMasthead()
     {
-        Occupancy = $"{State.YardOccupancy}%";
-        Moves = State.YardMoves.ToString("N0");
+        Occupancy = $"{State.Yard.Occupancy}%";
+        Moves = State.Yard.Moves.ToString("N0");
     }
 }

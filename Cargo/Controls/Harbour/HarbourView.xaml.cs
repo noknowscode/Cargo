@@ -110,6 +110,14 @@ public sealed partial class HarbourView : UserControl
         Unloaded += (_, _) => { if (XamlRoot is { } root) { root.Changed -= OnXamlRootChanged; } };
     }
 
+    /// <summary>The section, the open strip or the vessel worked on Berths changed: the camera frames what is now selected.</summary>
+    private void Reframe()
+    {
+        SyncScene();
+        RefreshTags();
+        Frame(animate: true);
+    }
+
     private void OnXamlRootChanged(XamlRoot sender, XamlRootChangedEventArgs args) => InvalidateMeasure();
 
     public PortState? State
@@ -148,11 +156,23 @@ public sealed partial class HarbourView : UserControl
                     PaintTags();
                 }
 
-                if (e.PropertyName is nameof(PortState.Section) or nameof(PortState.StageOpen) or nameof(PortState.SelectedVesselId))
+                if (e.PropertyName is nameof(PortState.SelectedVesselId))
                 {
-                    SyncScene();
-                    RefreshTags();
-                    Frame(animate: true);
+                    Reframe();
+                }
+            };
+            value.Navigation.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName is nameof(NavigationState.Section))
+                {
+                    Reframe();
+                }
+            };
+            value.Stage.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName is nameof(StageState.Open))
+                {
+                    Reframe();
                 }
             };
         }
@@ -376,15 +396,15 @@ public sealed partial class HarbourView : UserControl
 
     /// <summary>Berths has its own selection (the vessel being worked); elsewhere the harbour's selection applies.</summary>
     private string? EffectiveSelection =>
-        _state is null ? null : _state.Section == "berths" ? _state.SelectedVesselId : _state.HarbourSelection;
+        _state is null ? null : _state.Navigation.Section == "berths" ? _state.SelectedVesselId : _state.Stage.Selection;
 
     /// <summary>Security shows the perimeter and Cargo the yard zones; on Overview the layer switcher decides.</summary>
-    private string EffectiveLayer => _state?.Section switch
+    private string EffectiveLayer => _state?.Navigation.Section switch
     {
         null => "port",
         "security" => "security",
         "cargo" => "yard",
-        _ => _state.HarbourLayer
+        _ => _state.Stage.Layer
     };
 
     private void SyncScene()
@@ -448,7 +468,7 @@ public sealed partial class HarbourView : UserControl
 
         if (!Compact)
         {
-            if (_state.Section == "overview")
+            if (_state.Navigation.Section == "overview")
             {
                 _scene.GoTo(HarbourCameraPose.Overview, ms);
                 MarkView("overview");
@@ -458,9 +478,9 @@ public sealed partial class HarbourView : UserControl
         }
 
         var vessel = _scene.World.Vessels.FirstOrDefault(v => v.Id == EffectiveSelection);
-        var pose = _state.Section == "security"
+        var pose = _state.Navigation.Section == "security"
             ? new HarbourCameraPose(Rad(-8), Rad(36), 2.4, 40, -40)
-            : _state.Section == "cargo"
+            : _state.Navigation.Section == "cargo"
                 ? new HarbourCameraPose(Rad(-6), Rad(42), 3.0, 0, -66)
             : vessel is not null
                 ? new HarbourCameraPose(Rad(-14), Rad(26), 4.6, vessel.X, vessel.Y + 2)
@@ -492,7 +512,7 @@ public sealed partial class HarbourView : UserControl
                 name: vessel.Name,
                 sub: TagLine(vessel),
                 pendingSub: $"B{vessel.HomeBerth} · pilot aboard",
-                etaHours: PortState.ClockHours(vessel.Eta),
+                etaHours: ShiftClock.ClockHours(vessel.Eta),
                 accessibleName: $"{vessel.Name}, {vessel.StatusLine}",
                 facts: new[]
                 {
@@ -503,7 +523,7 @@ public sealed partial class HarbourView : UserControl
                 },
                 toggle: _state.PickHullVesselCommand,
                 open: _state.OpenVesselCommand,
-                hover: _state.HoverCommand);
+                hover: _state.Stage.HoverCommand);
 
             var host = new ContentControl { Content = tag, ContentTemplate = template, IsTabStop = false, RenderTransform = new TranslateTransform() };
             TagLayer.Children.Add(host);
@@ -586,7 +606,7 @@ public sealed partial class HarbourView : UserControl
             // The arrival still waiting on a berth decision wears the dark tag; confirmed, it is a light one
             var needs = _state?.PendingDecision == tag.Id;
             var selected = EffectiveSelection == tag.Id;
-            var lit = _state?.HoveredVessel == tag.Id;
+            var lit = _state?.Stage.HoveredVessel == tag.Id;
             tag.LightVisibility = needs ? Visibility.Collapsed : Visibility.Visible;
             tag.DarkVisibility = needs ? Visibility.Visible : Visibility.Collapsed;
             // The float shadow is the resting edge; selected takes a 2 px ink edge, a linked hover a 1 px one

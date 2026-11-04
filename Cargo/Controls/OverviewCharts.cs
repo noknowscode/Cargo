@@ -54,15 +54,15 @@ public sealed partial class VolumeChart : SceneHost
 
             _settled.Place(Draw.Rule(0, 104, 300, 104, Tokens.Brush("InkColor", 0.14)));
             _settled.Place(Draw.Text("14:00", 0, 108, 11, Tokens.Brush("TextFaintBrush")));
-            _settled.Place(Draw.Label(PortState.Format(hour - 3), 150, 108, 11, Tokens.Brush("TextFaintBrush"),
+            _settled.Place(Draw.Label(ShiftClock.Format(hour - 3), 150, 108, 11, Tokens.Brush("TextFaintBrush"),
                 alignment: TextAlignment.Center, width: 80));
-            _settled.Place(Draw.Label(PortState.Format(hour), 300, 108, 11, Tokens.Brush("TextFaintBrush"),
+            _settled.Place(Draw.Label(ShiftClock.Format(hour), 300, 108, 11, Tokens.Brush("TextFaintBrush"),
                 alignment: TextAlignment.Right, width: 80));
         }
 
         // The live column only changes when a block fills or starts, a few times an hour, so its shapes are
         // rebuilt then and not on every tick
-        var moves = PortState.MovesAt(Now);
+        var moves = ShiftTimeline.MovesAt(Now);
         var live = ((int)Math.Ceiling(moves / 20d), moves % 20 != 0);
         if (live == _liveDrawn)
         {

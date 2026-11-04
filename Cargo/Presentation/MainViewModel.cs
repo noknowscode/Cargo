@@ -4,7 +4,7 @@ namespace Cargo.Presentation;
 
 /// <summary>
 /// The dispatcher's frame: the section header, the harbour layer switcher, the tide readout,
-/// and the bridge between the router and <see cref="PortState.Section"/>. The header navigates
+/// and the bridge between the router and <see cref="NavigationState.Section"/>. The header navigates
 /// declaratively (uen:Navigation.Request); the route it lands on is written back to Section,
 /// which frames the harbour. Moves that start inside the store (opening a vessel, an
 /// inspection, a harbour tag) set Section, and this model navigates to match.
@@ -42,6 +42,8 @@ public sealed partial class MainViewModel : ObservableObject
             BuildLayers();
 
             state.PropertyChanged += OnStateChanged;
+            state.Navigation.PropertyChanged += OnStateChanged;
+            state.Stage.PropertyChanged += OnStateChanged;
             routeNotifier.RouteChanged += (_, e) => dispatcher.TryEnqueue(() => OnRouteChanged(e));
         });
     }
@@ -55,7 +57,7 @@ public sealed partial class MainViewModel : ObservableObject
     public SecurityViewModel Security { get; }
 
     /// <summary>The Overview greeting and figures sit above the harbour, on Overview only.</summary>
-    public bool IsOverview => State.Section == "overview";
+    public bool IsOverview => State.Navigation.Section == "overview";
 
     public ObservableCollection<NavItem> NavItems { get; } = new();
 
@@ -123,16 +125,16 @@ public sealed partial class MainViewModel : ObservableObject
     {
         switch (e.PropertyName)
         {
-            case nameof(PortState.Section):
+            case nameof(NavigationState.Section):
                 OnPropertyChanged(nameof(IsOverview));
                 BuildNav();
-                _ = ShowSectionAsync(State.Section);
+                _ = ShowSectionAsync(State.Navigation.Section);
                 break;
             case nameof(PortState.NeedsDecision):
                 // Confirming or undoing the berth adds or clears the Berths dot
                 BuildNav();
                 break;
-            case nameof(PortState.HarbourLayer):
+            case nameof(StageState.Layer):
                 BuildLayers();
                 break;
         }
@@ -154,7 +156,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         _routedSection = section;
-        State.Section = section;
+        State.Navigation.Section = section;
     }
 
     /// <summary>
@@ -163,7 +165,7 @@ public sealed partial class MainViewModel : ObservableObject
     /// region would otherwise start on its default tab.
     /// </summary>
     public static string RouteFor(PortState state) =>
-        state.Section == "security" ? $"security/{state.SecurityTab}" : state.Section;
+        state.Navigation.Section == "security" ? $"security/{state.Navigation.SecurityTab}" : state.Navigation.Section;
 
     private async Task ShowSectionAsync(string section)
     {
@@ -197,7 +199,7 @@ public sealed partial class MainViewModel : ObservableObject
         {
             ["overview"] = "3 alongside · 2 inbound · 2,146 moves today",
             ["berths"] = $"Nordic Star in {nordicIn} min · Berth 06 frees 21:30",
-            ["cargo"] = $"4,812 on site · {State.YardOccupancy}% yard · 1 hold",
+            ["cargo"] = $"4,812 on site · {State.Yard.Occupancy}% yard · 1 hold",
             ["fleet"] = "6 underway · 2 running late",
             ["security"] = "ISPS level 1 · 0 incidents"
         };
@@ -212,7 +214,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         foreach (var item in NavItems)
         {
-            var current = State.Section == item.Id;
+            var current = State.Navigation.Section == item.Id;
             var needs = State.SectionNeedsYou(item.Id);
 
             item.Tooltip = $"{item.Label} · {subs[item.Id]}";
@@ -244,13 +246,13 @@ public sealed partial class MainViewModel : ObservableObject
         {
             foreach (var (id, label, icon) in LayerDefinitions)
             {
-                Layers.Add(new LayerItem { Id = id, Label = label, Icon = Geo.Path(icon), Command = State.SetLayerCommand });
+                Layers.Add(new LayerItem { Id = id, Label = label, Icon = Geo.Path(icon), Command = State.Stage.SetLayerCommand });
             }
         }
 
         for (var i = 0; i < Layers.Count; i++)
         {
-            var current = State.HarbourLayer == Layers[i].Id;
+            var current = State.Stage.Layer == Layers[i].Id;
             Layers[i].Foreground = current ? Tokens.Brush("PaperBrush") : Tokens.Brush("InkBrush");
             Layers[i].IconForeground = current ? Tokens.Brush("PaperBrush") : Tokens.Brush("TextMutedBrush");
             if (current)

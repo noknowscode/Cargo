@@ -83,7 +83,7 @@ public sealed partial class BerthStatusViewModel : ObservableObject
             Rows.Clear();
             foreach (var slot in slots)
             {
-                Rows.Add(new BerthStatusRow { Slot = slot, Select = PickCommand, Hover = _state.HoverCommand });
+                Rows.Add(new BerthStatusRow { Slot = slot, Select = PickCommand, Hover = _state.Stage.HoverCommand });
             }
         }
 
@@ -167,8 +167,8 @@ public sealed partial class BerthStatusViewModel : ObservableObject
         var current = _state.SelectedBerth is { } picked
             ? row.VesselId is null && picked == row.Slot
             : row.VesselId is not null && row.VesselId == _state.SelectedVesselId;
-        var hoveredBerth = _state.HoveredBerth is { } i ? PortData.Berths[i].Number : null;
-        var linked = row.VesselId is not null ? _state.HoveredVessel == row.VesselId : hoveredBerth == row.Slot;
+        var hoveredBerth = _state.Stage.HoveredBerth is { } i ? PortData.Berths[i].Number : null;
+        var linked = row.VesselId is not null ? _state.Stage.HoveredVessel == row.VesselId : hoveredBerth == row.Slot;
         row.LinkKey = row.VesselId ?? row.Slot;
 
         var ink = Tokens.Brush("InkBrush");
@@ -230,7 +230,7 @@ internal static class BerthFacts
     /// <summary>The time a row leads with: the arrival countdown, else when the vessel sails.</summary>
     public static string When(PortState state, Vessel vessel) => vessel.Status switch
     {
-        VesselStatus.Arriving => MinutesTo(state, PortState.ClockHours(vessel.Eta)),
+        VesselStatus.Arriving => MinutesTo(state, ShiftClock.ClockHours(vessel.Eta)),
         VesselStatus.AtAnchor => Clock(vessel.Eta),
         _ => Clock(vessel.Etd)
     };

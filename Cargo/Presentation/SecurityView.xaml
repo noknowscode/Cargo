@@ -26,7 +26,7 @@
       </Grid.RowDefinitions>
       <StackPanel Spacing="{StaticResource Space12}">
         <TextBlock Text="SECURITY · ISPS LEVEL 1 · 1 HOLD ACTIVE" Style="{StaticResource EyebrowText}" TextWrapping="Wrap" />
-        <TextBlock Text="{x:Bind ViewModel.State.SecurityTitle, Mode=OneWay}" Style="{StaticResource PageTitleText}" TextWrapping="Wrap" />
+        <TextBlock Text="{x:Bind ViewModel.State.Navigation.SecurityTitle, Mode=OneWay}" Style="{StaticResource PageTitleText}" TextWrapping="Wrap" />
       </StackPanel>
       <!-- xaml-lint: allow card - segmented tab strip; the Simple theme ships no segmented TabBar style -->
       <Border Background="{ThemeResource SurfaceSunkAltBrush}" CornerRadius="{StaticResource RadiusPanel}" Padding="{StaticResource Inset4}"
@@ -174,7 +174,7 @@
               </ItemsControl.ItemTemplate>
             </ItemsControl>
             <Button Style="{StaticResource PrimaryButton}" Content="Open inspection →" Margin="{StaticResource GapTop4}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
-                    Command="{x:Bind ViewModel.State.OpenInspectionCommand, Mode=OneWay}" HorizontalAlignment="Left" Padding="{StaticResource Inset12x8}" />
+                    Command="{x:Bind ViewModel.State.Navigation.OpenInspectionCommand, Mode=OneWay}" HorizontalAlignment="Left" Padding="{StaticResource Inset12x8}" />
           </StackPanel>
         </utu:CardContentControl>
 

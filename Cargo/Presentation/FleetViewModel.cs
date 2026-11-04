@@ -60,7 +60,7 @@ public sealed class QuickMessage
 
 /// <summary>
 /// Waterways: the river fleet, lockings, gauges, notices and the crew chat for the selected
-/// barge. Everything on the page follows <see cref="PortState.FleetSelection"/> and the messages
+/// barge. Everything on the page follows <see cref="CrewChat.Selection"/> and the messages
 /// this page sends, so it refreshes on those two and ignores the rest of the port.
 /// </summary>
 public sealed partial class FleetViewModel : ObservableObject
@@ -75,9 +75,9 @@ public sealed partial class FleetViewModel : ObservableObject
         {
             BuildStatic();
             Refresh();
-            state.PropertyChanged += (_, e) =>
+            state.Chat.PropertyChanged += (_, e) =>
             {
-                if (e.PropertyName == nameof(PortState.FleetSelection))
+                if (e.PropertyName == nameof(CrewChat.Selection))
                 {
                     Refresh();
                 }
@@ -103,7 +103,7 @@ public sealed partial class FleetViewModel : ObservableObject
     public ObservableCollection<ChatBubble> Thread { get; } = new();
     public ObservableCollection<QuickMessage> QuickMessages { get; } = new();
 
-    public string BookedLabel => $"Booked passages · now {PortState.Format(PortData.NowHours)}";
+    public string BookedLabel => $"Booked passages · now {ShiftClock.Format(PortData.NowHours)}";
     public string NoticeCount => $"{PortData.Notices.Count} active";
     public string FleetCount => $"{PortData.RiverFleet.Count} vessels";
 
@@ -136,20 +136,20 @@ public sealed partial class FleetViewModel : ObservableObject
     public partial Brush? SlipInk { get; set; }
 
     private RiverVessel Selected =>
-        PortData.RiverFleet.FirstOrDefault(v => v.Id == State.FleetSelection) ?? PortData.RiverFleet[0];
+        PortData.RiverFleet.FirstOrDefault(v => v.Id == State.Chat.Selection) ?? PortData.RiverFleet[0];
 
     [RelayCommand]
-    private void Select(string id) => State.FleetSelection = id;
+    private void Select(string id) => State.Chat.Selection = id;
 
     [RelayCommand]
-    private void SendDraft() => SendToSelected(State.ChatDraft);
+    private void SendDraft() => SendToSelected(State.Chat.Draft);
 
     [RelayCommand]
     private void SendQuick(string text) => SendToSelected(text);
 
     private void SendToSelected(string text)
     {
-        State.Send(Selected.Id, text);
+        State.Chat.Send(Selected.Id, text);
         Refresh();
     }
 
@@ -260,7 +260,7 @@ public sealed partial class FleetViewModel : ObservableObject
                 Id = vessel.Id,
                 Name = vessel.Name,
                 Detail = $"Order {vessel.Order} · km {vessel.Km:0.0} · {vessel.Speed} kn",
-                Eta = $"ETA {PortState.Format(vessel.Eta + vessel.SlipMinutes / 60d)}",
+                Eta = $"ETA {ShiftClock.Format(vessel.Eta + vessel.SlipMinutes / 60d)}",
                 Slip = late ? $"+{vessel.SlipMinutes} min" : "On time",
                 Tone = Tokens.Brush(late ? "OrangeBrush" : "SeaGreenBrush"),
                 SlipInk = Tokens.Brush(late ? "OrangeInkBrush" : "SeaGreenInkBrush"),
@@ -278,13 +278,13 @@ public sealed partial class FleetViewModel : ObservableObject
         SlipInk = Tokens.Brush(isLate ? "OrangeInkBrush" : "SeaGreenInkBrush");
 
         Thread.Clear();
-        foreach (var line in State.ThreadFor(selected.Id))
+        foreach (var line in State.Chat.ThreadFor(selected.Id))
         {
             var fromCrew = line.Who == "crew";
             Thread.Add(new ChatBubble
             {
                 Text = line.Text,
-                Meta = $"{(fromCrew ? selected.Master.Split(' ').Last() : "Dispatch")} · {PortState.Format(line.Hour)}",
+                Meta = $"{(fromCrew ? selected.Master.Split(' ').Last() : "Dispatch")} · {ShiftClock.Format(line.Hour)}",
                 Align = fromCrew ? HorizontalAlignment.Left : HorizontalAlignment.Right,
                 Background = fromCrew ? Tokens.Brush("SurfaceSunkAltBrush") : Tokens.Brush("InkBrush"),
                 Foreground = fromCrew ? Tokens.Brush("InkBrush") : Tokens.Brush("PaperBrush")
@@ -298,7 +298,7 @@ public sealed partial class FleetViewModel : ObservableObject
         foreach (var (label, text) in new[]
                  {
                      ("Confirm new ETA",
-                         $"Please confirm revised ETA {PortState.Format(selected.Eta + selected.SlipMinutes / 60d)} " +
+                         $"Please confirm revised ETA {ShiftClock.Format(selected.Eta + selected.SlipMinutes / 60d)} " +
                          "to the consignee. Any further slip, call dispatch on VHF 12."),
                      ("Hold at next lock", $"Hold at {selected.Next} until further notice — traffic ahead. Acknowledge."),
                      ("Report water level", $"Report observed water level and any squat at your position, km {selected.Km:0.0}.")

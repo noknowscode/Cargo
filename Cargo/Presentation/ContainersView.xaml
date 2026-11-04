@@ -193,7 +193,7 @@
           </Button>
           <Button Style="{StaticResource GhostButton}" Content="Inspection record →"
                   MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
-                  Command="{x:Bind ViewModel.State.OpenInspectionCommand}" HorizontalAlignment="Stretch" />
+                  Command="{x:Bind ViewModel.State.Navigation.OpenInspectionCommand}" HorizontalAlignment="Stretch" />
         </StackPanel>
       </utu:CardContentControl>
     </Grid>

@@ -51,7 +51,7 @@ public sealed partial class NeedsYouViewModel : ObservableObject
     [ObservableProperty] public partial bool IsBusy { get; set; }
 
     /// <summary>Hovering the bar outlines its vessel, lights its tag and its row.</summary>
-    public System.Windows.Input.ICommand HoverCommand => _state.HoverCommand;
+    public System.Windows.Input.ICommand HoverCommand => _state.Stage.HoverCommand;
 
     /// <summary>The vessel the bar is about, for hover linking; null when nothing is pending.</summary>
     public string? Subject => _confirmed ?? _state.PendingDecision;
@@ -80,7 +80,7 @@ public sealed partial class NeedsYouViewModel : ObservableObject
             if (_error is null)
             {
                 _confirmed = vessel;
-                _confirmedAt = PortState.Format(_state.NowHours);
+                _confirmedAt = ShiftClock.Format(_state.NowHours);
             }
         }
 

@@ -50,7 +50,7 @@
       <Rectangle Width="1" Fill="{ThemeResource HairlineStrongBrush}" />
 
       <!-- A link to the queue: scrolls it into view and focuses its heading -->
-      <Button Style="{StaticResource BareButton}" Command="{x:Bind ViewModel.State.RevealNeedsYouCommand}"
+      <Button Style="{StaticResource BareButton}" Command="{x:Bind ViewModel.State.Navigation.RevealNeedsYouCommand}"
               AutomationProperties.Name="{x:Bind ViewModel.NeedsYouLink, Mode=OneWay}">
         <StackPanel Style="{StaticResource FigureStack}">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">

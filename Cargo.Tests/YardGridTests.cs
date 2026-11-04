@@ -50,7 +50,7 @@ public class YardGridTests
     {
         var clock = new ManualClock();
         var state = new PortState(clock);
-        var moves = state.YardMoves;
+        var moves = state.Yard.Moves;
         var changes = 0;
         state.YardChanged += (_, _) => changes++;
 
@@ -59,13 +59,13 @@ public class YardGridTests
         clock.Advance(TimeSpan.FromSeconds(3));
 
         Assert.That(changes, Is.EqualTo(2));
-        Assert.That(state.YardMoves, Is.EqualTo(moves + 2));
-        var worked = YardGrid.Slots.Where(s => state.YardRecentlyMoved(s.Key)).ToList();
+        Assert.That(state.Yard.Moves, Is.EqualTo(moves + 2));
+        var worked = YardGrid.Slots.Where(s => state.Yard.RecentlyMoved(s.Key)).ToList();
         Assert.That(worked, Has.Count.InRange(1, 2));
         Assert.That(worked, Has.All.Matches<(string Key, YardZoneDef Zone, string Slot, int Base, double X, double Y)>(
-            s => Math.Abs(state.YardHeight(s.Key, s.Base) - s.Base) <= 2));
+            s => Math.Abs(state.Yard.Height(s.Key, s.Base) - s.Base) <= 2));
 
-        var tiers = YardGrid.Slots.Sum(s => state.YardHeight(s.Key, s.Base));
-        Assert.That(state.YardOccupancy, Is.EqualTo((int)Math.Round(tiers * 100d / (YardGrid.Slots.Count * 5))));
+        var tiers = YardGrid.Slots.Sum(s => state.Yard.Height(s.Key, s.Base));
+        Assert.That(state.Yard.Occupancy, Is.EqualTo((int)Math.Round(tiers * 100d / (YardGrid.Slots.Count * 5))));
     }
 }

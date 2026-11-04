@@ -73,7 +73,7 @@ public sealed partial class ContainersViewModel : ObservableObject
     [ObservableProperty] public partial string EmptyText { get; set; } = string.Empty;
 
     [RelayCommand]
-    private void Filter(string? value) => State.ContainerFilter = value ?? "All";
+    private void Filter(string? value) => State.Scanner.Filter = value ?? "All";
 
     /// <summary>Selects a container and opens it in the scanner at the default view.</summary>
     [RelayCommand]
@@ -84,19 +84,19 @@ public sealed partial class ContainersViewModel : ObservableObject
             return;
         }
 
-        State.SelectedContainerId = id;
-        State.ScannerOpen = true;
-        State.Xray = false;
-        State.ScanRotationX = -18;
-        State.ScanRotationY = -32;
+        State.Scanner.SelectedContainerId = id;
+        State.Scanner.Open = true;
+        State.Scanner.Xray = false;
+        State.Scanner.RotationX = -18;
+        State.Scanner.RotationY = -32;
     }
 
     [RelayCommand]
-    private void OpenScanner() => State.ScannerOpen = true;
+    private void OpenScanner() => State.Scanner.Open = true;
 
     public void Refresh()
     {
-        var container = State.SelectedContainer;
+        var container = State.Scanner.SelectedContainer;
 
         BuildFilters();
         BuildCards();
@@ -110,7 +110,7 @@ public sealed partial class ContainersViewModel : ObservableObject
         Filters.Clear();
         foreach (var filter in PortData.ContainerFilters)
         {
-            var current = State.ContainerFilter == filter;
+            var current = State.Scanner.Filter == filter;
             Filters.Add(new FilterChip
             {
                 Label = filter,
@@ -126,7 +126,7 @@ public sealed partial class ContainersViewModel : ObservableObject
     private void BuildCards()
     {
         Cards.Clear();
-        foreach (var container in PortData.ContainersFor(State.ContainerFilter))
+        foreach (var container in PortData.ContainersFor(State.Scanner.Filter))
         {
             Cards.Add(new ContainerCard
             {
@@ -137,7 +137,7 @@ public sealed partial class ContainersViewModel : ObservableObject
                 State = container.State,
                 StateTone = Tokens.Brush(container.Warn ? "OrangeColor" : "AccentColor"),
                 StateInk = Tokens.Brush(container.Warn ? "OrangeInkBrush" : "AccentBrush"),
-                Border = State.SelectedContainerId == container.Id
+                Border = State.Scanner.SelectedContainerId == container.Id
                     ? Tokens.Brush("InkBrush")
                     : Tokens.Brush("HairlineBrush"),
                 Render = Sprites.Source(Sprites.ContainerByTone(container.TintToken)),
@@ -147,7 +147,7 @@ public sealed partial class ContainersViewModel : ObservableObject
         }
 
         IsEmpty = Cards.Count == 0;
-        EmptyText = $"No containers under {State.ContainerFilter} right now. Choose All to see every box on the terminal.";
+        EmptyText = $"No containers under {State.Scanner.Filter} right now. Choose All to see every box on the terminal.";
     }
 
     private void BuildDetail(ContainerDef container)

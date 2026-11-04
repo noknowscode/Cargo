@@ -324,7 +324,7 @@
             <!-- Enter sends: CommandExtensions runs the command on Enter for a TextBox -->
             <TextBox PlaceholderText="Message the crew…" CornerRadius="{StaticResource RadiusControl}"
                      Padding="12,9" AutomationProperties.Name="Message the crew" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
-                     Text="{x:Bind ViewModel.State.ChatDraft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Text="{x:Bind ViewModel.State.Chat.Draft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      utu:CommandExtensions.Command="{x:Bind ViewModel.SendDraftCommand, Mode=OneWay}" />
             <Button Grid.Column="1" Style="{StaticResource PrimaryButton}" Content="Send" Command="{x:Bind ViewModel.SendDraftCommand, Mode=OneWay}"
                     CornerRadius="{StaticResource RadiusControl}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}" />

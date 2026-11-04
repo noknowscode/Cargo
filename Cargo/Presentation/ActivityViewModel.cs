@@ -128,7 +128,7 @@ public sealed partial class ActivityViewModel : ObservableObject
 
     private string Ago(string time)
     {
-        var at = PortState.ClockHours(time);
+        var at = ShiftClock.ClockHours(time);
         if (double.IsNaN(at))
         {
             return string.Empty;

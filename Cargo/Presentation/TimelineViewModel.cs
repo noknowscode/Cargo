@@ -161,7 +161,7 @@ public sealed partial class TimelineViewModel : ObservableObject
         var rising = PortData.TideAt(now + .05) > level;
         var highWater = ShiftTimeline.NextHighWater(now);
         TideValue = $"{level:0.0} m";
-        TideSub = $"{(rising ? "rising" : "falling")} · HW {PortState.Format(highWater)}";
+        TideSub = $"{(rising ? "rising" : "falling")} · HW {ShiftClock.Format(highWater)}";
 
         // Moves: per hour, 06:00 to now, its total and peak
         var moves = new List<(double, double)>();
@@ -174,7 +174,7 @@ public sealed partial class TimelineViewModel : ObservableObject
         var peak = ShiftTimeline.MovesPeak(now);
         var total = ShiftTimeline.MovesToday(now);
         MovesValue = $"{total:N0} today";
-        MovesPeak = $"peak {peak.Value:0} / h at {PortState.Format(peak.Hour)}";
+        MovesPeak = $"peak {peak.Value:0} / h at {ShiftClock.Format(peak.Hour)}";
         MovesTotal = $"Totals {total:N0} moves";
 
         // Cargo: in and out per hour to now, and the net now
@@ -190,7 +190,7 @@ public sealed partial class TimelineViewModel : ObservableObject
         var net = ShiftTimeline.NetCargo(hour);
         CargoValue = $"Net {(net < 0 ? "−" : "+")}{Math.Abs(net):0} / h";
         CargoSub = $"{cargoIn:0} in · {cargoOut:0} out per hour";
-        CargoSince = net < 0 ? $"out ahead since {PortState.Format(ShiftTimeline.OutAheadSince(now))}" : "in ahead now";
+        CargoSince = net < 0 ? $"out ahead since {ShiftClock.Format(ShiftTimeline.OutAheadSince(now))}" : "in ahead now";
 
         Frame = new TimelineFrame(now, Events, moves, cargo, peak);
 
@@ -208,7 +208,7 @@ public sealed partial class TimelineViewModel : ObservableObject
         {
             new LivelineMarker(At(highWater), Math.Round(PortData.TideAt(highWater), 1))
             {
-                Label = $"HW {PortState.Format(highWater)} · {PortData.TideAt(highWater):0.0} m",
+                Label = $"HW {ShiftClock.Format(highWater)} · {PortData.TideAt(highWater):0.0} m",
                 LabelTypeface = _mono,
                 Fill = Tokens.Color("SurfaceColor"),
                 Stroke = Tokens.Color("WaterColor"),
@@ -230,7 +230,7 @@ public sealed partial class TimelineViewModel : ObservableObject
             UpdateRow(row, now);
         }
 
-        Summary = $"Today at North Quay, 06:00 to Thursday 06:00. Now {PortState.Format(now)}. " +
+        Summary = $"Today at North Quay, 06:00 to Thursday 06:00. Now {ShiftClock.Format(now)}. " +
                   $"Vessels {VesselsValue}, {VesselsSub}. Tide {TideValue}, {TideSub}. " +
                   $"Moves {MovesValue}, {MovesPeak}. Cargo {CargoValue}, {CargoSub}.";
     }
@@ -243,8 +243,8 @@ public sealed partial class TimelineViewModel : ObservableObject
         return new TimelineRow
         {
             Hour = hour,
-            Time = hour == 24 ? "Thu 00:00" : PortState.Format(hour),
-            Vessels = string.Join(", ", inHour.Select(e => $"{e.Name} {(e.Arrival ? "arrives" : "departs")} {PortState.Format(e.Hour)}")),
+            Time = hour == 24 ? "Thu 00:00" : ShiftClock.Format(hour),
+            Vessels = string.Join(", ", inHour.Select(e => $"{e.Name} {(e.Arrival ? "arrives" : "departs")} {ShiftClock.Format(e.Hour)}")),
             Tide = $"{turn}{level:0.0}"
         };
     }

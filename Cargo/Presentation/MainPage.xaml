@@ -123,7 +123,7 @@
     </Grid>
 
     <!-- ══ SHARED HARBOUR STAGE ════════════════════════════════════════ -->
-    <Grid x:Name="StageHost" Grid.Row="1" Visibility="{x:Bind ViewModel.State.ShowStage, Mode=OneWay}">
+    <Grid x:Name="StageHost" Grid.Row="1" Visibility="{x:Bind ViewModel.State.Stage.Shown, Mode=OneWay}">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
@@ -133,16 +133,16 @@
            scrolls (SPEC-OVERVIEW-SCROLL), in step with the band's snap to its mini. Drawn above the harbour
            (ZIndex). The padding lives on this wrapper so the fold takes it too -->
       <Border x:Name="MastheadFrame" Canvas.ZIndex="1" Padding="{utu:Responsive Narrowest={StaticResource Inset16x12}, Narrow='24,14,24,14', Normal='40,14,40,14'}" Visibility="Collapsed" Opacity="0"
-              controls:Reveal.IsOn="{x:Bind ViewModel.State.MastheadShown, Mode=OneWay}" controls:Reveal.Grow="True"
+              controls:Reveal.IsOn="{x:Bind ViewModel.State.Stage.MastheadShown, Mode=OneWay}" controls:Reveal.Grow="True"
               controls:Reveal.DurationKey="DurationExpandMs">
         <!-- From 1600 the greeting lines up with Overview's centred column (1440 less its 40 px sides) -->
         <local:OverviewMasthead x:Name="Masthead" MaxWidth="1360" DataContext="{x:Bind ViewModel.Overview, Mode=OneWay}" />
       </Border>
       <!-- One harbour for every harbour page: Overview's 340 px band (491 expanded), a strip framed by
            the section elsewhere -->
-      <harbour:HarbourView x:Name="Harbour" Grid.Row="1" Compact="{x:Bind ViewModel.State.StageCompact, Mode=OneWay}"
-                           OverlayShown="{x:Bind ViewModel.State.MastheadShown, Mode=OneWay}"
-                           StageHeight="{x:Bind ViewModel.State.StageHeight, Mode=OneWay}" />
+      <harbour:HarbourView x:Name="Harbour" Grid.Row="1" Compact="{x:Bind ViewModel.State.Stage.Compact, Mode=OneWay}"
+                           OverlayShown="{x:Bind ViewModel.State.Stage.MastheadShown, Mode=OneWay}"
+                           StageHeight="{x:Bind ViewModel.State.Stage.Height, Mode=OneWay}" />
       <!-- Layer switcher: centred on the HUD row from 1280; below it the centred switcher (370 px) would run into the
            Key and scale/zoom group, so it stacks above the camera menu (16 + 44 + 4 px up). 44 px tall below 1000 -->
       <!-- WORKAROUND(ShadowContainer keeps its paint when only its offset changes): the responsive
@@ -151,7 +151,7 @@
       <Grid Grid.Row="1" VerticalAlignment="Bottom"
             HorizontalAlignment="{utu:Responsive Narrowest=Left, Wide=Center}"
             Margin="{utu:Responsive Narrowest='16,0,0,60', Narrow='40,0,0,64', Wide={StaticResource GapBottom16}}"
-            Visibility="{x:Bind ViewModel.State.LayerSwitchShown, Mode=OneWay}">
+            Visibility="{x:Bind ViewModel.State.Stage.LayerSwitchShown, Mode=OneWay}">
       <utu:ShadowContainer Background="{ThemeResource SurfaceBrush}">
         <!-- The HUD float shadow. Inline: a Style-supplied collection never applies (Toolkit gotcha G36). -->
         <utu:ShadowContainer.Shadows>
@@ -195,7 +195,7 @@
       <!-- Expand / Collapse: Overview's band grows to 491; elsewhere the strip opens to the full stage -->
       <utu:ShadowContainer Grid.Row="1" Background="{ThemeResource SurfaceBrush}"
                            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="{utu:Responsive Narrowest='0,12,16,0', Narrow='0,16,40,0'}"
-                           Visibility="{x:Bind ViewModel.State.ShowStageToggle, Mode=OneWay}">
+                           Visibility="{x:Bind ViewModel.State.Stage.ShowToggle, Mode=OneWay}">
         <utu:ShadowContainer.Shadows>
           <utu:ShadowCollection>
             <utu:Shadow Spread="1" BlurRadius="0" Color="{ThemeResource ShadowRingColor}" Opacity="0.08" />
@@ -204,18 +204,18 @@
           </utu:ShadowCollection>
         </utu:ShadowContainer.Shadows>
         <Button Style="{StaticResource HudSummaryButton}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=40}" Padding="12,0,14,0"
-                Command="{x:Bind ViewModel.State.ToggleStageCommand}"
-                AutomationProperties.Name="{x:Bind ViewModel.State.StageToggleLabel, Mode=OneWay}">
+                Command="{x:Bind ViewModel.State.Stage.ToggleCommand}"
+                AutomationProperties.Name="{x:Bind ViewModel.State.Stage.ToggleLabel, Mode=OneWay}">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
             <Viewbox Width="{StaticResource IconSize}" Height="{StaticResource IconSize}" VerticalAlignment="Center">
               <Grid Width="24" Height="24">
                 <shapes:Path Style="{StaticResource ExpandIcon}" Stroke="{ThemeResource InkBrush}"
-                             Visibility="{x:Bind ViewModel.State.StageCollapsed, Mode=OneWay}" />
+                             Visibility="{x:Bind ViewModel.State.Stage.Collapsed, Mode=OneWay}" />
                 <shapes:Path Style="{StaticResource CollapseIcon}" Stroke="{ThemeResource InkBrush}"
-                             Visibility="{x:Bind ViewModel.State.StageExpanded, Mode=OneWay}" />
+                             Visibility="{x:Bind ViewModel.State.Stage.Expanded, Mode=OneWay}" />
               </Grid>
             </Viewbox>
-            <TextBlock Text="{x:Bind ViewModel.State.StageToggleLabel, Mode=OneWay}" Style="{StaticResource TypeMedium13}"
+            <TextBlock Text="{x:Bind ViewModel.State.Stage.ToggleLabel, Mode=OneWay}" Style="{StaticResource TypeMedium13}"
                        VerticalAlignment="Center" />
           </StackPanel>
         </Button>
@@ -249,6 +249,6 @@
 
   <!-- ══ CONTAINER INSPECTION ════════════════════════════════════════ -->
   <local:ScannerOverlay DataContext="{x:Bind ViewModel.Scanner, Mode=OneWay}"
-                        Visibility="{x:Bind ViewModel.State.ScannerOpen, Mode=OneWay, FallbackValue=Collapsed}" />
+                        Visibility="{x:Bind ViewModel.State.Scanner.Open, Mode=OneWay, FallbackValue=Collapsed}" />
   </Grid>
 </Page>

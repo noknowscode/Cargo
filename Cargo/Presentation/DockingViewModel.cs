@@ -175,7 +175,7 @@ public sealed partial class DockingViewModel : ObservableObject
     public void Scrubbed()
     {
         var planHour = State.EffectivePlanHour;
-        PlanLabel = (planHour >= 24 ? "Thu " : string.Empty) + PortState.Format(planHour % 24);
+        PlanLabel = (planHour >= 24 ? "Thu " : string.Empty) + ShiftClock.Format(planHour % 24);
         OnPropertyChanged(nameof(Scrub));
         IsLive = State.PlanHour is null;
 
@@ -237,7 +237,7 @@ public sealed partial class DockingViewModel : ObservableObject
                     conflicted || reserved ? "InkBrush" : null,
                     Dashed: reserved && !conflicted));
                 spoken.Add($"{vessel.Name} {(conflicted ? "in conflict" : reserved ? "reserved" : "alongside")} " +
-                           $"{PortState.Format(start % 24)} to {PortState.Format(end % 24)}");
+                           $"{ShiftClock.Format(start % 24)} to {ShiftClock.Format(end % 24)}");
             }
 
             PlanRows.Add(new PlanRow

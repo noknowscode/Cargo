@@ -55,9 +55,9 @@ public class ShiftTimelineTests
     [Test]
     public void Moves_today_are_the_whole_hours_since_06_00_plus_the_current_hour_so_far()
     {
-        Assert.That(ShiftTimeline.MovesToday(6), Is.EqualTo(PortState.MovesAt(6)));
+        Assert.That(ShiftTimeline.MovesToday(6), Is.EqualTo(ShiftTimeline.MovesAt(6)));
 
-        var expected = ShiftTimeline.Volume(6) + ShiftTimeline.Volume(7) + ShiftTimeline.Volume(8) + PortState.MovesAt(9.5);
+        var expected = ShiftTimeline.Volume(6) + ShiftTimeline.Volume(7) + ShiftTimeline.Volume(8) + ShiftTimeline.MovesAt(9.5);
         Assert.That(ShiftTimeline.MovesToday(9.5), Is.EqualTo(expected));
     }
 
@@ -113,14 +113,14 @@ public class ShiftTimelineTests
     [TestCase("Fri 10:00", 58, TestName = "Friday is two days on (it used to read as Thursday, 34)")]
     [TestCase("21:40", 21 + 40 / 60d, TestName = "A bare time is today")]
     public void Schedule_times_read_onto_the_app_clock(string when, double hours) =>
-        Assert.That(PortState.ClockHours(when), Is.EqualTo(hours).Within(1e-9));
+        Assert.That(ShiftClock.ClockHours(when), Is.EqualTo(hours).Within(1e-9));
 
     [TestCase("")]
     [TestCase("soon")]
     [TestCase("Sun 10:00", TestName = "A day outside the demo's week is unreadable, not tomorrow")]
     [TestCase("Today 9:40")]
     public void An_unreadable_schedule_time_is_NaN(string when) =>
-        Assert.That(PortState.ClockHours(when), Is.NaN);
+        Assert.That(ShiftClock.ClockHours(when), Is.NaN);
 
     [TestCase(20.5, "20:30")]
     [TestCase(24.5, "00:30")]
@@ -128,9 +128,9 @@ public class ShiftTimelineTests
     [TestCase(23 + 59.6 / 60, "23:59", TestName = "Minutes truncate: 23:59:36 reads 23:59")]
     [TestCase(24 - 0.1 / 3600, "00:00", TestName = "23:59:59.9 rounds to the second, then wraps")]
     public void Clock_times_wrap_at_midnight(double hours, string expected) =>
-        Assert.That(PortState.Format(hours), Is.EqualTo(expected));
+        Assert.That(ShiftClock.Format(hours), Is.EqualTo(expected));
 
     [Test]
     public void The_header_clock_carries_seconds() =>
-        Assert.That(PortState.FormatWithSeconds(20 + 58 / 60d + 20 / 3600d), Is.EqualTo("20:58:20"));
+        Assert.That(ShiftClock.FormatWithSeconds(20 + 58 / 60d + 20 / 3600d), Is.EqualTo("20:58:20"));
 }

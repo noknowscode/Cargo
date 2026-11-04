@@ -225,7 +225,7 @@ public sealed partial class TimelineLanes : SKCanvasElement
             var happened = e.Hour <= frame.Now;
             var cx = x(e.Hour);
             var cy = e.Arrival ? ArrivalDot : DepartureDot;
-            var time = PortState.Format(e.Hour);
+            var time = ShiftClock.Format(e.Hour);
             var nameWidth = _label.MeasureText(e.Name);
             var labelWidth = nameWidth + 6 + _mono.MeasureText(time);
             var left = Math.Clamp(cx - labelWidth / 2, _plotLeft, right - labelWidth);
@@ -385,7 +385,7 @@ public sealed partial class TimelineLanes : SKCanvasElement
             Text(canvas, Label(h), left, 568, h == 24 ? _monoStrong : _mono, h == 24 ? _ink : _muted);
         }
 
-        static string Label(int hour) => hour == 24 ? "Thu 00:00" : PortState.Format(hour);
+        static string Label(int hour) => hour == 24 ? "Thu 00:00" : ShiftClock.Format(hour);
     }
 
     private void DrawNow(SKCanvas canvas, TimelineFrame frame, float nowX)
@@ -394,7 +394,7 @@ public sealed partial class TimelineLanes : SKCanvasElement
         _stroke.Color = _ink;
         canvas.DrawLine(nowX, 20, nowX, 548, _stroke);
 
-        var text = $"NOW {PortState.Format(frame.Now)}";
+        var text = $"NOW {ShiftClock.Format(frame.Now)}";
         var pill = SKRect.Create(nowX - 40, 0, 80, 22);
         _fill.Color = _ink;
         canvas.DrawRoundRect(pill, 11, 11, _fill);
