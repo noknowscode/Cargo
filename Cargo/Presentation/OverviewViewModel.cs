@@ -66,6 +66,11 @@ public sealed partial class OverviewViewModel : ObservableObject
 
     public string OperatorSummary => $"{Operator.Role} {Operator.Name}, {Operator.Badge}, on shift {Operator.ClockedInText} to {Operator.ShiftEndText}";
 
+    /// <summary>The masthead's figures: the vessels alongside and inbound.</summary>
+    public string Alongside => PortData.Alongside.ToString();
+
+    public string Inbound => PortData.Inbound.ToString();
+
     /// <summary>The masthead's needs-you figure, as text for the figure's TextBlock.</summary>
     public string NeedsYouText => State.NeedsYou.Count.ToString();
 

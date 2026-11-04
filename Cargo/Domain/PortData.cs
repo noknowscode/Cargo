@@ -117,6 +117,12 @@ public static class PortData
 
     public static Vessel Vessel(string id) => Vessels.First(v => v.Id == id);
 
+    /// <summary>Vessels alongside: docked or departing.</summary>
+    public static int Alongside => Vessels.Count(v => v.Status is VesselStatus.Docked or VesselStatus.Departing);
+
+    /// <summary>Vessels inbound: arriving or waiting at anchor.</summary>
+    public static int Inbound => Vessels.Count(v => v.Status is VesselStatus.Arriving or VesselStatus.AtAnchor);
+
     // ── Berths ────────────────────────────────────────────────────────────────
 
     public static readonly IReadOnlyList<BerthDef> Berths = new[]

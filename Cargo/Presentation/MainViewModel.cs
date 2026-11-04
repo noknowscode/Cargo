@@ -241,9 +241,7 @@ public sealed partial class MainViewModel : ObservableObject
         switch (section)
         {
             case "overview":
-                var alongside = PortData.Vessels.Count(v => v.Status is VesselStatus.Docked or VesselStatus.Departing);
-                var inbound = PortData.Vessels.Count(v => v.Status is VesselStatus.Arriving or VesselStatus.AtAnchor);
-                return $"{alongside} alongside · {inbound} inbound · {ShiftTimeline.MovesToday(state.NowHours):N0} moves today";
+                return $"{PortData.Alongside} alongside · {PortData.Inbound} inbound · {ShiftTimeline.MovesToday(state.NowHours):N0} moves today";
 
             case "berths":
                 var parts = new List<string>();

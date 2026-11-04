@@ -142,4 +142,13 @@ public class OverviewViewModelTests
         log.ToggleCommand.Execute(entry);
         Assert.That(log.Left.Concat(log.Right).Any(e => e.IsExpanded || e.IsDimmed), Is.False);
     }
+
+    [Test]
+    public void The_masthead_counts_alongside_and_inbound_as_the_tab_tooltip_does()
+    {
+        var desk = new Desk();
+
+        Assert.That((desk.Overview.Alongside, desk.Overview.Inbound), Is.EqualTo(("3", "2")));
+        Assert.That(desk.Main.NavItems.Single(n => n.Id == "overview").Tooltip, Does.StartWith("Overview · 3 alongside · 2 inbound"));
+    }
 }

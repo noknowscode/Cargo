@@ -267,7 +267,7 @@ public sealed partial class HarbourViewModel : ObservableObject
     /// </summary>
     public string Summary(string viewName)
     {
-        var alongside = PortData.Vessels.Count(v => v.Status is VesselStatus.Docked or VesselStatus.Departing);
+        var alongside = PortData.Alongside;
         var arriving = PortData.Vessels.Count(v => v.Status == VesselStatus.Arriving);
         var selected = PortData.Vessels.FirstOrDefault(v => v.Id == Selection);
         var layer = Layer switch { "yard" => "Yard", "security" => "Security", "traffic" => "Traffic", _ => "Map" };

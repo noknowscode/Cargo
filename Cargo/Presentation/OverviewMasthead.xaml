@@ -36,7 +36,7 @@
           <Ellipse Width="8" Height="8" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" />
           <TextBlock Text="Alongside" Style="{StaticResource FigureLabelText}" />
         </StackPanel>
-        <TextBlock Text="3" Style="{StaticResource MetricText}" />
+        <TextBlock Text="{x:Bind ViewModel.Alongside, Mode=OneWay}" Style="{StaticResource MetricText}" />
       </StackPanel>
 
       <StackPanel Style="{StaticResource FigureStack}">
@@ -44,7 +44,7 @@
           <Ellipse Width="8" Height="8" Stroke="{ThemeResource NavyBrush}" StrokeThickness="1.6" VerticalAlignment="Center" />
           <TextBlock Text="Inbound" Style="{StaticResource FigureLabelText}" />
         </StackPanel>
-        <TextBlock Text="2" Style="{StaticResource MetricText}" />
+        <TextBlock Text="{x:Bind ViewModel.Inbound, Mode=OneWay}" Style="{StaticResource MetricText}" />
       </StackPanel>
 
       <Rectangle Width="1" Fill="{ThemeResource HairlineStrongBrush}" />
