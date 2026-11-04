@@ -245,6 +245,29 @@ public sealed partial class PortState : ObservableObject
         OnPlanChanged();
     }
 
+    // ── What the plan says about a vessel ──────────────────────────────────────
+
+    /// <summary>
+    /// Her status line as the plan stands: an arrival counts down to her ETA and names the berth the plan gives her
+    /// ("Arriving in 42 min · assigned Berth 08"), a vessel at anchor names hers once she has one ("At anchor ·
+    /// assigned Berth 05"). A vessel alongside keeps the data's line: her berth cannot move.
+    /// </summary>
+    public string StatusLine(Vessel vessel) => vessel.Status switch
+    {
+        VesselStatus.Arriving => $"Arriving {Countdown(ShiftClock.ClockHours(vessel.Eta))} · "
+            + (BerthOf(vessel.Id) is { } berth ? $"assigned Berth {berth}" : "no berth assigned"),
+        VesselStatus.AtAnchor when BerthOf(vessel.Id) is { } berth => $"At anchor · assigned Berth {berth}",
+        _ => vessel.StatusLine
+    };
+
+    /// <summary>
+    /// Her operations note as the plan stands: the data's note was written for the berth the data gives her, so once
+    /// the plan moves her it says where she is going instead.
+    /// </summary>
+    public string OpsNote(Vessel vessel) => BerthOf(vessel.Id) is var berth && berth != vessel.HomeBerth
+        ? berth is null ? "Released from her berth · she waits at anchor for one." : $"Assigned to Berth {berth} · pilots and mooring gang notified."
+        : vessel.OpsNote;
+
     // ── Decisions ─────────────────────────────────────────────────────────────
 
     private readonly HashSet<string> _confirmed = new();

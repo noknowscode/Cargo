@@ -17,10 +17,7 @@ namespace Cargo.Controls.Harbour;
 public sealed partial class HarbourTag(
     string id,
     string name,
-    string sub,
-    string pendingSub,
     double etaHours,
-    string accessibleName,
     IReadOnlyList<Fact> facts,
     ICommand toggle,
     ICommand open,
@@ -29,16 +26,20 @@ public sealed partial class HarbourTag(
     public string Id { get; } = id;
     public string Name { get; } = name;
 
-    /// <summary>The light tag's status: "B04 · discharging".</summary>
-    public string Sub { get; } = sub;
+    /// <summary>The light tag's status, by the berth the plan gives her: "B04 · discharging".</summary>
+    [ObservableProperty]
+    public partial string Sub { get; set; } = string.Empty;
 
     /// <summary>The dark tag's second line for the arrival waiting on its berth: "B07 · pilot aboard".</summary>
-    public string PendingSub { get; } = pendingSub;
+    [ObservableProperty]
+    public partial string PendingSub { get; set; } = string.Empty;
 
     /// <summary>Hours on the app clock when the vessel arrives, for the dark tag's countdown.</summary>
     public double EtaHours { get; } = etaHours;
 
-    public string AccessibleName { get; } = accessibleName;
+    /// <summary>The tag for a screen reader: her name and her status line as the plan stands.</summary>
+    [ObservableProperty]
+    public partial string AccessibleName { get; set; } = string.Empty;
     public IReadOnlyList<Fact> Facts { get; } = facts;
     public ICommand Toggle { get; } = toggle;
     public ICommand Open { get; } = open;
@@ -510,10 +511,7 @@ public sealed partial class HarbourView : UserControl
             var tag = new HarbourTag(
                 id: vessel.Id,
                 name: vessel.Name,
-                sub: TagLine(vessel),
-                pendingSub: $"B{vessel.HomeBerth} · pilot aboard",
                 etaHours: ShiftClock.ClockHours(vessel.Eta),
-                accessibleName: $"{vessel.Name}, {vessel.StatusLine}",
                 facts: new[]
                 {
                     new Fact { Key = "Arrival", Value = vessel.Eta },
@@ -534,13 +532,37 @@ public sealed partial class HarbourView : UserControl
         RefreshTags();
     }
 
-    private static string TagLine(Vessel v) => v.Status switch
+    /// <summary>
+    /// The tags' words as the plan stands: a drag or the optimiser moves an arrival's berth, and her tag, the docked
+    /// card and the screen reader's line say so. (The 3D ships stay at the data's berths: the harbour is the data's
+    /// picture of 20:58.)
+    /// </summary>
+    private void DescribeTags()
+    {
+        if (_state is null)
+        {
+            return;
+        }
+
+        foreach (var (tag, _) in _tags)
+        {
+            var vessel = PortData.Vessel(tag.Id);
+            var berth = _state.BerthOf(vessel.Id);
+            tag.Sub = TagLine(vessel, berth);
+            tag.PendingSub = $"B{berth} · pilot aboard";
+            tag.AccessibleName = $"{vessel.Name}, {_state.StatusLine(vessel)}";
+        }
+    }
+
+    private static string TagLine(Vessel v, string? berth) => v.Status switch
     {
         // The berth leads: a selected vessel's tag sits over its painted berth number
-        VesselStatus.Docked when v.UnloadPercent is > 0 and < 100 => $"B{v.HomeBerth} · discharging",
-        VesselStatus.Docked => $"B{v.HomeBerth} · loading",
-        VesselStatus.Departing => $"B{v.HomeBerth} · departing",
-        VesselStatus.Arriving => $"B{v.HomeBerth} · arriving {Clock(v.Eta)}",
+        VesselStatus.Docked when v.UnloadPercent is > 0 and < 100 => $"B{berth} · discharging",
+        VesselStatus.Docked => $"B{berth} · loading",
+        VesselStatus.Departing => $"B{berth} · departing",
+        VesselStatus.Arriving when berth is null => $"no berth · arriving {Clock(v.Eta)}",
+        VesselStatus.Arriving => $"B{berth} · arriving {Clock(v.Eta)}",
+        _ when berth is not null => $"anchored · B{berth} assigned",
         _ => "anchored · unassigned"
     };
 
@@ -558,10 +580,14 @@ public sealed partial class HarbourView : UserControl
         {
             tag.Countdown = _state.Countdown(tag.EtaHours);
         }
+
+        // An arrival's status line counts down too
+        DescribeTags();
     }
 
     private void RefreshTags()
     {
+        DescribeTags();
         PaintTags();
         DispatcherQueue.TryEnqueue(PlaceOverlays);
         UpdateSummary();
@@ -649,7 +675,7 @@ public sealed partial class HarbourView : UserControl
         var selected = vessels.FirstOrDefault(v => v.Id == EffectiveSelection);
         var layer = EffectiveLayer switch { "yard" => "Yard", "security" => "Security", "traffic" => "Traffic", _ => "Map" };
         var text = $"{_viewName} view, {layer} layer. {alongside} vessels alongside, {arriving} arriving."
-            + (selected is null ? string.Empty : $" Selected: {selected.Name}, {selected.StatusLine}.");
+            + (selected is null ? string.Empty : $" Selected: {selected.Name}, {_state.StatusLine(selected)}.");
         if (text == Summary.Text)
         {
             return;

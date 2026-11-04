@@ -2,12 +2,16 @@ using Cargo.Controls;
 
 namespace Cargo.Presentation;
 
-public sealed class VesselRow
+public sealed partial class VesselRow : ObservableObject
 {
     public required string Id { get; init; }
     public required string Name { get; init; }
-    public required string Line1 { get; init; }
-    public required string Line2 { get; init; }
+
+    /// <summary>Her status as the plan stands, "Arriving in 42 min · assigned Berth 07"; the countdown moves with the clock.</summary>
+    [ObservableProperty] public partial string Line1 { get; set; } = string.Empty;
+
+    [ObservableProperty] public partial string Line2 { get; set; } = string.Empty;
+
     /// <summary>The vessel's accent, as its palette key.</summary>
     public required string Tone { get; init; }
 
@@ -138,7 +142,7 @@ public sealed partial class VesselsViewModel : ObservableObject
         IsCleared = vessel.Security == "Cleared";
 
         TeuLabel = vessel.Containers.ToString("N0");
-        OpsNote = vessel.OpsNote;
+        OpsNote = State.OpsNote(vessel);
 
         BuildVesselList();
         BuildFacts(vessel);
@@ -157,14 +161,14 @@ public sealed partial class VesselsViewModel : ObservableObject
         foreach (var vessel in PortData.Vessels)
         {
             var selected = vessel.Id == State.SelectedVesselId;
-            var parts = vessel.StatusLine.Split(" · ");
+            var (line1, line2) = Lines(vessel);
 
             Vessels.Add(new VesselRow
             {
                 Id = vessel.Id,
                 Name = vessel.Name,
-                Line1 = string.Join(" · ", parts.Take(2)),
-                Line2 = SecondLine(vessel, parts),
+                Line1 = line1,
+                Line2 = line2,
                 Tone = vessel.AccentToken,
                 IsSelected = selected,
                 Silhouette = Sprites.Side(vessel.Id),
@@ -173,11 +177,23 @@ public sealed partial class VesselsViewModel : ObservableObject
         }
     }
 
-    private static string SecondLine(Vessel vessel, string[] parts)
+    /// <summary>A row's two lines from her status as the plan stands: "Docked · Berth 04" over "Discharging 62%".</summary>
+    private (string Line1, string Line2) Lines(Vessel vessel)
+    {
+        var parts = State.StatusLine(vessel).Split(" · ");
+        return (string.Join(" · ", parts.Take(2)), SecondLine(vessel, parts));
+    }
+
+    private string SecondLine(Vessel vessel, string[] parts)
     {
         if (parts.Length < 3)
         {
-            return vessel.Status == VesselStatus.AtAnchor ? "Waiting for Berth 06" : string.Empty;
+            // At anchor with no berth: what she waits for, from her note ("Waiting for Berth 06")
+            return vessel.Status == VesselStatus.AtAnchor && State.BerthOf(vessel.Id) is null
+                ? System.Text.RegularExpressions.Regex.Match(State.OpsNote(vessel), @"^Waiting for Berth \d+") is { Success: true } wait
+                    ? wait.Value
+                    : "Waiting for a berth"
+                : string.Empty;
         }
 
         var tail = parts[2];
@@ -288,6 +304,12 @@ public sealed partial class VesselsViewModel : ObservableObject
     {
         var vessel = State.SelectedVessel;
         var elapsed = State.ElapsedSeconds;
+
+        // The arrivals' countdowns in the list
+        foreach (var row in Vessels)
+        {
+            (row.Line1, row.Line2) = Lines(PortData.Vessel(row.Id));
+        }
 
         var unload = vessel.UnloadPercent is > 0 and < 100
             ? Math.Min(100, vessel.UnloadPercent + elapsed * 0.012)

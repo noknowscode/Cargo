@@ -262,12 +262,12 @@ public sealed partial class DockingViewModel : ObservableObject
 
         HasSelection = true;
         SelectedName = vessel.Name;
-        SelectedStatus = $"{vessel.Operator} · {vessel.StatusLine}";
+        SelectedStatus = $"{vessel.Operator} · {State.StatusLine(vessel)}";
         SelectedNote = berth is null
             ? "Not yet berthed. Drag her onto a berth marked Fits, pick one under Move to berth, or Optimize."
             : State.IsAssigned(id)
                 ? $"Assigned to Berth {berth} · mooring gang notified."
-                : vessel.OpsNote;
+                : State.OpsNote(vessel);
         SelectedProfile = Sprites.Side(vessel.Id);
         CanRelease = State.IsAssigned(id);
 

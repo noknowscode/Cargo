@@ -53,9 +53,9 @@
                         <Ellipse Width="7" Height="7" Fill="{x:Bind local:Paint.Tone(Tone)}" VerticalAlignment="Center" />
                         <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" TextTrimming="CharacterEllipsis" />
                       </StackPanel>
-                      <TextBlock Text="{x:Bind Line1}" Style="{StaticResource CaptionText}" Margin="{StaticResource GapStart16}"
+                      <TextBlock Text="{x:Bind Line1, Mode=OneWay}" Style="{StaticResource CaptionText}" Margin="{StaticResource GapStart16}"
                                  TextTrimming="CharacterEllipsis" />
-                      <TextBlock Text="{x:Bind Line2}" Style="{StaticResource CaptionText}" Margin="{StaticResource GapStart16}"
+                      <TextBlock Text="{x:Bind Line2, Mode=OneWay}" Style="{StaticResource CaptionText}" Margin="{StaticResource GapStart16}"
                                  TextTrimming="CharacterEllipsis" />
                     </StackPanel>
                     <Image Grid.Column="1" Source="{x:Bind local:Paint.Sprite(Silhouette)}" Width="84" Height="30"

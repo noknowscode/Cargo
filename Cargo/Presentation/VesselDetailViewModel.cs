@@ -68,7 +68,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
         StateLabel = BerthFacts.State(_state, vessel).ToUpperInvariant();
         NeedsYou = needs;
         IsRestricted = false;
-        Note = BerthFacts.Note(vessel);
+        Note = BerthFacts.Note(_state, vessel);
 
         (Big, BigSub) = vessel.Status switch
         {

@@ -18,7 +18,7 @@
 
         <Button Style="{StaticResource BareButton}" Command="{x:Bind Toggle}" CommandParameter="{x:Bind Id}"
                 controls:HoverLink.Command="{x:Bind Hover}" controls:HoverLink.Key="{x:Bind Id}"
-                AutomationProperties.Name="{x:Bind AccessibleName}" HorizontalAlignment="Center">
+                AutomationProperties.Name="{x:Bind AccessibleName, Mode=OneWay}" HorizontalAlignment="Center">
           <Grid>
             <!-- Light tag: name and status on one 30 px line, on the float shadow.
                  Shadows inline: a Style-supplied collection never applies (Toolkit gotcha G36). -->
@@ -35,7 +35,7 @@
                       BorderBrush="{x:Bind Edge, Mode=OneWay}" BorderThickness="{x:Bind EdgeThickness, Mode=OneWay}">
                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" VerticalAlignment="Center">
                   <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong13}" Foreground="{ThemeResource InkBrush}" />
-                  <TextBlock Text="{x:Bind Sub}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextMutedBrush}" />
+                  <TextBlock Text="{x:Bind Sub, Mode=OneWay}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextMutedBrush}" />
                 </StackPanel>
               </Border>
             </utu:ShadowContainer>
@@ -60,7 +60,7 @@
                     <TextBlock Grid.Column="1" Text="{x:Bind Countdown, Mode=OneWay}" Style="{StaticResource TypeMonoMedium12}"
                                Foreground="{ThemeResource SurfaceBrush}" />
                   </Grid>
-                  <TextBlock Text="{x:Bind PendingSub}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextInverseMutedBrush}" />
+                  <TextBlock Text="{x:Bind PendingSub, Mode=OneWay}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextInverseMutedBrush}" />
                 </StackPanel>
               </Border>
             </utu:ShadowContainer>
