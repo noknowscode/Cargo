@@ -18,10 +18,13 @@ public sealed partial class BerthMap : SceneHost
     // Kept from the last build so a drag repaints them instead of rebuilding the scene.
     private readonly Microsoft.UI.Xaml.Shapes.Rectangle?[] _boxes = new Microsoft.UI.Xaml.Shapes.Rectangle?[8];
     private readonly TextBlock?[] _statusLabels = new TextBlock?[8];
-    private readonly (string Status, bool Conflict, bool Selected)[] _berthInfo = new (string, bool, bool)[8];
+    private readonly (BerthState Status, bool Conflict, bool Selected)[] _berthInfo = new (BerthState, bool, bool)[8];
     private readonly Dictionary<string, (FrameworkElement Hull, FrameworkElement Name)> _hulls = new();
     private int _paintedHover = -2;
     private string? _lastHint;
+
+    // How many of the scene's children are the ground (land, apron, quay, swell, anchorage), which never changes
+    private int _groundCount;
 
     private string? _dragId;
     private Point _dragPoint;
@@ -39,7 +42,9 @@ public sealed partial class BerthMap : SceneHost
         PointerExited += (_, _) => CompleteDrop();
 
         Build();
-        this.RebuildWhenVisible(state, Build);
+        this.RebuildWhenVisible(state, BuildLive);
+        this.RebuildOnPlanHour(state, BuildLive);
+        this.RebuildOnTheme(Build);
     }
 
     /// <summary>Raised whenever the hint strip under the map should change.</summary>
@@ -70,15 +75,31 @@ public sealed partial class BerthMap : SceneHost
 
     // ── Drawing ───────────────────────────────────────────────────────────────
 
+    /// <summary>The whole map: the ground once (and again on a theme change), then the berths and vessels.</summary>
     private void Build()
     {
         Scene.Children.Clear();
+        DrawGround();
+        _groundCount = Scene.Children.Count;
+        BuildLive();
+    }
+
+    /// <summary>
+    /// The berths and the vessels, which an assignment, the selection and the plan hour change. The ground under
+    /// them (about 150 of the map's 190 shapes) stays.
+    /// </summary>
+    private void BuildLive()
+    {
+        while (Scene.Children.Count > _groundCount)
+        {
+            Scene.Children.RemoveAt(Scene.Children.Count - 1);
+        }
+
         _hulls.Clear();
 
         var planHour = _state.EffectivePlanHour;
         var conflicts = _state.Conflicts();
 
-        DrawGround();
         DrawBerths(planHour, conflicts);
         DrawVessels(planHour);
         _paintedHover = -2;
@@ -87,18 +108,18 @@ public sealed partial class BerthMap : SceneHost
 
     private void DrawGround()
     {
-        Scene.Place(Draw.Rect(0, 0, 1200, 460, Tokens.Brush("LandInvariantBrush")));
-        Scene.Place(Draw.Rect(0, 140, 1200, 320, Tokens.Brush("ShallowsInvariantBrush")));
+        Scene.Place(Draw.Rect(0, 0, 1200, 460, Tokens.Brush("LandBrush")));
+        Scene.Place(Draw.Rect(0, 140, 1200, 320, Tokens.Brush("ShallowsBrush")));
 
         // Terminal apron behind the quay
-        Scene.Place(Draw.Rect(0, 0, 1200, 128, Tokens.Brush("LandInvariantBrush")));
+        Scene.Place(Draw.Rect(0, 0, 1200, 128, Tokens.Brush("LandBrush")));
         for (var g = 0; g < 12; g++)
         {
             for (var i = 0; i < 5; i++)
             {
                 for (var j = 0; j < 3; j++)
                 {
-                    if (Geo.H(g * 13 + i * 5 + j) < 0.2)
+                    if (Noise.H(g * 13 + i * 5 + j) < 0.2)
                     {
                         continue;
                     }
@@ -109,8 +130,8 @@ public sealed partial class BerthMap : SceneHost
             }
         }
 
-        Scene.Place(Draw.Rect(0, 128, 1200, 8, Tokens.Brush("QuayInvariantBrush")));
-        Scene.Place(Draw.Rect(0, 135, 1200, 2, Tokens.Brush("QuayEdgeInvariantBrush")));
+        Scene.Place(Draw.Rect(0, 128, 1200, 8, Tokens.Brush("QuayBrush")));
+        Scene.Place(Draw.Rect(0, 135, 1200, 2, Tokens.Brush("QuayEdgeBrush")));
 
         // Swell in the basin
         var swell = Tokens.Brush("DeckWhiteColor", 0.35);
@@ -121,11 +142,11 @@ public sealed partial class BerthMap : SceneHost
         }
 
         // Anchorage
-        Scene.Place(Draw.Text("ANCHORAGE", 700, 346, 12, Tokens.Brush("TextMutedInvariantBrush"), "BodyMediumFont"));
-        Scene.Place(Draw.Rule(700, 440, 1170, 440, Tokens.Brush("TextFaintInvariantBrush"), 1, dash: Draw.Dash(3, 5)));
+        Scene.Place(Draw.Text("ANCHORAGE", 700, 346, 12, Tokens.Brush("TextMutedBrush"), "BodyMediumFont"));
+        Scene.Place(Draw.Rule(700, 440, 1170, 440, Tokens.Brush("TextFaintBrush"), 1, dash: Draw.Dash(3, 5)));
 
         // Nordic Star's approach
-        var approach = Draw.Shape("M700 392 C 760 330 860 260 930 222", null, Tokens.Brush("AccentInvariantBrush"), 1.5);
+        var approach = Draw.Shape("M700 392 C 760 330 860 260 930 222", null, Tokens.Brush("AccentBrush"), 1.5);
         approach.StrokeDashArray = Draw.Dash(6, 8);
         Scene.Place(approach);
     }
@@ -140,20 +161,25 @@ public sealed partial class BerthMap : SceneHost
             var incoming = _state.IncomingAt(berth.Number, planHour) is not null;
             var conflict = conflicts.Any(c => c.Berth == berth.Number);
 
-            var status = berth.State == "restricted" ? "restricted"
-                : occupied ? "occupied"
-                : incoming ? "reserved"
-                : "available";
+            var status = berth.State == BerthState.Restricted ? BerthState.Restricted
+                : occupied ? BerthState.Occupied
+                : incoming ? BerthState.Reserved
+                : BerthState.Available;
 
             var selected = _state.DockSelection is { } id && _state.BerthOf(id) == berth.Number;
             _berthInfo[i] = (status, conflict, selected);
 
             _boxes[i] = Scene.Place(Draw.Rect(x, 146, 132, 70, Tokens.Transparent, 8, Tokens.Transparent, 1.2));
-            Scene.Place(Draw.Text(berth.Number, x, 228, 16, Tokens.Brush("InkInvariantBrush"),
+            // A screen reader reads each berth as the map draws it
+            var holder = _state.OccupantAt(berth.Number, planHour) ?? _state.IncomingAt(berth.Number, planHour);
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(_boxes[i],
+                $"Berth {berth.Number}, {berth.Depth:0.0} m, {(conflict ? "conflict" : status.Label().ToLowerInvariant())}"
+                + (holder is null ? string.Empty : $", {holder.Name}"));
+            Scene.Place(Draw.Text(berth.Number, x, 228, 16, Tokens.Brush("InkBrush"),
                 "MonoMediumFont", TextAlignment.Center, 132));
-            _statusLabels[i] = Scene.Place(Draw.Text(conflict ? "Conflict" : char.ToUpperInvariant(status[0]) + status[1..],
+            _statusLabels[i] = Scene.Place(Draw.Text(conflict ? "Conflict" : status.Label(),
                 x, 248, 14, Tokens.Transparent, "BodyMediumFont", TextAlignment.Center, 132));
-            Scene.Place(Draw.Text($"{berth.Depth:0.0} m", x, 218, 10.5, Tokens.Brush("TextFaintInvariantBrush"),
+            Scene.Place(Draw.Text($"{berth.Depth:0.0} m", x, 218, 10.5, Tokens.Brush("TextFaintBrush"),
                 "BodyFont", TextAlignment.Center, 132));
         }
     }
@@ -181,7 +207,19 @@ public sealed partial class BerthMap : SceneHost
 
             var (status, conflict, selected) = _berthInfo[i];
             var isHover = hover == i;
-            var fits = dragVessel is not null && _state.Fits(dragVessel, i);
+            var fit = dragVessel is null ? BerthFit.Unknown : _state.Check(dragVessel, i);
+            var fits = fit == BerthFit.Fits;
+
+            // While a hull is dragged each berth says in words whether it takes her, not only in green or red
+            label.Text = dragVessel is not null
+                ? fit switch
+                {
+                    BerthFit.Fits => "Fits",
+                    BerthFit.Closed => "Closed",
+                    BerthFit.TooShallow => "Too shallow",
+                    _ => "Taken"
+                }
+                : conflict ? "Conflict" : status.Label();
 
             var toneToken = conflict ? "AlertColor" : StatusToken(status);
             if (dragVessel is not null)
@@ -193,22 +231,31 @@ public sealed partial class BerthMap : SceneHost
             var fillOpacity = isHover && fits ? 0.45
                 : selected ? 0.35
                 : dragVessel is not null && fits ? 0.22
-                : status == "available" ? 0.14
+                : status == BerthState.Available ? 0.14
                 : 0.18;
 
             box.Fill = Tokens.Of(tone, fillOpacity);
             box.Stroke = Tokens.Of(isHover && dragVessel is not null ? Tokens.Color("InkColor") : tone);
             box.StrokeThickness = isHover || selected || conflict ? 2.5 : 1.2;
-            box.StrokeDashArray = status == "reserved" || (dragVessel is not null && fits) ? Draw.Dash(6, 5) : null;
+            box.StrokeDashArray = status == BerthState.Reserved || (dragVessel is not null && fits) ? Draw.Dash(6, 5) : null;
             label.Foreground = Tokens.Of(tone);
         }
     }
 
-    private static string StatusToken(string status) => status switch
+    /// <summary>
+    /// The arrival still waiting on her berth decision (<see cref="PortState.PendingDecision"/>) is drawn in the
+    /// approach lane, off her berth, until the berth is confirmed or she is moved to a berth that needs no decision.
+    /// </summary>
+    public static bool WaitsInApproach(PortState state, string vesselId, double planHour) =>
+        state.PendingDecision == vesselId
+        && PortData.BerthIndex(state.BerthOf(vesselId)) is not null
+        && PortData.Schedule[vesselId].Start > planHour;
+
+    private static string StatusToken(BerthState status) => status switch
     {
-        "occupied" => "NavyColor",
-        "reserved" => "AccentColor",
-        "restricted" => "RestrictedColor",
+        BerthState.Occupied => "NavyColor",
+        BerthState.Reserved => "AccentColor",
+        BerthState.Restricted => "RestrictedColor",
         _ => "AccentColor"
     };
 
@@ -217,7 +264,7 @@ public sealed partial class BerthMap : SceneHost
         foreach (var vessel in PortData.Vessels)
         {
             var berth = _state.BerthOf(vessel.Id);
-            var index = berth is null ? -1 : PortData.Berths.ToList().FindIndex(b => b.Number == berth);
+            var index = PortData.BerthIndex(berth) ?? -1;
             var window = PortData.Schedule[vessel.Id];
             var present = window.Start <= planHour && window.End > planHour;
             var upcoming = window.Start > planHour;
@@ -235,7 +282,7 @@ public sealed partial class BerthMap : SceneHost
                 x = BerthX(index) - 14;
                 y = 160;
             }
-            else if (index >= 0 && upcoming && vessel.Id == "nordic" && !_state.IsAssigned(vessel.Id))
+            else if (WaitsInApproach(_state, vessel.Id, planHour))
             {
                 x = 700;
                 y = 372;
@@ -257,7 +304,7 @@ public sealed partial class BerthMap : SceneHost
                 y = 372;
             }
 
-            var movable = vessel.Status != "Docked" && vessel.Status != "Departing";
+            var movable = BerthPlan.Movable(vessel);
             var selected = _state.DockSelection == vessel.Id;
 
             var host = new Grid { Width = 160, Height = 30 };
@@ -267,7 +314,7 @@ public sealed partial class BerthMap : SceneHost
                 RadiusY = 20,
                 Margin = new Thickness(-6),
                 Stroke = selected || dragging
-                    ? Tokens.Brush("InkInvariantBrush")
+                    ? Tokens.Brush("InkBrush")
                     : movable ? Tokens.Brush("InkColor", 0.35) : Tokens.Transparent,
                 StrokeThickness = selected || dragging ? 2.5 : movable ? 1.2 : 0,
                 StrokeDashArray = movable && !selected && !dragging ? Draw.Dash(5, 4) : null
@@ -281,10 +328,13 @@ public sealed partial class BerthMap : SceneHost
             });
 
             host.Opacity = opacity;
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(host,
+                $"{vessel.Name}, " + (_state.BerthOf(vessel.Id) is { } at ? $"Berth {at}" : "at anchor")
+                + (movable ? ", inbound: drag onto a berth, or use Move to berth" : string.Empty));
             host.PointerPressed += (_, e) => BeginDrag(vessel, movable, e, Canvas.GetLeft(host), Canvas.GetTop(host));
             Scene.Place(host.At(x, y));
 
-            var name = Scene.Place(Draw.Label(vessel.Name, x + 80, y + 36, 15, Tokens.Brush("InkInvariantBrush"),
+            var name = Scene.Place(Draw.Label(vessel.Name, x + 80, y + 36, 15, Tokens.Brush("InkBrush"),
                 "BodyStrongFont", TextAlignment.Center, 220));
             _hulls[vessel.Id] = (host, name);
         }
@@ -341,7 +391,7 @@ public sealed partial class BerthMap : SceneHost
             ? _state.Fits(vessel, target)
                 ? $"Release to assign Berth {PortData.Berths[target].Number}"
                 : $"Berth {PortData.Berths[target].Number} can't take {vessel.Name}"
-            : "Drop on a green berth";
+            : "Drop on a berth marked Fits";
         if (hint != _lastHint)
         {
             _lastHint = hint;
@@ -392,20 +442,20 @@ public sealed partial class BerthMap : SceneHost
             return;
         }
 
-        if (target >= 0)
+        // Every drop says what happened: assigned, refused with the rule that refused it, or not on a berth at all
+        var message = target >= 0
+            ? _state.Assign(id, target)
+            : $"{PortData.Vessel(id).Name} was not moved: drop her on a berth marked Fits.";
+        if (message is not null)
         {
-            var message = _state.Assign(id, target);
-            if (message is not null)
-            {
-                HintChanged?.Invoke(this, message);
-            }
+            HintChanged?.Invoke(this, message);
         }
 
         // A successful assignment is a structural change, which rebuilds the map once;
         // otherwise the hull goes back to where it came from.
         if (!assigned)
         {
-            Build();
+            BuildLive();
         }
     }
 }

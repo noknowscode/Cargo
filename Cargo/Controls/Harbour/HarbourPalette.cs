@@ -3,18 +3,31 @@ using SkiaSharp;
 namespace Cargo.Controls.Harbour;
 
 /// <summary>
-/// Every colour in the scene, resolved once from Themes/Tokens.xaml. No literals live here:
-/// the scene follows the app's rule that colours resolve from the token file.
+/// Every colour in the scene, resolved from Themes/Tokens.xaml for the current theme. No literals live
+/// here: the scene follows the app's rule that colours resolve from the token file. The model's paint is
+/// invariant; the theme sets the ground, the water and the light (<c>HarbourLightLevel</c>), so Dark is the
+/// same harbour at night. <see cref="Reload"/> re-reads everything after a theme change.
 /// </summary>
 public sealed class HarbourPalette
 {
     private readonly Dictionary<string, SKColor> _cache = new();
-    private readonly SKColor _skyTint;
+    private SKColor _skyTint;
+    private double _level;
+    private double _edgeLift;
 
     /// <summary>The sun direction (toward the light), fixed to the world.</summary>
     public static readonly V3 Light = new V3(-0.55, 0.4, 0.72).Normalized();
 
-    public HarbourPalette() => _skyTint = this["HarbourSkyTintColor"];
+    public HarbourPalette() => Reload();
+
+    /// <summary>Forgets every resolved colour and reads the theme's light again.</summary>
+    public void Reload()
+    {
+        _cache.Clear();
+        _skyTint = this["HarbourSkyTintColor"];
+        _level = Tokens.Number("HarbourLightLevel", 1);
+        _edgeLift = Tokens.Number("HarbourEdgeLift", .42);
+    }
 
     public SKColor this[string key]
     {
@@ -39,27 +52,27 @@ public sealed class HarbourPalette
     public SKColor Shade(SKColor c, double light)
     {
         var t = Math.Max(0, 1 - light) * 0.4;
-        var k = Math.Min(light, 1.04);
+        var k = Math.Min(light, 1.04) * _level;
         byte Channel(byte v, byte tint) => (byte)Math.Clamp(Math.Round((v * (1 - t) + tint * t) * k), 0, 255);
         return new SKColor(Channel(c.Red, _skyTint.Red), Channel(c.Green, _skyTint.Green), Channel(c.Blue, _skyTint.Blue));
     }
 
-    /// <summary>The thin bright line a model's top edges catch under soft light.</summary>
-    public static SKColor EdgeLight(SKColor c)
+    /// <summary>The thin bright line a model's top edges catch under soft light (dimmer at night).</summary>
+    public SKColor EdgeLight(SKColor c)
     {
-        const double k = 0.42;
-        byte Channel(byte v) => (byte)Math.Round(v + (255 - v) * k);
+        var k = _edgeLift;
+        byte Channel(byte v) => (byte)Math.Round((v + (255 - v) * k) * _level);
         return new SKColor(Channel(c.Red), Channel(c.Green), Channel(c.Blue));
     }
 
     /// <summary>Hull and funnel livery by operator.</summary>
     public (SKColor Hull, SKColor Funnel) Livery(string @operator) => @operator switch
     {
-        "MSC" => (this["HullMscColor"], this["FunnelMscColor"]),
-        "ONE" => (this["HullOneColor"], this["FunnelOneColor"]),
-        "Maersk" => (this["HullMaerskColor"], this["FunnelMaerskColor"]),
-        "Hapag-Lloyd" => (this["HullHapagColor"], this["FunnelHapagColor"]),
-        _ => (this["HullCmaColor"], this["FunnelCmaColor"])
+        "Avren" => (this["HullAvrenColor"], this["FunnelAvrenColor"]),
+        "Tomoe" => (this["HullTomoeColor"], this["FunnelTomoeColor"]),
+        "Ravnby" => (this["HullRavnbyColor"], this["FunnelRavnbyColor"]),
+        "Ferrand-Lowe" => (this["HullFerrandColor"], this["FunnelFerrandColor"]),
+        _ => (this["HullMorvaneColor"], this["FunnelMorvaneColor"])
     };
 
     private static readonly (string Key, double Weight)[] Liveries =

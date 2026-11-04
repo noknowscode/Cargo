@@ -81,6 +81,22 @@ public sealed class HarbourCamera
     public bool Faces(V3 normal, V3 point) =>
         normal.X * (Eye.X - point.X) + normal.Y * (Eye.Y - point.Y) + normal.Z * (Eye.Z - point.Z) > 0;
 
+    /// <summary>Which way north lies on screen, for the HUD's needle: degrees clockwise from straight up.</summary>
+    public double NorthAngle()
+    {
+        var a = Project(TargetX, TargetY, 0);
+        var b = Project(TargetX, TargetY - 100, 0);
+        return Math.Atan2(b.Y - a.Y, b.X - a.X) * 180 / Math.PI + 90;
+    }
+
+    /// <summary>The HUD's scale bar: the longest round distance no wider than <paramref name="maxWidth"/> px, and its width.</summary>
+    public (int Metres, double Width) ScaleBar(double maxWidth = 130)
+    {
+        var pxPerMetre = Scale / HarbourWorld.MetresPerUnit;
+        var metres = new[] { 25, 50, 100, 200, 250, 500, 1000 }.LastOrDefault(m => m * pxPerMetre <= maxWidth, 25);
+        return (metres, Math.Max(8, Math.Round(metres * pxPerMetre)));
+    }
+
     /// <summary>How squarely the camera looks toward a horizontal direction (for the sun glint).</summary>
     public double Facing(double dirX, double dirY) => -(_sy * dirX + _cy * dirY);
 
@@ -107,6 +123,27 @@ public readonly record struct HarbourCameraPose(double Yaw, double Pitch, double
     public static HarbourCameraPose FromLand(HarbourCameraPose pose) => pose with { Yaw = Math.PI, Pitch = Rad(26) };
 
     public static HarbourCameraPose Plan(HarbourCameraPose pose) => pose with { Yaw = 0, Pitch = Rad(86) };
+
+    /// <summary>The camera menu's preset by name ("sea", "land", "plan"), turned from <paramref name="current"/>; any other name is the Overview.</summary>
+    public static HarbourCameraPose Preset(string? name, HarbourCameraPose current) => name switch
+    {
+        "sea" => FromSea(current),
+        "land" => FromLand(current),
+        "plan" => Plan(current),
+        _ => Overview
+    };
+
+    /// <summary>
+    /// A section's strip frames what the section is about: the terminal perimeter on Security, the yard on Cargo, the
+    /// vessel worked at <paramref name="vessel"/> elsewhere, or the harbour pitched down when there is none.
+    /// </summary>
+    public static HarbourCameraPose ForStrip(string section, (double X, double Y)? vessel) => section switch
+    {
+        "security" => new(Rad(-8), Rad(36), 2.4, 40, -40),
+        "cargo" => new(Rad(-6), Rad(42), 3.0, 0, -66),
+        _ when vessel is { } at => new(Rad(-14), Rad(26), 4.6, at.X, at.Y + 2),
+        _ => Overview with { Pitch = Rad(26) }
+    };
 
     /// <summary>Eases from this pose to <paramref name="to"/>; yaw takes the short way round.</summary>
     public HarbourCameraPose Lerp(HarbourCameraPose to, double t)

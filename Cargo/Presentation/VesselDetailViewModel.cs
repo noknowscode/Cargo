@@ -15,17 +15,23 @@ public sealed partial class VesselDetailViewModel : ObservableObject
         Refresh();
     }
 
-    [ObservableProperty] private string _name = string.Empty;
-    [ObservableProperty] private string _where = string.Empty;
-    [ObservableProperty] private string _stateLabel = string.Empty;
-    [ObservableProperty] private string _big = string.Empty;
-    [ObservableProperty] private string _bigSub = string.Empty;
-    [ObservableProperty] private string _note = string.Empty;
-    [ObservableProperty] private double _cargoPercent;
-    [ObservableProperty] private string _cargoLabel = string.Empty;
-    [ObservableProperty] private Visibility _cargoVisibility;
-    [ObservableProperty] private Brush? _accent;
-    [ObservableProperty] private IReadOnlyList<Fact> _facts = [];
+    [ObservableProperty] public partial string Name { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Where { get; set; } = string.Empty;
+    [ObservableProperty] public partial string StateLabel { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Big { get; set; } = string.Empty;
+    [ObservableProperty] public partial string BigSub { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Note { get; set; } = string.Empty;
+    [ObservableProperty] public partial double CargoPercent { get; set; }
+    [ObservableProperty] public partial string CargoLabel { get; set; } = string.Empty;
+    /// <summary>A vessel is shown (a berth has no cargo bar).</summary>
+    [ObservableProperty] public partial bool HasCargo { get; set; }
+
+    /// <summary>The vessel waiting on you: her state and figure read in alert ink.</summary>
+    [ObservableProperty] public partial bool NeedsYou { get; set; }
+
+    /// <summary>A closed berth: its state and depth read in the restricted ink.</summary>
+    [ObservableProperty] public partial bool IsRestricted { get; set; }
+    [ObservableProperty] public partial IReadOnlyList<Fact> Facts { get; set; } = [];
 
     [RelayCommand]
     private void ShowOnMap()
@@ -35,13 +41,13 @@ public sealed partial class VesselDetailViewModel : ObservableObject
             _state.PickVessel(_state.SelectedVesselId);
         }
 
-        _state.StageOpen = true;
+        _state.Stage.Open = true;
     }
 
     /// <summary>Called by the page while it is on screen, on structure changes and each tick.</summary>
     public void Refresh()
     {
-        if (_state.SelectedBerth is { } number && PortData.Berths.FirstOrDefault(b => b.Number == number) is { } berth)
+        if (PortData.Berth(_state.SelectedBerth) is { } berth)
         {
             ShowBerth(berth);
         }
@@ -53,34 +59,33 @@ public sealed partial class VesselDetailViewModel : ObservableObject
 
     private void ShowVessel(Vessel vessel)
     {
-        var berthNumber = _state.BerthOf(vessel.Id);
-        var berth = PortData.Berths.FirstOrDefault(b => b.Number == berthNumber);
+        var berth = PortData.Berth(_state.BerthOf(vessel.Id));
         var needs = _state.PendingDecision == vessel.Id;
-        var ink = Tokens.Brush("InkInvariantBrush");
 
         Name = vessel.Name;
         Where = berth is null ? "Anchorage" : $"Berth {berth.Number}";
         StateLabel = BerthFacts.State(_state, vessel).ToUpperInvariant();
-        Accent = needs ? Tokens.Brush("AlertInkInvariantBrush") : ink;
-        Note = BerthFacts.Note(vessel);
+        NeedsYou = needs;
+        IsRestricted = false;
+        Note = VesselCopy.Note(_state, vessel).Lead;
 
         (Big, BigSub) = vessel.Status switch
         {
-            "Arriving" => (BerthFacts.MinutesTo(_state, BerthFacts.Hours(vessel.Eta)), $"ETA {BerthFacts.Clock(vessel.Eta)}"),
-            "At anchor" => ("Unassigned", $"arrival window {BerthFacts.Clock(vessel.Eta)}"),
-            "Departing" => (BerthFacts.Clock(vessel.Etd), "departure"),
-            _ when vessel.UnloadPercent is > 0 and < 100 => ($"{vessel.UnloadPercent}%", $"discharged · departs {BerthFacts.Clock(vessel.Etd)}"),
-            _ => ($"{vessel.LoadPercent}%", $"loaded · sails {BerthFacts.Clock(vessel.Etd)}")
+            VesselStatus.Arriving => (BerthFacts.MinutesTo(_state, ShiftClock.ClockHours(vessel.Eta)), $"ETA {ShiftClock.Display(vessel.Eta)}"),
+            VesselStatus.AtAnchor => ("Unassigned", $"arrival window {ShiftClock.Display(vessel.Eta)}"),
+            VesselStatus.Departing => (ShiftClock.Display(vessel.Etd), "departure"),
+            _ when vessel.UnloadPercent is > 0 and < 100 => ($"{vessel.UnloadPercent}%", $"discharged · departs {ShiftClock.Display(vessel.Etd)}"),
+            _ => ($"{vessel.LoadPercent}%", $"loaded · sails {ShiftClock.Display(vessel.Etd)}")
         };
 
         // Progress of the work the vessel is here for; nothing has started on an arrival
         (CargoPercent, CargoLabel) = vessel.Status switch
         {
-            "Arriving" or "At anchor" => (0d, $"{vessel.Containers:N0} boxes to discharge · not started"),
+            VesselStatus.Arriving or VesselStatus.AtAnchor => (0d, $"{vessel.Containers:N0} boxes to discharge · not started"),
             _ when vessel.UnloadPercent is > 0 and < 100 => (vessel.UnloadPercent, $"Discharged {vessel.UnloadPercent}%"),
             _ => (vessel.LoadPercent, $"Loaded {vessel.LoadPercent}%")
         };
-        CargoVisibility = Visibility.Visible;
+        HasCargo = true;
 
         var facts = new List<Fact>
         {
@@ -97,7 +102,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
             var ukc = BerthFacts.UnderKeel(vessel, berth);
             facts.Add(Fact("Berth depth", $"{berth.Depth:0.0} m"));
             // A tight under-keel on the pending arrival is part of the decision, so it takes the status ink
-            facts.Add(Fact("Under-keel", $"{ukc:0.0} m", needs && ukc < 1 ? "AlertInkInvariantBrush" : null));
+            facts.Add(Fact("Under-keel", $"{ukc:0.0} m", needs && ukc < 1 ? "AlertInkBrush" : null));
         }
 
         SetFacts(facts);
@@ -113,27 +118,29 @@ public sealed partial class VesselDetailViewModel : ObservableObject
     }
 
     private static Fact Fact(string key, string value, string? tone = null) =>
-        new() { Key = key, Value = value, Tone = Tokens.Brush(tone ?? "InkInvariantBrush") };
+        new() { Key = key, Value = value, Tone = tone };
 
     private void ShowBerth(BerthDef berth)
     {
-        var restricted = berth.State == "restricted";
+        var restricted = berth.State == BerthState.Restricted;
         var next = _state.IncomingAt(berth.Number, _state.NowHours);
 
         Name = $"Berth {berth.Number}";
         Where = "North Quay";
         StateLabel = restricted ? "RESTRICTED" : "AVAILABLE";
-        Accent = restricted ? Tokens.Brush("RestrictedInvariantBrush") : Tokens.Brush("InkInvariantBrush");
+        NeedsYou = false;
+        IsRestricted = restricted;
         Big = $"{berth.Depth:0.0} m";
         BigSub = "alongside depth";
         Note = restricted
             ? BerthFacts.Restriction(berth)
-            : next is null ? "No vessel booked in the next 36 h" : $"{next.Name} booked from {BerthFacts.Clock(next.Eta)}";
-        CargoVisibility = Visibility.Collapsed;
-        SetFacts(
-        [
+            : next is null ? "No vessel booked in the next 36 h" : $"{next.Name} booked from {ShiftClock.Display(next.Eta)}";
+        HasCargo = false;
+        // An array, not a collection expression: one typed as IReadOnlyList has no concrete type under WinRT AOT (CsWinRT1032)
+        SetFacts(new[]
+        {
             Fact("Alongside depth", $"{berth.Depth:0.0} m"),
-            Fact("Next booking", next is null ? "None in 36 h" : BerthFacts.Clock(next.Eta))
-        ]);
+            Fact("Next booking", next is null ? "None in 36 h" : ShiftClock.Display(next.Eta))
+        });
     }
 }

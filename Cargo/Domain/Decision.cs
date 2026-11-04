@@ -11,7 +11,8 @@ public enum DecisionKind
 /// <summary>
 /// One thing waiting on the dispatcher, as the Needs-you queue lists it. The list is rebuilt when
 /// what needs deciding changes; the timing part of the sub-line (<see cref="When"/>) is updated in
-/// place on the clock, so a tick never rebuilds a row.
+/// place on the clock, so a tick never rebuilds a row. What its action does is the presentation's to decide, by
+/// <see cref="Kind"/> (<c>NeedsYouPanelViewModel</c>).
 /// </summary>
 public sealed partial class Decision : ObservableObject
 {
@@ -27,10 +28,7 @@ public sealed partial class Decision : ObservableObject
     /// <summary>The queue's one primary action; the rest are secondary buttons.</summary>
     public required bool IsPrimary { get; init; }
 
-    public required ICommand Command { get; init; }
-    public object? CommandParameter { get; init; }
-
-    /// <summary>What the shift log calls it ("CMAU 918204 4", "TRK 8834"), so a log entry can show it needs action.</summary>
+    /// <summary>What the shift log calls it ("MRVU 918204 1", "TRK 8834"), so a log entry can show it needs action.</summary>
     public string? Subject { get; init; }
 
     /// <summary>The vessel the row is about, for hover linking; null for cargo and gate rows.</summary>
@@ -38,9 +36,13 @@ public sealed partial class Decision : ObservableObject
 
     /// <summary>The live part of the sub-line: "in 17 min", "20 min late", "waiting 54 min".</summary>
     [ObservableProperty]
-    private string _when = string.Empty;
+    public partial string When { get; set; } = string.Empty;
 
     /// <summary>Whether <see cref="When"/> is overdue, which sets it in alert ink.</summary>
     [ObservableProperty]
-    private bool _isLate;
+    public partial bool IsLate { get; set; }
+
+    /// <summary>Why the action was refused ("Berth 07 is taken by ..."), shown on the row; empty until it is.</summary>
+    [ObservableProperty]
+    public partial string Refusal { get; set; } = string.Empty;
 }

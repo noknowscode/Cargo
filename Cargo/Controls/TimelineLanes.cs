@@ -1,4 +1,3 @@
-using Cargo.Presentation;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml.Input;
 using SkiaSharp;
@@ -11,13 +10,14 @@ namespace Cargo.Controls;
 /// The timeline's lanes on one time axis (EXTRACTION §2 "Today at North Quay"): vessels, moves and
 /// cargo, the 3-hourly grid, the axis, the future shade and the NOW line. The tide lane is a
 /// Liveline chart laid over its band. Everything is in the design's viewBox units: 580 tall, the
-/// summary column 0-168 (XAML text over it), the plot from 168 to 12 short of the right edge.
+/// summary column 0-168 (XAML text over it), the plot from <see cref="PlotLeft"/> (168) to 12 short of
+/// the right edge. On a phone the summary moves above the chart and the plot starts at 0.
 /// </summary>
 // xaml-lint: allow builtin - a bespoke canvas by decision (spec: four lanes share one axis, one NOW line and a future shade)
 public sealed partial class TimelineLanes : SKCanvasElement
 {
     public const double DesignHeight = 580;
-    public const float PlotLeft = 168, PlotRightInset = 12;
+    public const float PlotRightInset = 12;
     private const float PlotTop = 28, PlotBottom = 540;
     private const float TideTop = 164, MovesTop = 300, CargoTop = 428;
     private const float Baseline = 92, ArrivalDot = 84, DepartureDot = 100;
@@ -28,12 +28,10 @@ public sealed partial class TimelineLanes : SKCanvasElement
     private readonly SKFont _label = new(SKTypeface.Default, 12);
     private readonly SKFont _mono = new(SKTypeface.Default, 12);
     private readonly SKFont _monoStrong = new(SKTypeface.Default, 13);
-    private readonly SKPath _path = new();
-    private readonly SKPath _area = new();
+    private readonly SKPathBuilder _pb = new();
 
-    // Palette, resolved once from Themes/Tokens.xaml (the canvas has no XAML to bind)
-    private readonly SKColor _ink = Sk("InkColor"), _muted = Sk("TextMutedColor"), _surface = Sk("SurfaceColor"),
-        _navy = Sk("NavyColor"), _water = Sk("WaterColor"), _accent = Sk("AccentColor"), _ground = Sk("PaperColor");
+    // Palette from Themes/Tokens.xaml (the canvas has no XAML to bind), read again when the theme changes
+    private SKColor _ink, _muted, _surface, _navy, _water, _accent, _ground;
 
     // The vessel dots as drawn, for hit-testing (r12 around each); swapped whole on each render
     private (string Id, SKPoint At)[] _targets = Array.Empty<(string, SKPoint)>();
@@ -42,9 +40,41 @@ public sealed partial class TimelineLanes : SKCanvasElement
     public TimelineLanes()
     {
         Height = DesignHeight;
+        // Uno 7: SKCanvasElement is a Grid, and a Grid without a background is not hit-testable,
+        // so the dot hover would fall through to whatever lies behind the lanes
+        Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
         PointerMoved += OnPointerMoved;
         PointerExited += OnPointerExited;
+        ReadPalette();
+        this.RebuildOnTheme(() =>
+        {
+            ReadPalette();
+            Invalidate();
+        });
         LoadFonts();
+    }
+
+    private void ReadPalette() =>
+        (_ink, _muted, _surface, _navy, _water, _accent, _ground) = (Sk("InkColor"), Sk("TextMutedColor"), Sk("SurfaceColor"),
+            Sk("NavyColor"), Sk("WaterColor"), Sk("AccentColor"), Sk("PaperColor"));
+
+    public static readonly DependencyProperty PlotLeftProperty = DependencyProperty.Register(
+        nameof(PlotLeft), typeof(double), typeof(TimelineLanes),
+        new PropertyMetadata(168d, (d, e) => ((TimelineLanes)d).OnPlotLeftChanged((double)e.NewValue)));
+
+    private float _plotLeft = 168;
+
+    /// <summary>Where the time axis starts: 168 beside the summary column, 0 when the summary sits above the chart.</summary>
+    public double PlotLeft
+    {
+        get => (double)GetValue(PlotLeftProperty);
+        set => SetValue(PlotLeftProperty, value);
+    }
+
+    private void OnPlotLeftChanged(double value)
+    {
+        _plotLeft = (float)value;
+        Invalidate();
     }
 
     public static readonly DependencyProperty HoverCommandProperty = DependencyProperty.Register(
@@ -149,8 +179,8 @@ public sealed partial class TimelineLanes : SKCanvasElement
 
         var width = (float)area.Width;
         var right = width - PlotRightInset;
-        var perHour = (right - PlotLeft) / (float)(TimelineViewModel.End - TimelineViewModel.Start);
-        float X(double hour) => PlotLeft + (float)(hour - TimelineViewModel.Start) * perHour;
+        var perHour = (right - _plotLeft) / (float)(TimelineViewModel.End - TimelineViewModel.Start);
+        float X(double hour) => _plotLeft + (float)(hour - TimelineViewModel.Start) * perHour;
         var nowX = X(frame.Now);
 
         // Ahead of now: a 3% ink shade over every lane
@@ -183,7 +213,7 @@ public sealed partial class TimelineLanes : SKCanvasElement
     {
         _stroke.StrokeWidth = 1;
         _stroke.Color = Alpha(_ink, .18);
-        canvas.DrawLine(PlotLeft, Baseline, right, Baseline, _stroke);
+        canvas.DrawLine(_plotLeft, Baseline, right, Baseline, _stroke);
 
         // Labels stack into tiers away from the baseline so neighbours never collide
         var targets = new List<(string, SKPoint)>();
@@ -195,10 +225,10 @@ public sealed partial class TimelineLanes : SKCanvasElement
             var happened = e.Hour <= frame.Now;
             var cx = x(e.Hour);
             var cy = e.Arrival ? ArrivalDot : DepartureDot;
-            var time = PortState.Format(e.Hour);
+            var time = ShiftClock.Format(e.Hour);
             var nameWidth = _label.MeasureText(e.Name);
             var labelWidth = nameWidth + 6 + _mono.MeasureText(time);
-            var left = Math.Clamp(cx - labelWidth / 2, PlotLeft, right - labelWidth);
+            var left = Math.Clamp(cx - labelWidth / 2, _plotLeft, right - labelWidth);
 
             var tiers = e.Arrival ? arrivalTiers : departureTiers;
             var tier = tiers.FindIndex(end => left > end + 10);
@@ -240,26 +270,27 @@ public sealed partial class TimelineLanes : SKCanvasElement
         // The 100 / h reference
         _stroke.StrokeWidth = 1;
         _stroke.Color = Alpha(_ink, .08);
-        canvas.DrawLine(PlotLeft, Y(100), nowX, Y(100), _stroke);
-        Text(canvas, "100 / h", PlotLeft + 4, Y(100) - 5, _mono, _muted);
+        canvas.DrawLine(_plotLeft, Y(100), nowX, Y(100), _stroke);
+        Text(canvas, "100 / h", _plotLeft + 4, Y(100) - 5, _mono, _muted);
 
+        // The line, then the same line closed down to zero for the area under it
         Smooth(frame.Moves.Select(m => new SKPoint(x(m.Hour), Y(m.Value))).ToArray());
-        _area.Reset();
-        _area.AddPath(_path);
-        _area.LineTo(nowX, Y(0));
-        _area.LineTo(x(frame.Moves[0].Hour), Y(0));
-        _area.Close();
+        using var line = _pb.Snapshot();
+        _pb.LineTo(nowX, Y(0));
+        _pb.LineTo(x(frame.Moves[0].Hour), Y(0));
+        _pb.Close();
+        using (var area = _pb.Detach())
         using (var shader = SKShader.CreateLinearGradient(new SKPoint(0, MovesTop), new SKPoint(0, Y(0)),
                    new[] { Alpha(_accent, .2), Alpha(_accent, 0) }, null, SKShaderTileMode.Clamp))
         {
             _fill.Shader = shader;
-            canvas.DrawPath(_area, _fill);
+            canvas.DrawPath(area, _fill);
             _fill.Shader = null;
         }
 
         _stroke.StrokeWidth = 2;
         _stroke.Color = _accent;
-        canvas.DrawPath(_path, _stroke);
+        canvas.DrawPath(line, _stroke);
 
         // The peak, hollow, with its value
         var (peakHour, peakValue) = frame.MovesPeak;
@@ -289,21 +320,28 @@ public sealed partial class TimelineLanes : SKCanvasElement
 
         // The band between in and out, in water at 16%
         Smooth(outPoints);
-        _area.Reset();
-        _area.AddPath(_path);
-        Smooth(inPoints.Reverse().ToArray());
-        _area.AddPath(_path, SKPathAddMode.Extend);
-        _area.Close();
-        _fill.Color = Alpha(_water, .16);
-        canvas.DrawPath(_area, _fill);
+        Smooth(inPoints.Reverse().ToArray(), extend: true);
+        _pb.Close();
+        using (var band = _pb.Detach())
+        {
+            _fill.Color = Alpha(_water, .16);
+            canvas.DrawPath(band, _fill);
+        }
 
         _stroke.StrokeWidth = 2;
         Smooth(inPoints);
-        _stroke.Color = _navy;
-        canvas.DrawPath(_path, _stroke);
+        using (var inLine = _pb.Detach())
+        {
+            _stroke.Color = _navy;
+            canvas.DrawPath(inLine, _stroke);
+        }
+
         Smooth(outPoints);
-        _stroke.Color = _water;
-        canvas.DrawPath(_path, _stroke);
+        using (var outLine = _pb.Detach())
+        {
+            _stroke.Color = _water;
+            canvas.DrawPath(outLine, _stroke);
+        }
 
         var now = frame.Cargo[^1];
         var outAbove = now.Out >= now.In;
@@ -313,31 +351,41 @@ public sealed partial class TimelineLanes : SKCanvasElement
 
     private void DrawAxis(SKCanvas canvas, Func<double, float> x, float nowX)
     {
-        for (var h = (int)TimelineViewModel.Start; h <= (int)TimelineViewModel.End; h++)
+        var start = (int)TimelineViewModel.Start;
+        var end = (int)TimelineViewModel.End;
+        var labels = new List<(int Hour, float Left, float Width)>();
+        for (var h = start; h <= end; h++)
         {
             var major = h % 3 == 0;
             _stroke.StrokeWidth = 1;
             _stroke.Color = Alpha(_ink, .18);
             canvas.DrawLine(x(h), PlotBottom, x(h), PlotBottom + (major ? 8 : 5), _stroke);
-            if (!major)
-            {
-                continue;
-            }
-
-            var label = h == 24 ? "Thu 00:00" : PortState.Format(h);
-            var w = _mono.MeasureText(label);
-            var lx = h == (int)TimelineViewModel.Start ? x(h)
-                : h == (int)TimelineViewModel.End ? x(h) - w
-                : x(h) - w / 2;
 
             // The label under NOW gives way to the NOW pill's line
-            if (Math.Abs(x(h) - nowX) < 28 && h != (int)TimelineViewModel.Start && h != (int)TimelineViewModel.End)
+            if (!major || (Math.Abs(x(h) - nowX) < 28 && h != start && h != end))
             {
                 continue;
             }
 
-            Text(canvas, label, lx, 568, h == 24 ? _monoStrong : _mono, h == 24 ? _ink : _muted);
+            var w = (h == 24 ? _monoStrong : _mono).MeasureText(Label(h));
+            labels.Add((h, h == start ? x(h) : h == end ? x(h) - w : x(h) - w / 2, w));
         }
+
+        // A narrow plot cannot hold a label every 3 h: the ends and Thursday 00:00 come first, then each other hour
+        // that clears its neighbours by 8 px
+        var drawn = new List<(float Left, float Right)>();
+        foreach (var (h, left, w) in labels.OrderBy(l => l.Hour == start || l.Hour == end || l.Hour == 24 ? 0 : 1))
+        {
+            if (drawn.Any(d => left < d.Right + 8 && left + w > d.Left - 8))
+            {
+                continue;
+            }
+
+            drawn.Add((left, left + w));
+            Text(canvas, Label(h), left, 568, h == 24 ? _monoStrong : _mono, h == 24 ? _ink : _muted);
+        }
+
+        static string Label(int hour) => hour == 24 ? "Thu 00:00" : ShiftClock.Format(hour);
     }
 
     private void DrawNow(SKCanvas canvas, TimelineFrame frame, float nowX)
@@ -346,7 +394,7 @@ public sealed partial class TimelineLanes : SKCanvasElement
         _stroke.Color = _ink;
         canvas.DrawLine(nowX, 20, nowX, 548, _stroke);
 
-        var text = $"NOW {PortState.Format(frame.Now)}";
+        var text = $"NOW {ShiftClock.Format(frame.Now)}";
         var pill = SKRect.Create(nowX - 40, 0, 80, 22);
         _fill.Color = _ink;
         canvas.DrawRoundRect(pill, 11, 11, _fill);
@@ -364,21 +412,31 @@ public sealed partial class TimelineLanes : SKCanvasElement
         canvas.DrawText(text, x, y, SKTextAlign.Left, font, _fill);
     }
 
-    /// <summary>A smooth line through the points into <see cref="_path"/> (cubic, control points 30% out).</summary>
-    private void Smooth(IReadOnlyList<SKPoint> points)
+    /// <summary>
+    /// Adds a smooth line through the points to <see cref="_pb"/> (cubic, control points 30% out). With
+    /// <paramref name="extend"/>, a straight segment joins it to the open contour instead of starting a new one.
+    /// </summary>
+    private void Smooth(IReadOnlyList<SKPoint> points, bool extend = false)
     {
-        _path.Reset();
         if (points.Count == 0)
         {
             return;
         }
 
-        _path.MoveTo(points[0]);
+        if (extend)
+        {
+            _pb.LineTo(points[0]);
+        }
+        else
+        {
+            _pb.MoveTo(points[0]);
+        }
+
         for (var i = 1; i < points.Count; i++)
         {
             var (a, b) = (points[i - 1], points[i]);
             var dx = (b.X - a.X) * .3f;
-            _path.CubicTo(a.X + dx, a.Y, b.X - dx, b.Y, b.X, b.Y);
+            _pb.CubicTo(a.X + dx, a.Y, b.X - dx, b.Y, b.X, b.Y);
         }
     }
 }

@@ -62,8 +62,8 @@ let them make it in place, and link every list row to the thing it means on the 
 
 - **Direction:** keep the app's (flat, ruled, ink-first). Colour is status only.
 - **Colour mapping:** the artifact uses teal for "needs you". In this app amber already means
-  *reserved · arriving* (legend, tags, harbour), so **needs-you is amber here** (`AmberInvariantBrush`, ink
-  `AmberInkInvariantBrush`); confirmed resolves to the occupied neutral. (Unresolved question 1.)
+  *reserved · arriving* (legend, tags, harbour), so **needs-you is amber here** (`AmberBrush`, ink
+  `AmberInkBrush`; `*InvariantBrush` before the Dark theme); confirmed resolves to the occupied neutral. (Unresolved question 1.)
 - **Tokens:** add `Themes/MotionTokens.xaml` (house curves `EaseSmooth 0.22,1 0.36,1`, `EaseOut 0.17,1 0.32,1`;
   durations press 120, state 180, slide 200, bar 300, resolve 400 ms). Spacing 4-based; control height 40;
   radii panel 12 / control 8 / row 4 (from the artifact's `:root`).
@@ -72,8 +72,8 @@ let them make it in place, and link every list row to the thing it means on the 
 - **Layout:** Berth status rows = chip 34x30 · state/name/meta · time · chevron; 10 px padding; hairline
   dividers. Detail: state label, big number 32 px display, sub line, note, 6 px cargo bar, 2-column facts,
   ghost "Show on map".
-- **Responsive:** below 1040 px the two columns stack (`utu:Responsive`, `HeaderBreakpoints` values); the
-  needs-you bar goes full width below 960.
+- **Responsive:** below 1000 px the two columns stack, and the needs-you bar sits beside the title from 1280 and
+  full width under it below (App.xaml's `DefaultResponsiveLayout`, 600/1000/1280/1600; updated in B2).
 
 ## Interaction Brief
 
@@ -130,7 +130,7 @@ no screen-reader path).
   region or VSM states (no code-behind toggling; CODEBEHIND lint).
 - **Layout:** the panel's height is fixed at the space the stage leaves (the stage is capped at 58% of the window
   height), so Overview fits one screen with no vertical scroll at 1680 x 1020, and a mode change never moves the
-  page. Header: what it shows ("MSC Aurora · Berth 04") and a clear button when a selection drives it.
+  page. Header: what it shows ("Avren Aurora · Berth 04") and a clear button when a selection drives it.
 - **Motion:** content cross-fades 200 ms and rises 6 px (`EaseSmooth`); reduced motion switches instantly. Hover
   changes the panel after a 300 ms dwell and a click changes it at once, so crossing the quay does not flicker.
 - **Page below:** the remaining Overview charts move to their sections (Container volume and Cargo flow to

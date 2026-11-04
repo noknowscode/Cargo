@@ -3,21 +3,30 @@ namespace Cargo.Presentation;
 public sealed class ManifestRow
 {
     public required string Name { get; init; }
-    public required Brush Tone { get; init; }
+
+    /// <summary>The item's imaging class, as its palette key.</summary>
+    public required string Tone { get; init; }
     public required string Flag { get; init; }
-    public required Brush FlagTone { get; init; }
+
+    /// <summary>The scan flagged the item: the flag reads in the anomaly colour, else sea green.</summary>
+    public required bool Flagged { get; init; }
 }
 
 public sealed class ScanViewOption
 {
     public required string Label { get; init; }
-    public required Brush Background { get; init; }
     public required System.Windows.Input.ICommand Select { get; init; }
+
+    /// <summary>The box is turned to this preset: a lit ground.</summary>
+    public required bool IsCurrent { get; init; }
+
+    /// <summary>The preset for a screen reader: "Front view", with "current" when the box is turned to it.</summary>
+    public required string AccessibleName { get; init; }
 }
 
 /// <summary>
 /// The full-window container inspection: verdict, manifest, density and the 3D view's
-/// presets. The overlay stays in the shell behind <see cref="PortState.ScannerOpen"/>, so
+/// presets. The overlay stays in the shell behind <see cref="ScannerCamera.Open"/>, so
 /// this model does its work only while the scanner is open. Created by
 /// <see cref="MainViewModel"/> on the UI thread.
 /// </summary>
@@ -30,18 +39,25 @@ public sealed partial class ScannerViewModel : ObservableObject
 
     private int _currentView = -2;
 
-    public ScannerViewModel(PortState state)
+    public ScannerViewModel(PortState state, ScannerCamera camera)
     {
         State = state;
+        Camera = camera;
         Refresh();
-        state.PropertyChanged += (_, e) =>
+        state.Scanner.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName is nameof(PortState.Xray) or nameof(PortState.SelectedContainerId)
-                or nameof(PortState.ScannerOpen))
+            if (e.PropertyName is nameof(ScannerState.SelectedContainerId))
             {
                 Refresh();
             }
-            else if (e.PropertyName is nameof(PortState.ScanRotationX) or nameof(PortState.ScanRotationY))
+        };
+        camera.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName is nameof(ScannerCamera.Xray) or nameof(ScannerCamera.Open))
+            {
+                Refresh();
+            }
+            else if (e.PropertyName is nameof(ScannerCamera.RotationX) or nameof(ScannerCamera.RotationY))
             {
                 // A drag changes the angles on every pointer move; only the preset highlight depends on them
                 RefreshViews();
@@ -51,35 +67,59 @@ public sealed partial class ScannerViewModel : ObservableObject
 
     public PortState State { get; }
 
+    /// <summary>How the scanner looks at the box: open, X-ray, rotation and zoom.</summary>
+    public ScannerCamera Camera { get; }
+
     public ObservableCollection<Fact> ScanFacts { get; } = new();
     public ObservableCollection<ManifestRow> Manifest { get; } = new();
     public ObservableCollection<CompositionSlice> Density { get; } = new();
     public ObservableCollection<ScanViewOption> Views { get; } = new();
 
-    [ObservableProperty] private string _containerId = string.Empty;
-    [ObservableProperty] private string _containerMeta = string.Empty;
-    [ObservableProperty] private string _scanMode = string.Empty;
-    [ObservableProperty] private string _verdict = string.Empty;
-    [ObservableProperty] private string _verdictNote = string.Empty;
-    [ObservableProperty] private Brush? _verdictTone;
-    [ObservableProperty] private string _manifestHeading = string.Empty;
-    [ObservableProperty] private string _scanAction = string.Empty;
-    [ObservableProperty] private Brush? _xrayBackground;
-    [ObservableProperty] private Brush? _xrayBorder;
-    [ObservableProperty] private Brush? _xrayForeground;
-    [ObservableProperty] private IReadOnlyList<(double Weight, Brush Fill)> _densitySlices = [];
+    [ObservableProperty] public partial string ContainerId { get; set; } = string.Empty;
+    [ObservableProperty] public partial string ContainerMeta { get; set; } = string.Empty;
+    [ObservableProperty] public partial string ScanMode { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Verdict { get; set; } = string.Empty;
+    [ObservableProperty] public partial string VerdictNote { get; set; } = string.Empty;
+    /// <summary>The verdict's dot, as the container's security palette key.</summary>
+    [ObservableProperty] public partial string VerdictTone { get; set; } = "AccentColor";
+    [ObservableProperty] public partial string ManifestHeading { get; set; } = string.Empty;
+    /// <summary>
+    /// The scan's action: the held box opens her inspection record on Security ("Open inspection →"); any other box's
+    /// scan is logged in the inspection log ("Log scan"), once, and then the action stands done ("Scan logged").
+    /// </summary>
+    [ObservableProperty] public partial string ScanAction { get; set; } = string.Empty;
+
+    /// <summary>The scanner images in X-ray: the toggle lights.</summary>
+    [ObservableProperty] public partial bool IsXray { get; set; }
+    [ObservableProperty] public partial string XrayName { get; set; } = "X-ray, off";
+    [ObservableProperty] public partial IReadOnlyList<(double Weight, string Tone)> DensitySlices { get; set; } = [];
 
     [RelayCommand]
-    private void Close() => State.ScannerOpen = false;
+    private void Close() => Camera.Open = false;
 
     [RelayCommand]
-    private void ToggleXray() => State.Xray = !State.Xray;
+    private void ToggleXray() => Camera.Xray = !Camera.Xray;
 
-    [RelayCommand]
-    private void OpenInspection()
+    [RelayCommand(CanExecute = nameof(CanTakeScanAction))]
+    private void TakeScanAction()
     {
-        State.ScannerOpen = false;
-        State.OpenInspectionCommand.Execute(null);
+        var container = State.Scanner.SelectedContainer;
+        if (container.IsHeld)
+        {
+            Camera.Open = false;
+            State.Navigation.OpenInspectionCommand.Execute(null);
+            return;
+        }
+
+        State.Inspections.LogScan(container.Id,
+            $"Scan logged · {container.DisplayId} · {(Camera.Xray ? "X-ray" : "optical")} · {Verdict.ToLowerInvariant()}");
+        Refresh();
+    }
+
+    private bool CanTakeScanAction()
+    {
+        var box = State.Scanner.SelectedContainer;
+        return box.IsHeld || !State.Inspections.Scanned(box.Id);
     }
 
     [RelayCommand]
@@ -90,50 +130,47 @@ public sealed partial class ScannerViewModel : ObservableObject
             return;
         }
 
-        State.ScanRotationX = view.Rx;
-        State.ScanRotationY = view.Ry;
+        Camera.Turn(view.Rx, view.Ry);
     }
 
     [RelayCommand]
-    private void ZoomIn() => State.ScanZoom = Math.Min(1.8, State.ScanZoom + 0.15);
+    private void ZoomIn() => Camera.ZoomIn();
 
     [RelayCommand]
-    private void ZoomOut() => State.ScanZoom = Math.Max(0.6, State.ScanZoom - 0.15);
+    private void ZoomOut() => Camera.ZoomOut();
 
     [RelayCommand]
     private void ResetView()
     {
-        State.ScanZoom = 1;
-        State.ScanRotationX = -18;
-        State.ScanRotationY = -32;
+        Camera.ResetView();
     }
 
     public void Refresh()
     {
         // The overlay stays in the tree behind a Visibility flag, so skip the work while shut
-        if (!State.ScannerOpen)
+        if (!Camera.Open)
         {
             return;
         }
 
-        var container = State.SelectedContainer;
+        var container = State.Scanner.SelectedContainer;
 
         ContainerId = container.DisplayId;
         ContainerMeta = $"{container.Size} · {container.Carrier} · {container.Route}";
 
-        ScanMode = State.Xray ? "X-RAY · 160 kV · SCANNING" : "OPTICAL · 3D INSPECTION";
-        XrayBackground = State.Xray ? Tokens.Brush("AccentBrightColor", 0.2) : Tokens.Transparent;
-        XrayBorder = State.Xray ? Tokens.Brush("AccentBrightInvariantBrush") : Tokens.Brush("HairlineOnDarkBrush");
-        XrayForeground = State.Xray ? Tokens.Brush("AccentPaleInvariantBrush") : Tokens.Brush("TextOnDarkBrush");
+        ScanMode = Camera.Xray ? "X-RAY · 160 kV · SCANNING" : "OPTICAL · 3D INSPECTION";
+        IsXray = Camera.Xray;
+        XrayName = Camera.Xray ? "X-ray, on" : "X-ray, off";
 
         Verdict = container.Warn ? "Anomaly detected" : container.Stage == 3 ? "Under review" : "Clear";
-        VerdictTone = Tokens.Brush(container.SecurityToken);
+        VerdictTone = container.SecurityToken;
         VerdictNote = container.Warn
             ? "Dense unlisted mass at bay 3 · measured weight +1.8 t over manifest. Physical inspection required before release."
             : container.Stage == 3
                 ? "Documentary review in progress · imaging consistent with manifest."
                 : "Imaging consistent with manifest · seal intact · weight within tolerance.";
-        ScanAction = container.Warn ? "Open inspection →" : "Log scan →";
+        ScanAction = container.IsHeld ? "Open inspection →" : State.Inspections.Scanned(container.Id) ? "Scan logged" : "Log scan";
+        TakeScanActionCommand.NotifyCanExecuteChanged();
 
         var manifest = PortData.Manifests.TryGetValue(container.Id, out var listed)
             ? listed
@@ -147,27 +184,26 @@ public sealed partial class ScannerViewModel : ObservableObject
             Manifest.Add(new ManifestRow
             {
                 Name = item.Name,
-                Tone = Tokens.Brush(item.TintToken),
+                Tone = item.TintToken,
                 Flag = item.Flagged ? "FLAG" : "ok",
-                FlagTone = Tokens.Brush(item.Flagged ? "ScanAnomalyColor" : "SeaGreenColor")
+                Flagged = item.Flagged
             });
         }
 
         BuildDensity(manifest);
 
         ScanFacts.Clear();
-        foreach (var (key, value, tone) in new (string, string, string?)[]
+        foreach (var (key, value) in new[]
                  {
-                     ("Seal", container.Seal, null),
-                     ("Gross weight", container.Weight, container.Warn ? "ScanOrganicColor" : null),
-                     ("Customs", container.Customs,
-                         container.Customs is "Cleared" or "Pre-cleared" ? "ScanMixedColor" : "ScanOrganicColor"),
-                     ("Inspection", container.Inspection, container.Warn ? "ScanOrganicColor" : null),
-                     ("Vessel", container.Vessel, null),
-                     ("Yard slot", container.YardSlot, null)
+                     ("Seal", container.Seal),
+                     ("Gross weight", container.Weight),
+                     ("Customs", container.Customs),
+                     ("Inspection", container.Inspection),
+                     ("Vessel", container.Vessel),
+                     ("Yard slot", container.YardSlot)
                  })
         {
-            ScanFacts.Add(new Fact { Key = key, Value = value, Tone = tone is null ? null : Tokens.Brush(tone) });
+            ScanFacts.Add(new Fact { Key = key, Value = value });
         }
 
         _currentView = -2;
@@ -177,13 +213,13 @@ public sealed partial class ScannerViewModel : ObservableObject
     /// <summary>Rebuilds the view presets only when the highlighted preset actually changes.</summary>
     private void RefreshViews()
     {
-        if (!State.ScannerOpen)
+        if (!Camera.Open)
         {
             return;
         }
 
         var current = Array.FindIndex(ViewAngles, v =>
-            Math.Abs(State.ScanRotationX - v.Rx) < 0.5 && Math.Abs(State.ScanRotationY - v.Ry) < 0.5);
+            Math.Abs(Camera.RotationX - v.Rx) < 0.5 && Math.Abs(Camera.RotationY - v.Ry) < 0.5);
         if (current == _currentView)
         {
             return;
@@ -196,8 +232,9 @@ public sealed partial class ScannerViewModel : ObservableObject
             Views.Add(new ScanViewOption
             {
                 Label = ViewAngles[i].Label,
-                Background = i == current ? Tokens.Brush("DeckWhiteColor", 0.16) : Tokens.Transparent,
-                Select = ShowViewCommand
+                IsCurrent = i == current,
+                Select = ShowViewCommand,
+                AccessibleName = $"{ViewAngles[i].Label} view" + (i == current ? ", current" : string.Empty)
             });
         }
     }
@@ -213,7 +250,7 @@ public sealed partial class ScannerViewModel : ObservableObject
         };
 
         Density.Clear();
-        var slices = new List<(double, Brush)>();
+        var slices = new List<(double, string)>();
 
         foreach (var (label, token) in groups)
         {
@@ -224,15 +261,13 @@ public sealed partial class ScannerViewModel : ObservableObject
             }
 
             var percent = (int)Math.Round(count * 100d / manifest.Count);
-            var brush = Tokens.Brush(token);
-
             Density.Add(new CompositionSlice
             {
                 Label = label,
-                Fill = brush,
+                Fill = token,
                 Count = $"{percent}%"
             });
-            slices.Add((percent, brush));
+            slices.Add((percent, token));
         }
 
         DensitySlices = slices;

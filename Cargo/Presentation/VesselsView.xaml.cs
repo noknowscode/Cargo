@@ -14,6 +14,15 @@ public sealed partial class VesselsView : UserControl
 
     public VesselsViewModel? ViewModel => DataContext as VesselsViewModel;
 
+    /// <summary>The vessel being worked takes an accent edge.</summary>
+    public static Brush RowEdge(bool selected) => Tokens.Brush(selected ? "AccentBrush" : "HairlineBrush");
+
+    // Her security chip: navy while cleared, amber while anything is pending
+
+    public static Brush SecurityGround(bool cleared) => cleared ? Tokens.Brush("NavyColor", 0.12) : Tokens.Brush("AmberDeepColor", 0.16);
+
+    public static Brush SecurityInk(bool cleared) => Tokens.Brush(cleared ? "AccentBrush" : "OrangeInkBrush");
+
     // xaml-lint: allow codebehind - the vessel profile is a code-built scene over the store, and the
     // model's refreshes run only while this panel is on screen (Live gates on the view's visibility)
     private void Attach()

@@ -15,16 +15,15 @@ public sealed partial class NextSixRow : ObservableObject
     public required System.Windows.Input.ICommand Open { get; init; }
     public required System.Windows.Input.ICommand Hover { get; init; }
 
-    /// <summary>The linked-hover tint (accent at 7%) while this vessel is lit anywhere.</summary>
-    [ObservableProperty] private Brush? _ground;
+    /// <summary>The vessel is lit anywhere (a tag, a row, the chart): the linked-hover tint.</summary>
+    [ObservableProperty] public partial bool IsLinked { get; set; }
 
-    [ObservableProperty] private bool _happened;
-    [ObservableProperty] private string _countdown = string.Empty;
-    [ObservableProperty] private Brush? _countdownInk;
-    [ObservableProperty] private Brush? _dotFill;
-    [ObservableProperty] private Brush? _dotRing;
-    [ObservableProperty] private double _dotRingWidth;
-    [ObservableProperty] private bool _departing;
+    [ObservableProperty] public partial bool Happened { get; set; }
+    [ObservableProperty] public partial string Countdown { get; set; } = string.Empty;
+
+    /// <summary>Under an hour to go: the countdown reads in ink rather than muted.</summary>
+    [ObservableProperty] public partial bool IsSoon { get; set; }
+    [ObservableProperty] public partial bool Departing { get; set; }
 }
 
 /// <summary>
@@ -51,7 +50,7 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
     {
         foreach (var row in Past.Concat(Upcoming))
         {
-            row.Ground = Tokens.Tint("AccentInvariantBrush", row.Id == _state.HoveredVessel ? .07 : 0);
+            row.IsLinked = row.Id == _state.Stage.HoveredVessel;
         }
     }
 
@@ -61,14 +60,16 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
     /// <summary>Movements to come, below the NOW row.</summary>
     public ObservableCollection<NextSixRow> Upcoming { get; } = new();
 
-    [ObservableProperty] private string _sub = string.Empty;
-    [ObservableProperty] private Visibility _emptyVisibility;
+    [ObservableProperty] public partial string Sub { get; set; } = string.Empty;
+    /// <summary>Nothing moves in the next six hours: the list says so.</summary>
+    [ObservableProperty] public partial bool IsEmpty { get; set; }
 
     public void Refresh()
     {
         var now = _state.NowHours;
         var inWindow = _events.Where(e => e.Hour >= now - Back && e.Hour <= now + Ahead).ToArray();
-        var membership = string.Join("|", inWindow.Select(e => $"{e.Id}{e.Arrival}{e.Hour <= now}"));
+        // A row says which berth she arrives at, so an assignment changes the rows as much as the clock does
+        var membership = string.Join("|", inWindow.Select(e => $"{e.Id}{e.Arrival}{e.Hour <= now}{_state.BerthOf(e.Id)}"));
         if (membership != _membership)
         {
             _membership = membership;
@@ -84,49 +85,43 @@ public sealed partial class NextSixHoursViewModel : ObservableObject
 
         foreach (var row in Past.Concat(Upcoming))
         {
-            Tick(row, now);
+            Tick(row);
         }
 
         var count = inWindow.Length;
-        Sub = $"{PortState.Format(now)} → {PortState.Format(now + Ahead)} · {(count == 1 ? "1 movement" : $"{count} movements")} · ships to scale";
-        EmptyVisibility = count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        Sub = $"{ShiftClock.Format(now)} → {ShiftClock.Format(now + Ahead)} · {(count == 1 ? "1 movement" : $"{count} movements")} · ships to scale";
+        IsEmpty = count == 0;
     }
 
     private NextSixRow Row(TimelineEvent e)
     {
         var vessel = PortData.Vessels.FirstOrDefault(v => v.Id == e.Id);
-        var berth = vessel?.HomeBerth;
+        var berth = vessel is null ? null : _state.BerthOf(vessel.Id);
         var sub = e.Arrival
             ? $"Arrives {(e.Hour >= 24 ? "Thu" : berth is null ? "today" : $"Berth {berth}")}"
               + (berth is null ? " · no berth yet" : string.Empty)
-              + (vessel?.StatusLine.Contains("pilot", StringComparison.OrdinalIgnoreCase) == true ? " · pilot aboard" : string.Empty)
+              + (vessel?.PilotAboard == true ? " · pilot aboard" : string.Empty)
             : $"Departs {(berth is null ? "the quay" : $"Berth {berth}")}";
 
         return new NextSixRow
         {
             Id = e.Id,
             Hour = e.Hour,
-            Time = PortState.Format(e.Hour),
+            Time = ShiftClock.Format(e.Hour),
             Name = e.Name,
             Sub = sub,
             Arrival = e.Arrival,
             Length = vessel?.Length ?? 250,
             Open = _state.OpenVesselCommand,
-            Hover = _state.HoverCommand
+            Hover = _state.Stage.HoverCommand
         };
     }
 
-    private static void Tick(NextSixRow row, double now)
+    private void Tick(NextSixRow row)
     {
-        var minutes = (int)Math.Ceiling((row.Hour - now) * 60);
-        row.Happened = row.Hour <= now;
+        row.Happened = row.Hour <= _state.NowHours;
         row.Departing = row.Happened && !row.Arrival;
-        row.Countdown = row.Happened
-            ? (row.Arrival ? "arrived" : "departing")
-            : minutes < 60 ? $"in {minutes} min" : $"in {minutes / 60} h {minutes % 60:D2}";
-        row.CountdownInk = Tokens.Brush(minutes < 60 ? "InkInvariantBrush" : "TextMutedInvariantBrush");
-        row.DotFill = Tokens.Brush(row.Happened ? "NavyInvariantBrush" : "SurfaceInvariantBrush");
-        row.DotRing = Tokens.Brush(row.Happened ? "SurfaceInvariantBrush" : "NavyInvariantBrush");
-        row.DotRingWidth = row.Happened ? 2 : 1.6;
+        row.Countdown = row.Happened ? (row.Arrival ? "arrived" : "departing") : _state.Countdown(row.Hour);
+        row.IsSoon = _state.MinutesUntil(row.Hour) < 60;
     }
 }

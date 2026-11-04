@@ -27,7 +27,8 @@ public sealed partial class StackTiers : SceneHost
         for (var i = 0; i < tiers.Count; i++)
         {
             var (id, tag, token) = tiers[i];
-            var color = Tokens.Color(token);
+            // A box's paint, the same in either theme, so the white stencil on it reads the same
+            var color = Tokens.Paint(token);
             var top = 160 - i * 30;
 
             Scene.Place(Draw.Rect(90, top, 170, 30, Tokens.Of(color)));

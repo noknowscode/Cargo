@@ -11,27 +11,30 @@ public sealed partial class FeedEntry : ObservableObject
     public required string Time { get; init; }
     public required string Title { get; init; }
     public required string Detail { get; init; }
-    public required Geometry Icon { get; init; }
-    public required Brush Tone { get; init; }
-    public required Visibility ChipVisibility { get; init; }
+    /// <summary>The entry kind's 24-unit stroke icon, as SVG path data (an entry that needs action wears the queue's icon).</summary>
+    public required string IconData { get; init; }
 
     /// <summary>The open decision the entry is about, whose action the detail offers; null when none is.</summary>
     public Decision? About { get; init; }
 
-    public Visibility AboutVisibility => About is null ? Visibility.Collapsed : Visibility.Visible;
+    /// <summary>The entry is about an open decision: the NEEDS ACTION chip, the alert icon and the decision's action.</summary>
+    public bool NeedsAction => About is not null;
+
+    /// <summary>The decision's action, as the Needs-you queue offers it; <see cref="About"/> is its parameter.</summary>
+    public required ICommand Act { get; init; }
 
     public required ICommand Toggle { get; init; }
 
     [ObservableProperty]
-    private bool _isExpanded;
+    public partial bool IsExpanded { get; set; }
 
     /// <summary>Another row in the same column is open.</summary>
     [ObservableProperty]
-    private bool _isDimmed;
+    public partial bool IsDimmed { get; set; }
 
     /// <summary>"Logged 20:41 · 17 min ago", set when the row opens so it is current.</summary>
     [ObservableProperty]
-    private string _logged = string.Empty;
+    public partial string Logged { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -42,26 +45,30 @@ public sealed partial class FeedEntry : ObservableObject
 public sealed partial class ActivityViewModel : ObservableObject
 {
     private readonly PortState _state;
+    private readonly ICommand _act;
 
-    public ActivityViewModel(PortState state)
+    /// <summary>The log over the store, offering <paramref name="act"/> on the entries about an open decision.</summary>
+    public ActivityViewModel(PortState state, ICommand act)
     {
         _state = state;
-        state.Decisions.CollectionChanged += OnQueueChanged;
+        _act = act;
+        state.NeedsYou.Decisions.CollectionChanged += OnQueueChanged;
         Build();
     }
 
-    [ObservableProperty] private IReadOnlyList<FeedEntry> _left = Array.Empty<FeedEntry>();
-    [ObservableProperty] private IReadOnlyList<FeedEntry> _right = Array.Empty<FeedEntry>();
-    [ObservableProperty] private string _sub = string.Empty;
+    [ObservableProperty] public partial IReadOnlyList<FeedEntry> Left { get; set; } = Array.Empty<FeedEntry>();
+    [ObservableProperty] public partial IReadOnlyList<FeedEntry> Right { get; set; } = Array.Empty<FeedEntry>();
+    [ObservableProperty] public partial string Sub { get; set; } = string.Empty;
 
-    public Visibility EmptyVisibility => PortData.Activity.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    /// <summary>No entry in the log yet today: the panel says so.</summary>
+    public bool IsEmpty => PortData.Activity.Count == 0;
 
     private void OnQueueChanged(object? sender, NotifyCollectionChangedEventArgs e) => Build();
 
     private void Build()
     {
         var opened = Left.Concat(Right).FirstOrDefault(f => f.IsExpanded)?.Title;
-        var open = _state.Decisions.Where(d => d.Subject is not null).ToArray();
+        var open = _state.NeedsYou.Decisions.Where(d => d.Subject is not null).ToArray();
         var feed = PortData.Activity.Select(entry =>
         {
             var about = open.FirstOrDefault(d => entry.Title.Contains(d.Subject!) || entry.Detail.Contains(d.Subject!));
@@ -70,10 +77,9 @@ public sealed partial class ActivityViewModel : ObservableObject
                 Time = entry.Time,
                 Title = entry.Title,
                 Detail = entry.Detail,
-                Icon = (about is null ? null : QueueIcon(about.Kind)) ?? Geo.Path(PortData.ActivityIcons[entry.Kind].Icon),
-                Tone = Tokens.Brush(about is null ? "TextMutedInvariantBrush" : "AlertInvariantBrush"),
-                ChipVisibility = about is null ? Visibility.Collapsed : Visibility.Visible,
+                IconData = PortData.ActivityIcons[entry.Kind].Icon,
                 About = about,
+                Act = _act,
                 Toggle = ToggleCommand
             };
         }).ToList();
@@ -88,7 +94,7 @@ public sealed partial class ActivityViewModel : ObservableObject
             Open(reopen);
         }
 
-        var needs = feed.Count(f => f.ChipVisibility == Visibility.Visible);
+        var needs = feed.Count(f => f.NeedsAction);
         Sub = $"{feed.Count} today · {needs} need action · newest first";
     }
 
@@ -128,25 +134,13 @@ public sealed partial class ActivityViewModel : ObservableObject
 
     private string Ago(string time)
     {
-        if (!TimeSpan.TryParse(time, out var at))
+        var at = ShiftClock.ClockHours(time);
+        if (double.IsNaN(at))
         {
             return string.Empty;
         }
 
-        var minutes = (int)Math.Round((_state.NowHours - at.TotalHours) * 60);
+        var minutes = (int)Math.Round((_state.NowHours - at) * 60);
         return minutes < 1 ? "just now" : minutes < 60 ? $"{minutes} min ago" : $"{minutes / 60} h {minutes % 60} min ago";
     }
-
-    /// <summary>
-    /// The Needs-you queue's icon for the kind, read from its style in Themes/Icons.xaml. Uno keeps
-    /// a Path.Data setter's value as the path string until the style is applied, so both forms count.
-    /// </summary>
-    private static Geometry? QueueIcon(DecisionKind kind) =>
-        (Application.Current.Resources[NeedsYouPanel.IconKey(kind)] as Style)?.Setters
-            .OfType<Setter>().FirstOrDefault(s => s.Property == Microsoft.UI.Xaml.Shapes.Path.DataProperty)?.Value switch
-        {
-            Geometry geometry => geometry,
-            string data => Geo.Path(data),
-            _ => null
-        };
 }

@@ -36,8 +36,8 @@ internal static class Sprites
         ["cont-yellow-side"] = new(80, 69),
         ["crane-rtg-1"] = new(149, 186),
         ["crane-side"] = new(380, 280),
-        ["msc-plan"] = new(844, 134),
-        ["msc-side"] = new(845, 245),
+        ["aurora-plan"] = new(844, 134),
+        ["aurora-side"] = new(845, 245),
         ["ship-plan"] = new(934, 142),
         ["ship-side"] = new(1018, 274),
         ["tug-plan-b"] = new(240, 99),
@@ -93,16 +93,16 @@ internal static class Sprites
     }
 
     private static readonly Hull ShipHull = new("ship-side", 135, 872, 78, 172, 228, 10, 1010);
-    private static readonly Hull MscHull = new("msc-side", 95, 690, 76, 160, 205, 8, 820);
+    private static readonly Hull AuroraHull = new("aurora-side", 95, 690, 76, 160, 205, 8, 820);
 
-    /// <summary>MSC Aurora has her own render; the rest of the fleet shares the generic hull.</summary>
-    public static bool IsMsc(string vesselId) => vesselId == "aurora";
+    /// <summary>Avren Aurora has her own render (her name on the hull); the rest of the fleet shares the generic, unnamed hull.</summary>
+    public static bool IsAurora(string vesselId) => vesselId == "aurora";
 
-    internal static Hull HullOf(string vesselId) => IsMsc(vesselId) ? MscHull : ShipHull;
+    internal static Hull HullOf(string vesselId) => IsAurora(vesselId) ? AuroraHull : ShipHull;
 
     public static string Side(string vesselId) => HullOf(vesselId).Name;
 
-    public static string Plan(string vesselId) => IsMsc(vesselId) ? "msc-plan" : "ship-plan";
+    public static string Plan(string vesselId) => IsAurora(vesselId) ? "aurora-plan" : "ship-plan";
 
     /// <summary>The isometric render for a container class, for the inspection panels.</summary>
     public static string Container(CargoClass cargo) => cargo switch

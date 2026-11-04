@@ -115,7 +115,7 @@ fill `#1C6E9E` (placeholder 2.0%), "until 06:00" mono 400 11 muted.
 stroke `#1C6E9E` 1.5 dash `5 4`; approach route `#1C6E9E` 2 dash `6 5` round. Vertical leaders ink
 1.25 ending in anchor rings r5.5: alongside/happened filled `#0F4A6E` with `#FBFBFA` stroke 2;
 inbound hollow (`#FBFBFA` fill, `#0F4A6E` 1.6). Light tags: r8, surface, float shadow, padding
-`0 10`, height 30, gap 8; name 600 13 ink + sub mono 400 12 muted ("MSC Aurora" / "B04 ·
+`0 10`, height 30, gap 8; name 600 13 ink + sub mono 400 12 muted ("Avren Aurora" / "B04 ·
 discharging", "Baltic Crown" / "B06 · departing"). Dark tag (the pending arrival): `#121617`,
 text `#FBFBFA`, padding `8 12`, r8, dark-tag shadow, gap 3; row 1 "Nordic Star" 600 13/18 +
 "in 5 min" mono 500 12/18 (space-between, gap 16); row 2 "B07 · pilot aboard" mono 400 12/1.3
@@ -186,7 +186,7 @@ bleeds to the card edges (margin -24, padding `24 24 16`), tint `rgba(201,85,59,
 `12 12 0 0`. Head H2 "Needs you" + badge (mono 600 13, padding `6 10`, r12, `#B04A32`, white).
 Rows: grid `20 | 1fr | auto`, gap 12, padding `16 0`, hairline between; 18px icon stroke `#C9553B`
 1.6; title 600 15/1.3; sub 13/1.4 muted with late part 600 `#B04A32`; button h44 padding `0 16`
-r8 500 14 (primary `#1C6E9E` white; secondary surface + ring .18). Items: lock "Hold on CMAU 918204
+r8 500 14 (primary `#1C6E9E` white; secondary surface + ring .18). Items: lock "Hold on MRVU 918204
 4" / "Inspection due 21:15 · 20 min late" / primary "Open inspection"; ID card "Driver ID pending
 at Gate 3" / "TRK 8834 at the barrier · waiting 54 min" / "Verify driver"; clock "2 orders late" /
 "Both in the yard queue" / "View orders". Full-bleed 1px .18 divider below.

@@ -21,12 +21,14 @@ public sealed partial class ShipGlyph : SKCanvasElement
 
     private readonly SKPaint _fill = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
     private readonly SKPaint _stroke = new() { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeCap = SKStrokeCap.Round };
-    private readonly SKPath _hull = new();
+    private readonly SKPathBuilder _pb = new();
 
     public ShipGlyph()
     {
         Height = 26;
         IsHitTestVisible = false;
+        // Colours are read from the tokens on every draw, so a theme change only needs a redraw
+        this.RebuildOnTheme(Invalidate);
     }
 
     public static readonly DependencyProperty LengthProperty = DependencyProperty.Register(
@@ -95,15 +97,15 @@ public sealed partial class ShipGlyph : SKCanvasElement
         }
 
         // Hull, bow to the left
-        _hull.Reset();
-        _hull.MoveTo(0, 14.4f);
-        _hull.LineTo(w - 1, 15);
-        _hull.LineTo(w - 2.2f, 22);
-        _hull.LineTo(6, 22);
-        _hull.CubicTo(3, 22, 1.2f, 18.5f, 0, 14.4f);
-        _hull.Close();
+        _pb.MoveTo(0, 14.4f);
+        _pb.LineTo(w - 1, 15);
+        _pb.LineTo(w - 2.2f, 22);
+        _pb.LineTo(6, 22);
+        _pb.CubicTo(3, 22, 1.2f, 18.5f, 0, 14.4f);
+        _pb.Close();
+        using var hull = _pb.Detach();
         _fill.Color = Sk("NavyColor");
-        canvas.DrawPath(_hull, _fill);
+        canvas.DrawPath(hull, _fill);
 
         // Bridge with its window line, then the funnel
         var bridge = new SKRoundRect(SKRect.Create(bridgeX, 1, 7, 14), .6f);

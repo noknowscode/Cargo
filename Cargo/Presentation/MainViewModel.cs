@@ -4,7 +4,7 @@ namespace Cargo.Presentation;
 
 /// <summary>
 /// The dispatcher's frame: the section header, the harbour layer switcher, the tide readout,
-/// and the bridge between the router and <see cref="PortState.Section"/>. The header navigates
+/// and the bridge between the router and <see cref="NavigationState.Section"/>. The header navigates
 /// declaratively (uen:Navigation.Request); the route it lands on is written back to Section,
 /// which frames the harbour. Moves that start inside the store (opening a vessel, an
 /// inspection, a harbour tag) set Section, and this model navigates to match.
@@ -12,40 +12,56 @@ namespace Cargo.Presentation;
 public sealed partial class MainViewModel : ObservableObject
 {
     private readonly INavigator _navigator;
+    private readonly IThemeService _themes;
     private readonly ILogger<MainViewModel> _logger;
 
     // The section the router last reported, so a Section change that came from the router
     // is not navigated a second time.
     private string? _routedSection;
 
-    public MainViewModel(PortState state, INavigator navigator, IRouteNotifier routeNotifier, IDispatcher dispatcher,
-        ILogger<MainViewModel> logger, OverviewViewModel overview, BerthsViewModel berths, CargoViewModel cargo,
+    public MainViewModel(PortState state, ScannerCamera camera, INavigator navigator, IRouteNotifier routeNotifier, IDispatcher dispatcher,
+        IThemeService themes, ILogger<MainViewModel> logger, OverviewViewModel overview, BerthsViewModel berths, CargoViewModel cargo,
         FleetViewModel fleet, SecurityViewModel security)
     {
         State = state;
+        Harbour = new HarbourViewModel(state);
         Overview = overview;
         Berths = berths;
         Cargo = cargo;
         Fleet = fleet;
         Security = security;
         _navigator = navigator;
+        _themes = themes;
         _logger = logger;
 
-
-        // The router builds models off the UI thread, and the header items carry brushes and
-        // geometries, which must be created on it.
+        // The router builds models off the UI thread; the header items are bound to the views, so they are made and
+        // changed on the UI thread.
         dispatcher.TryEnqueue(() =>
         {
-            Scanner = new ScannerViewModel(state);
+            Scanner = new ScannerViewModel(state, camera);
             BuildNav();
             BuildLayers();
 
             state.PropertyChanged += OnStateChanged;
+            state.Navigation.PropertyChanged += OnStateChanged;
+            state.Stage.PropertyChanged += OnStateChanged;
+            state.NeedsYou.PropertyChanged += OnStateChanged;
+            // The tooltips' countdowns and the yard's figure move with the clock; once a minute is enough
+            state.Ticked += (_, _) =>
+            {
+                if ((int)(state.NowHours * 60) != _builtMinute)
+                {
+                    BuildNav();
+                }
+            };
             routeNotifier.RouteChanged += (_, e) => dispatcher.TryEnqueue(() => OnRouteChanged(e));
         });
     }
 
     public PortState State { get; }
+
+    /// <summary>The harbour stage's tags, facts card and description, shared by every harbour section.</summary>
+    public HarbourViewModel Harbour { get; }
 
     public OverviewViewModel Overview { get; }
     public BerthsViewModel Berths { get; }
@@ -54,7 +70,7 @@ public sealed partial class MainViewModel : ObservableObject
     public SecurityViewModel Security { get; }
 
     /// <summary>The Overview greeting and figures sit above the harbour, on Overview only.</summary>
-    public bool IsOverview => State.Section == "overview";
+    public bool IsOverview => State.Navigation.Section == "overview";
 
     public ObservableCollection<NavItem> NavItems { get; } = new();
 
@@ -81,9 +97,40 @@ public sealed partial class MainViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// The account menu's theme: 0 System (follow the device, the default), 1 Light, 2 Dark. Uno.Extensions'
+    /// theme service applies it to the window and saves it between launches.
+    /// </summary>
+    public int ThemeIndex
+    {
+        get => _themes.Theme switch { AppTheme.Light => 1, AppTheme.Dark => 2, _ => 0 };
+        set
+        {
+            var theme = value switch { 1 => AppTheme.Light, 2 => AppTheme.Dark, _ => AppTheme.System };
+            if (value is >= 0 and <= 2 && theme != _themes.Theme)
+            {
+                _ = SetThemeAsync(theme);
+            }
+        }
+    }
+
+    private async Task SetThemeAsync(AppTheme theme)
+    {
+        try
+        {
+            await _themes.SetThemeAsync(theme);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Switching to the {Theme} theme failed", theme);
+        }
+
+        OnPropertyChanged(nameof(ThemeIndex));
+    }
+
     /// <summary>The container inspection that covers the whole window while it is open.</summary>
     [ObservableProperty]
-    private ScannerViewModel? _scanner;
+    public partial ScannerViewModel? Scanner { get; set; }
 
     // The nav and the layer switcher each depend on one or two properties, so they listen for
     // those rather than for every structural change in the app.
@@ -91,16 +138,16 @@ public sealed partial class MainViewModel : ObservableObject
     {
         switch (e.PropertyName)
         {
-            case nameof(PortState.Section):
+            case nameof(NavigationState.Section):
                 OnPropertyChanged(nameof(IsOverview));
                 BuildNav();
-                _ = ShowSectionAsync(State.Section);
+                _ = ShowSectionAsync(State.Navigation.Section);
                 break;
-            case nameof(PortState.NeedsDecision):
-                // Confirming or undoing the berth adds or clears the Berths dot
+            case nameof(PortState.NeedsDecision) or nameof(NeedsYouQueue.Count):
+                // A settled decision (the berth, the hold, the driver, the late orders) clears its section's dot
                 BuildNav();
                 break;
-            case nameof(PortState.HarbourLayer):
+            case nameof(StageState.Layer):
                 BuildLayers();
                 break;
         }
@@ -122,7 +169,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         _routedSection = section;
-        State.Section = section;
+        State.Navigation.Section = section;
     }
 
     /// <summary>
@@ -131,7 +178,7 @@ public sealed partial class MainViewModel : ObservableObject
     /// region would otherwise start on its default tab.
     /// </summary>
     public static string RouteFor(PortState state) =>
-        state.Section == "security" ? $"security/{state.SecurityTab}" : state.Section;
+        state.Navigation.Section == "security" ? $"security/{state.Navigation.SecurityTab}" : state.Navigation.Section;
 
     private async Task ShowSectionAsync(string section)
     {
@@ -154,22 +201,12 @@ public sealed partial class MainViewModel : ObservableObject
 
     /// <summary>
     /// Builds the header items on first use, then only refreshes what navigation
-    /// actually changes. Replacing the collection recreated every button and its subtree,
-    /// which read as a flicker across the header on each move between sections.
+    /// actually changes: replacing the collection would recreate every button and its subtree,
+    /// a flicker across the header on each move between sections.
     /// </summary>
     private void BuildNav()
     {
-        // Sub-labels double as the tooltip: what each section is worth looking at for.
-        var nordicIn = (int)Math.Floor(Math.Max(0, 21 + 40 / 60d - State.NowHours) * 60);
-        var subs = new Dictionary<string, string>
-        {
-            ["overview"] = "3 alongside · 2 inbound · 2,146 moves today",
-            ["berths"] = $"Nordic Star in {nordicIn} min · Berth 06 frees 21:30",
-            ["cargo"] = $"4,812 on site · {State.YardOccupancy}% yard · 1 hold",
-            ["fleet"] = "6 underway · 2 running late",
-            ["security"] = "ISPS level 1 · 0 incidents"
-        };
-
+        _builtMinute = (int)(State.NowHours * 60);
         if (NavItems.Count == 0)
         {
             foreach (var section in PortData.Sections)
@@ -180,22 +217,80 @@ public sealed partial class MainViewModel : ObservableObject
 
         foreach (var item in NavItems)
         {
-            var current = State.Section == item.Id;
-            var needs = State.SectionNeedsYou(item.Id);
+            var current = State.Navigation.Section == item.Id;
+            var needs = State.NeedsYou.SectionNeedsYou(item.Id);
 
-            item.Tooltip = $"{item.Label} · {subs[item.Id]}";
+            item.Tooltip = $"{item.Label} · {SectionSummary(State, item.Id)}";
             item.AutomationName = needs ? $"{item.Label}, needs you" : item.Label;
-            item.LabelForeground = current ? Tokens.Brush("InkInvariantBrush") : Tokens.Brush("TextMutedInvariantBrush");
-            item.NeedsVisibility = needs ? Visibility.Visible : Visibility.Collapsed;
-            item.UnderlineOpacity = current ? 1 : 0;
-            item.CurrentVisibility = current ? Visibility.Visible : Visibility.Collapsed;
-            item.OtherVisibility = current ? Visibility.Collapsed : Visibility.Visible;
+            item.IsCurrent = current;
+            item.NeedsYou = needs;
+        }
+    }
+
+    // The minute the header was last described for
+    private int _builtMinute = -1;
+
+    /// <summary>
+    /// A section's tooltip: what it is worth looking at for, read from the store as the screens read it (the
+    /// countdowns as the tags and rows count, the plan's berths, the yard as it works, the queue as it stands).
+    /// </summary>
+    public static string SectionSummary(PortState state, string section)
+    {
+        string Plural(int n, string one, string many) => n == 1 ? $"1 {one}" : $"{n} {many}";
+
+        switch (section)
+        {
+            case "overview":
+                return $"{PortData.Alongside} alongside · {PortData.Inbound} inbound · {ShiftTimeline.MovesToday(state.NowHours):N0} moves today";
+
+            case "berths":
+                var parts = new List<string>();
+                if (PortData.Vessels.Where(v => v.Status == VesselStatus.Arriving)
+                        .OrderBy(v => ShiftClock.ClockHours(v.Eta)).FirstOrDefault() is { } arrival)
+                {
+                    var eta = ShiftClock.ClockHours(arrival.Eta);
+                    parts.Add(state.MinutesUntil(eta) > 0 ? $"{arrival.Name} {state.Countdown(eta)}" : $"{arrival.Name} due");
+                }
+
+                if (PortData.Vessels.Where(v => v.Status is VesselStatus.Docked or VesselStatus.Departing)
+                        .Select(v => (Vessel: v, Etd: ShiftClock.ClockHours(v.Etd)))
+                        .Where(v => v.Etd > state.NowHours && state.BerthOf(v.Vessel.Id) is not null)
+                        .OrderBy(v => v.Etd).FirstOrDefault() is { Vessel: not null } departure)
+                {
+                    parts.Add($"Berth {state.BerthOf(departure.Vessel.Id)} frees {ShiftClock.Format(departure.Etd)}");
+                }
+
+                if (state.PendingDecision is { } pending)
+                {
+                    parts.Add($"berth {state.BerthOf(pending)} to confirm");
+                }
+
+                return parts.Count == 0 ? "No movements ahead" : string.Join(" · ", parts);
+
+            case "cargo":
+                var holds = PortData.Containers.Count(c => c.Security == "Hold");
+                return $"{PortData.ContainersOnSite:N0} on site · {state.Yard.Occupancy}% yard · {Plural(holds, "hold", "holds")}";
+
+            case "fleet":
+                var late = PortData.RiverFleet.Count(v => v.SlipMinutes > 0);
+                var toConfirm = PortData.RiverFleet.Count(state.NeedsYou.AwaitsEta);
+                return $"{PortData.RiverFleet.Count} underway · {late} running late"
+                    + (toConfirm > 0 ? $" · {Plural(toConfirm, "ETA", "ETAs")} to confirm" : string.Empty);
+
+            case "security":
+                var incidents = PortData.SecurityRecords.FirstOrDefault(r => r.Label == "Security incidents")?.Count ?? "0";
+                var open = state.NeedsYou.Decisions.Count(d => d.Kind is DecisionKind.InspectionHold or DecisionKind.DriverCheck);
+                return $"ISPS level {PortData.IspsLevel} · {incidents} {(incidents == "1" ? "incident" : "incidents")}"
+                    + (open > 0 ? $" · {Plural(open, "check", "checks")} waiting" : string.Empty);
+
+            default:
+                return string.Empty;
         }
     }
 
     /// <summary>The current layer's place in <see cref="Layers"/>, for the switcher's sliding indicator.</summary>
     [ObservableProperty]
-    private int _selectedLayerIndex = -1;
+    public partial int SelectedLayerIndex { get; set; } = -1;
 
     /// <summary>The design's 24-unit stroke icons for the four layers (EXTRACTION §2 Harbour).</summary>
     private static readonly (string Id, string Label, string Icon)[] LayerDefinitions =
@@ -212,15 +307,14 @@ public sealed partial class MainViewModel : ObservableObject
         {
             foreach (var (id, label, icon) in LayerDefinitions)
             {
-                Layers.Add(new LayerItem { Id = id, Label = label, Icon = Geo.Path(icon), Command = State.SetLayerCommand });
+                Layers.Add(new LayerItem { Id = id, Label = label, IconData = icon, Command = State.Stage.SetLayerCommand });
             }
         }
 
         for (var i = 0; i < Layers.Count; i++)
         {
-            var current = State.HarbourLayer == Layers[i].Id;
-            Layers[i].Foreground = current ? Tokens.Brush("PaperInvariantBrush") : Tokens.Brush("InkInvariantBrush");
-            Layers[i].IconForeground = current ? Tokens.Brush("PaperInvariantBrush") : Tokens.Brush("TextMutedInvariantBrush");
+            var current = State.Stage.Layer == Layers[i].Id;
+            Layers[i].IsCurrent = current;
             if (current)
             {
                 SelectedLayerIndex = i;

@@ -3,7 +3,8 @@ namespace Cargo.Controls;
 /// <summary>
 /// The container yard from above. Every slot is a stack of up to five tiers: darker tops
 /// are taller stacks, and a slot that has just been worked keeps an amber ring for a minute.
-/// The RTGs and the yard tractors run off a shared timer, not repeating storyboards.
+/// The RTGs and the yard tractors run off a shared timer, not repeating storyboards. The map
+/// only draws: the slots are <see cref="YardGrid.Slots"/>, and the store works the stacks.
 /// </summary>
 public sealed partial class YardMap : SceneHost
 {
@@ -19,7 +20,7 @@ public sealed partial class YardMap : SceneHost
     // Each slot's elements and the state they were drawn for, so a yard move or a click
     // redraws only the slots that changed rather than all ~300 of them.
     private readonly Dictionary<string, (List<UIElement> Elements, int Height, bool Selected, bool Moved)> _drawn = new();
-    private List<(string Key, YardZoneDef Zone, string Slot, int Base, double X, double Y)>? _slots;
+    private IReadOnlyList<(string Key, YardZoneDef Zone, string Slot, int Base, double X, double Y)>? _slots;
 
     public YardMap(PortState state) : base(1100, 560)
     {
@@ -28,55 +29,30 @@ public sealed partial class YardMap : SceneHost
         _timer.Tick += (_, _) => Animate();
         this.RunWhileShown(_timer);
 
+        // The keyboard's way to the stacks a pointer clicks: tab to the map, the arrows step through a block's slots
+        // and the tiers panel follows; Escape clears
+        IsTabStop = true;
+        UseSystemFocusVisuals = true;
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(this,
+            "Yard map. Arrow keys move between the stacks of a block and show the selected stack's tiers; Escape clears.");
+        KeyDown += OnKeyDown;
+
         Build();
         this.RebuildWhenVisible(state, UpdateSlots);
         this.RebuildOnYardMove(state, UpdateSlots);
-    }
-
-    /// <summary>All slots as (key, zone, slot label, tier count, cargo token).</summary>
-    public static IEnumerable<(string Key, YardZoneDef Zone, string Slot, int Base, double X, double Y)> Slots()
-    {
-        for (var z = 0; z < PortData.YardZones.Count; z++)
-        {
-            var zone = PortData.YardZones[z];
-            var columns = (int)Math.Floor((zone.W - 28) / 32);
-            var rows = (int)Math.Floor((zone.H - 60) / 24);
-
-            for (var r = 0; r < rows; r++)
-            {
-                for (var c = 0; c < columns; c++)
-                {
-                    var seed = z * 131 + r * 17 + c * 3;
-
-                    // The bonded and inspection blocks are deliberately sparse
-                    var height = z == 5
-                        ? Geo.H(seed) > 0.6 ? (int)(Geo.H(seed + 1) * 3) + 1 : 0
-                        : z == 4
-                            ? Geo.H(seed) > 0.5 ? 1 : 0
-                            : (int)(Geo.H(seed) * 6);
-
-                    yield return (
-                        $"{zone.Id}-{r}-{c}",
-                        zone,
-                        $"{zone.Id}-{r + 1:D2}-{c + 1:D2}",
-                        height,
-                        zone.X + 14 + c * 32,
-                        zone.Y + 50 + r * 24);
-                }
-            }
-        }
+        this.RebuildOnTheme(Build);
     }
 
     private void Build()
     {
         Scene.Children.Clear();
 
-        Scene.Place(Draw.Rect(0, 0, 1100, 560, Tokens.Brush("LandInvariantBrush")));
+        Scene.Place(Draw.Rect(0, 0, 1100, 560, Tokens.Brush("LandBrush")));
 
         // Haul roads
-        Scene.Place(Draw.Rect(0, 270, 1100, 22, Tokens.Brush("RoadInvariantBrush")));
-        Scene.Place(Draw.Rule(0, 281, 1100, 281, Tokens.Brush("PaperWarmInvariantBrush"), 1.5, dash: Draw.Dash(9, 8)));
-        Scene.Place(Draw.Rect(540, 0, 22, 560, Tokens.Brush("RoadInvariantBrush")));
+        Scene.Place(Draw.Rect(0, 270, 1100, 22, Tokens.Brush("RoadBrush")));
+        Scene.Place(Draw.Rule(0, 281, 1100, 281, Tokens.Brush("PaperWarmBrush"), 1.5, dash: Draw.Dash(9, 8)));
+        Scene.Place(Draw.Rect(540, 0, 22, 560, Tokens.Brush("RoadBrush")));
 
         AddTruck(_truckA, "CargoHazardColor");
         AddTruck(_truckB, "CargoStandardColor");
@@ -92,15 +68,14 @@ public sealed partial class YardMap : SceneHost
             }
 
             Scene.Place(box);
-            Scene.Place(Draw.Text(zone.Name, zone.X + 14, zone.Y + 8, 13, Tokens.Brush("InkInvariantBrush"), "BodyStrongFont"));
-            Scene.Place(Draw.Text(zone.Sub, zone.X + 14, zone.Y + 26, 12, Tokens.Brush("TextMutedInvariantBrush")));
+            Scene.Place(Draw.Text(zone.Name, zone.X + 14, zone.Y + 8, 13, Tokens.Brush("InkBrush"), "BodyStrongFont"));
+            Scene.Place(Draw.Text(zone.Sub, zone.X + 14, zone.Y + 26, 12, Tokens.Brush("TextMutedBrush")));
         }
 
         AddRtg(_rtgA, 52);
         AddRtg(_rtgB, 602);
 
-        _slots ??= Slots().ToList();
-        _state.YardKeys = _slots.Select(s => (s.Key, s.Base)).ToList();
+        _slots = YardGrid.Slots;
         _drawn.Clear();
         UpdateSlots();
     }
@@ -113,13 +88,11 @@ public sealed partial class YardMap : SceneHost
             return;
         }
 
-        var occupied = 0;
         foreach (var (key, zone, _, baseHeight, x, y) in _slots)
         {
-            var height = _state.YardHeight(key, baseHeight);
-            var selected = _state.SelectedStack == key;
-            var moved = _state.YardRecentlyMoved(key);
-            occupied += height;
+            var height = _state.Yard.Height(key, baseHeight);
+            var selected = _state.Yard.SelectedStack == key;
+            var moved = _state.Yard.RecentlyMoved(key);
 
             if (_drawn.TryGetValue(key, out var drawn)
                 && drawn.Height == height && drawn.Selected == selected && drawn.Moved == moved)
@@ -137,8 +110,6 @@ public sealed partial class YardMap : SceneHost
 
             _drawn[key] = (DrawSlot(key, zone, x, y, height, selected, moved), height, selected, moved);
         }
-
-        _state.YardOccupancy = _slots.Count == 0 ? 0 : (int)Math.Round(occupied * 100d / (_slots.Count * 5));
     }
 
     private List<UIElement> DrawSlot(string key, YardZoneDef zone, double x, double y, int height, bool selected, bool moved)
@@ -168,15 +139,46 @@ public sealed partial class YardMap : SceneHost
 
         if (selected)
         {
-            elements.Add(Scene.Place(Unhit(Draw.Rect(x, y, 26, 16, null, 1.5, Tokens.Brush("InkInvariantBrush"), 2))));
+            elements.Add(Scene.Place(Unhit(Draw.Rect(x, y, 26, 16, null, 1.5, Tokens.Brush("InkBrush"), 2))));
         }
 
         if (moved)
         {
-            elements.Add(Scene.Place(Unhit(Draw.Rect(x, y, 26, 16, null, 1.5, Tokens.Brush("AmberInvariantBrush"), 2))));
+            elements.Add(Scene.Place(Unhit(Draw.Rect(x, y, 26, 16, null, 1.5, Tokens.Brush("AmberBrush"), 2))));
         }
 
         return elements;
+    }
+
+    // xaml-lint: allow codebehind - keyboard selection on a code-built map; the slots are not focusable elements
+    private void OnKeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        if (_slots is null)
+        {
+            return;
+        }
+
+        if (e.Key == Windows.System.VirtualKey.Escape && _state.Yard.SelectedStack is not null)
+        {
+            _state.Yard.SelectedStack = null;
+            e.Handled = true;
+            return;
+        }
+
+        var (rows, columns) = e.Key switch
+        {
+            Windows.System.VirtualKey.Up => (-1, 0),
+            Windows.System.VirtualKey.Down => (1, 0),
+            Windows.System.VirtualKey.Left => (0, -1),
+            Windows.System.VirtualKey.Right => (0, 1),
+            _ => (0, 0)
+        };
+
+        if (rows != 0 || columns != 0)
+        {
+            _state.Yard.SelectedStack = YardGrid.Step(_slots.Select(s => s.Key).ToList(), _state.Yard.SelectedStack, rows, columns);
+            e.Handled = true;
+        }
     }
 
     /// <summary>Overlays must not swallow the click meant for the slot beneath them.</summary>
@@ -188,14 +190,22 @@ public sealed partial class YardMap : SceneHost
 
     private void Bind(UIElement element, string key)
     {
+        // The slot for a screen reader: where it is and how high it stands (the map itself takes the arrows)
+        var slot = YardGrid.Slots.FirstOrDefault(s => s.Key == key);
+        if (slot.Key is not null)
+        {
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(element,
+                $"Slot {slot.Slot}, {slot.Zone.Name}, {_state.Yard.Height(key, slot.Base)} of 5 tiers");
+        }
+
         element.PointerPressed += (_, _) =>
-            _state.SelectedStack = _state.SelectedStack == key ? null : key;
+            _state.Yard.SelectedStack = _state.Yard.SelectedStack == key ? null : key;
     }
 
     private void AddRtg(TranslateTransform transform, double x)
     {
         var rtg = new Canvas { RenderTransform = transform };
-        rtg.Place(Draw.Rect(x, 92, 100, 120, null, 4, Tokens.Brush("AccentInvariantBrush", 0.9), 5));
+        rtg.Place(Draw.Rect(x, 92, 100, 120, null, 4, Tokens.Brush("AccentBrush", 0.9), 5));
         rtg.Place(Draw.Rect(x + 44, 96, 14, 112, Tokens.Brush("AccentColor", 0.35)));
         foreach (var (dx, dy) in new[] { (-2d, -4d), (92d, -4d), (-2d, 116d), (92d, 116d) })
         {
@@ -209,7 +219,7 @@ public sealed partial class YardMap : SceneHost
     {
         var truck = new Canvas { RenderTransform = transform };
         truck.Place(Draw.Rect(0, 274, 34, 14, Tokens.Brush(tintToken), 1.5));
-        truck.Place(Draw.Rect(35, 275, 10, 12, Tokens.Brush("DeckWhiteInvariantBrush"), 2, Tokens.Brush("QuayInvariantBrush"), 1));
+        truck.Place(Draw.Rect(35, 275, 10, 12, Tokens.Brush("DeckWhiteInvariantBrush"), 2, Tokens.Brush("QuayBrush"), 1));
         Scene.Place(truck);
     }
 

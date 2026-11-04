@@ -2,17 +2,40 @@ using Cargo.Controls;
 
 namespace Cargo.Presentation;
 
-public sealed class PlanRow
+public sealed partial class PlanRow : ObservableObject
 {
     public required string Berth { get; init; }
+
+    /// <summary>The row in words for a screen reader: the berth and who holds it when.</summary>
+    public required string AccessibleName { get; init; }
     public required IReadOnlyList<ProportionalPanel.Segment> Segments { get; init; }
-    public required double NowFraction { get; init; }
+
+    /// <summary>Where the plan hour's line crosses the row (a fraction of the 36 h); the scrubber moves it in place.</summary>
+    [ObservableProperty] public partial double NowFraction { get; set; }
+}
+
+/// <summary>
+/// One berth in the selected vessel's "Move to berth" list: the keyboard and touch path for drag-to-assign. Every
+/// berth is listed; one that cannot take her says why in words (not only in colour), and choosing it anyway shows
+/// the same refusal a drop would. The eight rows are made once and updated in place, so the button that has
+/// keyboard focus keeps it when the clock or an assignment changes what the rows say.
+/// </summary>
+public sealed partial class BerthChoice : ObservableObject
+{
+    public required string Number { get; init; }
+    public required ICommand Assign { get; init; }
+
+    [ObservableProperty] public partial string Caption { get; set; } = string.Empty;
+    [ObservableProperty] public partial string AccessibleName { get; set; } = string.Empty;
+
+    /// <summary>The berth takes her: an accent edge and caption (the view picks the brushes).</summary>
+    [ObservableProperty] public partial bool Fits { get; set; }
 }
 
 /// <summary>
 /// The berth plan: the timeline, the scrubber over the next 36 hours, conflicts, and the
-/// selected vessel's panel. <see cref="Refresh"/> follows structural changes; <see cref="Tick"/>
-/// follows the clock. Created by <see cref="BerthsViewModel"/> on the UI thread.
+/// selected vessel's panel. <see cref="Refresh"/> follows structural changes, <see cref="Scrubbed"/>
+/// the scrubber and <see cref="Tick"/> the clock. Created by <see cref="BerthsViewModel"/> on the UI thread.
 /// </summary>
 public sealed partial class DockingViewModel : ObservableObject
 {
@@ -26,44 +49,39 @@ public sealed partial class DockingViewModel : ObservableObject
     public DockingViewModel(PortState state)
     {
         State = state;
-        Legend = new[]
-        {
-            new LegendItem { Label = "Available", Swatch = Tokens.Brush("AccentColor", 0.35) },
-            new LegendItem { Label = "Reserved", Swatch = Tokens.Brush("AccentInvariantBrush") },
-            new LegendItem { Label = "Occupied", Swatch = Tokens.Brush("NavyInvariantBrush") },
-            new LegendItem { Label = "Restricted", Swatch = Tokens.Brush("RestrictedInvariantBrush") },
-            new LegendItem { Label = "Conflict", Swatch = Tokens.Brush("AlertInvariantBrush") }
-        };
-
         Refresh();
     }
 
     public PortState State { get; }
 
-    public IReadOnlyList<LegendItem> Legend { get; }
-
     public ObservableCollection<PlanRow> PlanRows { get; } = new();
 
     public ObservableCollection<Fact> SelectedFacts { get; } = new();
 
-    [ObservableProperty] private string _planLabel = string.Empty;
-    [ObservableProperty] private string _conflictText = string.Empty;
-    [ObservableProperty] private Brush? _conflictTone;
-    [ObservableProperty] private string _hint = DefaultHint;
-    [ObservableProperty] private string _selectedName = string.Empty;
-    [ObservableProperty] private string _selectedStatus = string.Empty;
-    [ObservableProperty] private string _selectedNote = string.Empty;
-    [ObservableProperty] private ImageSource? _selectedProfile;
-    [ObservableProperty] private bool _canRelease;
-    [ObservableProperty] private Brush? _nowBackground;
-    [ObservableProperty] private Brush? _nowForeground;
+    public ObservableCollection<BerthChoice> BerthChoices { get; } = new();
+
+    [ObservableProperty] public partial string PlanLabel { get; set; } = string.Empty;
+    [ObservableProperty] public partial string ConflictText { get; set; } = string.Empty;
+
+    /// <summary>Two vessels share a berth somewhere in the next 36 h: the conflict line reads in alert ink.</summary>
+    [ObservableProperty] public partial bool HasConflicts { get; set; }
+
+    [ObservableProperty] public partial string Hint { get; set; } = DefaultHint;
+    [ObservableProperty] public partial string SelectedName { get; set; } = string.Empty;
+    [ObservableProperty] public partial string SelectedStatus { get; set; } = string.Empty;
+    [ObservableProperty] public partial string SelectedNote { get; set; } = string.Empty;
+
+    /// <summary>The selected vessel's side render, by sprite name (Assets/Sprites); the view loads the image.</summary>
+    [ObservableProperty] public partial string SelectedProfile { get; set; } = string.Empty;
+
+    [ObservableProperty] public partial bool CanRelease { get; set; }
+    [ObservableProperty] public partial bool CanMove { get; set; }
+
+    /// <summary>The plan follows the live clock (Now is lit) rather than a scrubbed hour.</summary>
+    [ObservableProperty] public partial bool IsLive { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(PanelWidth))]
-    private bool _hasSelection;
-
-    /// <summary>The selected vessel's panel takes a column only while something is selected.</summary>
-    public GridLength PanelWidth => HasSelection ? new GridLength(320) : new GridLength(0);
+    public partial bool HasSelection { get; set; }
 
     /// <summary>
     /// The scrubber position in hours. A value equal to the time already shown is ignored, so
@@ -99,6 +117,16 @@ public sealed partial class DockingViewModel : ObservableObject
         }
     }
 
+    /// <summary>Assigns the selected vessel to a berth from the list; a refused move shows its reason in the hint.</summary>
+    [RelayCommand]
+    private void AssignTo(string berth)
+    {
+        if (State.DockSelection is { } id && PortData.BerthIndex(berth) is { } index)
+        {
+            Hint = State.Assign(id, index) ?? DefaultHint;
+        }
+    }
+
     [RelayCommand]
     private void OpenProfile()
     {
@@ -122,22 +150,16 @@ public sealed partial class DockingViewModel : ObservableObject
 
     public void Refresh()
     {
-        var planHour = State.EffectivePlanHour;
-        PlanLabel = (planHour >= 24 ? "Thu " : string.Empty) + PortState.Format(planHour % 24);
-        OnPropertyChanged(nameof(Scrub));
-
-        NowBackground = State.PlanHour is null ? Tokens.Brush("InkInvariantBrush") : Tokens.Brush("SurfaceInvariantBrush");
-        NowForeground = State.PlanHour is null ? Tokens.Brush("PaperInvariantBrush") : Tokens.Brush("InkInvariantBrush");
-
         var conflicts = State.Conflicts();
         ConflictText = conflicts.Count == 0
             ? "No conflicts in the next 36 h"
             : $"{conflicts.Count} berth conflict{(conflicts.Count > 1 ? "s" : string.Empty)}: " +
               string.Join(" · ", conflicts.Select(c => $"{c.A} × {c.B} on {c.Berth}"));
-        ConflictTone = conflicts.Count == 0 ? Tokens.Brush("SeaGreenInvariantBrush") : Tokens.Brush("AlertInvariantBrush");
+        HasConflicts = conflicts.Count > 0;
 
         BuildTimeline(conflicts);
         BuildSelection();
+        Scrubbed();
 
         if (string.IsNullOrEmpty(Hint))
         {
@@ -145,27 +167,48 @@ public sealed partial class DockingViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// The scrubber moved (or Now was pressed): only the plan hour's label, the Now button and the line across the
+    /// timeline rows follow it, so the rows are kept and their line moves in place.
+    /// </summary>
+    public void Scrubbed()
+    {
+        var planHour = State.EffectivePlanHour;
+        PlanLabel = (planHour >= 24 ? "Thu " : string.Empty) + ShiftClock.Format(planHour % 24);
+        OnPropertyChanged(nameof(Scrub));
+        IsLive = State.PlanHour is null;
+
+        var nowFraction = Math.Clamp(planHour / PlanHours, 0, 1);
+        foreach (var row in PlanRows)
+        {
+            row.NowFraction = nowFraction;
+        }
+    }
+
     private void BuildTimeline(IReadOnlyList<(string Berth, string A, string B)> conflicts)
     {
         var now = State.NowHours;
-        var nowFraction = Math.Clamp(State.EffectivePlanHour / PlanHours, 0, 1);
 
         PlanRows.Clear();
         foreach (var berth in PortData.Berths)
         {
             var segments = new List<ProportionalPanel.Segment>();
+            var spoken = new List<string>();
 
-            // What was here earlier today, and any planned closure
+            // What was here earlier today (outlined, muted: the past), and any planned closure
             if (PortData.BerthHistory.TryGetValue(berth.Number, out var history))
             {
-                foreach (var segment in history.Where(s => s.Kind is "prev" or "restricted"))
+                foreach (var segment in history)
                 {
+                    var past = segment.Kind == "prev";
                     segments.Add(new ProportionalPanel.Segment(
                         segment.Label,
                         segment.Start / PlanHours,
                         (Math.Min(segment.End, PlanHours) - segment.Start) / PlanHours,
-                        Tokens.Brush(segment.Kind == "prev" ? "TextFaintColor" : "RestrictedColor"),
-                        segment.Kind == "prev" ? 0.45 : 1));
+                        past ? null : "RestrictedBrush",
+                        past ? "TextMutedBrush" : "SurfaceBrush",
+                        past ? "TextFaintBrush" : null));
+                    spoken.Add(past ? $"earlier {segment.Label}" : $"closed, {segment.Label}");
                 }
             }
 
@@ -180,20 +223,27 @@ public sealed partial class DockingViewModel : ObservableObject
                     continue;
                 }
 
+                // Alongside: navy. Reserved for an arrival: accent with a dashed edge. Two in one window: alert
+                // with an ink edge
                 var conflicted = conflicts.Any(c => c.Berth == berth.Number && (c.A == vessel.Name || c.B == vessel.Name));
+                var reserved = window.Start > now;
                 segments.Add(new ProportionalPanel.Segment(
                     vessel.Name,
                     start / PlanHours,
                     (end - start) / PlanHours,
-                    Tokens.Brush(conflicted ? "AlertColor" : window.Start > now ? "AccentColor" : "NavyColor"),
-                    conflicted ? 0.9 : window.Start > now ? 0.75 : 1));
+                    conflicted ? "AlertInkBrush" : reserved ? "AccentBrush" : "NavyBrush",
+                    "SurfaceBrush",
+                    conflicted || reserved ? "InkBrush" : null,
+                    Dashed: reserved && !conflicted));
+                spoken.Add($"{vessel.Name} {(conflicted ? "in conflict" : reserved ? "reserved" : "alongside")} " +
+                           $"{ShiftClock.Format(start % 24)} to {ShiftClock.Format(end % 24)}");
             }
 
             PlanRows.Add(new PlanRow
             {
                 Berth = berth.Number,
-                Segments = segments,
-                NowFraction = nowFraction
+                AccessibleName = spoken.Count == 0 ? $"Berth {berth.Number}: free" : $"Berth {berth.Number}: {string.Join(", ", spoken)}",
+                Segments = segments
             });
         }
     }
@@ -211,14 +261,16 @@ public sealed partial class DockingViewModel : ObservableObject
 
         HasSelection = true;
         SelectedName = vessel.Name;
-        SelectedStatus = $"{vessel.Operator} · {vessel.StatusLine}";
+        SelectedStatus = $"{vessel.Operator} · {VesselCopy.StatusLine(State, vessel)}";
         SelectedNote = berth is null
-            ? "Not yet berthed. Drag onto a green berth, or Optimize."
+            ? "Not yet berthed. Drag her onto a berth marked Fits, pick one under Move to berth, or Optimize."
             : State.IsAssigned(id)
                 ? $"Assigned to Berth {berth} · mooring gang notified."
-                : vessel.OpsNote;
-        SelectedProfile = Sprites.Source(Sprites.Side(vessel.Id));
+                : VesselCopy.Note(State, vessel).Full;
+        SelectedProfile = Sprites.Side(vessel.Id);
         CanRelease = State.IsAssigned(id);
+
+        BuildChoices(vessel, berth);
 
         SelectedFacts.Clear();
         foreach (var (key, value) in new[]
@@ -232,6 +284,36 @@ public sealed partial class DockingViewModel : ObservableObject
                  })
         {
             SelectedFacts.Add(new Fact { Key = key, Value = value });
+        }
+    }
+
+    private void BuildChoices(Vessel vessel, string? current)
+    {
+        CanMove = BerthPlan.Movable(vessel);
+
+        // The berths never change: one row each, made once, then only what they say is updated
+        if (BerthChoices.Count == 0)
+        {
+            foreach (var berth in PortData.Berths)
+            {
+                BerthChoices.Add(new BerthChoice { Number = berth.Number, Assign = AssignToCommand });
+            }
+        }
+
+        for (var i = 0; i < PortData.Berths.Count; i++)
+        {
+            var berth = PortData.Berths[i];
+            var fit = State.Check(vessel, i);
+            var choice = BerthChoices[i];
+            choice.Caption = berth.Number == current ? "her berth" : fit switch
+            {
+                BerthFit.Fits => "fits",
+                BerthFit.Closed => "closed",
+                BerthFit.TooShallow => "too shallow",
+                _ => "taken"
+            };
+            choice.AccessibleName = $"Berth {berth.Number}, {berth.Depth:0.0} m: {choice.Caption}";
+            choice.Fits = fit == BerthFit.Fits;
         }
     }
 }

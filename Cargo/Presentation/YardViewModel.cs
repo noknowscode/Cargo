@@ -1,12 +1,11 @@
-using Cargo.Controls;
-
 namespace Cargo.Presentation;
 
 public sealed class TierRow
 {
     public required string Id { get; init; }
     public required string Detail { get; init; }
-    public required Brush Tone { get; init; }
+    /// <summary>The box's cargo class, as its palette key.</summary>
+    public required string Tone { get; init; }
 }
 
 /// <summary>
@@ -20,12 +19,12 @@ public sealed partial class YardViewModel : ObservableObject
         State = state;
         Legend = new[]
         {
-            new LegendItem { Label = "Standard", Swatch = Tokens.Brush("CargoStandardInvariantBrush") },
-            new LegendItem { Label = "Refrigerated", Swatch = Tokens.Brush("CargoReeferInvariantBrush") },
-            new LegendItem { Label = "Hazardous", Swatch = Tokens.Brush("CargoHazardInvariantBrush") },
-            new LegendItem { Label = "Inspection", Swatch = Tokens.Brush("CargoOversizeInvariantBrush") },
-            new LegendItem { Label = "Restricted", Swatch = Tokens.Brush("RestrictedInvariantBrush") },
-            new LegendItem { Label = "Available slot", Swatch = Tokens.Brush("InkColor", 0.12) }
+            new LegendItem { Label = "Standard", Swatch = "CargoStandardInvariantBrush" },
+            new LegendItem { Label = "Refrigerated", Swatch = "CargoReeferInvariantBrush" },
+            new LegendItem { Label = "Hazardous", Swatch = "CargoHazardInvariantBrush" },
+            new LegendItem { Label = "Inspection", Swatch = "CargoOversizeInvariantBrush" },
+            new LegendItem { Label = "Restricted", Swatch = "RestrictedBrush" },
+            new LegendItem { Label = "Available slot", Swatch = "InkColor", Strength = 0.12 }
         };
 
         Refresh();
@@ -37,47 +36,43 @@ public sealed partial class YardViewModel : ObservableObject
 
     public ObservableCollection<TierRow> Tiers { get; } = new();
 
-    [ObservableProperty] private string _liveLine = string.Empty;
-    [ObservableProperty] private string _occupancyLine = string.Empty;
-    [ObservableProperty] private double _occupancy;
-    [ObservableProperty] private string _slotTitle = string.Empty;
-    [ObservableProperty] private string _slotSubtitle = string.Empty;
-    [ObservableProperty] private IReadOnlyList<(string Id, string Tag, string Token)> _stackBoxes = [];
+    [ObservableProperty] public partial string LiveLine { get; set; } = string.Empty;
+    [ObservableProperty] public partial string OccupancyLine { get; set; } = string.Empty;
+    [ObservableProperty] public partial double Occupancy { get; set; }
+    [ObservableProperty] public partial string SlotTitle { get; set; } = string.Empty;
+    [ObservableProperty] public partial string SlotSubtitle { get; set; } = string.Empty;
+    [ObservableProperty] public partial IReadOnlyList<(string Id, string Tag, string Token)> StackBoxes { get; set; } = [];
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(PanelWidth))]
-    private bool _hasStack;
-
-    /// <summary>The stack panel takes a column only while a stack is selected.</summary>
-    public GridLength PanelWidth => HasStack ? new GridLength(300) : new GridLength(0);
+    public partial bool HasStack { get; set; }
 
     [RelayCommand]
-    private void CloseStack() => State.SelectedStack = null;
+    private void CloseStack() => State.Yard.SelectedStack = null;
 
     public void Refresh()
     {
-        LiveLine = $"Live · {State.YardMoves:N0} moves today · 3 RTGs ·";
-        OccupancyLine = $"{State.YardOccupancy}% occupied";
-        Occupancy = State.YardOccupancy;
+        LiveLine = $"Live · {State.Yard.Moves:N0} moves today · 3 RTGs ·";
+        OccupancyLine = $"{State.Yard.Occupancy}% occupied";
+        Occupancy = State.Yard.Occupancy;
 
         BuildStack();
     }
 
     private void BuildStack()
     {
-        if (State.SelectedStack is not { } key)
+        if (State.Yard.SelectedStack is not { } key)
         {
             HasStack = false;
             return;
         }
 
-        var slot = YardMap.Slots().FirstOrDefault(s => s.Key == key);
+        var slot = YardGrid.Slots.FirstOrDefault(s => s.Key == key);
         if (slot.Key is null)
         {
             return;
         }
 
-        var height = State.YardHeight(key, slot.Base);
+        var height = State.Yard.Height(key, slot.Base);
 
         HasStack = true;
 
@@ -94,22 +89,22 @@ public sealed partial class YardViewModel : ObservableObject
             var tag = slot.Zone.TintToken switch
             {
                 "CargoReeferColor" => "Reefer −18°C",
-                "CargoHazardColor" => $"IMDG class {3 + (int)(Geo.H(seed) * 6)}",
+                "CargoHazardColor" => $"IMDG class {3 + (int)(Noise.H(seed) * 6)}",
                 "CargoOversizeColor" => "Awaiting exam",
                 "RestrictedColor" => "Bonded",
-                _ => Geo.H(seed) > 0.7 ? "Empty" : "Laden"
+                _ => Noise.H(seed) > 0.7 ? "Empty" : "Laden"
             };
 
             var token = tag == "Empty" ? "CargoEmptyColor" : slot.Zone.TintToken;
-            var id = $"{PortData.ContainerPrefixes[(int)(Geo.H(seed) * 8)]} " +
-                     $"{(int)(Geo.H(seed + 5) * 900000 + 100000)} {(int)(Geo.H(seed + 9) * 10)}";
+            var id = $"{PortData.ContainerPrefixes[(int)(Noise.H(seed) * 8)]} " +
+                     $"{(int)(Noise.H(seed + 5) * 900000 + 100000)} {(int)(Noise.H(seed + 9) * 10)}";
 
             boxes.Add((id, tag, token));
             Tiers.Add(new TierRow
             {
                 Id = id,
                 Detail = $"Tier {i + 1} · {tag}",
-                Tone = Tokens.Brush(token)
+                Tone = token
             });
         }
 

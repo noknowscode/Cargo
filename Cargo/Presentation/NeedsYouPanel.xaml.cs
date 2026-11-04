@@ -1,15 +1,13 @@
-using System.ComponentModel;
-
 namespace Cargo.Presentation;
 
 /// <summary>
-/// The Needs-you queue over <see cref="PortState.Decisions"/>. The row visuals that depend on a
-/// decision (icon, button, late ink) are picked by the static functions below through x:Bind, so
-/// the decision itself carries no brushes.
+/// The Needs-you queue, over its view model (<see cref="NeedsYouPanelViewModel"/>). The row visuals that depend on a
+/// decision (icon, button, late ink) are picked by the static functions below through x:Bind, so the decision itself
+/// carries no brushes.
 /// </summary>
 public sealed partial class NeedsYouPanel : UserControl
 {
-    private PortState? _state;
+    private NeedsYouPanelViewModel? _model;
 
     public NeedsYouPanel()
     {
@@ -17,19 +15,19 @@ public sealed partial class NeedsYouPanel : UserControl
         DataContextChanged += (_, _) => Attach();
     }
 
-    public PortState? ViewModel => DataContext as PortState;
+    public NeedsYouPanelViewModel? ViewModel => DataContext as NeedsYouPanelViewModel;
 
     private void Attach()
     {
-        if (_state is not null)
+        if (_model is not null)
         {
-            _state.PropertyChanged -= OnStateChanged;
+            _model.RevealRequested -= OnRevealRequested;
         }
 
-        _state = ViewModel;
-        if (_state is not null)
+        _model = ViewModel;
+        if (_model is not null)
         {
-            _state.PropertyChanged += OnStateChanged;
+            _model.RevealRequested += OnRevealRequested;
         }
 
         Bindings.Update();
@@ -37,16 +35,13 @@ public sealed partial class NeedsYouPanel : UserControl
 
     // xaml-lint: allow codebehind - "Needs you" in the masthead scrolls this section into view and
     // focuses its heading; bringing an element into view has no XAML surface
-    private void OnStateChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnRevealRequested(object? sender, EventArgs e)
     {
-        if (e.PropertyName == nameof(PortState.NeedsYouReveal))
-        {
-            Section.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = !Motion.Reduced, VerticalOffset = 24 });
-            Heading.Focus(FocusState.Programmatic);
-        }
+        Section.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = !Motion.Reduced, VerticalOffset = 24 });
+        Heading.Focus(FocusState.Programmatic);
     }
 
-    public static Brush Ground(int count) => count > 0 ? Tokens.Brush("AlertInvariantBrush", .05) : Tokens.Transparent;
+    public static Brush Ground(int count) => count > 0 ? Tokens.Brush("AlertBrush", .05) : Tokens.Transparent;
 
     public static Visibility Shown(int count) => count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
@@ -75,10 +70,13 @@ public sealed partial class NeedsYouPanel : UserControl
     public static Style Action(bool primary) =>
         (Style)Application.Current.Resources[primary ? "QueuePrimaryButton" : "QueueSecondaryButton"];
 
+    /// <summary>A row's refusal shows only once there is one.</summary>
+    public static Visibility Said(string text) => string.IsNullOrEmpty(text) ? Visibility.Collapsed : Visibility.Visible;
+
     /// <summary>The " · " before the live part, only when there is one.</summary>
     public static string Separator(string when) => string.IsNullOrEmpty(when) ? string.Empty : " · ";
 
-    public static Brush WhenInk(bool late) => Tokens.Brush(late ? "AlertInkInvariantBrush" : "TextMutedInvariantBrush");
+    public static Brush WhenInk(bool late) => Tokens.Brush(late ? "AlertInkBrush" : "TextMutedBrush");
 
     public static FontFamily WhenFace(bool late) =>
         (FontFamily)Application.Current.Resources[late ? "BodyStrongFont" : "BodyFont"];

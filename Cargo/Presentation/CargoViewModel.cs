@@ -6,15 +6,15 @@ namespace Cargo.Presentation;
 /// </summary>
 public sealed partial class CargoViewModel : ObservableObject
 {
-    public CargoViewModel(PortState state, IDispatcher dispatcher)
+    public CargoViewModel(PortState state, ScannerCamera camera, IDispatcher dispatcher)
     {
         State = state;
 
-        // The router builds models off the UI thread; the sub-models build brushes and
-        // images as they start, so they are created on it.
+        // The router builds models off the UI thread; the sub-models are bound to the views and follow the store's
+        // events there, so they are made on it.
         dispatcher.TryEnqueue(() =>
         {
-            Containers = new ContainersViewModel(state);
+            Containers = new ContainersViewModel(state, camera);
             Yard = new YardViewModel(state);
             RefreshMasthead();
             state.YardChanged += (_, _) => RefreshMasthead();
@@ -24,20 +24,28 @@ public sealed partial class CargoViewModel : ObservableObject
     public PortState State { get; }
 
     [ObservableProperty]
-    private ContainersViewModel? _containers;
+    public partial ContainersViewModel? Containers { get; set; }
 
     [ObservableProperty]
-    private YardViewModel? _yard;
+    public partial YardViewModel? Yard { get; set; }
 
     [ObservableProperty]
-    private string _occupancy = string.Empty;
+    public partial string Occupancy { get; set; } = string.Empty;
+
+    /// <summary>Containers on the terminal, the masthead's first figure.</summary>
+    public string OnSite => PortData.ContainersOnSite.ToString("N0");
+
+    /// <summary>Containers on hold, and the word for them.</summary>
+    public string Holds => PortData.Containers.Count(c => c.Security == "Hold").ToString();
+
+    public string HoldsLabel => Holds == "1" ? "hold" : "holds";
 
     [ObservableProperty]
-    private string _moves = string.Empty;
+    public partial string Moves { get; set; } = string.Empty;
 
     private void RefreshMasthead()
     {
-        Occupancy = $"{State.YardOccupancy}%";
-        Moves = State.YardMoves.ToString("N0");
+        Occupancy = $"{State.Yard.Occupancy}%";
+        Moves = State.Yard.Moves.ToString("N0");
     }
 }
