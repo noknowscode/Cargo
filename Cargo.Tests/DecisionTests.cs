@@ -72,8 +72,8 @@ public class DecisionTests
     [Test]
     public void Dragging_the_arrival_off_her_reserved_berth_settles_the_decision_everywhere()
     {
-        // The review's repro: Nordic Star dragged from reserved 07 to 08. The bar said nothing needs you while the
-        // queue, the count, the dot and the marker still asked for 07, and the queue's Confirm confirmed 08.
+        // Nordic Star dragged from reserved 07 to 08: the bar, the queue, the count, the dot and the marker must all
+        // stop asking for 07, and nothing may confirm 08 in its place.
         var state = new PortState(new ManualClock());
         var bar = new NeedsYouViewModel(state);
 

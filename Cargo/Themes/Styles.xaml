@@ -317,7 +317,7 @@
        Cards — Toolkit CardContentControl, tuned by lightweight keys.
        PanelCard: surface, hairline edge, elevation (the section panels).
        OutlinedPanel: hairline only, for cards inside a panel or a row.
-       Both stretch like the old Card did (the Toolkit base does not).
+       Both stretch to their column (the Toolkit base does not).
        These panels are static, so pointer-over keeps the resting fill:
        a hover tint on a panel reads as "this is clickable". The fills are
        the Toolkit's lightweight keys, set per theme in Tokens.xaml.

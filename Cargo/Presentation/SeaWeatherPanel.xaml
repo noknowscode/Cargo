@@ -4,8 +4,7 @@
              xmlns:controls="using:Cargo.Controls"
              xmlns:utu="using:Uno.Toolkit.UI">
 
-  <!-- Conditions in the outer harbour and the night's tide. Moved from Overview (and from the
-       header's weather and tide badges): the waterways are where the river traffic plans on it. -->
+  <!-- Conditions in the outer harbour and the night's tide, on Waterways: the river traffic plans on them. -->
   <Border Style="{StaticResource RuledPanel}" Padding="{StaticResource RuledPanelInsetEnd}">
     <StackPanel>
       <Grid>
