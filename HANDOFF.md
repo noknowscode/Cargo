@@ -1,5 +1,16 @@
-# HANDOFF — Cargo: production readiness, code review round 2 fixed
-Updated: 2026-11-02
+# HANDOFF — Cargo: production readiness, uno-audit pass
+Updated: 2026-11-04
+
+## uno-audit (branch `feat/production-readiness`, from cc60ef2)
+Report: `docs/UNO-AUDIT.md` (findings with file:line, the lint table, performance numbers, stack currency, Remaining
+with sizes). Lint gating rules 0 before and after; TEMPLATE 3 now each with a reason; WORKAROUND 1, reproduced on
+Uno.Sdk 7.0.0-dev.115 (`docs/evidence/2026-10-01-shadowcontainer-offset-paint.md`). Fixed: dead `OpenSecurity`
+command, unused section icons and template transform; unused and duplicate usings; every `CARGO_*` hook through
+`DebugHooks.Hook`; `CARGO_X11_RENDERER=software` for Xvfb runs; literal font sizes into tokens and a type style;
+history comments rewritten as constraints; per-frame allocations on the harbour's frame path. Idle CPU: the designed
+15 fps ambient harbour loop is the whole idle cost (Overview 49% of a core on the CPU backend, 4.9% with reduce
+motion, 130-175% on llvmpipe); its idle policy is an owner decision. Next pass: split `PortState` (plan in the
+report), brushes out of 13 view models, view-model tests, header tooltips from the store, icons into Icons.xaml.
 
 ## Code review round 2 (branch `feat/production-readiness`, from 1531097)
 The review: uno-lab `docs/production-readiness/CODE-REVIEW-ROUND2-2026-11-02.md` (one High, six Medium, three Low).
