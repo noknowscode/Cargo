@@ -706,8 +706,13 @@ public sealed partial class HarbourView : UserControl
         var leaders = new Dictionary<string, (SKPoint, SKPoint)>();
         var placed = new List<Rect>();
 
-        // Left to right, so a later tag gives way to one already placed
-        foreach (var (tag, host) in _tags.OrderBy(t => camera.Project(_scene.World.Vessels.First(v => v.Id == t.Tag.Id).Mast).X))
+        // The arrival waiting on a decision first, then the selected vessel, then left to right: a later tag gives way to
+        // one already placed, so the dark tag and its countdown are never the ones hidden
+        var pending = _state?.PendingDecision;
+        var selection = EffectiveSelection;
+        foreach (var (tag, host) in _tags
+                     .OrderBy(t => t.Tag.Id == pending ? 0 : t.Tag.Id == selection ? 1 : 2)
+                     .ThenBy(t => camera.Project(_scene.World.Vessels.First(v => v.Id == t.Tag.Id).Mast).X))
         {
             var vessel = _scene.World.Vessels.First(v => v.Id == tag.Id);
             var (x, y) = camera.Project(vessel.Mast);
@@ -732,7 +737,16 @@ public sealed partial class HarbourView : UserControl
             // Below the overlay (the greeting and figures), clear of the top-right float
             var minTop = (Tight ? 6 : 52) + _inset + _bandOffset;
             var top = Math.Max(minTop, y - Lead - height);
-            (left, top) = AvoidOverlap(placed, left, top, width, height, minTop, ActualWidth - right);
+            (left, top, var fits) = AvoidOverlap(placed, left, top, width, height, minTop, ActualWidth - right,
+                visible + _bandOffset - (Tight ? 8 : 56));
+            if (!fits)
+            {
+                // No clear spot beside, above or below the tags already placed (a narrow band with vessels close
+                // together): this one gives way rather than covering another's countdown
+                host.Visibility = Visibility.Collapsed;
+                continue;
+            }
+
             placed.Add(new Rect(left, top, width, height));
 
             var transform = (TranslateTransform)host.RenderTransform;
@@ -755,38 +769,46 @@ public sealed partial class HarbourView : UserControl
     }
 
     /// <summary>
-    /// Vessels alongside neighbouring berths project close together, most of all in the compact
-    /// strip, so a tag that lands on one already placed moves up above it (its leader grows). When
-    /// there is no room above, it moves beside it instead.
+    /// Vessels alongside neighbouring berths project close together, most of all in the compact strip and on a phone,
+    /// so a tag that lands on one already placed moves up above it (its leader grows); with no room above, beside it
+    /// (right, then left); then below it. When none of those is clear it does not fit, and the caller hides it.
     /// </summary>
-    private static (double Left, double Top) AvoidOverlap(List<Rect> placed, double left, double top,
-        double width, double height, double minTop, double maxRight)
+    private static (double Left, double Top, bool Fits) AvoidOverlap(List<Rect> placed, double left, double top,
+        double width, double height, double minTop, double maxRight, double maxBottom)
     {
         const double Gap = 6;
-        for (var guard = 0; guard < placed.Count + 1; guard++)
+        for (var guard = 0; guard < placed.Count * 4 + 1; guard++)
         {
             var hit = placed.FirstOrDefault(r => left < r.Right + Gap && left + width + Gap > r.Left
                 && top < r.Bottom + Gap && top + height + Gap > r.Top, Rect.Empty);
             if (hit.IsEmpty)
             {
-                break;
+                return (left, top, true);
             }
 
             if (hit.Top - Gap - height >= minTop)
             {
                 top = hit.Top - Gap - height;
             }
+            else if (hit.Right + Gap + width <= maxRight)
+            {
+                left = hit.Right + Gap;
+            }
+            else if (hit.Left - Gap - width >= 10)
+            {
+                left = hit.Left - Gap - width;
+            }
+            else if (hit.Bottom + Gap + height <= maxBottom)
+            {
+                top = hit.Bottom + Gap;
+            }
             else
             {
-                left = Math.Min(hit.Right + Gap, Math.Max(10, maxRight - width));
-                if (left + width > maxRight)
-                {
-                    break;
-                }
+                return (left, top, false);
             }
         }
 
-        return (left, top);
+        return (left, top, false);
     }
 
     // ── Camera controls ────────────────────────────────────────────────────────

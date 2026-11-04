@@ -178,8 +178,11 @@
 
           <!-- Table: the same day hour by hour, the chart's full non-visual alternative. Its seven columns need 600 px:
                narrower (a phone, or the 7-of-12 band from 1000 to 1279) it scrolls sideways inside the card -->
+          <!-- Below 1280 the table keeps 600 px and scrolls sideways in its card; from 1280 it takes the card's width and the
+               vessels column trims, so a long hour never pushes NET / H past the card's edge -->
           <ScrollViewer AutomationProperties.Name="Today at North Quay, by the hour" Visibility="{x:Bind ViewModel.Timeline.IsTable, Mode=OneWay}"
-                        HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto"
+                        HorizontalScrollMode="{utu:Responsive Narrowest=Auto, Wide=Disabled}"
+                        HorizontalScrollBarVisibility="{utu:Responsive Narrowest=Auto, Wide=Disabled}"
                         VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
           <StackPanel MinWidth="600" Padding="{StaticResource GapBottom8}">
             <Grid ColumnSpacing="{StaticResource Space12}" Padding="{StaticResource InsetX8}" Height="32">
