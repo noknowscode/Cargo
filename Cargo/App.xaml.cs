@@ -104,7 +104,7 @@ public partial class App : Application
 #endif
 #if DEBUG
         // Layout verification opens at a given size (CARGO_WINDOW=390x844), one launch per size
-        if (Environment.GetEnvironmentVariable("CARGO_WINDOW")?.Split('x') is [var w, var h]
+        if (DebugHooks.Hook("CARGO_WINDOW")?.Split('x') is [var w, var h]
             && int.TryParse(w, out var width) && int.TryParse(h, out var height))
         {
             size = new Windows.Graphics.SizeInt32 { Width = width, Height = height };
@@ -129,7 +129,7 @@ public partial class App : Application
     /// </summary>
     private async Task ApplyThemeFixtureAsync()
     {
-        if (!Enum.TryParse<Uno.Extensions.Toolkit.AppTheme>(Environment.GetEnvironmentVariable("CARGO_THEME"), ignoreCase: true, out var theme))
+        if (!Enum.TryParse<Uno.Extensions.Toolkit.AppTheme>(DebugHooks.Hook("CARGO_THEME"), ignoreCase: true, out var theme))
         {
             return;
         }
@@ -141,6 +141,13 @@ public partial class App : Application
                 && root.FindServiceProvider()?.GetService<Uno.Extensions.Toolkit.IThemeService>() is { } service)
             {
                 await service.SetThemeAsync(theme);
+
+                // The palette follows the window on its ActualThemeChanged, a moment after the switch
+                for (var wait = 0; wait < 20 && Tokens.Theme != root.ActualTheme; wait++)
+                {
+                    await Task.Delay(100);
+                }
+
                 Console.Error.WriteLine($"VERIFY theme={theme} actual={root.ActualTheme} palette={Tokens.Theme}");
                 return;
             }

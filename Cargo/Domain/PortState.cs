@@ -1,4 +1,5 @@
 using System.Globalization;
+using static Cargo.Domain.DebugHooks;
 
 namespace Cargo.Domain;
 
@@ -40,16 +41,8 @@ public sealed partial class PortState : ObservableObject
         clock.Tick += (_, _) => Tick();
     }
 
-    // DEBUG verification hooks (CARGO_*). They let a headless run open straight onto a section, a selection or a
-    // hover, which Windows will not let a background process reach with synthesized input. The properties they
-    // start take them as initializers: an initializer sets the backing field without running the setter, so the
-    // change hooks stay quiet, as the constructor's field writes did before the properties became partial.
-    // Release never reads the environment.
-#if DEBUG
-    private static string? Hook(string name) => Environment.GetEnvironmentVariable(name);
-#else
-    private static string? Hook(string name) => null;
-#endif
+    // The properties a DEBUG hook (DebugHooks) starts take it as an initializer: an initializer sets the backing
+    // field without running the setter, so the change hooks stay quiet.
 
     private static string? StartSection() =>
         Hook("CARGO_START_SECTION") is { Length: > 0 } requested

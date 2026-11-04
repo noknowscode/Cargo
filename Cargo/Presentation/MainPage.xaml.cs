@@ -167,7 +167,7 @@ public sealed partial class MainPage : Page
     [System.Diagnostics.Conditional("DEBUG")]
     private void ScrollToStartOffset()
     {
-        if (!double.TryParse(Environment.GetEnvironmentVariable("CARGO_SCROLL"), out var offset) || offset <= 0)
+        if (!double.TryParse(DebugHooks.Hook("CARGO_SCROLL"), out var offset) || offset <= 0)
         {
             return;
         }

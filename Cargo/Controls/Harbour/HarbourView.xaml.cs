@@ -831,7 +831,7 @@ public sealed partial class HarbourView : UserControl
         }
 #if DEBUG
         // A verification run that asked for a preset (ApplyStartView) photographs it without the swing.
-        if (Environment.GetEnvironmentVariable("CARGO_HARBOUR_VIEW") is { Length: > 0 })
+        if (DebugHooks.Hook("CARGO_HARBOUR_VIEW") is { Length: > 0 })
         {
             return;
         }
@@ -846,7 +846,7 @@ public sealed partial class HarbourView : UserControl
     [System.Diagnostics.Conditional("DEBUG")]
     private void ApplyStartView()
     {
-        var view = Environment.GetEnvironmentVariable("CARGO_HARBOUR_VIEW");
+        var view = DebugHooks.Hook("CARGO_HARBOUR_VIEW");
         if (string.IsNullOrEmpty(view) || _scene is null)
         {
             return;

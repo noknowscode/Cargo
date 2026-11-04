@@ -196,6 +196,9 @@ headless run can photograph them:
 | `CARGO_HARBOUR_VIEW` | Harbour camera preset, no intro swing: `overview`, `sea`, `land`, `plan` |
 | `CARGO_ORBIT=1` | Spins the harbour camera without stopping, to measure drag-frame cost |
 | `CARGO_HOVER_BERTH` | Berth index 0–7 to show hovered, for the harbour highlight and its label |
+| `CARGO_X11_RENDERER=software` | Draws with Skia's CPU backend on X11 instead of Mesa's llvmpipe OpenGL (Xvfb runs: about a third of the CPU on Overview) |
+
+Every `CARGO_*` variable is read through `DebugHooks.Hook` (`Domain/DebugHooks.cs`), which reads nothing in Release.
 
 Startup failures are written to `startup.log` beside the executable — a desktop Uno app is a
 windowed process, so redirected stdout captures nothing.

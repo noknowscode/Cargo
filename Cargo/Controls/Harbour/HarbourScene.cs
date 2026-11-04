@@ -19,7 +19,7 @@ public sealed class HarbourScene : SKCanvasElement
     private static readonly TimeSpan IdleFrame = TimeSpan.FromMilliseconds(66);
 
 #if DEBUG
-    private static readonly bool DebugOrbit = Environment.GetEnvironmentVariable("CARGO_ORBIT") == "1";
+    private static readonly bool DebugOrbit = DebugHooks.Hook("CARGO_ORBIT") == "1";
 #endif
 
     private readonly HarbourPalette _palette = new();
