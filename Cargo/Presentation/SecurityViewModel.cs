@@ -146,6 +146,16 @@ public sealed partial class SecurityViewModel : ObservableObject
     // The inspection sheet's two actions. Each is logged with the time and then stands done: the button disables
     // and says what happened (an inspection is assigned or a re-weigh requested once)
 
+    /// <summary>"SECURITY · ISPS LEVEL 1 · 1 HOLD ACTIVE": the level and the holds from the data.</summary>
+    public string Eyebrow
+    {
+        get
+        {
+            var holds = PortData.Containers.Count(c => c.Security == "Hold");
+            return $"SECURITY · ISPS LEVEL {PortData.IspsLevel} · {holds} {(holds == 1 ? "HOLD" : "HOLDS")} ACTIVE";
+        }
+    }
+
     public string AssignLabel => State.InspectorAssigned ? "Inspector assigned" : "Assign inspector";
 
     public string ReweighLabel => State.ReweighRequested ? "Re-weigh requested" : "Request re-weigh";

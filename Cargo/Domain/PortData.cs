@@ -35,6 +35,12 @@ public static class PortData
         "M3 7h11v9H3zM14 10h4l3 3v3h-7M6 19a2 2 0 100-4 2 2 0 000 4M17 19a2 2 0 100-4 2 2 0 000 4"
     };
 
+    /// <summary>Containers on the terminal at 20:58, the Cargo masthead's figure.</summary>
+    public const int ContainersOnSite = 4812;
+
+    /// <summary>The port's ISPS security level (1 is normal operations).</summary>
+    public const int IspsLevel = 1;
+
     // ── Vessels in port ───────────────────────────────────────────────────────
 
     // IMO numbers are invented: a made-up series (1000007 to 1000045) with valid check digits, below the 5 million and

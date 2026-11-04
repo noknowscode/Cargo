@@ -25,7 +25,7 @@
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
       <StackPanel Spacing="{StaticResource Space12}">
-        <TextBlock Text="SECURITY · ISPS LEVEL 1 · 1 HOLD ACTIVE" Style="{StaticResource EyebrowText}" TextWrapping="Wrap" />
+        <TextBlock Text="{x:Bind ViewModel.Eyebrow}" Style="{StaticResource EyebrowText}" TextWrapping="Wrap" />
         <TextBlock Text="{x:Bind ViewModel.State.Navigation.SecurityTitle, Mode=OneWay}" Style="{StaticResource PageTitleText}" TextWrapping="Wrap" />
       </StackPanel>
       <!-- xaml-lint: allow card - segmented tab strip; the Simple theme ships no segmented TabBar style -->

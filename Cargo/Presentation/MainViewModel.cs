@@ -44,6 +44,14 @@ public sealed partial class MainViewModel : ObservableObject
             state.PropertyChanged += OnStateChanged;
             state.Navigation.PropertyChanged += OnStateChanged;
             state.Stage.PropertyChanged += OnStateChanged;
+            // The tooltips' countdowns and the yard's figure move with the clock; once a minute is enough
+            state.Ticked += (_, _) =>
+            {
+                if ((int)(state.NowHours * 60) != _builtMinute)
+                {
+                    BuildNav();
+                }
+            };
             routeNotifier.RouteChanged += (_, e) => dispatcher.TryEnqueue(() => OnRouteChanged(e));
         });
     }
@@ -130,8 +138,8 @@ public sealed partial class MainViewModel : ObservableObject
                 BuildNav();
                 _ = ShowSectionAsync(State.Navigation.Section);
                 break;
-            case nameof(PortState.NeedsDecision):
-                // Confirming or undoing the berth adds or clears the Berths dot
+            case nameof(PortState.NeedsDecision) or nameof(PortState.NeedsYouCount):
+                // A settled decision (the berth, the hold, the driver, the late orders) clears its section's dot
                 BuildNav();
                 break;
             case nameof(StageState.Layer):
@@ -193,17 +201,7 @@ public sealed partial class MainViewModel : ObservableObject
     /// </summary>
     private void BuildNav()
     {
-        // Sub-labels double as the tooltip: what each section is worth looking at for.
-        var nordicIn = (int)Math.Floor(Math.Max(0, 21 + 40 / 60d - State.NowHours) * 60);
-        var subs = new Dictionary<string, string>
-        {
-            ["overview"] = "3 alongside · 2 inbound · 2,146 moves today",
-            ["berths"] = $"Nordic Star in {nordicIn} min · Berth 06 frees 21:30",
-            ["cargo"] = $"4,812 on site · {State.Yard.Occupancy}% yard · 1 hold",
-            ["fleet"] = "6 underway · 2 running late",
-            ["security"] = "ISPS level 1 · 0 incidents"
-        };
-
+        _builtMinute = (int)(State.NowHours * 60);
         if (NavItems.Count == 0)
         {
             foreach (var section in PortData.Sections)
@@ -217,10 +215,73 @@ public sealed partial class MainViewModel : ObservableObject
             var current = State.Navigation.Section == item.Id;
             var needs = State.SectionNeedsYou(item.Id);
 
-            item.Tooltip = $"{item.Label} · {subs[item.Id]}";
+            item.Tooltip = $"{item.Label} · {SectionSummary(State, item.Id)}";
             item.AutomationName = needs ? $"{item.Label}, needs you" : item.Label;
             item.IsCurrent = current;
             item.NeedsYou = needs;
+        }
+    }
+
+    // The minute the header was last described for
+    private int _builtMinute = -1;
+
+    /// <summary>
+    /// A section's tooltip: what it is worth looking at for, read from the store as the screens read it (the
+    /// countdowns as the tags and rows count, the plan's berths, the yard as it works, the queue as it stands).
+    /// </summary>
+    public static string SectionSummary(PortState state, string section)
+    {
+        string Plural(int n, string one, string many) => n == 1 ? $"1 {one}" : $"{n} {many}";
+
+        switch (section)
+        {
+            case "overview":
+                var alongside = PortData.Vessels.Count(v => v.Status is VesselStatus.Docked or VesselStatus.Departing);
+                var inbound = PortData.Vessels.Count(v => v.Status is VesselStatus.Arriving or VesselStatus.AtAnchor);
+                return $"{alongside} alongside · {inbound} inbound · {ShiftTimeline.MovesToday(state.NowHours):N0} moves today";
+
+            case "berths":
+                var parts = new List<string>();
+                if (PortData.Vessels.Where(v => v.Status == VesselStatus.Arriving)
+                        .OrderBy(v => ShiftClock.ClockHours(v.Eta)).FirstOrDefault() is { } arrival)
+                {
+                    var eta = ShiftClock.ClockHours(arrival.Eta);
+                    parts.Add(state.MinutesUntil(eta) > 0 ? $"{arrival.Name} {state.Countdown(eta)}" : $"{arrival.Name} due");
+                }
+
+                if (PortData.Vessels.Where(v => v.Status is VesselStatus.Docked or VesselStatus.Departing)
+                        .Select(v => (Vessel: v, Etd: ShiftClock.ClockHours(v.Etd)))
+                        .Where(v => v.Etd > state.NowHours && state.BerthOf(v.Vessel.Id) is not null)
+                        .OrderBy(v => v.Etd).FirstOrDefault() is { Vessel: not null } departure)
+                {
+                    parts.Add($"Berth {state.BerthOf(departure.Vessel.Id)} frees {ShiftClock.Format(departure.Etd)}");
+                }
+
+                if (state.PendingDecision is { } pending)
+                {
+                    parts.Add($"berth {state.BerthOf(pending)} to confirm");
+                }
+
+                return parts.Count == 0 ? "No movements ahead" : string.Join(" · ", parts);
+
+            case "cargo":
+                var holds = PortData.Containers.Count(c => c.Security == "Hold");
+                return $"{PortData.ContainersOnSite:N0} on site · {state.Yard.Occupancy}% yard · {Plural(holds, "hold", "holds")}";
+
+            case "fleet":
+                var late = PortData.RiverFleet.Count(v => v.SlipMinutes > 0);
+                var toConfirm = PortData.RiverFleet.Count(state.AwaitsEta);
+                return $"{PortData.RiverFleet.Count} underway · {late} running late"
+                    + (toConfirm > 0 ? $" · {Plural(toConfirm, "ETA", "ETAs")} to confirm" : string.Empty);
+
+            case "security":
+                var incidents = PortData.SecurityRecords.FirstOrDefault(r => r.Label == "Security incidents")?.Count ?? "0";
+                var open = state.Decisions.Count(d => d.Kind is DecisionKind.InspectionHold or DecisionKind.DriverCheck);
+                return $"ISPS level {PortData.IspsLevel} · {incidents} {(incidents == "1" ? "incident" : "incidents")}"
+                    + (open > 0 ? $" · {Plural(open, "check", "checks")} waiting" : string.Empty);
+
+            default:
+                return string.Empty;
         }
     }
 

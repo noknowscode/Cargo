@@ -32,6 +32,14 @@ public sealed partial class CargoViewModel : ObservableObject
     [ObservableProperty]
     public partial string Occupancy { get; set; } = string.Empty;
 
+    /// <summary>Containers on the terminal, the masthead's first figure.</summary>
+    public string OnSite => PortData.ContainersOnSite.ToString("N0");
+
+    /// <summary>Containers on hold, and the word for them.</summary>
+    public string Holds => PortData.Containers.Count(c => c.Security == "Hold").ToString();
+
+    public string HoldsLabel => Holds == "1" ? "hold" : "holds";
+
     [ObservableProperty]
     public partial string Moves { get; set; } = string.Empty;
 

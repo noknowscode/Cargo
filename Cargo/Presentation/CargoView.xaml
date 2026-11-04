@@ -33,7 +33,7 @@
       <controls:FlowPanel Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" VerticalAlignment="Bottom"
                           Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}">
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-          <TextBlock Text="4,812" Style="{StaticResource MetricText}" />
+          <TextBlock Text="{x:Bind ViewModel.OnSite}" Style="{StaticResource MetricText}" />
           <TextBlock Text="on site" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
@@ -45,8 +45,8 @@
           <TextBlock Text="moves today" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-          <TextBlock Text="1" Style="{StaticResource MetricText}" Foreground="{ThemeResource OrangeInkBrush}" />
-          <TextBlock Text="hold" Style="{StaticResource MetricLabelText}" />
+          <TextBlock Text="{x:Bind ViewModel.Holds}" Style="{StaticResource MetricText}" Foreground="{ThemeResource OrangeInkBrush}" />
+          <TextBlock Text="{x:Bind ViewModel.HoldsLabel}" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
       </controls:FlowPanel>
     </Grid>
