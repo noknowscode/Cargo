@@ -72,11 +72,11 @@ public sealed partial class VesselDetailViewModel : ObservableObject
 
         (Big, BigSub) = vessel.Status switch
         {
-            VesselStatus.Arriving => (BerthFacts.MinutesTo(_state, ShiftClock.ClockHours(vessel.Eta)), $"ETA {BerthFacts.Clock(vessel.Eta)}"),
-            VesselStatus.AtAnchor => ("Unassigned", $"arrival window {BerthFacts.Clock(vessel.Eta)}"),
-            VesselStatus.Departing => (BerthFacts.Clock(vessel.Etd), "departure"),
-            _ when vessel.UnloadPercent is > 0 and < 100 => ($"{vessel.UnloadPercent}%", $"discharged · departs {BerthFacts.Clock(vessel.Etd)}"),
-            _ => ($"{vessel.LoadPercent}%", $"loaded · sails {BerthFacts.Clock(vessel.Etd)}")
+            VesselStatus.Arriving => (BerthFacts.MinutesTo(_state, ShiftClock.ClockHours(vessel.Eta)), $"ETA {ShiftClock.Display(vessel.Eta)}"),
+            VesselStatus.AtAnchor => ("Unassigned", $"arrival window {ShiftClock.Display(vessel.Eta)}"),
+            VesselStatus.Departing => (ShiftClock.Display(vessel.Etd), "departure"),
+            _ when vessel.UnloadPercent is > 0 and < 100 => ($"{vessel.UnloadPercent}%", $"discharged · departs {ShiftClock.Display(vessel.Etd)}"),
+            _ => ($"{vessel.LoadPercent}%", $"loaded · sails {ShiftClock.Display(vessel.Etd)}")
         };
 
         // Progress of the work the vessel is here for; nothing has started on an arrival
@@ -135,13 +135,13 @@ public sealed partial class VesselDetailViewModel : ObservableObject
         BigSub = "alongside depth";
         Note = restricted
             ? BerthFacts.Restriction(berth)
-            : next is null ? "No vessel booked in the next 36 h" : $"{next.Name} booked from {BerthFacts.Clock(next.Eta)}";
+            : next is null ? "No vessel booked in the next 36 h" : $"{next.Name} booked from {ShiftClock.Display(next.Eta)}";
         HasCargo = false;
         // An array, not a collection expression: one typed as IReadOnlyList has no concrete type under WinRT AOT (CsWinRT1032)
         SetFacts(new[]
         {
             Fact("Alongside depth", $"{berth.Depth:0.0} m"),
-            Fact("Next booking", next is null ? "None in 36 h" : BerthFacts.Clock(next.Eta))
+            Fact("Next booking", next is null ? "None in 36 h" : ShiftClock.Display(next.Eta))
         });
     }
 }

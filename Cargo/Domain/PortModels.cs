@@ -169,10 +169,8 @@ public sealed record CargoItem(string Name, string TintToken, bool Flagged = fal
 public sealed record DutyOperator(string Name, string ShortName, string Initials, string Role, string Badge,
     double ClockedIn, double ShiftEnd)
 {
-    public string ClockedInText => Clock(ClockedIn);
-    public string ShiftEndText => Clock(ShiftEnd);
-
-    private static string Clock(double hours) => TimeSpan.FromHours(hours % 24).ToString(@"hh\:mm");
+    public string ClockedInText => ShiftClock.Format(ClockedIn);
+    public string ShiftEndText => ShiftClock.Format(ShiftEnd);
 }
 
 public sealed record ChatLine(string Who, string Text, double Hour);

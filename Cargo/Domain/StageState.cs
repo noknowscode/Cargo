@@ -179,9 +179,9 @@ public sealed partial class StageState : ObservableObject
             return;
         }
 
-        var berth = PortData.Berths.Select(b => b.Number).ToList().IndexOf(key);
-        HoveredVessel = berth < 0 ? key : null;
-        HoveredBerth = berth < 0 ? null : berth;
+        var berth = PortData.BerthIndex(key);
+        HoveredVessel = berth is null ? key : null;
+        HoveredBerth = berth;
     }
 
     private string? HoverKey => HoveredVessel ?? (HoveredBerth is { } i ? PortData.Berths[i].Number : null);

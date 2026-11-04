@@ -298,7 +298,7 @@ public sealed partial class PortState : ObservableObject
     public string? Confirm(string vesselId)
     {
         var vessel = PortData.Vessel(vesselId);
-        if (PendingDecision != vesselId || BerthIndex(BerthOf(vesselId)) is not { } index)
+        if (PendingDecision != vesselId || PortData.BerthIndex(BerthOf(vesselId)) is not { } index)
         {
             return $"{vessel.Name} has no berth waiting to be confirmed.";
         }
@@ -322,9 +322,6 @@ public sealed partial class PortState : ObservableObject
             OnPlanChanged();
         }
     }
-
-    private static int? BerthIndex(string? number) =>
-        PortData.Berths.Select(b => b.Number).ToList().IndexOf(number ?? string.Empty) is >= 0 and var index ? index : null;
 
     // The berth decision the queue was last built for: the vessel waiting and the berth she waits on
     private (string? Vessel, string? Berth) _queuedBerthDecision;

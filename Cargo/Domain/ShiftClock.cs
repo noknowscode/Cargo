@@ -29,6 +29,12 @@ public static class ShiftClock
             : double.NaN;
     }
 
+    /// <summary>
+    /// A stamp from the data as the screens write it: today's drops the day ("Today 21:40" is "21:40"), another day
+    /// keeps its name ("Thu 02:30").
+    /// </summary>
+    public static string Display(string stamp) => stamp.Replace("Today ", string.Empty, StringComparison.Ordinal);
+
     /// <summary>"21:15": the hour of the day, wrapped past midnight.</summary>
     public static string Format(double hours)
     {

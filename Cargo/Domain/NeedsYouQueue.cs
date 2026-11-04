@@ -221,7 +221,7 @@ public sealed partial class NeedsYouQueue : ObservableObject
                     d.When = $"waiting {Math.Max(0, waiting)} min";
                     break;
                 case DecisionKind.BerthConfirm when d.VesselId is { } vessel:
-                    d.When = $"arrives {PortData.Vessel(vessel).Eta[^5..]}";
+                    d.When = $"arrives {ShiftClock.Display(PortData.Vessel(vessel).Eta)}";
                     break;
             }
         }

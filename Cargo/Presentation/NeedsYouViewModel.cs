@@ -122,7 +122,7 @@ public sealed partial class NeedsYouViewModel : ObservableObject
             var vessel = PortData.Vessel(confirmed);
             var berth = _state.BerthOf(confirmed);
             Title = $"Berth {berth} confirmed for {vessel.Name}";
-            Meta = $"Confirmed {_confirmedAt} · arrives {BerthFacts.Clock(vessel.Eta)}";
+            Meta = $"Confirmed {_confirmedAt} · arrives {ShiftClock.Display(vessel.Eta)}";
         }
         else if (pending is { } id)
         {
@@ -130,7 +130,7 @@ public sealed partial class NeedsYouViewModel : ObservableObject
             var berthNumber = _state.BerthOf(id);
             var berth = PortData.Berths.First(b => b.Number == berthNumber);
             Title = $"{vessel.Name} needs berth {berth.Number} confirmed";
-            Meta = _error ?? $"Arrives {BerthFacts.Clock(vessel.Eta)} · under-keel {BerthFacts.UnderKeel(vessel, berth):0.0} m · pilot aboard";
+            Meta = _error ?? $"Arrives {ShiftClock.Display(vessel.Eta)} · under-keel {BerthFacts.UnderKeel(vessel, berth):0.0} m · pilot aboard";
             ConfirmLabel = IsBusy ? "Confirming" : $"Confirm berth {berth.Number}";
         }
         else

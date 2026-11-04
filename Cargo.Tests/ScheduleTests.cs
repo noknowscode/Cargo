@@ -65,4 +65,23 @@ public class ScheduleTests
         Assert.That(state.Countdown(nordic), Is.EqualTo("now"));
         Assert.That(state.MinutesUntil(nordic), Is.EqualTo(0));
     }
+
+    [TestCase("Today 21:40", "21:40")]
+    [TestCase("Thu 02:30", "Thu 02:30")]
+    [TestCase("21:40", "21:40")]
+    public void A_stamp_reads_as_the_screens_write_it(string stamp, string shown) =>
+        Assert.That(ShiftClock.Display(stamp), Is.EqualTo(shown));
+
+    [TestCase("01", 0)]
+    [TestCase("07", 6)]
+    [TestCase("08", 7)]
+    [TestCase("09", null)]
+    [TestCase(null, null)]
+    [TestCase("nordic", null)]
+    public void A_berth_number_finds_its_place_on_the_quay(string? number, int? index) =>
+        Assert.That(PortData.BerthIndex(number), Is.EqualTo(index));
+
+    [Test]
+    public void The_operator_shift_reads_in_clock_time() =>
+        Assert.That((PortData.Operator.ClockedInText, PortData.Operator.ShiftEndText), Is.EqualTo(("18:00", "06:00")));
 }

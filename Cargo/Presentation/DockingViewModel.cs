@@ -121,8 +121,7 @@ public sealed partial class DockingViewModel : ObservableObject
     [RelayCommand]
     private void AssignTo(string berth)
     {
-        var index = PortData.Berths.Select(b => b.Number).ToList().IndexOf(berth);
-        if (State.DockSelection is { } id && index >= 0)
+        if (State.DockSelection is { } id && PortData.BerthIndex(berth) is { } index)
         {
             Hint = State.Assign(id, index) ?? DefaultHint;
         }

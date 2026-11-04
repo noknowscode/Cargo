@@ -560,13 +560,11 @@ public sealed partial class HarbourView : UserControl
         VesselStatus.Docked when v.UnloadPercent is > 0 and < 100 => $"B{berth} · discharging",
         VesselStatus.Docked => $"B{berth} · loading",
         VesselStatus.Departing => $"B{berth} · departing",
-        VesselStatus.Arriving when berth is null => $"no berth · arriving {Clock(v.Eta)}",
-        VesselStatus.Arriving => $"B{berth} · arriving {Clock(v.Eta)}",
+        VesselStatus.Arriving when berth is null => $"no berth · arriving {ShiftClock.Display(v.Eta)}",
+        VesselStatus.Arriving => $"B{berth} · arriving {ShiftClock.Display(v.Eta)}",
         _ when berth is not null => $"anchored · B{berth} assigned",
         _ => "anchored · unassigned"
     };
-
-    private static string Clock(string when) => when[^5..];
 
     /// <summary>"in 41 min", "in 1 h 55": minutes only, so the dark tag changes once a minute.</summary>
     private void TickTags()

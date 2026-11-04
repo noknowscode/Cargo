@@ -255,7 +255,7 @@ public sealed partial class BerthMap : SceneHost
         foreach (var vessel in PortData.Vessels)
         {
             var berth = _state.BerthOf(vessel.Id);
-            var index = berth is null ? -1 : PortData.Berths.ToList().FindIndex(b => b.Number == berth);
+            var index = PortData.BerthIndex(berth) ?? -1;
             var window = PortData.Schedule[vessel.Id];
             var present = window.Start <= planHour && window.End > planHour;
             var upcoming = window.Start > planHour;

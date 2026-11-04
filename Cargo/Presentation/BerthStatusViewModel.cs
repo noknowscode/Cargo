@@ -145,7 +145,7 @@ public sealed partial class BerthStatusViewModel : ObservableObject
         row.StateLabel = "AT ANCHOR";
         row.Name = vessel.Name;
         row.Meta = BerthFacts.FitsLine(_state, vessel);
-        row.When = BerthFacts.Clock(vessel.Eta);
+        row.When = ShiftClock.Display(vessel.Eta);
         row.AccessibleName = $"Anchorage, {vessel.Name}, at anchor, arrival window {row.When}, {row.Meta}";
         row.Kind = BerthRowKind.Vessel;
         Paint(row);
@@ -177,9 +177,6 @@ public enum BerthRowKind { Vessel, Needs, Free, Restricted }
 /// <summary>The wording the status list, the vessel detail and the needs-you bar share.</summary>
 internal static class BerthFacts
 {
-    /// <summary>"Today 21:40" → "21:40"; other days keep their name.</summary>
-    public static string Clock(string stamp) => stamp.Replace("Today ", string.Empty);
-
     /// <summary>Whole minutes to go, rounded up so the figure changes on the minute: "42 min", then "Due".</summary>
     public static string MinutesTo(PortState state, double hour) =>
         state.MinutesUntil(hour) is > 0 and var minutes ? $"{minutes} min" : "Due";
@@ -197,8 +194,8 @@ internal static class BerthFacts
     public static string When(PortState state, Vessel vessel) => vessel.Status switch
     {
         VesselStatus.Arriving => MinutesTo(state, ShiftClock.ClockHours(vessel.Eta)),
-        VesselStatus.AtAnchor => Clock(vessel.Eta),
-        _ => Clock(vessel.Etd)
+        VesselStatus.AtAnchor => ShiftClock.Display(vessel.Eta),
+        _ => ShiftClock.Display(vessel.Etd)
     };
 
     /// <summary>The first sentence of the ops note, which is what a row has room for.</summary>

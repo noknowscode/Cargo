@@ -129,6 +129,20 @@ public static class PortData
         new BerthDef("08", BerthState.Available, null, 13.0)
     };
 
+    /// <summary>Where a berth number ("07") sits in <see cref="Berths"/>; null for no berth or one the quay does not have.</summary>
+    public static int? BerthIndex(string? number)
+    {
+        for (var i = 0; i < Berths.Count; i++)
+        {
+            if (Berths[i].Number == number)
+            {
+                return i;
+            }
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Occupation window per vessel, in hours on the app clock (may run past 24): from her ETA to her ETD, read
     /// through <see cref="ShiftClock.ClockHours"/>, so the plan, the conflict check and the berth list agree with the
