@@ -146,7 +146,8 @@
       <!-- Layer switcher: centred on the HUD row from 1280; below it the centred switcher (370 px) would run into the
            Key and scale/zoom group, so it stacks above the camera menu (16 + 44 + 4 px up). 44 px tall below 1000 -->
       <!-- WORKAROUND(ShadowContainer keeps its paint when only its offset changes): the responsive
-           alignment and margin live on this wrapper, so the ShadowContainer never moves within its parent -->
+           alignment and margin live on this wrapper, so the ShadowContainer never moves within its parent.
+           Still needed on Uno.Sdk 7.0.0-dev.115 / Toolkit 11.0.0-dev.157 (repro: docs/evidence/2026-10-01-shadowcontainer-offset-paint.md) -->
       <Grid Grid.Row="1" VerticalAlignment="Bottom"
             HorizontalAlignment="{utu:Responsive Narrowest=Left, Wide=Center}"
             Margin="{utu:Responsive Narrowest='16,0,0,60', Narrow='40,0,0,64', Wide={StaticResource GapBottom16}}"
