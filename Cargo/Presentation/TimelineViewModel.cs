@@ -48,6 +48,9 @@ public sealed partial class TimelineViewModel : ObservableObject
     private readonly PortState _state;
     private readonly LivelinePoint[] _tide;
 
+    // Where NOW splits the tide samples; the lane's two series are new arrays only when it moves (every 15 min)
+    private int _tideSplit = -1;
+
     public TimelineViewModel(PortState state)
     {
         _state = state;
@@ -195,8 +198,12 @@ public sealed partial class TimelineViewModel : ObservableObject
         TideLerp = Motion.Reduced ? 1 : .04;
         var split = Array.FindLastIndex(_tide, p => p.Time <= At(now)) + 1;
         NowTime = At(now);
-        TidePast = _tide[..split];
-        TideAhead = _tide[split..];
+        if (split != _tideSplit)
+        {
+            _tideSplit = split;
+            TidePast = _tide[..split];
+            TideAhead = _tide[split..];
+        }
         TideMarkers = new[]
         {
             new LivelineMarker(At(highWater), Math.Round(PortData.TideAt(highWater), 1))

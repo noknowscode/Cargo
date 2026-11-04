@@ -3,7 +3,7 @@ using SkiaSharp;
 namespace Cargo.Controls.Harbour;
 
 /// <summary>What the scene needs to know about app state for one frame.</summary>
-public sealed record HarbourFrameState(
+public readonly record struct HarbourFrameState(
     string? SelectedVessel,
     string? HoveredVessel,
     int? HoveredBerth,
@@ -45,15 +45,17 @@ public sealed class HarbourRenderer : IDisposable
     private readonly SKPathEffect _dashFairway = SKPathEffect.CreateDash(new[] { 10f, 6f }, 0);
     private readonly SKPathEffect _dashTile = SKPathEffect.CreateDash(new[] { 5f, 4f }, 0);
 
-    private SKPicture? _still;
-    private string _stillKey = string.Empty;
+    // What the still scene was drawn for; null forces a new recording. A value, so comparing it every frame allocates nothing.
+    private readonly record struct StillKey(HarbourCameraPose Pose, float Width, float Height, double TopInset, string Layer);
 
-    // The still scene with its tilt-shift, baked once the camera settles. Replaying the picture
-    // twice and blurring the full frame cost well over a core at 30 fps; a settled frame is now
-    // one image draw plus the live layer.
+    private SKPicture? _still;
+    private StillKey? _stillKey;
+
+    // The still scene with its tilt-shift, baked once the camera settles: replaying the picture twice and blurring
+    // the full frame costs well over a core at 30 fps, and a settled frame is one image draw plus the live layer.
     private SKImage? _baked;
-    private string _bakedKey = string.Empty;
-    private string _lastKey = string.Empty;
+    private StillKey? _bakedKey;
+    private StillKey? _lastKey;
     private SKShader? _maskShader;
     private SKShader? _hazeShader;
     private readonly SKShader?[] _fadeShaders = new SKShader?[4];
@@ -100,8 +102,8 @@ public sealed class HarbourRenderer : IDisposable
     /// <summary>Forces the still scene to be recorded again on the next frame.</summary>
     public void Invalidate()
     {
-        _stillKey = string.Empty;
-        _bakedKey = string.Empty;
+        _stillKey = null;
+        _bakedKey = null;
     }
 
     public void Render(SKCanvas canvas, float width, float height, double seconds, HarbourFrameState state)
@@ -113,7 +115,7 @@ public sealed class HarbourRenderer : IDisposable
 
         _camera.Update(width, height);
 
-        var key = $"{_camera.Pose}|{width}|{height}|{_camera.TopInset}|{state.Layer}";
+        var key = new StillKey(_camera.Pose, width, height, _camera.TopInset, state.Layer);
         if (key != _stillKey || _still is null)
         {
             _stillKey = key;
@@ -153,7 +155,7 @@ public sealed class HarbourRenderer : IDisposable
     /// Renders the sharp still plus tilt-shift into an image at device resolution, on the same
     /// GPU context as the window when there is one, so drawing it back is a texture blit.
     /// </summary>
-    private void Bake(SKCanvas target, float width, float height, string key)
+    private void Bake(SKCanvas target, float width, float height, StillKey key)
     {
         var scale = target.TotalMatrix;
         var sx = Math.Max(1f, Math.Abs(scale.ScaleX));
@@ -834,13 +836,11 @@ public sealed class HarbourRenderer : IDisposable
 
         // Everything outside the slice fills solid too, so nothing shows past a fade mid-animation
         var (top, bottom, topReach, reach) = EdgeFades(height);
-        var rects = new[]
-        {
-            new SKRect(0, 0, width, top + topReach),
-            new SKRect(0, bottom - reach, width, height),
-            new SKRect(0, 0, width * .05f, height),
-            new SKRect(width * .95f, 0, width, height)
-        };
+        Span<SKRect> rects = stackalloc SKRect[4];
+        rects[0] = new SKRect(0, 0, width, top + topReach);
+        rects[1] = new SKRect(0, bottom - reach, width, height);
+        rects[2] = new SKRect(0, 0, width * .05f, height);
+        rects[3] = new SKRect(width * .95f, 0, width, height);
         for (var i = 0; i < 4; i++)
         {
             if (_fadeShaders[i] is { } shader)
