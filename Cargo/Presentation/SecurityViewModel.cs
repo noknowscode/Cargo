@@ -30,6 +30,16 @@ public sealed class PersonCard
 
 public sealed class VehicleCard
 {
+    public required string Id { get; init; }
+
+    /// <summary>The truck waits at the barrier on its driver's ID: the card offers Verify driver.</summary>
+    public required bool AwaitsDriver { get; init; }
+
+    public required ICommand Verify { get; init; }
+
+    /// <summary>The card for a screen reader: the truck, its gate and its authorization.</summary>
+    public required string AccessibleName { get; init; }
+
     /// <summary>The container's livery, as its palette key (paint, the same in both themes).</summary>
     public required string Tint { get; init; }
     public required IReadOnlyList<Fact> Facts { get; init; }
@@ -136,39 +146,49 @@ public sealed partial class SecurityViewModel : ObservableObject
     // The inspection sheet's two actions. Each is logged with the time and then stands done: the button disables
     // and says what happened (an inspection is assigned or a re-weigh requested once)
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AssignInspectorCommand))]
-    public partial bool InspectorAssigned { get; set; }
+    public string AssignLabel => State.InspectorAssigned ? "Inspector assigned" : "Assign inspector";
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(RequestReweighCommand))]
-    public partial bool ReweighRequested { get; set; }
+    public string ReweighLabel => State.ReweighRequested ? "Re-weigh requested" : "Request re-weigh";
 
-    public string AssignLabel => InspectorAssigned ? "Inspector assigned" : "Assign inspector";
-
-    public string ReweighLabel => ReweighRequested ? "Re-weigh requested" : "Request re-weigh";
-
-    partial void OnInspectorAssignedChanged(bool value) => OnPropertyChanged(nameof(AssignLabel));
-
-    partial void OnReweighRequestedChanged(bool value) => OnPropertyChanged(nameof(ReweighLabel));
-
+    /// <summary>Assigns the inspector, which settles the hold's row in the needs-you queue (the hold stays until 21:15).</summary>
     [RelayCommand(CanExecute = nameof(CanAssignInspector))]
     private void AssignInspector()
     {
-        InspectorAssigned = true;
-        Log("→", "Inspector assigned: Priya Nair (customs), lane 2, for the 21:15 inspection");
+        if (State.AssignInspector())
+        {
+            Log("→", "Inspector assigned: Priya Nair (customs), lane 2, for the 21:15 inspection");
+        }
+
+        OnPropertyChanged(nameof(AssignLabel));
+        AssignInspectorCommand.NotifyCanExecuteChanged();
     }
 
-    private bool CanAssignInspector() => !InspectorAssigned;
+    private bool CanAssignInspector() => !State.InspectorAssigned;
 
     [RelayCommand(CanExecute = nameof(CanRequestReweigh))]
     private void RequestReweigh()
     {
-        ReweighRequested = true;
-        Log("→", "Re-weigh requested on weighbridge 1 · driver of TRK 3391 notified");
+        if (State.RequestReweigh())
+        {
+            Log("→", "Re-weigh requested on weighbridge 1 · driver of TRK 3391 notified");
+        }
+
+        OnPropertyChanged(nameof(ReweighLabel));
+        RequestReweighCommand.NotifyCanExecuteChanged();
     }
 
-    private bool CanRequestReweigh() => !ReweighRequested;
+    private bool CanRequestReweigh() => !State.ReweighRequested;
+
+    /// <summary>Verifies the driver of a truck at the barrier, which settles the driver row in the needs-you queue.</summary>
+    [RelayCommand]
+    private void VerifyDriver(string truckId)
+    {
+        if (State.VerifyDriver(truckId))
+        {
+            Log("✓", $"Driver ID verified at the barrier for {truckId} · gate opened");
+            BuildVehicles();
+        }
+    }
 
     private void Log(string mark, string text) =>
         InspectionLog = InspectionLog
@@ -282,16 +302,25 @@ public sealed partial class SecurityViewModel : ObservableObject
             .Select(l => new CheckRow { Mark = l.Mark, Label = l.Text, Time = l.Time, Tone = l.Tone == "OrangeColor" ? "OrangeInkBrush" : l.Tone })
             .ToList();
 
+        BuildVehicles();
+    }
+
+    private void BuildVehicles()
+    {
         Vehicles = PortData.Vehicles.Select(v => new VehicleCard
         {
+            Id = v.Id,
             Tint = v.TintToken,
+            AwaitsDriver = State.AwaitsDriver(v),
+            Verify = VerifyDriverCommand,
+            AccessibleName = $"{v.Id}, {v.Gate}, {State.AuthorizationOf(v)}",
             Facts = new[]
             {
                 new Fact { Key = "Truck", Value = v.Id },
                 new Fact { Key = "Driver", Value = v.Driver },
                 new Fact { Key = "Container", Value = v.Container },
                 new Fact { Key = "Gate", Value = v.Gate },
-                new Fact { Key = "Authorization", Value = v.Authorization },
+                new Fact { Key = "Authorization", Value = State.AuthorizationOf(v) },
                 new Fact { Key = "Entry", Value = v.Entry }
             }
         }).ToList();

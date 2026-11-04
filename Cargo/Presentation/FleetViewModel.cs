@@ -63,9 +63,14 @@ public sealed class ChatBubble
 
 public sealed class QuickMessage
 {
+    /// <summary>"eta", "hold" or "level": what the message is for.</summary>
+    public required string Id { get; init; }
     public required string Label { get; init; }
     public required string Text { get; init; }
     public required ICommand Send { get; init; }
+
+    /// <summary>The button for a screen reader: what it sends, and to whom.</summary>
+    public required string AccessibleName { get; init; }
 }
 
 /// <summary>
@@ -151,8 +156,23 @@ public sealed partial class FleetViewModel : ObservableObject
     [RelayCommand]
     private void SendDraft() => SendToSelected(State.Chat.Draft);
 
+    /// <summary>
+    /// Sends a quick message. "Confirm new ETA" to a late crew also handles her late order in the needs-you queue
+    /// (<see cref="PortState.ConfirmRevisedEta"/>).
+    /// </summary>
     [RelayCommand]
-    private void SendQuick(string text) => SendToSelected(text);
+    private void SendQuick(string id)
+    {
+        if (id == "eta")
+        {
+            State.ConfirmRevisedEta(Selected.Id);
+            Refresh();
+        }
+        else if (QuickMessages.FirstOrDefault(q => q.Id == id) is { } message)
+        {
+            SendToSelected(message.Text);
+        }
+    }
 
     private void SendToSelected(string text)
     {
@@ -281,16 +301,18 @@ public sealed partial class FleetViewModel : ObservableObject
         ThreadEmptyText = $"No messages with {selected.Name} this shift. Send one below or pick a quick message.";
 
         QuickMessages.Clear();
-        foreach (var (label, text) in new[]
+        foreach (var (id, label, text) in new[]
                  {
-                     ("Confirm new ETA",
-                         $"Please confirm revised ETA {ShiftClock.Format(selected.Eta + selected.SlipMinutes / 60d)} " +
-                         "to the consignee. Any further slip, call dispatch on VHF 12."),
-                     ("Hold at next lock", $"Hold at {selected.Next} until further notice — traffic ahead. Acknowledge."),
-                     ("Report water level", $"Report observed water level and any squat at your position, km {selected.Km:0.0}.")
+                     ("eta", "Confirm new ETA", PortState.RevisedEtaMessage(selected)),
+                     ("hold", "Hold at next lock", $"Hold at {selected.Next} until further notice — traffic ahead. Acknowledge."),
+                     ("level", "Report water level", $"Report observed water level and any squat at your position, km {selected.Km:0.0}.")
                  })
         {
-            QuickMessages.Add(new QuickMessage { Label = label, Text = text, Send = SendQuickCommand });
+            QuickMessages.Add(new QuickMessage
+            {
+                Id = id, Label = label, Text = text, Send = SendQuickCommand,
+                AccessibleName = $"{label}: send to {selected.Name}" + (id == "eta" && State.AwaitsEta(selected) ? ", handles her late order" : string.Empty)
+            });
         }
     }
 }

@@ -61,8 +61,9 @@ public class DecisionTests
             DecisionKind.InspectionHold, DecisionKind.DriverCheck, DecisionKind.LateOrders, DecisionKind.BerthConfirm
         }));
         Assert.That(state.NeedsYouCount, Is.EqualTo(4));
-        Assert.That(new[] { "berths", "cargo", "security" }.All(state.SectionNeedsYou), Is.True);
-        Assert.That(state.SectionNeedsYou("fleet"), Is.False);
+        // The late orders are handled on Waterways, where View orders lands
+        Assert.That(new[] { "berths", "fleet", "security" }.All(state.SectionNeedsYou), Is.True);
+        Assert.That(state.SectionNeedsYou("cargo"), Is.False);
         AssertAgree(state, new NeedsYouViewModel(state), "nordic", "07");
     }
 

@@ -308,8 +308,8 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:QuickMessage">
-                <Button Style="{StaticResource GhostButton}" Command="{x:Bind Send}" CommandParameter="{x:Bind Text}"
-                        Content="{x:Bind Label}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                <Button Style="{StaticResource GhostButton}" Command="{x:Bind Send}" CommandParameter="{x:Bind Id}"
+                        Content="{x:Bind Label}" AutomationProperties.Name="{x:Bind AccessibleName}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                         MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=0}"
                         Padding="{StaticResource Inset12x8}" CornerRadius="{StaticResource RadiusControl}" />
               </DataTemplate>

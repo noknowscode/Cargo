@@ -284,14 +284,14 @@ public sealed partial class PortState : ObservableObject
     public bool NeedsDecision => PendingDecision is not null;
 
     /// <summary>
-    /// Whether a section holds something waiting on the dispatcher, for the header's needs-you
-    /// dots: Berths the unconfirmed arrival, Cargo the late orders, Security the inspection hold
-    /// and the driver check.
+    /// Whether a section holds something waiting on the dispatcher, for the header's needs-you dots: Berths the
+    /// unconfirmed arrival, Waterways the late orders (their ETAs are confirmed with the crews there), Security the
+    /// inspection hold and the driver check.
     /// </summary>
     public bool SectionNeedsYou(string section) => Decisions.Any(d => d.Kind switch
     {
         DecisionKind.BerthConfirm => section == "berths",
-        DecisionKind.LateOrders => section == "cargo",
+        DecisionKind.LateOrders => section == "fleet",
         _ => section == "security"
     });
 
@@ -299,6 +299,95 @@ public sealed partial class PortState : ObservableObject
     public int NeedsYouCount => Decisions.Count;
 
     // ── Needs-you queue ─────────────────────────────────────────────────────
+
+    // What the dispatcher has done about the rows other than the berth: each one settles its row
+    private readonly HashSet<string> _verifiedDrivers = new();
+    private readonly HashSet<string> _etaConfirmed = new();
+
+    /// <summary>The held container's 21:15 inspection has an inspector: the hold's row is settled (the hold stays until the inspection).</summary>
+    [ObservableProperty]
+    public partial bool InspectorAssigned { get; set; }
+
+    /// <summary>The held container's re-weigh is booked on weighbridge 1.</summary>
+    [ObservableProperty]
+    public partial bool ReweighRequested { get; set; }
+
+    /// <summary>Assigns the inspector to the held container's inspection, which settles the hold's row. False when already done.</summary>
+    public bool AssignInspector()
+    {
+        if (InspectorAssigned)
+        {
+            return false;
+        }
+
+        InspectorAssigned = true;
+        Settled();
+        return true;
+    }
+
+    /// <summary>Books the held container's re-weigh. False when already booked.</summary>
+    public bool RequestReweigh()
+    {
+        if (ReweighRequested)
+        {
+            return false;
+        }
+
+        ReweighRequested = true;
+        _signals.Structure();
+        return true;
+    }
+
+    /// <summary>A truck at the barrier still waiting on its driver's ID check.</summary>
+    public bool AwaitsDriver(VehicleDef vehicle) =>
+        vehicle.Authorization == "Awaiting driver ID" && !_verifiedDrivers.Contains(vehicle.Id);
+
+    /// <summary>The truck's authorization as it stands: verified at the gate once the dispatcher checked the driver.</summary>
+    public string AuthorizationOf(VehicleDef vehicle) =>
+        _verifiedDrivers.Contains(vehicle.Id) ? "Authorized · driver ID verified" : vehicle.Authorization;
+
+    /// <summary>Verifies the driver of a truck waiting at the barrier, which settles the driver row. False when there is nothing to verify.</summary>
+    public bool VerifyDriver(string truckId)
+    {
+        if (PortData.Vehicles.FirstOrDefault(v => v.Id == truckId) is not { } truck || !AwaitsDriver(truck))
+        {
+            return false;
+        }
+
+        _verifiedDrivers.Add(truckId);
+        Settled();
+        return true;
+    }
+
+    /// <summary>A late river order whose revised ETA has not been confirmed with her crew yet.</summary>
+    public bool AwaitsEta(RiverVessel vessel) => vessel.SlipMinutes > 0 && !_etaConfirmed.Contains(vessel.Id);
+
+    /// <summary>The message that asks a late crew to confirm their revised ETA to the consignee.</summary>
+    public static string RevisedEtaMessage(RiverVessel vessel) =>
+        $"Please confirm revised ETA {ShiftClock.Format(vessel.Eta + vessel.SlipMinutes / 60d)} " +
+        "to the consignee. Any further slip, call dispatch on VHF 12.";
+
+    /// <summary>
+    /// Sends the late crew the revised-ETA message; the order counts as handled, so the late-orders row drops it (and
+    /// leaves when both are handled). A vessel on time is just sent the message.
+    /// </summary>
+    public void ConfirmRevisedEta(string vesselId)
+    {
+        var vessel = PortData.RiverFleet.First(v => v.Id == vesselId);
+        Chat.Send(vesselId, RevisedEtaMessage(vessel));
+        if (AwaitsEta(vessel))
+        {
+            _etaConfirmed.Add(vesselId);
+            Settled();
+        }
+    }
+
+    /// <summary>A row other than the berth's was settled: the queue, the count, the dots and the log's chips follow.</summary>
+    private void Settled()
+    {
+        RebuildDecisions();
+        _signals.Structure();
+    }
 
     /// <summary>The physical inspection on the held container is booked for 21:15.</summary>
     private const double InspectionDue = 21.25;
@@ -315,7 +404,7 @@ public sealed partial class PortState : ObservableObject
         Decisions.Clear();
         _queuedBerthDecision = BerthDecision();
 
-        if (PortData.Containers.FirstOrDefault(c => c.Security == "Hold") is { } held)
+        if (!InspectorAssigned && PortData.Containers.FirstOrDefault(c => c.Security == "Hold") is { } held)
         {
             Decisions.Add(new Decision
             {
@@ -325,7 +414,7 @@ public sealed partial class PortState : ObservableObject
             });
         }
 
-        if (PortData.Vehicles.FirstOrDefault(v => v.Authorization == "Awaiting driver ID") is { } truck)
+        if (PortData.Vehicles.FirstOrDefault(AwaitsDriver) is { } truck)
         {
             Decisions.Add(new Decision
             {
@@ -335,7 +424,7 @@ public sealed partial class PortState : ObservableObject
             });
         }
 
-        var late = PortData.RiverFleet.Count(v => v.SlipMinutes > 0);
+        var late = PortData.RiverFleet.Count(AwaitsEta);
         if (late > 0)
         {
             Decisions.Add(new Decision
@@ -375,7 +464,7 @@ public sealed partial class PortState : ObservableObject
                     d.When = due < 0 ? $"{-due} min late" : $"in {due} min";
                     break;
                 case DecisionKind.DriverCheck:
-                    var since = ShiftClock.ClockHours(PortData.Vehicles.First(v => v.Authorization == "Awaiting driver ID").Entry);
+                    var since = ShiftClock.ClockHours(PortData.Vehicles.First(v => v.Id == d.Subject).Entry);
                     var waiting = double.IsNaN(since) ? 0 : (int)Math.Round((NowHours - since) * 60);
                     d.IsLate = true;
                     d.When = $"waiting {Math.Max(0, waiting)} min";
