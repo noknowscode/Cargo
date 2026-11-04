@@ -10,8 +10,8 @@ public sealed partial class OverviewViewModel : ObservableObject
     {
         State = state;
 
-        // The router builds models off the UI thread; the rows carry brushes and images,
-        // which must be created on it.
+        // The router builds models off the UI thread; the sub-models are bound to the views and follow the store's
+        // events there, so they are made on it.
         dispatcher.TryEnqueue(() =>
         {
             Timeline = new TimelineViewModel(state);

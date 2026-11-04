@@ -1,6 +1,4 @@
-using Cargo.Controls;
 using Liveline.Models;
-using SkiaSharp;
 
 namespace Cargo.Presentation;
 
@@ -11,6 +9,13 @@ public sealed record TimelineFrame(
     IReadOnlyList<(double Hour, double Value)> Moves,
     IReadOnlyList<(double Hour, double In, double Out)> Cargo,
     (double Hour, double Value) MovesPeak);
+
+/// <summary>
+/// The tide lane's two marks: high water (its time, level and label) and the level now. The view draws them as
+/// Liveline markers in the theme's colours.
+/// </summary>
+public sealed record TideMarks(DateTimeOffset HighWater, double HighWaterLevel, string HighWaterLabel,
+    DateTimeOffset Now, double NowLevel, string NowLabel);
 
 /// <summary>One hour of the table view: the non-visual alternative to the chart.</summary>
 public sealed partial class TimelineRow : ObservableObject
@@ -67,10 +72,6 @@ public sealed partial class TimelineViewModel : ObservableObject
 
         ShowChart();
         Refresh();
-        LoadFonts();
-
-        // The tide markers carry resolved colours (Liveline paints them), so a theme change refreshes them
-        Tokens.ThemeChanged += (_, _) => Refresh();
     }
 
     // ── Chart / Table ───────────────────────────────────────────────────
@@ -91,23 +92,6 @@ public sealed partial class TimelineViewModel : ObservableObject
     {
         ViewIndex = table ? 1 : 0;
         IsTable = table;
-    }
-
-    // ── Tide lane typefaces ─────────────────────────────────────────────
-
-    private SKTypeface? _mono;
-
-    /// <summary>The tide lane's label face (the "now" level); the HW label takes the mono face.</summary>
-    [ObservableProperty] public partial SKTypeface? TideTypeface { get; set; }
-
-    /// <summary>Liveline eases toward each push; under reduced motion it snaps.</summary>
-    [ObservableProperty] public partial double TideLerp { get; set; } = .04;
-
-    private async void LoadFonts()
-    {
-        TideTypeface = await CanvasFonts.Load(CanvasFonts.BodyMedium);
-        _mono = await CanvasFonts.Load(CanvasFonts.Mono);
-        Refresh();
     }
 
     public IReadOnlyList<TimelineEvent> Events { get; }
@@ -135,7 +119,8 @@ public sealed partial class TimelineViewModel : ObservableObject
     [ObservableProperty] public partial DateTimeOffset NowTime { get; set; }
     [ObservableProperty] public partial IList<LivelinePoint>? TidePast { get; set; }
     [ObservableProperty] public partial IList<LivelinePoint>? TideAhead { get; set; }
-    [ObservableProperty] public partial IList<LivelineMarker>? TideMarkers { get; set; }
+    /// <summary>High water and the level now, for the lane's markers.</summary>
+    [ObservableProperty] public partial TideMarks? Tide { get; set; }
 
     /// <summary>The chart's spoken summary (its automation name); the table is the full alternative.</summary>
     [ObservableProperty] public partial string Summary { get; set; } = string.Empty;
@@ -192,7 +177,6 @@ public sealed partial class TimelineViewModel : ObservableObject
         Frame = new TimelineFrame(now, Events, moves, cargo, peak);
 
         // Tide lane: the same samples every tick; only the split at NOW moves
-        TideLerp = Motion.Reduced ? 1 : .04;
         var split = Array.FindLastIndex(_tide, p => p.Time <= At(now)) + 1;
         NowTime = At(now);
         if (split != _tideSplit)
@@ -201,26 +185,8 @@ public sealed partial class TimelineViewModel : ObservableObject
             TidePast = _tide[..split];
             TideAhead = _tide[split..];
         }
-        TideMarkers = new[]
-        {
-            new LivelineMarker(At(highWater), Math.Round(PortData.TideAt(highWater), 1))
-            {
-                Label = $"HW {ShiftClock.Format(highWater)} · {PortData.TideAt(highWater):0.0} m",
-                LabelTypeface = _mono,
-                Fill = Tokens.Color("SurfaceColor"),
-                Stroke = Tokens.Color("WaterColor"),
-                LabelColor = Tokens.Color("TextMutedColor"),
-                LabelPlacement = MarkerLabelPlacement.Above,
-            },
-            new LivelineMarker(At(now), level)
-            {
-                Label = $"{level:0.0} m",
-                Fill = Tokens.Color("NavyColor"),
-                Stroke = Tokens.Color("SurfaceColor"),
-                StrokeThickness = 2,
-                LabelColor = Tokens.Color("InkColor"),
-            },
-        };
+        Tide = new TideMarks(At(highWater), Math.Round(PortData.TideAt(highWater), 1),
+            $"HW {ShiftClock.Format(highWater)} · {PortData.TideAt(highWater):0.0} m", At(now), level, $"{level:0.0} m");
 
         foreach (var row in Rows)
         {

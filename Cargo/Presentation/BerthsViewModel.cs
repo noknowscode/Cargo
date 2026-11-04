@@ -10,8 +10,8 @@ public sealed partial class BerthsViewModel : ObservableObject
     {
         State = state;
 
-        // The router builds models off the UI thread; the sub-models build brushes and
-        // images as they start, so they are created on it.
+        // The router builds models off the UI thread; the sub-models are bound to the views and follow the store's
+        // events there, so they are made on it.
         dispatcher.TryEnqueue(() =>
         {
             NeedsYou = new NeedsYouViewModel(state);

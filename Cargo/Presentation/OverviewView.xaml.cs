@@ -1,4 +1,6 @@
 using Cargo.Controls;
+using Liveline.Models;
+using SkiaSharp;
 
 namespace Cargo.Presentation;
 
@@ -14,6 +16,43 @@ public sealed partial class OverviewView : Page
 
     public OverviewViewModel? ViewModel => DataContext as OverviewViewModel;
 
+    // ── The tide lane: Liveline draws with Skia, so it takes typefaces and colours rather than XAML styles ──
+
+    private static SKTypeface? _mono;
+
+    // xaml-lint: allow codebehind - Liveline takes an SKTypeface, loaded from the package once the page exists
+    private async Task LoadTideFacesAsync()
+    {
+        TideLane.Typeface = await CanvasFonts.Load(CanvasFonts.BodyMedium);
+        _mono = await CanvasFonts.Load(CanvasFonts.Mono);
+        Bindings.Update();
+    }
+
+    /// <summary>High water (above the line, in the mono face) and the level now, in the theme's colours.</summary>
+    public static IList<LivelineMarker>? TideMarkers(TideMarks? tide) => tide is null ? null : new[]
+    {
+        new LivelineMarker(tide.HighWater, tide.HighWaterLevel)
+        {
+            Label = tide.HighWaterLabel,
+            LabelTypeface = _mono,
+            Fill = Tokens.Color("SurfaceColor"),
+            Stroke = Tokens.Color("WaterColor"),
+            LabelColor = Tokens.Color("TextMutedColor"),
+            LabelPlacement = MarkerLabelPlacement.Above,
+        },
+        new LivelineMarker(tide.Now, tide.NowLevel)
+        {
+            Label = tide.NowLabel,
+            Fill = Tokens.Color("NavyColor"),
+            Stroke = Tokens.Color("SurfaceColor"),
+            StrokeThickness = 2,
+            LabelColor = Tokens.Color("InkColor"),
+        },
+    };
+
+    /// <summary>Liveline eases toward each push; under reduced motion it snaps. Read on each tick, so the choice applies at once.</summary>
+    public static double TideLerp(double now) => Motion.Reduced ? 1 : .04;
+
     // xaml-lint: allow codebehind - the clock reaches the page's charts only while Overview is on screen (Live), like
     // every other section; the page stays alive once visited
     private void Attach()
@@ -22,6 +61,9 @@ public sealed partial class OverviewView : Page
         {
             _attached = true;
             this.TickWhenVisible(vm.State, vm.Refresh);
+            // The tide markers carry resolved colours, so a theme change draws them again
+            this.RebuildOnTheme(Bindings.Update);
+            _ = LoadTideFacesAsync();
         }
 
         Bindings.Update();

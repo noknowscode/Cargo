@@ -189,13 +189,15 @@ public sealed partial class SecurityViewModel : ObservableObject
 
     private bool CanRequestReweigh() => !State.ReweighRequested;
 
-    /// <summary>Verifies the driver of a truck at the barrier, which settles the driver row in the needs-you queue.</summary>
+    /// <summary>
+    /// Verifies the driver of a truck at the barrier, which settles the driver row in the needs-you queue; the truck's
+    /// card then reads authorized.
+    /// </summary>
     [RelayCommand]
     private void VerifyDriver(string truckId)
     {
         if (State.VerifyDriver(truckId))
         {
-            Log("✓", $"Driver ID verified at the barrier for {truckId} · gate opened");
             BuildVehicles();
         }
     }

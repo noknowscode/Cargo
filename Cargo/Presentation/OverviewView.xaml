@@ -109,15 +109,14 @@
                                     AutomationProperties.Name="{x:Bind ViewModel.Timeline.Summary, Mode=OneWay}"
                                     AutomationProperties.LiveSetting="Polite" />
             <!-- Tide: y = 284 - 35 m in the design, so the band 164-300 holds 0 to 3.43 m over 16 px of floor -->
-            <liveline:LivelineChart Margin="{utu:Responsive Narrowest='0,164,12,0', Narrow='168,164,12,0'}" Height="136" VerticalAlignment="Top"
+            <liveline:LivelineChart x:Name="TideLane" Margin="{utu:Responsive Narrowest='0,164,12,0', Narrow='168,164,12,0'}" Height="136" VerticalAlignment="Top"
                                     WindowStart="{x:Bind ViewModel.Timeline.WindowStart, Mode=OneWay}"
                                     WindowEnd="{x:Bind ViewModel.Timeline.WindowEnd, Mode=OneWay}"
                                     NowTime="{x:Bind ViewModel.Timeline.NowTime, Mode=OneWay}"
                                     Data="{x:Bind ViewModel.Timeline.TidePast, Mode=OneWay}"
                                     Forecast="{x:Bind ViewModel.Timeline.TideAhead, Mode=OneWay}"
-                                    Markers="{x:Bind ViewModel.Timeline.TideMarkers, Mode=OneWay}"
-                                    Typeface="{x:Bind ViewModel.Timeline.TideTypeface, Mode=OneWay}"
-                                    LerpSpeed="{x:Bind ViewModel.Timeline.TideLerp, Mode=OneWay}"
+                                    Markers="{x:Bind local:OverviewView.TideMarkers(ViewModel.Timeline.Tide), Mode=OneWay}"
+                                    LerpSpeed="{x:Bind local:OverviewView.TideLerp(ViewModel.NowHours), Mode=OneWay}"
                                     ChartBackground="Transparent" LineBrush="{ThemeResource WaterBrush}"
                                     FillTopBrush="{ThemeResource TideFillTopBrush}" FillBottomBrush="{ThemeResource TideFillBottomBrush}"
                                     LabelHaloBrush="{ThemeResource SurfaceBrush}" LabelBrush="{ThemeResource TextFaintBrush}"
