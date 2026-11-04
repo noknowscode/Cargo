@@ -219,7 +219,7 @@ public partial class App : Application
 
     /// <summary>
     /// Main hosts the header, the harbour stage and the section region; each section is a
-    /// nested route whose name is its <see cref="PortState.Section"/> id.
+    /// nested route whose name is its <see cref="NavigationState.Section"/> id.
     /// </summary>
     private static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)
     {

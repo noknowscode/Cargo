@@ -12,7 +12,7 @@ public sealed partial class BerthStatusRow : ObservableObject
 
     public required ICommand Select { get; init; }
 
-    /// <summary>Linked hover through <see cref="PortState.HoverCommand"/>.</summary>
+    /// <summary>Linked hover through <see cref="StageState.HoverCommand"/>.</summary>
     public required ICommand Hover { get; init; }
 
     /// <summary>What the row stands for on the harbour: its vessel, else its berth.</summary>
