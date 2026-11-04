@@ -31,6 +31,28 @@ public sealed partial class ScannerOverlay : UserControl
         });
     }
 
+    public static readonly DependencyProperty IsShortLandscapeProperty = DependencyProperty.Register(
+        nameof(IsShortLandscape), typeof(bool), typeof(ScannerOverlay), new PropertyMetadata(false));
+
+    /// <summary>
+    /// The window is 600 to 999 wide (where the result sits under the stage) but under 560 high, a phone on its side:
+    /// the stage cannot sit over the scan result, so the Short state puts the result beside it. The size classes are
+    /// widths, so the height is read here. From 1000 the result is beside the stage already.
+    /// </summary>
+    public bool IsShortLandscape
+    {
+        get => (bool)GetValue(IsShortLandscapeProperty);
+        private set => SetValue(IsShortLandscapeProperty, value);
+    }
+
+    /// <summary>Below this height a stacked scanner leaves the 3D stage no room.</summary>
+    public const double ShortHeight = 560;
+
+    // xaml-lint: allow responsive - the window's height decides the Short state; the size classes are widths only
+    // xaml-lint: allow codebehind - SizeChanged has no command surface; it only sets the state's trigger
+    private void OnSizeChanged(object sender, SizeChangedEventArgs e) =>
+        IsShortLandscape = e.NewSize.Height < ShortHeight && e.NewSize.Width is >= 600 and < 1000;
+
     // xaml-lint: allow codebehind - Escape closes the inspection, as its × does
     private void OnKeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
     {

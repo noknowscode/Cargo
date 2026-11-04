@@ -9,10 +9,35 @@
   <!-- A floating panel over the dimmed page, not a full-window takeover: the section you came from
        stays visible around it. At most 1320 x 820, 48 px from the window edges from 1000 px (24 below).
        Below 1000 the scan result moves under the stage and scrolls on its own (200 px, so the stage keeps the
-       height for the box) and the stage's insets tighten; on a phone the panel fills the window, as a sheet would. -->
+       height for the box) and the stage's insets tighten; on a phone the panel fills the window, as a sheet would.
+       A short window 600 to 999 wide (a phone on its side, 844 x 390) has no height for the stage over the result, so
+       the result goes back beside the stage, 300 wide, and the panel takes the window's edges (the Short state). -->
   <!-- Modal to the keyboard: focus moves to Close when it opens, Tab cycles inside it, Escape closes it -->
-  <Grid Background="{StaticResource PageDimInvariantBrush}" TabFocusNavigation="Cycle" KeyDown="OnKeyDown">
-  <Grid Background="{StaticResource InkDeepInvariantBrush}" MaxWidth="1320" MaxHeight="820"
+  <Grid Background="{StaticResource PageDimInvariantBrush}" TabFocusNavigation="Cycle" KeyDown="OnKeyDown"
+        SizeChanged="OnSizeChanged">
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup x:Name="HeightStates">
+        <VisualState x:Name="Short">
+          <VisualState.StateTriggers>
+            <StateTrigger IsActive="{x:Bind IsShortLandscape, Mode=OneWay}" />
+          </VisualState.StateTriggers>
+          <VisualState.Setters>
+            <Setter Target="Panel.Margin" Value="0" />
+            <Setter Target="Panel.CornerRadius" Value="0" />
+            <Setter Target="Stage.(Grid.RowSpan)" Value="2" />
+            <Setter Target="Result.(Grid.Row)" Value="0" />
+            <Setter Target="Result.(Grid.Column)" Value="1" />
+            <Setter Target="Result.(Grid.RowSpan)" Value="2" />
+            <Setter Target="Result.Width" Value="300" />
+            <Setter Target="Result.MaxHeight" Value="820" />
+            <Setter Target="Result.BorderThickness" Value="1,0,0,0" />
+            <Setter Target="RotateHint.Visibility" Value="Collapsed" />
+            <Setter Target="ScanMeta.Visibility" Value="Collapsed" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+  <Grid x:Name="Panel" Background="{StaticResource InkDeepInvariantBrush}" MaxWidth="1320" MaxHeight="820"
         CornerRadius="{utu:Responsive Narrowest='0', Narrow={StaticResource RadiusCard}}"
         Margin="{utu:Responsive Narrowest='0', Narrow={StaticResource Inset24}, Normal='48'}">
     <Grid.ColumnDefinitions>
@@ -25,7 +50,7 @@
     </Grid.RowDefinitions>
 
     <!-- ── Inspection stage ─────────────────────────────────────── -->
-    <Grid Grid.RowSpan="{utu:Responsive Narrowest=1, Normal=2}">
+    <Grid x:Name="Stage" Grid.RowSpan="{utu:Responsive Narrowest=1, Normal=2}">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="*" />
@@ -54,7 +79,7 @@
           </StackPanel>
           <TextBlock Text="{x:Bind ViewModel.ContainerId, Mode=OneWay}" Style="{StaticResource TypeMonoMedium24}"
                      Foreground="{StaticResource TextOnDarkStrongBrush}" />
-          <TextBlock Text="{x:Bind ViewModel.ContainerMeta, Mode=OneWay}" Style="{StaticResource SubtitleText}"
+          <TextBlock x:Name="ScanMeta" Text="{x:Bind ViewModel.ContainerMeta, Mode=OneWay}" Style="{StaticResource SubtitleText}"
                      Foreground="{StaticResource TextOnDarkMutedBrush}" TextWrapping="Wrap" />
         </StackPanel>
         <Button x:Name="CloseButton" Grid.Column="1" Style="{StaticResource CloseOnDarkButton}" Content="×" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}"
@@ -115,7 +140,7 @@
           </Button>
 
           <!-- Phones leave the hint out (a touch drag is the expected gesture) to keep the stage tall enough for the box -->
-          <TextBlock Text="Drag to rotate" Style="{StaticResource CaptionText}" Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}"
+          <TextBlock x:Name="RotateHint" Text="Drag to rotate" Style="{StaticResource CaptionText}" Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}"
                      Foreground="{StaticResource TextOnDarkMutedBrush}" VerticalAlignment="Center" Margin="{StaticResource GapStart10}" />
         </controls:FlowPanel>
 
@@ -138,7 +163,7 @@
     </Grid>
 
     <!-- ── Scan result ──────────────────────────────────────────── -->
-    <ScrollViewer Background="{StaticResource InkDeepInvariantBrush}" VerticalScrollBarVisibility="Auto"
+    <ScrollViewer x:Name="Result" Background="{StaticResource InkDeepInvariantBrush}" VerticalScrollBarVisibility="Auto"
                   Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                   Grid.RowSpan="{utu:Responsive Narrowest=1, Normal=2}"
                   Width="{utu:Responsive Narrowest=NaN, Normal=360}" MaxHeight="{utu:Responsive Narrowest=200, Normal=820}"
