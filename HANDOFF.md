@@ -181,7 +181,10 @@ dead-code pass removed 47 usings, 7 members, 12 motion tokens, a font and 10 unu
 - 2026-11-04 (Linux, A pass): Debug `net10.0-desktop` 0 warnings / 0 errors (also with XML docs on, as the Android head
   builds them); Release `net10.0-browserwasm` published (trim warnings only) and run in headless Chromium; `Cargo.Tests`
   211/211; lint gate 0. Runtime under Xvfb `:466`, CPU renderer: the seven critical workflows, Dark on Berths, Cargo and
-  Security, 844x390 scanner, 390 tags, 1680 table, Tab walks with `CARGO_FOCUS_LOG=1`.
+  Security, 844x390 scanner, 390 tags, 1680 table, Tab walks with `CARGO_FOCUS_LOG=1`. Release `net10.0-android` at
+  4570a51: 0 warnings / 0 errors (it builds the XML docs; the CS1574 crefs that failed CI's Android job on e2503c0 and
+  1f7435c are fixed in 0af5d3c). CI: run 41833318126 (1f7435c) green on every job but Android (those crefs), WinAppSDK
+  and iOS included; the runs for bc72e6e onwards were still queued at hand-off (no runner had picked them up).
 - 2026-11-02 (Linux, review round 2): Release, 0 warnings / 0 errors for `net10.0-desktop`, `net10.0-android` and
   `net10.0-browserwasm`; `Cargo.Tests` 125/125 (Debug and Release); desktop with the toolkit's WinRT analyzers on: 0
   MVVMTK0045. CI green on 13596fc and 222e1fa, WinAppSDK included. Debug desktop under Xvfb: the review's repro
