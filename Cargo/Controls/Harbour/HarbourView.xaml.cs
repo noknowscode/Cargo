@@ -743,6 +743,7 @@ public sealed partial class HarbourView : UserControl
             {
                 // No clear spot beside, above or below the tags already placed (a narrow band with vessels close
                 // together): this one gives way rather than covering another's countdown
+                // xaml-lint: allow codebehind - per-frame tag placement over the camera; there is no XAML surface for it
                 host.Visibility = Visibility.Collapsed;
                 continue;
             }
