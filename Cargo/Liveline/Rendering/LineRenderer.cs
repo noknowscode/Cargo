@@ -59,7 +59,7 @@ internal static class LineRenderer
                 null,
                 SKShaderTileMode.Clamp);
 
-            rc.Fill.Color = SKColors.White;
+            rc.Fill.Color = ColorHelper.WithAlpha(palette.LineColor, 255); // opaque: the shader supplies the colour
             rc.Fill.Style = SKPaintStyle.Fill;
             rc.Fill.Shader = gradient;
             canvas.DrawPath(fillPath, rc.Fill);

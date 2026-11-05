@@ -6,28 +6,31 @@ namespace Liveline;
 /// <summary>
 /// Real-time animated line chart. Frames are driven by <see cref="CompositionTarget.Rendering"/>
 /// only while the line is still easing toward its targets; a settled chart costs no frames.
+/// Its colours come from the app's theme: the default style (Themes/Generic.xaml) sets every brush to a
+/// palette role with <c>{ThemeResource}</c>, so the chart follows Light, Dark and any palette with no wiring.
+/// Set a brush property to override one.
 /// </summary>
-public partial class LivelineChart : UserControl
+[TemplatePart(Name = CanvasPartName, Type = typeof(LivelineChartCanvas))]
+public partial class LivelineChart : Control
 {
-    private readonly LivelineChartCanvas _canvas;
+    private const string CanvasPartName = "PART_Canvas";
+
+    private LivelineChartCanvas? _canvas;
     private bool _isLoaded;
     private bool _animationAttached;
 
     public LivelineChart()
     {
-        _canvas = new LivelineChartCanvas
-        {
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch
-        };
-        HorizontalAlignment = HorizontalAlignment.Stretch;
-        VerticalAlignment = VerticalAlignment.Stretch;
-        HorizontalContentAlignment = HorizontalAlignment.Stretch;
-        VerticalContentAlignment = VerticalAlignment.Stretch;
-        Content = _canvas;
-
+        DefaultStyleKey = typeof(LivelineChart);
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
+    }
+
+    protected override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+        _canvas = GetTemplateChild(CanvasPartName) as LivelineChartCanvas;
+        PushState();
     }
 
     public static readonly DependencyProperty DataProperty =
@@ -48,16 +51,6 @@ public partial class LivelineChart : UserControl
     {
         get => (double)GetValue(ValueProperty);
         set => SetValue(ValueProperty, value);
-    }
-
-    public static readonly DependencyProperty ThemeProperty =
-        DependencyProperty.Register(nameof(Theme), typeof(LivelineTheme), typeof(LivelineChart),
-            new PropertyMetadata(null, OnRenderPropertyChanged));
-
-    public LivelineTheme? Theme
-    {
-        get => (LivelineTheme?)GetValue(ThemeProperty);
-        set => SetValue(ThemeProperty, value);
     }
 
     /// <summary>Draws the value and time axis labels.</summary>
@@ -207,7 +200,7 @@ public partial class LivelineChart : UserControl
         set => SetValue(ForecastOpacityProperty, value);
     }
 
-    /// <summary>Fill behind the plot. Null uses the theme background; a transparent brush draws nothing.</summary>
+    /// <summary>Fill behind the plot. The default style sets <c>SurfaceBrush</c>; a transparent brush draws nothing.</summary>
     public static readonly DependencyProperty ChartBackgroundProperty =
         DependencyProperty.Register(nameof(ChartBackground), typeof(Brush), typeof(LivelineChart),
             new PropertyMetadata(null, OnRenderPropertyChanged));
@@ -218,7 +211,7 @@ public partial class LivelineChart : UserControl
         set => SetValue(ChartBackgroundProperty, value);
     }
 
-    /// <summary>Line colour. Null derives it from <see cref="Theme"/>.</summary>
+    /// <summary>Line, badge and live dot colour. The default style sets <c>PrimaryBrush</c>.</summary>
     public static readonly DependencyProperty LineBrushProperty =
         DependencyProperty.Register(nameof(LineBrush), typeof(Brush), typeof(LivelineChart),
             new PropertyMetadata(null, OnRenderPropertyChanged));
@@ -229,7 +222,7 @@ public partial class LivelineChart : UserControl
         set => SetValue(LineBrushProperty, value);
     }
 
-    /// <summary>Top stop of the area gradient. Null derives it from <see cref="Theme"/>.</summary>
+    /// <summary>Top stop of the area gradient. Null uses the line colour, faded.</summary>
     public static readonly DependencyProperty FillTopBrushProperty =
         DependencyProperty.Register(nameof(FillTopBrush), typeof(Brush), typeof(LivelineChart),
             new PropertyMetadata(null, OnRenderPropertyChanged));
@@ -240,7 +233,7 @@ public partial class LivelineChart : UserControl
         set => SetValue(FillTopBrushProperty, value);
     }
 
-    /// <summary>Bottom stop of the area gradient. Null derives it from <see cref="Theme"/>.</summary>
+    /// <summary>Bottom stop of the area gradient. Null uses the line colour, fully transparent.</summary>
     public static readonly DependencyProperty FillBottomBrushProperty =
         DependencyProperty.Register(nameof(FillBottomBrush), typeof(Brush), typeof(LivelineChart),
             new PropertyMetadata(null, OnRenderPropertyChanged));
@@ -251,7 +244,7 @@ public partial class LivelineChart : UserControl
         set => SetValue(FillBottomBrushProperty, value);
     }
 
-    /// <summary>Stroke drawn behind marker labels so they read over the line. Null draws none.</summary>
+    /// <summary>Stroke drawn behind marker labels so they read over the line. The default style sets <c>SurfaceBrush</c>; null draws none.</summary>
     public static readonly DependencyProperty LabelHaloBrushProperty =
         DependencyProperty.Register(nameof(LabelHaloBrush), typeof(Brush), typeof(LivelineChart),
             new PropertyMetadata(null, OnRenderPropertyChanged));
@@ -262,7 +255,7 @@ public partial class LivelineChart : UserControl
         set => SetValue(LabelHaloBrushProperty, value);
     }
 
-    /// <summary>Grid lines and the tracking line. Null derives them from <see cref="Theme"/>.</summary>
+    /// <summary>Grid lines. The default style sets <c>OutlineVariantBrush</c>.</summary>
     public static readonly DependencyProperty GridLineBrushProperty =
         DependencyProperty.Register(nameof(GridLineBrush), typeof(Brush), typeof(LivelineChart),
             new PropertyMetadata(null, OnRenderPropertyChanged));
@@ -273,7 +266,7 @@ public partial class LivelineChart : UserControl
         set => SetValue(GridLineBrushProperty, value);
     }
 
-    /// <summary>Axis labels and the loading / no-data message. Null derives them from <see cref="Theme"/>.</summary>
+    /// <summary>Axis labels, marker labels and the loading / no-data message. The default style sets <c>OnSurfaceVariantBrush</c>.</summary>
     public static readonly DependencyProperty LabelBrushProperty =
         DependencyProperty.Register(nameof(LabelBrush), typeof(Brush), typeof(LivelineChart),
             new PropertyMetadata(null, OnRenderPropertyChanged));
@@ -284,7 +277,7 @@ public partial class LivelineChart : UserControl
         set => SetValue(LabelBrushProperty, value);
     }
 
-    /// <summary>The value badge's text, on the line colour. Null picks black or white for the line's lightness.</summary>
+    /// <summary>The value badge's text and the live dot's highlight, on the line colour. The default style sets <c>OnPrimaryBrush</c>, the pair of <c>PrimaryBrush</c>; set both together.</summary>
     public static readonly DependencyProperty BadgeTextBrushProperty =
         DependencyProperty.Register(nameof(BadgeTextBrush), typeof(Brush), typeof(LivelineChart),
             new PropertyMetadata(null, OnRenderPropertyChanged));
@@ -366,8 +359,11 @@ public partial class LivelineChart : UserControl
 
     private void PushState()
     {
+        if (_canvas is null)
+            return;
+
         _canvas.UpdateState(new ChartState(
-            Data, Forecast, Value, Theme,
+            Data, Forecast, Value,
             ShowGrid, ShowBadge, ShowFill, ShowTrackingLine,
             Momentum,
             LerpSpeed, IsPaused, IsLoading,
@@ -386,7 +382,7 @@ public partial class LivelineChart : UserControl
 
     private void AttachAnimation()
     {
-        if (_isLoaded && !_animationAttached)
+        if (_isLoaded && !_animationAttached && _canvas is not null)
         {
             CompositionTarget.Rendering += OnCompositionRendering;
             _animationAttached = true;
@@ -418,7 +414,7 @@ public partial class LivelineChart : UserControl
     {
         // A held Rendering subscription makes the compositor produce frames at display refresh,
         // so let go as soon as the line settles. The next PushState re-attaches.
-        if (_canvas.TickAnimation())
+        if (_canvas is not null && _canvas.TickAnimation())
             _canvas.Invalidate();
         else
             DetachAnimation();

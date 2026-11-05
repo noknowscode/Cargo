@@ -23,7 +23,11 @@ public static class Tokens
     /// <summary>Counts theme changes, so a view that was off screen can tell it missed one.</summary>
     public static int Version { get; private set; }
 
-    /// <summary>Raised after <see cref="Apply"/> has recoloured the brushes, for code that keeps colours.</summary>
+    /// <summary>
+    /// Raised after the brushes handed out were recoloured, for code that keeps colours: on a theme change
+    /// (<see cref="Apply"/>) and when the palette itself changes (Studio's Themes tab editing
+    /// Styles/ColorPaletteOverride.xaml under Hot Reload regenerates the theme's role brushes).
+    /// </summary>
     public static event EventHandler? ThemeChanged;
 
     /// <summary>
@@ -38,6 +42,12 @@ public static class Tokens
         }
 
         Theme = theme;
+        Recolour();
+    }
+
+    /// <summary>Re-resolves every colour, recolours every brush handed out, then raises <see cref="ThemeChanged"/>.</summary>
+    private static void Recolour()
+    {
         Version++;
         ColorCache.Clear();
 
@@ -52,7 +62,43 @@ public static class Tokens
             brush.Color = WithAlpha(Color(key), bucket / 1000d);
         }
 
+        foreach (var ((key, bucket, theme), brush) in PinnedCache)
+        {
+            brush.Color = Resolve(key, theme);
+            brush.Opacity = bucket / 1000d;
+        }
+
         ThemeChanged?.Invoke(null, EventArgs.Empty);
+    }
+
+    private static readonly HashSet<SolidColorBrush> Watched = new(ReferenceEqualityComparer.Instance);
+    private static bool _recolourQueued;
+
+    /// <summary>
+    /// The theme recolours its role brushes in place when the palette changes. Watching the ones code has read
+    /// tells this palette to re-read too; the recolour runs once, after the theme has finished.
+    /// </summary>
+    private static void Watch(SolidColorBrush roleBrush)
+    {
+        if (Watched.Add(roleBrush))
+        {
+            roleBrush.RegisterPropertyChangedCallback(SolidColorBrush.ColorProperty, (_, _) => QueueRecolour());
+        }
+    }
+
+    private static void QueueRecolour()
+    {
+        if (_recolourQueued || Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread() is not { } queue)
+        {
+            return;
+        }
+
+        _recolourQueued = true;
+        queue.TryEnqueue(() =>
+        {
+            _recolourQueued = false;
+            Recolour();
+        });
     }
 
     /// <summary>A token's colour for the current theme. A brush token carries its transparency in Opacity, folded into the alpha here.</summary>
@@ -170,15 +216,22 @@ public static class Tokens
 
     // A key names a colour or a brush; a no-role colour that has no brush resource ("NavyBrush") resolves through its
     // colour ("NavyColor")
-    private static Color Resolve(string key, ElementTheme theme) => (Find(key, theme) ?? Find(key + "Color", theme)
-        ?? (key.EndsWith("Brush", StringComparison.Ordinal) ? Find(key[..^5] + "Color", theme) : null)) switch
+    private static Color Resolve(string key, ElementTheme theme)
     {
-        Color c => c,
-        // A brush token carries its transparency in Opacity (the hairlines are ink at 4.5-14%); fold it
-        // into the alpha, or every code-set hairline renders solid ink.
-        SolidColorBrush b => WithAlpha(b.Color, b.Opacity),
-        _ => default
-    };
+        switch (Find(key, theme) ?? Find(key + "Color", theme)
+            ?? (key.EndsWith("Brush", StringComparison.Ordinal) ? Find(key[..^5] + "Color", theme) : null))
+        {
+            case Color c:
+                return c;
+            case SolidColorBrush b:
+                // A brush token carries its transparency in Opacity (the state brushes are a role at 8-64%); fold
+                // it into the alpha, or every code-set state layer renders solid
+                Watch(b);
+                return WithAlpha(b.Color, b.Opacity);
+            default:
+                return default;
+        }
+    }
 
     /// <summary>
     /// Looks a key up for an explicit theme. Code has no {ThemeResource}, and a plain Application

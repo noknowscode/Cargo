@@ -13,7 +13,6 @@ internal sealed record ChartState(
     IList<LivelinePoint>? Data,
     IList<LivelinePoint>? Forecast,
     double Value,
-    LivelineTheme? Theme,
     bool ShowGrid, bool ShowBadge, bool ShowFill, bool ShowTrackingLine,
     object? Momentum,
     double LerpSpeed,
@@ -32,7 +31,7 @@ public class LivelineChartCanvas : SKCanvasElement
 {
     private readonly LerpEngine _lerp = new();
     private readonly RenderContext _rc = new();
-    private ChartPalette _palette = ColorHelper.DerivePalette("#4CAF50", false);
+    private ChartPalette _palette = ChartPalette.Empty;
     private SKColor _background;
     private SKColor? _labelHalo;
     private DateTimeOffset[] _times = [];
@@ -64,17 +63,18 @@ public class LivelineChartCanvas : SKCanvasElement
         _isLoading = s.IsLoading;
         _labelHalo = s.LabelHalo;
 
-        var derived = ColorHelper.DerivePalette(s.Theme?.Color ?? "#4CAF50", s.Theme?.IsDark ?? false);
-        _palette = derived with
-        {
-            LineColor = s.Line ?? derived.LineColor,
-            FillTop = s.FillTop ?? derived.FillTop,
-            FillBottom = s.FillBottom ?? derived.FillBottom,
-            GridLine = s.GridLine ?? derived.GridLine,
-            TextDim = s.Label ?? derived.TextDim,
-            BadgeText = s.BadgeText ?? derived.BadgeText,
-        };
-        _background = s.Background ?? derived.Background;
+        // Every colour comes from the chart's brushes, which the default style binds to the theme's palette roles.
+        var line = s.Line ?? SKColors.Transparent;
+        _palette = new ChartPalette(
+            LineColor: line,
+            FillTop: s.FillTop ?? ColorHelper.WithAlpha(line, 80),
+            FillBottom: s.FillBottom ?? ColorHelper.WithAlpha(line, 0),
+            GridLine: s.GridLine ?? SKColors.Transparent,
+            TextDim: s.Label ?? SKColors.Transparent,
+            BadgeBg: line,
+            BadgeText: s.BadgeText ?? SKColors.Transparent,
+            Background: s.Background ?? SKColors.Transparent);
+        _background = _palette.Background;
 
         _rc.Stroke.StrokeWidth = (float)s.StrokeThickness;
         _rc.PadLeft = (float)s.PlotPadding.Left;
@@ -217,7 +217,7 @@ public class LivelineChartCanvas : SKCanvasElement
             canvas.Restore();
 
         if (_markers.Length > 0)
-            MarkerRenderer.Draw(canvas, w, h, _markers, minY, maxY, _labelHalo, _rc);
+            MarkerRenderer.Draw(canvas, w, h, _markers, minY, maxY, _labelHalo, _palette, _rc);
 
         if (_momentumDirection != MomentumDirection.Off)
             MomentumRenderer.Draw(canvas, w, h, liveValue, minY, maxY, _palette, _rc);
@@ -293,7 +293,7 @@ public class LivelineChartCanvas : SKCanvasElement
             SKShaderTileMode.Clamp);
 
         _rc.Fill.Style = SKPaintStyle.Fill;
-        _rc.Fill.Color = SKColors.White;
+        _rc.Fill.Color = ColorHelper.WithAlpha(_palette.LineColor, 255); // opaque: the shader supplies the colour
         _rc.Fill.Shader = gradient;
         canvas.DrawPath(fillPath, _rc.Fill);
         _rc.Fill.Shader = null;

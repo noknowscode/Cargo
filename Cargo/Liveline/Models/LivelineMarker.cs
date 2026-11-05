@@ -13,7 +13,8 @@ public enum MarkerLabelPlacement
 
 /// <summary>
 /// A point drawn on the chart at a time and value, with an optional label.
-/// A hollow marker is a <see cref="Fill"/> of the background colour with a <see cref="Stroke"/> ring.
+/// Colours left null follow the chart's theme: <see cref="Fill"/> the line colour, <see cref="LabelColor"/> the
+/// label colour. A hollow marker is a <see cref="Fill"/> of the background colour with a <see cref="Stroke"/> ring.
 /// </summary>
 /// <remarks>
 /// Settable rather than init-only: the WinAppSDK XAML compiler writes type metadata, setters included, for the item
@@ -26,10 +27,12 @@ public sealed record LivelineMarker(DateTimeOffset Time, double Value)
     public double Value { get; set; } = Value;
     public string? Label { get; set; }
     public float Radius { get; set; } = 4f;
-    public Color Fill { get; set; } = Color.FromArgb(255, 255, 255, 255);
-    public Color Stroke { get; set; } = Color.FromArgb(0, 0, 0, 0);
+    public Color? Fill { get; set; }
+
+    /// <summary>Ring around the marker. Null draws none.</summary>
+    public Color? Stroke { get; set; }
     public float StrokeThickness { get; set; } = 1.6f;
-    public Color LabelColor { get; set; } = Color.FromArgb(200, 0, 0, 0);
+    public Color? LabelColor { get; set; }
     public float LabelSize { get; set; } = 12f;
 
     /// <summary>Overrides the chart's <c>Typeface</c> for this label (for example a mono face).</summary>

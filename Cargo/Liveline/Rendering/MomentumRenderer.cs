@@ -33,7 +33,7 @@ internal static class MomentumRenderer
         rc.Fill.Color = palette.LineColor;
         canvas.DrawCircle(dotX, dotY, DotRadius, rc.Fill);
 
-        rc.Fill.Color = new SKColor(255, 255, 255, 120);
+        rc.Fill.Color = ColorHelper.WithAlpha(palette.BadgeText, 120); // highlight in the line colour's On colour
         canvas.DrawCircle(dotX - 1.5f, dotY - 1.5f, 2f, rc.Fill);
     }
 }

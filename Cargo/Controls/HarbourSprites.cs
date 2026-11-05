@@ -36,7 +36,7 @@ public sealed partial class YardTruck : SpriteControl
 
     public static readonly DependencyProperty TintProperty = DependencyProperty.Register(
         nameof(Tint), typeof(Color), typeof(YardTruck),
-        new PropertyMetadata(Microsoft.UI.Colors.SlateGray, Redraw));
+        new PropertyMetadata(default(Color), Redraw));
 
     public Color Tint
     {

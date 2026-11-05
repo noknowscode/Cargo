@@ -1,3 +1,4 @@
+using Liveline.Helpers;
 using Liveline.Models;
 using SkiaSharp;
 
@@ -14,6 +15,7 @@ internal static class MarkerRenderer
         (LivelineMarker Marker, float Fraction)[] markers,
         double minY, double maxY,
         SKColor? halo,
+        ChartPalette palette,
         RenderContext rc)
     {
         var (left, right, top, bottom) = GridRenderer.GetChartArea(width, height, rc);
@@ -28,13 +30,13 @@ internal static class MarkerRenderer
             float y = (float)(bottom - (m.Value - minY) / range * chartHeight);
 
             rc.Fill.Style = SKPaintStyle.Fill;
-            rc.Fill.Color = ToSk(m.Fill);
+            rc.Fill.Color = m.Fill is { } fill ? ToSk(fill) : palette.LineColor;
             canvas.DrawCircle(x, y, m.Radius, rc.Fill);
 
-            if (m.Stroke.A > 0 && m.StrokeThickness > 0)
+            if (m.Stroke is { A: > 0 } stroke && m.StrokeThickness > 0)
             {
                 rc.ThinStroke.StrokeWidth = m.StrokeThickness;
-                rc.ThinStroke.Color = ToSk(m.Stroke);
+                rc.ThinStroke.Color = ToSk(stroke);
                 canvas.DrawCircle(x, y, m.Radius, rc.ThinStroke);
                 rc.ThinStroke.StrokeWidth = 1f;
             }
@@ -66,7 +68,7 @@ internal static class MarkerRenderer
                 canvas.DrawText(m.Label, tx, ty, SKTextAlign.Left, font, rc.Halo);
             }
 
-            rc.Fill.Color = ToSk(m.LabelColor);
+            rc.Fill.Color = m.LabelColor is { } label ? ToSk(label) : palette.TextDim;
             canvas.DrawText(m.Label, tx, ty, SKTextAlign.Left, font, rc.Fill);
 
             font.Typeface = chartTypeface;

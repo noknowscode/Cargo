@@ -30,7 +30,7 @@ public sealed partial class GridPaper : UserControl
                 GradientStops =
                 {
                     new GradientStop { Offset = 0, Color = Tokens.Paint("PrimaryColor") },
-                    new GradientStop { Offset = 1, Color = Windows.UI.Color.FromArgb(0, 0, 0, 0) }
+                    new GradientStop { Offset = 1, Color = Microsoft.UI.Colors.Transparent }
                 }
             },
             Opacity = 0.10

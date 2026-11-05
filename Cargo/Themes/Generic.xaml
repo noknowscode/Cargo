@@ -1,0 +1,24 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:liveline="using:Liveline">
+
+  <!-- The chart's default look: every colour is a palette role, so the chart follows Light, Dark and any palette
+       (seed, override or Studio's Themes tab) with no wiring. Set a brush on the chart to override one. -->
+  <Style TargetType="liveline:LivelineChart">
+    <Setter Property="ChartBackground" Value="{ThemeResource SurfaceBrush}" />
+    <Setter Property="LineBrush" Value="{ThemeResource PrimaryBrush}" />
+    <Setter Property="BadgeTextBrush" Value="{ThemeResource OnPrimaryBrush}" />
+    <Setter Property="GridLineBrush" Value="{ThemeResource OutlineVariantBrush}" />
+    <Setter Property="LabelBrush" Value="{ThemeResource OnSurfaceVariantBrush}" />
+    <Setter Property="LabelHaloBrush" Value="{ThemeResource SurfaceBrush}" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="VerticalAlignment" Value="Stretch" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="liveline:LivelineChart">
+          <liveline:LivelineChartCanvas x:Name="PART_Canvas" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+</ResourceDictionary>

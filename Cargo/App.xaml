@@ -23,6 +23,8 @@
             <ut:ThemeColors xmlns:ut="using:Uno.Themes" OverrideSource="ms-appx:///Styles/ColorPaletteOverride.xaml" />
           </utus:SimpleToolkitTheme.Colors>
         </utus:SimpleToolkitTheme>
+        <!-- Default styles of the controls drawn in code (the tide chart): an app project does not load it by itself -->
+        <ResourceDictionary Source="ms-appx:///Themes/Generic.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/Layout.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/MotionTokens.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/Icons.xaml" />

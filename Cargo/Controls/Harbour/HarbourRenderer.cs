@@ -201,17 +201,18 @@ public sealed class HarbourRenderer : IDisposable
 
     private void RebuildScreenShaders(float width, float height)
     {
-        // Tilt-shift mask: opaque at the top and bottom of the frame, clear through the focus band.
+        // Tilt-shift mask: opaque at the top and bottom of the frame, clear through the focus band. The mask draws
+        // DstIn, so only its alpha counts: the stage colour at full and at no alpha.
         var focus = Math.Clamp(_camera.Project(_camera.TargetX, _camera.TargetY, 0).Y / height, .3f, .75f);
         var a = Math.Max(0, focus - .2f);
         var c = Math.Min(1, focus + .16f);
+        var stage = _pal["HarbourStageColor"];
         _maskShader?.Dispose();
         _maskShader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(0, height),
-            new[] { SKColors.Black, SKColors.Transparent, SKColors.Transparent, SKColors.Black },
+            new[] { stage.WithAlpha(255), stage.WithAlpha(0), stage.WithAlpha(0), stage.WithAlpha(255) },
             new[] { 0f, a, c, 1f }, SKShaderTileMode.Clamp);
 
         // Haze toward the horizon, strongest at low pitch.
-        var stage = _pal["HarbourStageColor"];
         var hazeAlpha = (byte)Math.Round(255 * .7 * Math.Max(0, Math.Cos(_camera.Pitch) - .1));
         _hazeShader?.Dispose();
         _hazeShader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(0, height * .62f),
