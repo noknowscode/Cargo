@@ -1,0 +1,99 @@
+<Page x:Class="UnoOrbit.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:UnoOrbit"
+      xmlns:components="using:UnoOrbit.Components"
+      xmlns:rendering="using:UnoOrbit.Rendering"
+      Background="#04060e"
+      KeyDown="OnKeyDown">
+
+    <Grid>
+        <!-- Layer 0: Atmosphere glow -->
+        <Border x:Name="AtmosphereGlow"
+                Width="500" Height="500"
+                CornerRadius="250"
+                Opacity="0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                IsHitTestVisible="False" />
+
+        <!-- Layer 1: Orbit canvas (starfield + sun + planets all drawn here) -->
+        <rendering:OrbitRenderer x:Name="OrbitCanvas"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Stretch"
+                                 PointerMoved="OnCanvasPointerMoved"
+                                 PointerPressed="OnCanvasPointerPressed"
+                                 PointerWheelChanged="OnCanvasWheel"
+                                 ManipulationMode="Scale"
+                                 ManipulationDelta="OnManipulationDelta" />
+
+        <!-- Layer 10: Top bar -->
+        <Grid VerticalAlignment="Top"
+              Padding="32,24"
+              IsHitTestVisible="False">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="UNO ORBIT"
+                       FontFamily="{StaticResource SyneFont}"
+                       FontWeight="SemiBold"
+                       FontSize="11"
+                       CharacterSpacing="350"
+                       Foreground="#e8e6f0"
+                       Opacity="0.4"
+                       VerticalAlignment="Center"
+                       IsTextSelectionEnabled="False"
+                       Grid.Column="0" />
+            <components:ZoomIndicator x:Name="ZoomControl"
+                                      Grid.Column="1"
+                                      IsHitTestVisible="True" />
+        </Grid>
+
+        <!-- Layer 15: Hint text -->
+        <TextBlock x:Name="HintText"
+                   Text="CLICK A PLANET TO EXPLORE · SCROLL TO ZOOM"
+                   FontFamily="{StaticResource SyneFont}"
+                   FontSize="11"
+                   CharacterSpacing="200"
+                   Foreground="#e8e6f0"
+                   Opacity="0"
+                   VerticalAlignment="Bottom"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,48"
+                   IsHitTestVisible="False"
+                   IsTextSelectionEnabled="False" />
+
+        <!-- Layer 20: Planet panel -->
+        <components:PlanetPanel x:Name="Panel"
+                                VerticalAlignment="Bottom" />
+
+        <!-- Layer 25: Planet nav -->
+        <components:PlanetNav x:Name="NavBar"
+                              VerticalAlignment="Bottom"
+                              HorizontalAlignment="Center"
+                              Margin="0,0,0,8" />
+
+        <!-- Layer 30: Tooltip -->
+        <Border x:Name="Tooltip"
+                CornerRadius="8"
+                Background="#E614141e"
+                BorderBrush="#1Affffff"
+                BorderThickness="1"
+                Padding="12,5.6"
+                Opacity="0"
+                IsHitTestVisible="False"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top">
+            <Border.RenderTransform>
+                <TranslateTransform x:Name="TooltipTranslate" />
+            </Border.RenderTransform>
+            <TextBlock x:Name="TooltipText"
+                       FontFamily="{StaticResource SyneFont}"
+                       FontWeight="Medium"
+                       FontSize="13"
+                       Foreground="#e8e6f0"
+                       IsTextSelectionEnabled="False" />
+        </Border>
+    </Grid>
+</Page>
