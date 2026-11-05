@@ -1,0 +1,10 @@
+<UserControl x:Class="UnoOrbit.Components.PlanetNav"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Opacity="0">
+    <StackPanel x:Name="DotsPanel"
+                Orientation="Horizontal"
+                Spacing="6.4"
+                Padding="16,12.8"
+                HorizontalAlignment="Center" />
+</UserControl>

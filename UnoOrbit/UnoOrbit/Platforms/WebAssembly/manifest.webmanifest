@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "UnoOrbit",
+  "display": "standalone",
+  "name": "UnoOrbit",
+  "short_name": "UnoOrbit",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}
