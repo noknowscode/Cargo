@@ -330,7 +330,7 @@ public sealed partial class HarbourView : UserControl
 
     public static Visibility DarkTag(bool pending) => pending ? Visibility.Visible : Visibility.Collapsed;
 
-    public static Brush TagEdge(bool selected, bool lit) => selected || lit ? Tokens.Brush("InkBrush") : Tokens.Transparent;
+    public static Brush TagEdge(bool selected, bool lit) => selected || lit ? Tokens.Brush("OnSurfaceBrush") : Tokens.Transparent;
 
     public static Thickness TagEdgeWidth(bool selected) => new(selected ? 2 : 1);
 

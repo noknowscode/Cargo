@@ -33,7 +33,7 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
-          <Ellipse Width="6" Height="6" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Top" Margin="{StaticResource GapTop6}" />
+          <Ellipse Width="6" Height="6" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Top" Margin="{StaticResource GapTop6}" />
           <TextBlock Grid.Column="1" Text="Live AIS · Port of Westhaven to the Alder River · 120 km" Style="{StaticResource PageSubtitleText}" TextWrapping="Wrap" />
         </Grid>
       </StackPanel>
@@ -53,7 +53,7 @@
           <TextBlock Text="lockings booked" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-          <TextBlock Text="{x:Bind ViewModel.NoticeTotal, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{ThemeResource AlertInkBrush}" />
+          <TextBlock Text="{x:Bind ViewModel.NoticeTotal, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{ThemeResource ErrorBrush}" />
           <TextBlock Text="notices" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
       </controls:FlowPanel>
@@ -177,7 +177,7 @@
                     <ColumnDefinition Width="Auto" />
                   </Grid.ColumnDefinitions>
                   <TextBlock Text="{x:Bind Time}" Style="{StaticResource TypeMonoMedium12}"
-                             Foreground="{ThemeResource TextMutedBrush}" VerticalAlignment="Center" />
+                             Foreground="{ThemeResource OnSurfaceVariantBrush}" VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1" Style="{StaticResource BodyText}" VerticalAlignment="Center"
                              TextTrimming="CharacterEllipsis">
                     <Run Text="{x:Bind Lock}" FontFamily="{StaticResource BodyStrongFont}" /><Run Text=" · " /><Run Text="{x:Bind Vessel}" />
@@ -295,7 +295,7 @@
                                  TextWrapping="Wrap" LineHeight="18" />
                     </Border>
                     <TextBlock Text="{x:Bind Meta}" Style="{StaticResource TypeMono11}"
-                               Foreground="{ThemeResource TextMutedBrush}" HorizontalAlignment="{x:Bind local:FleetView.BubbleSide(FromCrew)}" />
+                               Foreground="{ThemeResource OnSurfaceVariantBrush}" HorizontalAlignment="{x:Bind local:FleetView.BubbleSide(FromCrew)}" />
                   </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>

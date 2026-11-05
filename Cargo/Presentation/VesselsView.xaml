@@ -74,7 +74,7 @@
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
           <Grid>
             <TextBlock Text="View all in Docking" Style="{StaticResource TypeMedium13}" />
-            <TextBlock Text="↗" Foreground="{ThemeResource TextMutedBrush}" HorizontalAlignment="Right"
+            <TextBlock Text="↗" Foreground="{ThemeResource OnSurfaceVariantBrush}" HorizontalAlignment="Right"
                        AutomationProperties.AccessibilityView="Raw" />
           </Grid>
         </Button>
@@ -103,7 +103,7 @@
                   <TextBlock Text="{x:Bind ViewModel.ProfileHint, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
                 </StackPanel>
                 <TextBlock Text="{x:Bind ViewModel.BayLabel, Mode=OneWay}" Style="{StaticResource BodyStrongSmallText}"
-                           Foreground="{ThemeResource AccentBrush}" VerticalAlignment="Top" TextWrapping="Wrap"
+                           Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Top" TextWrapping="Wrap"
                            Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
                            Margin="{utu:Responsive Narrowest={StaticResource GapTop6}, Wide={StaticResource GapStart16}}" />
               </Grid>
@@ -133,12 +133,12 @@
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:MiniCard">
-                  <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Background="{ThemeResource PaperBrush}" Padding="12,10,12,9">
+                  <utu:CardContentControl Style="{StaticResource OutlinedPanel}" Background="{ThemeResource BackgroundBrush}" Padding="12,10,12,9">
                     <StackPanel Spacing="{StaticResource Space4}">
                       <!-- xaml-lint: allow card - icon disc -->
                       <Border Width="22" Height="22" CornerRadius="11" BorderThickness="1" Margin="{StaticResource GapBottom6}"
-                              BorderBrush="{ThemeResource HairlineStrongBrush}">
-                        <shapes:Path Data="{x:Bind local:Paint.Icon(IconData)}" Stroke="{ThemeResource InkBrush}"
+                              BorderBrush="{ThemeResource OutlineBrush}">
+                        <shapes:Path Data="{x:Bind local:Paint.Icon(IconData)}" Stroke="{ThemeResource OnSurfaceBrush}"
                                    StrokeThickness="2" Width="11" Height="11" Stretch="Uniform" />
                       </Border>
                       <TextBlock Text="{x:Bind Key}" Style="{StaticResource MicroText}" />
@@ -169,7 +169,7 @@
               <Grid>
                 <TextBlock Text="Cargo operations" Style="{StaticResource CardTitleText}" />
                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}" HorizontalAlignment="Right" VerticalAlignment="Center">
-                  <Ellipse Width="6" Height="6" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Center" />
+                  <Ellipse Width="6" Height="6" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
                   <TextBlock Text="{x:Bind ViewModel.MovesLabel, Mode=OneWay}" Style="{StaticResource CaptionText}" />
                 </StackPanel>
               </Grid>
@@ -192,7 +192,7 @@
                 <StackPanel Grid.Column="1" Spacing="{StaticResource Space8}">
                   <Grid>
                     <TextBlock Text="Loading" Style="{StaticResource BodyStrongText}" />
-                    <TextBlock Text="{x:Bind ViewModel.LoadLive, Mode=OneWay}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource AccentBrush}" HorizontalAlignment="Right" />
+                    <TextBlock Text="{x:Bind ViewModel.LoadLive, Mode=OneWay}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource PrimaryBrush}" HorizontalAlignment="Right" />
                   </Grid>
                   <controls:TickBar AutomationProperties.Name="{x:Bind ViewModel.LoadLive, Mode=OneWay}" Height="14" LitToken="AccentInvariantBrush" Percent="{x:Bind ViewModel.LoadPercent, Mode=OneWay}" />
                 </StackPanel>
@@ -274,7 +274,7 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
-          <Border Height="1" Background="{ThemeResource HairlineBrush}" />
+          <Border Height="1" Background="{ThemeResource OutlineVariantBrush}" />
           <StackPanel Spacing="{StaticResource Space10}">
             <TextBlock Text="Security clearance" Style="{StaticResource BodyStrongLargeText}" />
             <ItemsControl IsTabStop="False" AutomationProperties.Name="Clearance checks" ItemsSource="{x:Bind ViewModel.Checks, Mode=OneWay}">
@@ -292,7 +292,7 @@
                     <TextBlock Text="{x:Bind Mark}" Style="{StaticResource TypeStrong13}"
                                Foreground="{x:Bind local:Paint.Tone(Tone)}" />
                     <TextBlock Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyText}" />
-                    <TextBlock Grid.Column="2" Text="{x:Bind Time}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource TextFaintBrush}" />
+                    <TextBlock Grid.Column="2" Text="{x:Bind Time}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource OnSurfaceVariantBrush}" />
                   </Grid>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
@@ -313,7 +313,7 @@
         <controls:FlowPanel Spacing="{StaticResource Space14}" RowSpacing="{StaticResource Space2}">
           <TextBlock Text="{x:Bind ViewModel.BayHeading, Mode=OneWay}" Style="{StaticResource TypeStrong18}" />
           <TextBlock Text="{x:Bind ViewModel.BayTotal, Mode=OneWay}" Style="{StaticResource BodyText}"
-                     Foreground="{ThemeResource AccentBrush}" VerticalAlignment="Bottom" Margin="{StaticResource GapBottom2}" />
+                     Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Bottom" Margin="{StaticResource GapBottom2}" />
           <TextBlock Text="{x:Bind ViewModel.BayRemaining, Mode=OneWay}" Style="{StaticResource SubtitleText}"
                      VerticalAlignment="Bottom" Margin="{StaticResource GapBottom2}" />
         </controls:FlowPanel>
@@ -356,7 +356,7 @@
               </StackPanel>
               <StackPanel Grid.Column="2" Spacing="{StaticResource Space4}">
                 <TextBlock Text="Remaining" Style="{StaticResource CaptionText}" />
-                <TextBlock Text="{x:Bind ViewModel.BayLeft, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource AccentBrush}" />
+                <TextBlock Text="{x:Bind ViewModel.BayLeft, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource PrimaryBrush}" />
               </StackPanel>
             </Grid>
             <StackPanel Spacing="{StaticResource Space2}">
@@ -397,7 +397,7 @@
             </Grid>
           </StackPanel>
 
-          <Grid ColumnSpacing="{StaticResource Space14}" BorderBrush="{ThemeResource HairlineBrush}"
+          <Grid ColumnSpacing="{StaticResource Space14}" BorderBrush="{ThemeResource OutlineVariantBrush}"
                 Grid.Row="{utu:Responsive Narrowest=3, Narrow=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Narrow=2, Wide=3}"
                 Grid.ColumnSpan="{utu:Responsive Narrowest=4, Narrow=2, Wide=1}"
                 BorderThickness="{utu:Responsive Narrowest='0,1,0,0', Narrow='1,0,0,0'}"
@@ -427,7 +427,7 @@
                 <TextBlock Grid.Row="1" Text="Status" Style="{StaticResource MicroText}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.BayContainerStatus, Mode=OneWay}"
                            Style="{StaticResource BodyStrongSmallText}" HorizontalAlignment="Right"
-                           Foreground="{ThemeResource AccentBrush}" />
+                           Foreground="{ThemeResource PrimaryBrush}" />
               </Grid>
             </StackPanel>
           </Grid>

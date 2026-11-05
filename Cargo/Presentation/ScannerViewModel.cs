@@ -81,7 +81,7 @@ public sealed partial class ScannerViewModel : ObservableObject
     [ObservableProperty] public partial string Verdict { get; set; } = string.Empty;
     [ObservableProperty] public partial string VerdictNote { get; set; } = string.Empty;
     /// <summary>The verdict's dot, as the container's security palette key.</summary>
-    [ObservableProperty] public partial string VerdictTone { get; set; } = "AccentColor";
+    [ObservableProperty] public partial string VerdictTone { get; set; } = "PrimaryColor";
     [ObservableProperty] public partial string ManifestHeading { get; set; } = string.Empty;
     /// <summary>
     /// The scan's action: the held box opens her inspection record on Security ("Open inspection →"); any other box's

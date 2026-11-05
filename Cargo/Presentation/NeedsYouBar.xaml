@@ -29,9 +29,9 @@
 
       <!-- Needs: the alert square the app uses for every needs-you mark. Done: a check. -->
       <Grid VerticalAlignment="Center" AutomationProperties.AccessibilityView="Raw">
-        <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource AlertBrush}"
+        <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource ErrorBrush}"
                    Visibility="{x:Bind ViewModel.IsPending, Mode=OneWay}" />
-        <FontIcon Glyph="&#xE73E;" FontSize="{StaticResource GlyphSizeSmall}" Foreground="{ThemeResource InkBrush}"
+        <FontIcon Glyph="&#xE73E;" FontSize="{StaticResource GlyphSizeSmall}" Foreground="{ThemeResource OnSurfaceBrush}"
                   Visibility="{x:Bind ViewModel.IsDone, Mode=OneWay}" />
       </Grid>
 
@@ -55,7 +55,7 @@
                 AutomationProperties.Name="{x:Bind ViewModel.ConfirmLabel, Mode=OneWay}">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
             <ProgressRing Width="12" Height="12" MinWidth="12" MinHeight="12" IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
-                          Foreground="{ThemeResource OnAccentBrush}" />
+                          Foreground="{ThemeResource OnPrimaryBrush}" />
             <TextBlock Text="{x:Bind ViewModel.ConfirmLabel, Mode=OneWay}" Style="{StaticResource ActionLabelText}" />
           </StackPanel>
         </Button>

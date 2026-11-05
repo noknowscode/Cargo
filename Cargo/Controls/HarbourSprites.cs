@@ -51,8 +51,8 @@ public sealed partial class YardTruck : SpriteControl
         Surface.Place(Draw.Rect(6, 12, 26, 20, Tokens.Brush("BridgeBrush"), 3));
         Surface.Place(Draw.Rect(9, 15, 12, 9, Tokens.Brush("ShallowsBrush"), 1));
         Surface.Place(Draw.Rect(4, 32, 112, 4, Tokens.Brush("SteelBrush"), 1));
-        Surface.Place(Draw.Dot(16, 39, 5, Tokens.Brush("InkBrush")));
-        Surface.Place(Draw.Dot(86, 39, 5, Tokens.Brush("InkBrush")));
-        Surface.Place(Draw.Dot(101, 39, 5, Tokens.Brush("InkBrush")));
+        Surface.Place(Draw.Dot(16, 39, 5, Tokens.Brush("OnSurfaceBrush")));
+        Surface.Place(Draw.Dot(86, 39, 5, Tokens.Brush("OnSurfaceBrush")));
+        Surface.Place(Draw.Dot(101, 39, 5, Tokens.Brush("OnSurfaceBrush")));
     }
 }

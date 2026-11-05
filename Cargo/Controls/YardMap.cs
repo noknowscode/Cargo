@@ -51,7 +51,7 @@ public sealed partial class YardMap : SceneHost
 
         // Haul roads
         Scene.Place(Draw.Rect(0, 270, 1100, 22, Tokens.Brush("RoadBrush")));
-        Scene.Place(Draw.Rule(0, 281, 1100, 281, Tokens.Brush("PaperWarmBrush"), 1.5, dash: Draw.Dash(9, 8)));
+        Scene.Place(Draw.Rule(0, 281, 1100, 281, Tokens.Brush("BackgroundBrush"), 1.5, dash: Draw.Dash(9, 8)));
         Scene.Place(Draw.Rect(540, 0, 22, 560, Tokens.Brush("RoadBrush")));
 
         AddTruck(_truckA, "CargoHazardColor");
@@ -68,8 +68,8 @@ public sealed partial class YardMap : SceneHost
             }
 
             Scene.Place(box);
-            Scene.Place(Draw.Text(zone.Name, zone.X + 14, zone.Y + 8, 13, Tokens.Brush("InkBrush"), "BodyStrongFont"));
-            Scene.Place(Draw.Text(zone.Sub, zone.X + 14, zone.Y + 26, 12, Tokens.Brush("TextMutedBrush")));
+            Scene.Place(Draw.Text(zone.Name, zone.X + 14, zone.Y + 8, 13, Tokens.Brush("OnSurfaceBrush"), "BodyStrongFont"));
+            Scene.Place(Draw.Text(zone.Sub, zone.X + 14, zone.Y + 26, 12, Tokens.Brush("OnSurfaceVariantBrush")));
         }
 
         AddRtg(_rtgA, 52);
@@ -120,7 +120,7 @@ public sealed partial class YardMap : SceneHost
         if (height == 0)
         {
             // A filled (near-transparent) empty slot, so the whole slot takes the click, not just its outline
-            var empty = Draw.Rect(x, y, 26, 16, Tokens.Brush("InkColor", 0.02), 1.5, Tokens.Brush("ApronLineColor", 0.5), 1, 0.9);
+            var empty = Draw.Rect(x, y, 26, 16, Tokens.Brush("OnSurfaceColor", 0.02), 1.5, Tokens.Brush("ApronLineColor", 0.5), 1, 0.9);
             empty.StrokeDashArray = Draw.Dash(3, 3);
             Bind(empty, key);
             elements.Add(Scene.Place(empty));
@@ -133,13 +133,13 @@ public sealed partial class YardMap : SceneHost
             elements.Add(Scene.Place(top));
 
             // Taller stacks read darker, so height is legible at a glance
-            elements.Add(Scene.Place(Unhit(Draw.Rect(x, y, 26, Math.Round((height - 1) * 3.5), Tokens.Brush("InkColor", 0.18), 1.5))));
+            elements.Add(Scene.Place(Unhit(Draw.Rect(x, y, 26, Math.Round((height - 1) * 3.5), Tokens.Brush("OnSurfaceColor", 0.18), 1.5))));
             elements.Add(Scene.Place(Unhit(Draw.Rect(x + 3, y + 9, Math.Round(20d * height / 5), 4, Tokens.Brush("DeckWhiteColor", 0.55), 1))));
         }
 
         if (selected)
         {
-            elements.Add(Scene.Place(Unhit(Draw.Rect(x, y, 26, 16, null, 1.5, Tokens.Brush("InkBrush"), 2))));
+            elements.Add(Scene.Place(Unhit(Draw.Rect(x, y, 26, 16, null, 1.5, Tokens.Brush("OnSurfaceBrush"), 2))));
         }
 
         if (moved)
@@ -205,11 +205,11 @@ public sealed partial class YardMap : SceneHost
     private void AddRtg(TranslateTransform transform, double x)
     {
         var rtg = new Canvas { RenderTransform = transform };
-        rtg.Place(Draw.Rect(x, 92, 100, 120, null, 4, Tokens.Brush("AccentBrush", 0.9), 5));
-        rtg.Place(Draw.Rect(x + 44, 96, 14, 112, Tokens.Brush("AccentColor", 0.35)));
+        rtg.Place(Draw.Rect(x, 92, 100, 120, null, 4, Tokens.Brush("PrimaryBrush", 0.9), 5));
+        rtg.Place(Draw.Rect(x + 44, 96, 14, 112, Tokens.Brush("PrimaryColor", 0.35)));
         foreach (var (dx, dy) in new[] { (-2d, -4d), (92d, -4d), (-2d, 116d), (92d, 116d) })
         {
-            rtg.Place(Draw.Rect(x + dx, 92 + dy, 10, 8, Tokens.Brush("CargoOversizeInvariantBrush"), 2));
+            rtg.Place(Draw.Rect(x + dx, 92 + dy, 10, 8, Tokens.Brush("CargoOversizeColor"), 2));
         }
 
         Scene.Place(rtg);
@@ -219,7 +219,7 @@ public sealed partial class YardMap : SceneHost
     {
         var truck = new Canvas { RenderTransform = transform };
         truck.Place(Draw.Rect(0, 274, 34, 14, Tokens.Brush(tintToken), 1.5));
-        truck.Place(Draw.Rect(35, 275, 10, 12, Tokens.Brush("DeckWhiteInvariantBrush"), 2, Tokens.Brush("QuayBrush"), 1));
+        truck.Place(Draw.Rect(35, 275, 10, 12, Tokens.Brush("DeckWhiteColor"), 2, Tokens.Brush("QuayBrush"), 1));
         Scene.Place(truck);
     }
 

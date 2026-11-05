@@ -212,7 +212,7 @@ public sealed partial class SecurityViewModel : ObservableObject
         }
     }
 
-    private void Log(string mark, string text) => State.Inspections.Add(mark, text, "AccentBrush");
+    private void Log(string mark, string text) => State.Inspections.Add(mark, text, "PrimaryBrush");
 
     /// <summary>The log's rows; a status colour that is too light for text takes its ink variant, as the marks are text.</summary>
     private void BuildLog() =>
@@ -302,13 +302,13 @@ public sealed partial class SecurityViewModel : ObservableObject
             Mark = "✓",
             Label = label,
             Time = string.Empty,
-            Tone = "AccentBrush"
+            Tone = "PrimaryBrush"
         }).ToList();
 
         HeldChecks = new[]
         {
-            ("✓", "Seal verified", "AccentBrush"),
-            ("✓", "Manifest matched", "AccentBrush"),
+            ("✓", "Seal verified", "PrimaryBrush"),
+            ("✓", "Manifest matched", "PrimaryBrush"),
             ("⚠", "Weight variance +1.8 t · manual inspection required", "OrangeInkBrush")
         }.Select(entry => new CheckRow
         {

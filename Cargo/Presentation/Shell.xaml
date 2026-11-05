@@ -1,7 +1,7 @@
 <UserControl x:Class="Cargo.Presentation.Shell"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="{ThemeResource PaperBrush}">
+             Background="{ThemeResource BackgroundBrush}">
   <!-- The navigation host: the router puts the Main route here. Regions live in MainPage, never here. -->
   <ContentControl x:Name="Host" IsTabStop="False" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
 </UserControl>

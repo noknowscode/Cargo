@@ -90,7 +90,7 @@ public sealed partial class CargoOpsScene : SceneHost
 
         _hookGroup.Children.Clear();
         _hookGroup.RenderTransform = _hook;
-        _hookGroup.Place(Draw.Rect(-4, -2, 42, 4, Tokens.Brush("CargoOversizeInvariantBrush"), 1));
+        _hookGroup.Place(Draw.Rect(-4, -2, 42, 4, Tokens.Brush("CargoOversizeColor"), 1));
         _hookGroup.Place(Sprites.Fill(
             Sprites.ContainerSide(vessel.Mix.Hazard > 5 ? CargoClass.Hazard : CargoClass.Standard),
             0, 2, 34, 16));
@@ -100,9 +100,9 @@ public sealed partial class CargoOpsScene : SceneHost
         Scene.Place(Sprites.Fit("crane-side", 36, -4, 150, 148, anchorY: 1, opacity: 0.96));
 
         Scene.Place(Draw.Text($"Quay · {Math.Round(vessel.Containers * vessel.UnloadPercent / 100d):N0} discharged",
-            8, 158, 10.5, Tokens.Brush("TextMutedBrush")));
+            8, 158, 10.5, Tokens.Brush("OnSurfaceVariantBrush")));
         Scene.Place(Draw.Text($"Aboard · {vessel.Containers - Math.Round(vessel.Containers * vessel.UnloadPercent / 100d):N0} TEU",
-            212, 158, 10.5, Tokens.Brush("TextMutedBrush"), alignment: TextAlignment.Right, width: 200));
+            212, 158, 10.5, Tokens.Brush("OnSurfaceVariantBrush"), alignment: TextAlignment.Right, width: 200));
     }
 
     private void Advance()

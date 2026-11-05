@@ -101,7 +101,7 @@
                     <Border Background="{ThemeResource SurfaceBrush}" CornerRadius="{StaticResource RadiusTag}" Padding="6,2"
                             HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,0,10,8">
                       <TextBlock Text="{x:Bind Meta}" Style="{StaticResource TypeMonoMedium11}"
-                                 Foreground="{ThemeResource TextMutedBrush}" />
+                                 Foreground="{ThemeResource OnSurfaceVariantBrush}" />
                     </Border>
                   </Grid>
                   <TextBlock Text="{x:Bind Route}" Style="{StaticResource BodyStrongText}"
@@ -134,7 +134,7 @@
 
           <StackPanel Spacing="{StaticResource Space10}">
             <TextBlock Text="JOURNEY" Style="{StaticResource TypeStrong12}"
-                       Foreground="{ThemeResource TextMutedBrush}" />
+                       Foreground="{ThemeResource OnSurfaceVariantBrush}" />
             <ItemsControl IsTabStop="False" AutomationProperties.Name="Container journey" ItemsSource="{x:Bind ViewModel.Journey, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate><controls:EvenRowPanel /></ItemsPanelTemplate>
@@ -164,7 +164,7 @@
             </ItemsControl>
           </StackPanel>
 
-          <Border Height="1" Background="{ThemeResource HairlineBrush}" />
+          <Border Height="1" Background="{ThemeResource OutlineVariantBrush}" />
           <ItemsControl IsTabStop="False" AutomationProperties.Name="Container facts" ItemsSource="{x:Bind ViewModel.Facts, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><controls:TwoColumnPanel ColumnSpacing="{StaticResource Space14}" RowSpacing="{StaticResource Space12}" /></ItemsPanelTemplate>
@@ -185,10 +185,10 @@
                   MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}">
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" HorizontalAlignment="Center">
               <shapes:Path Data="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3M3 12h18"
-                           Stroke="{ThemeResource PaperBrush}" StrokeThickness="2" Width="{StaticResource IconSizeSmall}" Height="{StaticResource IconSizeSmall}"
+                           Stroke="{ThemeResource OnSurfaceInverseBrush}" StrokeThickness="2" Width="{StaticResource IconSizeSmall}" Height="{StaticResource IconSizeSmall}"
                            Stretch="Uniform" VerticalAlignment="Center" />
               <TextBlock Text="Scan container" Style="{StaticResource TypeMedium13}"
-                         Foreground="{ThemeResource PaperBrush}" />
+                         Foreground="{ThemeResource OnSurfaceInverseBrush}" />
             </StackPanel>
           </Button>
           <!-- Security's inspection record is the held box's: only she offers it -->

@@ -17,8 +17,8 @@ public sealed partial class GridPaper : UserControl
     public GridPaper()
     {
         IsHitTestVisible = false;
-        // The scanner stage is dark in both themes: its grid and wash use the invariant ink and the accent's paint
-        _lines.Stroke = Tokens.Brush("InkDeepColor", 0.045);
+        // The scanner stage is the Dark theme in both themes: its grid is the Dark page ink, its wash the accent's paint
+        _lines.Stroke = Tokens.Brush("BackgroundColor", 0.045, ElementTheme.Dark);
 
         var glow = new Rectangle
         {
@@ -29,7 +29,7 @@ public sealed partial class GridPaper : UserControl
                 RadiusY = 0.9,
                 GradientStops =
                 {
-                    new GradientStop { Offset = 0, Color = Tokens.Paint("AccentColor") },
+                    new GradientStop { Offset = 0, Color = Tokens.Paint("PrimaryColor") },
                     new GradientStop { Offset = 1, Color = Windows.UI.Color.FromArgb(0, 0, 0, 0) }
                 }
             },

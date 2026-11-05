@@ -55,8 +55,8 @@ public sealed partial class TimelineLanes : SKCanvasElement
     }
 
     private void ReadPalette() =>
-        (_ink, _muted, _surface, _navy, _water, _accent, _ground) = (Sk("InkColor"), Sk("TextMutedColor"), Sk("SurfaceColor"),
-            Sk("NavyColor"), Sk("WaterColor"), Sk("AccentColor"), Sk("PaperColor"));
+        (_ink, _muted, _surface, _navy, _water, _accent, _ground) = (Sk("OnSurfaceColor"), Sk("OnSurfaceVariantColor"), Sk("SurfaceColor"),
+            Sk("NavyColor"), Sk("WaterColor"), Sk("PrimaryColor"), Sk("BackgroundColor"));
 
     public static readonly DependencyProperty PlotLeftProperty = DependencyProperty.Register(
         nameof(PlotLeft), typeof(double), typeof(TimelineLanes),

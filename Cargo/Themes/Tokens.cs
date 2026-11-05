@@ -3,13 +3,13 @@ using Windows.UI;
 namespace Cargo.Themes;
 
 /// <summary>
-/// Typed access to the palette declared in Themes/Tokens.xaml, so view models and scenes can hand
-/// brushes to the view without any colour literal ever appearing in code. It is also the app's one
-/// theme-aware palette for code: tokens resolve for the window's theme (<see cref="Theme"/>), and when
-/// that changes (<see cref="Apply"/>) every brush handed out here is recoloured in place, so a view
-/// that holds one follows the theme with no work of its own. Code that keeps a colour rather than a
-/// brush (Skia paints, blends, gradients) re-reads on <see cref="ThemeChanged"/>, through
-/// <c>Controls/Live.RebuildOnTheme</c> for anything on screen.
+/// The palette for code, so view models and scenes can hand brushes to the view without any colour literal
+/// appearing in code. A key is a palette role of the Simple theme (<c>OnSurfaceBrush</c>, <c>PrimaryColor</c>: the
+/// palette is Styles/ColorPaletteOverride.xaml) or one of the app's no-role colours in App.xaml (<c>NavyColor</c>,
+/// <c>HarbourStageColor</c>). Tokens resolve for the window's theme (<see cref="Theme"/>), and when that changes
+/// (<see cref="Apply"/>) every brush handed out here is recoloured in place, so a view that holds one follows the
+/// theme with no work of its own. Code that keeps a colour rather than a brush (Skia paints, blends, gradients)
+/// re-reads on <see cref="ThemeChanged"/>, through <c>Controls/Live.RebuildOnTheme</c> for anything on screen.
 /// </summary>
 public static class Tokens
 {
@@ -73,6 +73,28 @@ public static class Tokens
     /// </summary>
     public static Color Paint(string key) => Resolve(key, ElementTheme.Light);
 
+    /// <summary>A token's value for one theme whatever the window's: for a part of the page that sets its own
+    /// RequestedTheme (the scanner's stage is Dark in both themes).</summary>
+    public static Color Color(string key, ElementTheme theme) => Resolve(key, theme);
+
+    private static readonly Dictionary<(string, int, ElementTheme), SolidColorBrush> PinnedCache = new();
+
+    /// <summary>
+    /// Brush for a token in one theme whatever the window's (see <see cref="Color(string, ElementTheme)"/>).
+    /// Cached and shared; it does not follow a theme change, because the element it paints does not either.
+    /// </summary>
+    public static SolidColorBrush Brush(string key, double opacity, ElementTheme theme)
+    {
+        var bucket = (int)Math.Round(opacity * 1000);
+        if (!PinnedCache.TryGetValue((key, bucket, theme), out var brush))
+        {
+            brush = new SolidColorBrush(Resolve(key, theme)) { Opacity = bucket / 1000d };
+            PinnedCache[(key, bucket, theme)] = brush;
+        }
+
+        return brush;
+    }
+
     /// <summary>Brush for a palette key, optionally at reduced opacity. Instances are cached, shared and recoloured on a theme change.</summary>
     public static SolidColorBrush Brush(string key, double opacity = 1d)
     {
@@ -132,15 +154,18 @@ public static class Tokens
         return Windows.UI.Color.FromArgb(source.A, Clamp(source.R + delta), Clamp(source.G + delta), Clamp(source.B + delta));
     }
 
-    /// <summary>A number from Themes/Tokens.xaml for the current theme (e.g. <c>HarbourLightLevel</c>).</summary>
+    /// <summary>A number from App.xaml's theme dictionaries for the current theme (e.g. <c>HarbourLightLevel</c>).</summary>
     public static double Number(string key, double fallback) => Find(key, Theme) is double d ? d : fallback;
 
-    public static readonly SolidColorBrush Transparent = new(Windows.UI.Color.FromArgb(0, 0, 0, 0));
+    public static readonly SolidColorBrush Transparent = new(Microsoft.UI.Colors.Transparent);
 
     private static Color WithAlpha(Color c, double alpha) =>
         Windows.UI.Color.FromArgb((byte)Math.Round(c.A * alpha), c.R, c.G, c.B);
 
-    private static Color Resolve(string key, ElementTheme theme) => (Find(key, theme) ?? Find(key + "Color", theme)) switch
+    // A key names a colour or a brush; a no-role colour that has no brush resource ("NavyBrush") resolves through its
+    // colour ("NavyColor")
+    private static Color Resolve(string key, ElementTheme theme) => (Find(key, theme) ?? Find(key + "Color", theme)
+        ?? (key.EndsWith("Brush", StringComparison.Ordinal) ? Find(key[..^5] + "Color", theme) : null)) switch
     {
         Color c => c,
         // A brush token carries its transparency in Opacity (the hairlines are ink at 4.5-14%); fold it
@@ -152,8 +177,9 @@ public static class Tokens
     /// <summary>
     /// Looks a key up for an explicit theme. Code has no {ThemeResource}, and a plain Application
     /// resource lookup answers with the application's theme, not the window's, so this walks the
-    /// merged dictionaries' theme dictionaries itself (the Dark palette is keyed "Default", the WinUI
-    /// convention), then falls back to the invariant resources.
+    /// merged dictionaries' theme dictionaries itself, the theme's generated palette and role brushes
+    /// included (the Dark palette is keyed "Default", the WinUI convention), then falls back to the
+    /// invariant resources.
     /// </summary>
     private static object? Find(string key, ElementTheme theme)
     {
@@ -163,29 +189,27 @@ public static class Tokens
         }
 
         string[] themeKeys = theme == ElementTheme.Dark ? ["Dark", "Default"] : ["Light"];
-        foreach (var themeKey in themeKeys)
-        {
-            if (FindThemed(resources, key, themeKey) is { } found)
-            {
-                return found;
-            }
-        }
-
-        return resources.TryGetValue(key, out var direct) ? direct : null;
+        return FindThemed(resources, key, themeKeys) ?? (resources.TryGetValue(key, out var direct) ? direct : null);
     }
 
-    /// <summary>Depth-first through merged dictionaries, last first: a later dictionary wins in WinUI.</summary>
-    private static object? FindThemed(ResourceDictionary dictionary, string key, string themeKey)
+    /// <summary>
+    /// Depth-first through merged dictionaries, last first: a later dictionary wins in WinUI. Each dictionary answers
+    /// with its own theme dictionary for the theme ("Dark", else "Default") before the dictionaries it merges.
+    /// </summary>
+    private static object? FindThemed(ResourceDictionary dictionary, string key, string[] themeKeys)
     {
-        if (dictionary.ThemeDictionaries.TryGetValue(themeKey, out var t) && t is ResourceDictionary themed
-            && themed.TryGetValue(key, out var value))
+        foreach (var themeKey in themeKeys)
         {
-            return value;
+            if (dictionary.ThemeDictionaries.TryGetValue(themeKey, out var t) && t is ResourceDictionary themed
+                && themed.TryGetValue(key, out var value))
+            {
+                return value;
+            }
         }
 
         for (var i = dictionary.MergedDictionaries.Count - 1; i >= 0; i--)
         {
-            if (FindThemed(dictionary.MergedDictionaries[i], key, themeKey) is { } found)
+            if (FindThemed(dictionary.MergedDictionaries[i], key, themeKeys) is { } found)
             {
                 return found;
             }

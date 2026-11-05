@@ -197,7 +197,7 @@ public sealed partial class ContainerScanner : Panel
             (new[] { -hx, hx, hx, -hx }, new[] { hy, hy, hy, hy }, new[] { hz, hz, -hz, -hz }, Tokens.Shade(tint, -70))
         };
 
-        var edge = xray ? Tokens.Brush("AccentBrightColor", 0.75) : Tokens.Brush("InkDeepColor", 0.35);
+        var edge = xray ? Tokens.Brush("PrimaryColor", 0.75, ElementTheme.Dark) : Tokens.Brush("BackgroundColor", 0.35, ElementTheme.Dark);
 
         var ordered = faces
             .Select(face => (Face: face, Depth: Enumerable.Range(0, 4)
@@ -282,7 +282,7 @@ public sealed partial class ContainerScanner : Panel
                 Text = block.Item.Name.Split(" · ")[0],
                 FontFamily = (FontFamily)Application.Current.Resources["MonoMediumFont"],
                 FontSize = 9,
-                Foreground = Tokens.Brush("TextOnDarkStrongBrush")
+                Foreground = Tokens.Brush("OnSurfaceBrush", 1, ElementTheme.Dark)
             };
             var anchor = Project(block.X + 4, hy - 6, front, cx, cy, zoom);
             Canvas.SetLeft(label, anchor.X);

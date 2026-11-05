@@ -31,9 +31,9 @@ public sealed partial class MainPage : Page
 
     // The layer switcher's segments: paper on the ink indicator for the current layer
 
-    public static Brush LayerInk(bool current) => Tokens.Brush(current ? "PaperBrush" : "InkBrush");
+    public static Brush LayerInk(bool current) => Tokens.Brush(current ? "OnSurfaceInverseBrush" : "OnSurfaceBrush");
 
-    public static Brush LayerIconInk(bool current) => Tokens.Brush(current ? "PaperBrush" : "TextMutedBrush");
+    public static Brush LayerIconInk(bool current) => Tokens.Brush(current ? "OnSurfaceInverseBrush" : "OnSurfaceVariantBrush");
 
     // xaml-lint: allow codebehind - the harbour scene is a code-built control that takes its model once, with the store it draws
     private void Attach()

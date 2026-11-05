@@ -136,8 +136,8 @@ public sealed partial class RiverMap : SceneHost
         DrawNotices();
         DrawFleet();
 
-        Scene.Place(Draw.Text("ALDER BASIN · KM 120", 40, 26, 11, Tokens.Brush("TextMutedBrush")));
-        Scene.Place(Draw.Label("WESTHAVEN · KM 0", 1400, 26, 11, Tokens.Brush("TextMutedBrush"),
+        Scene.Place(Draw.Text("ALDER BASIN · KM 120", 40, 26, 11, Tokens.Brush("OnSurfaceVariantBrush")));
+        Scene.Place(Draw.Label("WESTHAVEN · KM 0", 1400, 26, 11, Tokens.Brush("OnSurfaceVariantBrush"),
             alignment: TextAlignment.Right, width: 200));
     }
 
@@ -151,9 +151,9 @@ public sealed partial class RiverMap : SceneHost
             var y = position.Y + normal.Y * 58;
 
             Scene.Place(Draw.Rule(x, y, position.X + normal.X * 66, position.Y + normal.Y * 66,
-                Tokens.Brush("TextMutedBrush")));
+                Tokens.Brush("OnSurfaceVariantBrush")));
             Scene.Place(Draw.Label($"km {km}", position.X + normal.X * 78, position.Y + normal.Y * 78 - 7, 10.5,
-                Tokens.Brush("TextMutedBrush"), "MonoFont", TextAlignment.Center, 80));
+                Tokens.Brush("OnSurfaceVariantBrush"), "MonoFont", TextAlignment.Center, 80));
         }
     }
 
@@ -182,7 +182,7 @@ public sealed partial class RiverMap : SceneHost
             Scene.Place(Draw.Rule(position.X - normal.X * 38, position.Y - normal.Y * 38,
                 position.X - normal.X * 70 + 15, position.Y - normal.Y * 70 + 15, tone, 1, dash: Draw.Dash(2, 3)));
             Scene.Place(Draw.Rect(x, y, 74, 30, Tokens.Brush("SurfaceBrush", 0.92), 7, tone, 1));
-            Scene.Place(Draw.Text(gauge.Name, x + 8, y + 3, 9.5, Tokens.Brush("TextMutedBrush")));
+            Scene.Place(Draw.Text(gauge.Name, x + 8, y + 3, 9.5, Tokens.Brush("OnSurfaceVariantBrush")));
             Scene.Place(Draw.Text($"{gauge.Level:0.0} m {gauge.Trend}", x + 8, y + 15, 11.5, tone, "MonoMediumFont"));
         }
     }
@@ -197,12 +197,12 @@ public sealed partial class RiverMap : SceneHost
             {
                 RenderTransform = new RotateTransform { Angle = angle + 90 }
             };
-            gate.Place(Draw.Rect(-8, -46, 16, 92, Tokens.Brush("InkBrush"), 3));
+            gate.Place(Draw.Rect(-8, -46, 16, 92, Tokens.Brush("OnSurfaceBrush"), 3));
             gate.Place(Draw.Rect(-3, -30, 6, 60, Tokens.Brush(lockDef.Tone)));
             Scene.Place(gate.At(position.X, position.Y));
 
             Scene.Place(Draw.Rect(position.X - 46, position.Y - 78, 92, 22, Tokens.Brush("SurfaceBrush", 0.94), 6));
-            Scene.Place(Draw.Label(lockDef.Name, position.X, position.Y - 76, 11, Tokens.Brush("InkBrush"),
+            Scene.Place(Draw.Label(lockDef.Name, position.X, position.Y - 76, 11, Tokens.Brush("OnSurfaceBrush"),
                 "BodyStrongFont", TextAlignment.Center, 200));
             Scene.Place(Draw.Label(lockDef.Status, position.X, position.Y + 60, 10.5,
                 Tokens.Brush(lockDef.Tone), "BodyFont", TextAlignment.Center, 200));
@@ -246,7 +246,7 @@ public sealed partial class RiverMap : SceneHost
                 RadiusX = 14,
                 RadiusY = 14,
                 Stroke = selected
-                    ? Tokens.Brush("InkBrush")
+                    ? Tokens.Brush("OnSurfaceBrush")
                     : late ? Tokens.Brush("OrangeBrush") : Tokens.Brush("DeckWhiteColor", 0.7),
                 StrokeThickness = 2
             });
@@ -273,10 +273,10 @@ public sealed partial class RiverMap : SceneHost
             Scene.Place(button);
 
             var width = vessel.Name.Length * 6.2 + 22;
-            var tag = Scene.Place(Draw.Rect(0, 0, width, 20, Tokens.Brush("InkColor", 0.86), 6));
+            var tag = Scene.Place(Draw.Rect(0, 0, width, 20, Tokens.Brush("SurfaceInverseColor", 0.86), 6));
             var dot = Scene.Place(Draw.Dot(0, 0, 3.5, Tokens.Brush(late ? "OrangeBrush" : "SeaGreenBrush")));
             var name = Scene.Place(Draw.Label(vessel.Name, 0, 0, 11.5,
-                Tokens.Brush("SurfaceBrush"), "BodyStrongFont", TextAlignment.Center, 200));
+                Tokens.Brush("OnSurfaceInverseBrush"), "BodyStrongFont", TextAlignment.Center, 200));
 
             _boats.Add((vessel, button, heading, tag, dot, name, width));
         }

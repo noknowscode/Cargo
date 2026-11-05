@@ -1,0 +1,121 @@
+<!--
+  Westhaven Dispatch: the palette. The one file that holds the design's role colours; the Simple theme reads it through
+  App.xaml (SimpleToolkitTheme.Colors > ThemeColors.OverrideSource) and generates every role brush from it
+  (PrimaryBrush, OnSurfaceVariantBrush, OutlineBrush and their Hover, Pressed, Medium... variants), so Uno Platform
+  Studio's Themes tab, which edits this file, recolours the whole app. The design gives a full Light and Dark token
+  table, so every role is set here and no generated colour reaches the screen.
+
+  Where the design's tokens went (docs/design/overview-timeline/EXTRACTION.md §1):
+    Ink           -> OnSurface, OnBackground (text and marks); SurfaceInverse (the ground of inverse chips: the ink
+                     buttons, the NOW pill, a filter that is on)
+    Paper         -> Background (the page), OnSurfaceInverse (text on an ink chip)
+    Surface       -> Surface (header, panels, tags, HUD floats, popovers)
+    SurfaceSunk   -> SurfaceVariant (tonal buttons, chips, tracks, sunk grounds)
+    TextMuted     -> OnSurfaceVariant (secondary text; the design's TextFaint folds in here)
+    Accent        -> Primary (active tab, accent buttons, focus, links, reserved berth, approach route)
+    OnAccent      -> OnPrimary
+    AccentDark    -> OnPrimaryContainer and PrimaryVariantDark (the filled button's hover)
+    AlertInk      -> Error (needs-you marks, late text, count badge); Alert at 12% -> ErrorContainer
+    Hairlines     -> Outline (ink at 18%, interactive edges and strong rules), OutlineVariant (ink at 8%, card edges
+                     and dividers)
+    Shadow        -> Shadow (cast shadows stay ink-dark in both themes)
+  Navy and Water stay data colours (App.xaml), but Navy is also the supporting accent (Secondary) and the design's
+  third neutral ramp step is Tertiary, which Simple uses for pressed states.
+
+  Contrast (WCAG): every text role holds >= 4.5:1 on the grounds it is set on, in both themes. Light: OnSurface 17.6:1
+  on Surface, OnSurfaceVariant 5.3:1 on Background and 5.2:1 on SurfaceVariant, Primary 5.0:1 on Background, Error
+  4.9:1 on Background and 4.5:1 on ErrorContainer, OnPrimary 5.6:1 on Primary. Dark: OnSurfaceVariant 7.3:1 on
+  Surface, Primary 7.5:1, Error 7.0:1, OnPrimary 8.0:1 on Primary.
+
+  "Default" is the Dark dictionary (the WinUI convention).
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ResourceDictionary.ThemeDictionaries>
+    <!-- Light: the design's daylight palette -->
+    <ResourceDictionary x:Key="Light">
+      <Color x:Key="PrimaryColor">#FF1C6E9E</Color>
+      <Color x:Key="OnPrimaryColor">#FFFFFFFF</Color>
+      <Color x:Key="PrimaryContainerColor">#FFE0EAEF</Color>
+      <Color x:Key="OnPrimaryContainerColor">#FF155A82</Color>
+      <Color x:Key="PrimaryInverseColor">#FF6CB4E4</Color>
+      <Color x:Key="PrimaryVariantDarkColor">#FF155A82</Color>
+      <Color x:Key="PrimaryVariantLightColor">#FF5598C4</Color>
+
+      <Color x:Key="SecondaryColor">#FF0F4A6E</Color>
+      <Color x:Key="OnSecondaryColor">#FFFFFFFF</Color>
+      <Color x:Key="SecondaryContainerColor">#FFDFE6E9</Color>
+      <Color x:Key="OnSecondaryContainerColor">#FF0F4A6E</Color>
+      <Color x:Key="SecondaryVariantDarkColor">#FF0F4A6E</Color>
+      <Color x:Key="SecondaryVariantLightColor">#FF5598C4</Color>
+
+      <Color x:Key="TertiaryColor">#FF1F2629</Color>
+      <Color x:Key="OnTertiaryColor">#FFF3F3F1</Color>
+      <Color x:Key="TertiaryContainerColor">#FFE9EAE6</Color>
+      <Color x:Key="OnTertiaryContainerColor">#FF121617</Color>
+
+      <Color x:Key="ErrorColor">#FFB04A32</Color>
+      <Color x:Key="OnErrorColor">#FFFFFFFF</Color>
+      <Color x:Key="ErrorContainerColor">#FFF5E7E3</Color>
+      <Color x:Key="OnErrorContainerColor">#FFB04A32</Color>
+
+      <Color x:Key="BackgroundColor">#FFF3F3F1</Color>
+      <Color x:Key="OnBackgroundColor">#FF121617</Color>
+
+      <Color x:Key="SurfaceColor">#FFFBFBFA</Color>
+      <Color x:Key="OnSurfaceColor">#FF121617</Color>
+      <Color x:Key="SurfaceVariantColor">#FFF0F0ED</Color>
+      <Color x:Key="OnSurfaceVariantColor">#FF5E6569</Color>
+      <Color x:Key="SurfaceInverseColor">#FF121617</Color>
+      <Color x:Key="OnSurfaceInverseColor">#FFF3F3F1</Color>
+      <Color x:Key="SurfaceTintColor">#FF1C6E9E</Color>
+
+      <Color x:Key="OutlineColor">#2E121617</Color>
+      <Color x:Key="OutlineVariantColor">#14121617</Color>
+      <Color x:Key="ShadowColor">#FF121617</Color>
+    </ResourceDictionary>
+
+    <!-- Dark: the dispatch desk at night -->
+    <ResourceDictionary x:Key="Default">
+      <Color x:Key="PrimaryColor">#FF6CB4E4</Color>
+      <Color x:Key="OnPrimaryColor">#FF0B1820</Color>
+      <Color x:Key="PrimaryContainerColor">#FF222F38</Color>
+      <Color x:Key="OnPrimaryContainerColor">#FF8EC6EA</Color>
+      <Color x:Key="PrimaryInverseColor">#FF1C6E9E</Color>
+      <Color x:Key="PrimaryVariantDarkColor">#FF8EC6EA</Color>
+      <Color x:Key="PrimaryVariantLightColor">#FFA7C8DE</Color>
+
+      <Color x:Key="SecondaryColor">#FFA9C6DD</Color>
+      <Color x:Key="OnSecondaryColor">#FF0B1820</Color>
+      <Color x:Key="SecondaryContainerColor">#FF293137</Color>
+      <Color x:Key="OnSecondaryContainerColor">#FFA9C6DD</Color>
+      <Color x:Key="SecondaryVariantDarkColor">#FFA9C6DD</Color>
+      <Color x:Key="SecondaryVariantLightColor">#FF4A86B0</Color>
+
+      <Color x:Key="TertiaryColor">#FFC3CBCF</Color>
+      <Color x:Key="OnTertiaryColor">#FF0F1315</Color>
+      <Color x:Key="TertiaryContainerColor">#FF293135</Color>
+      <Color x:Key="OnTertiaryContainerColor">#FFE6EAEC</Color>
+
+      <Color x:Key="ErrorColor">#FFF08C72</Color>
+      <Color x:Key="OnErrorColor">#FF0B1820</Color>
+      <Color x:Key="ErrorContainerColor">#FF302626</Color>
+      <Color x:Key="OnErrorContainerColor">#FFF08C72</Color>
+
+      <Color x:Key="BackgroundColor">#FF0F1315</Color>
+      <Color x:Key="OnBackgroundColor">#FFE6EAEC</Color>
+
+      <Color x:Key="SurfaceColor">#FF181D20</Color>
+      <Color x:Key="OnSurfaceColor">#FFE6EAEC</Color>
+      <Color x:Key="SurfaceVariantColor">#FF20272A</Color>
+      <Color x:Key="OnSurfaceVariantColor">#FFA1ABB0</Color>
+      <Color x:Key="SurfaceInverseColor">#FFE6EAEC</Color>
+      <Color x:Key="OnSurfaceInverseColor">#FF0F1315</Color>
+      <Color x:Key="SurfaceTintColor">#FF6CB4E4</Color>
+
+      <Color x:Key="OutlineColor">#2EE6EAEC</Color>
+      <Color x:Key="OutlineVariantColor">#14E6EAEC</Color>
+      <Color x:Key="ShadowColor">#FF121617</Color>
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

@@ -38,7 +38,7 @@
           <TextBlock Text="Cargo flow" Style="{StaticResource CardTitleText}" />
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space12}" HorizontalAlignment="Right" VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-              <Ellipse Width="6" Height="6" Fill="{ThemeResource AccentBrush}" VerticalAlignment="Center" />
+              <Ellipse Width="6" Height="6" Fill="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
               <TextBlock Text="Entering" Style="{StaticResource CaptionText}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">

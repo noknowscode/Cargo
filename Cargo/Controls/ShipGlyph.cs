@@ -17,7 +17,7 @@ public sealed partial class ShipGlyph : SKCanvasElement
     private const float WakeRoom = 18;
 
     private static readonly string[] BoxTokens =
-        { "AccentColor", "WaterColor", "GlyphBoxPaleColor", "GlyphBoxLightColor", "GlyphBoxSlateColor", "GlyphBoxMistColor", "GlyphBoxStoneColor" };
+        { "PrimaryColor", "WaterColor", "GlyphBoxPaleColor", "GlyphBoxLightColor", "GlyphBoxSlateColor", "GlyphBoxMistColor", "GlyphBoxStoneColor" };
 
     private readonly SKPaint _fill = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
     private readonly SKPaint _stroke = new() { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeCap = SKStrokeCap.Round };
@@ -112,10 +112,10 @@ public sealed partial class ShipGlyph : SKCanvasElement
         _fill.Color = Sk("GlyphBridgeColor");
         canvas.DrawRoundRect(bridge, _fill);
         _stroke.StrokeWidth = .75f;
-        _stroke.Color = Sk("InkColor", .35);
+        _stroke.Color = Sk("OnSurfaceColor", .35);
         canvas.DrawRoundRect(bridge, _stroke);
         _stroke.StrokeWidth = .6f;
-        _stroke.Color = Sk("InkColor");
+        _stroke.Color = Sk("OnSurfaceColor");
         canvas.DrawLine(bridgeX + 1, 3.4f, bridgeX + 6, 3.4f, _stroke);
         _fill.Color = Sk("NavyColor");
         canvas.DrawRect(bridgeX + 8, 6, 3, 9, _fill);

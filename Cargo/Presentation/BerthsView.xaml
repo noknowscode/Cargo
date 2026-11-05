@@ -37,7 +37,7 @@
             <TextBlock Text="alongside" Style="{StaticResource MetricLabelText}" />
           </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-            <TextBlock Text="{x:Bind ViewModel.Arriving, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{ThemeResource AccentDarkBrush}" />
+            <TextBlock Text="{x:Bind ViewModel.Arriving, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{ThemeResource PrimaryBrush}" />
             <TextBlock Text="arriving" Style="{StaticResource MetricLabelText}" />
           </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
@@ -83,7 +83,7 @@
           <ItemsControl AutomationProperties.Name="Berth status" ItemsSource="{x:Bind ViewModel.Status.Rows, Mode=OneWay}" IsTabStop="False">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:BerthStatusRow">
-                <Border BorderBrush="{ThemeResource HairlineBrush}" BorderThickness="0,1,0,0" Padding="0,1">
+                <Border BorderBrush="{ThemeResource OutlineVariantBrush}" BorderThickness="0,1,0,0" Padding="0,1">
                   <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Slot}"
                           controls:HoverLink.Command="{x:Bind Hover}" controls:HoverLink.Key="{x:Bind LinkKey, Mode=OneWay}"
                           AutomationProperties.Name="{x:Bind AccessibleName, Mode=OneWay}">
@@ -121,7 +121,7 @@
                         <controls:RollingText Grid.Column="2" Text="{x:Bind When, Mode=OneWay}" Style="{StaticResource ListTimeFigure}"
                                               Foreground="{x:Bind local:BerthsView.WhenInk(Kind), Mode=OneWay}" VerticalAlignment="Center" />
 
-                        <FontIcon Grid.Column="3" Glyph="&#xE76C;" FontSize="{StaticResource GlyphSizeSmall}" Foreground="{ThemeResource TextMutedBrush}"
+                        <FontIcon Grid.Column="3" Glyph="&#xE76C;" FontSize="{StaticResource GlyphSizeSmall}" Foreground="{ThemeResource OnSurfaceVariantBrush}"
                                   VerticalAlignment="Center" AutomationProperties.AccessibilityView="Raw" />
                       </Grid>
                     </Border>
@@ -163,7 +163,7 @@
           <StackPanel Spacing="{StaticResource Space6}" Margin="{StaticResource GapBottom16}" Visibility="{x:Bind ViewModel.Detail.HasCargo, Mode=OneWay}">
             <!-- Slides between ships (300 ms EaseSmooth) -->
             <ProgressBar controls:Slide.Value="{x:Bind ViewModel.Detail.CargoPercent, Mode=OneWay}" Maximum="100" Height="6" MinHeight="6" CornerRadius="{StaticResource RadiusTag}"
-                         Foreground="{ThemeResource TextMutedBrush}" Background="{ThemeResource HairlineBrush}"
+                         Foreground="{ThemeResource OnSurfaceVariantBrush}" Background="{ThemeResource OutlineVariantBrush}"
                          AutomationProperties.Name="{x:Bind ViewModel.Detail.CargoLabel, Mode=OneWay}" />
             <TextBlock Text="{x:Bind ViewModel.Detail.CargoLabel, Mode=OneWay}" Style="{StaticResource FactKeyText}" />
           </StackPanel>

@@ -15,7 +15,7 @@ public sealed partial class ActivityView : UserControl
     public static TextWrapping Wrap(bool open) => open ? TextWrapping.Wrap : TextWrapping.NoWrap;
 
     /// <summary>An entry about an open decision wears the alert ink; the rest are muted.</summary>
-    public static Brush Tone(bool needsAction) => Tokens.Brush(needsAction ? "AlertBrush" : "TextMutedBrush");
+    public static Brush Tone(bool needsAction) => Tokens.Brush(needsAction ? "ErrorBrush" : "OnSurfaceVariantBrush");
 
     /// <summary>The entry's icon: the Needs-you queue's for the decision it is about, else its own kind's.</summary>
     public static Geometry Icon(string data, Decision? about) =>

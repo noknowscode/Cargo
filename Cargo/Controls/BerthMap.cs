@@ -142,11 +142,11 @@ public sealed partial class BerthMap : SceneHost
         }
 
         // Anchorage
-        Scene.Place(Draw.Text("ANCHORAGE", 700, 346, 12, Tokens.Brush("TextMutedBrush"), "BodyMediumFont"));
-        Scene.Place(Draw.Rule(700, 440, 1170, 440, Tokens.Brush("TextFaintBrush"), 1, dash: Draw.Dash(3, 5)));
+        Scene.Place(Draw.Text("ANCHORAGE", 700, 346, 12, Tokens.Brush("OnSurfaceVariantBrush"), "BodyMediumFont"));
+        Scene.Place(Draw.Rule(700, 440, 1170, 440, Tokens.Brush("OnSurfaceVariantBrush"), 1, dash: Draw.Dash(3, 5)));
 
         // Nordic Star's approach
-        var approach = Draw.Shape("M700 392 C 760 330 860 260 930 222", null, Tokens.Brush("AccentBrush"), 1.5);
+        var approach = Draw.Shape("M700 392 C 760 330 860 260 930 222", null, Tokens.Brush("PrimaryBrush"), 1.5);
         approach.StrokeDashArray = Draw.Dash(6, 8);
         Scene.Place(approach);
     }
@@ -175,11 +175,11 @@ public sealed partial class BerthMap : SceneHost
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(_boxes[i],
                 $"Berth {berth.Number}, {berth.Depth:0.0} m, {(conflict ? "conflict" : status.Label().ToLowerInvariant())}"
                 + (holder is null ? string.Empty : $", {holder.Name}"));
-            Scene.Place(Draw.Text(berth.Number, x, 228, 16, Tokens.Brush("InkBrush"),
+            Scene.Place(Draw.Text(berth.Number, x, 228, 16, Tokens.Brush("OnSurfaceBrush"),
                 "MonoMediumFont", TextAlignment.Center, 132));
             _statusLabels[i] = Scene.Place(Draw.Text(conflict ? "Conflict" : status.Label(),
                 x, 248, 14, Tokens.Transparent, "BodyMediumFont", TextAlignment.Center, 132));
-            Scene.Place(Draw.Text($"{berth.Depth:0.0} m", x, 218, 10.5, Tokens.Brush("TextFaintBrush"),
+            Scene.Place(Draw.Text($"{berth.Depth:0.0} m", x, 218, 10.5, Tokens.Brush("OnSurfaceVariantBrush"),
                 "BodyFont", TextAlignment.Center, 132));
         }
     }
@@ -221,10 +221,10 @@ public sealed partial class BerthMap : SceneHost
                 }
                 : conflict ? "Conflict" : status.Label();
 
-            var toneToken = conflict ? "AlertColor" : StatusToken(status);
+            var toneToken = conflict ? "ErrorColor" : StatusToken(status);
             if (dragVessel is not null)
             {
-                toneToken = fits ? "AccentColor" : "RestrictedColor";
+                toneToken = fits ? "PrimaryColor" : "ErrorColor";
             }
 
             var tone = Tokens.Color(toneToken);
@@ -235,7 +235,7 @@ public sealed partial class BerthMap : SceneHost
                 : 0.18;
 
             box.Fill = Tokens.Of(tone, fillOpacity);
-            box.Stroke = Tokens.Of(isHover && dragVessel is not null ? Tokens.Color("InkColor") : tone);
+            box.Stroke = Tokens.Of(isHover && dragVessel is not null ? Tokens.Color("OnSurfaceColor") : tone);
             box.StrokeThickness = isHover || selected || conflict ? 2.5 : 1.2;
             box.StrokeDashArray = status == BerthState.Reserved || (dragVessel is not null && fits) ? Draw.Dash(6, 5) : null;
             label.Foreground = Tokens.Of(tone);
@@ -254,9 +254,9 @@ public sealed partial class BerthMap : SceneHost
     private static string StatusToken(BerthState status) => status switch
     {
         BerthState.Occupied => "NavyColor",
-        BerthState.Reserved => "AccentColor",
-        BerthState.Restricted => "RestrictedColor",
-        _ => "AccentColor"
+        BerthState.Reserved => "PrimaryColor",
+        BerthState.Restricted => "ErrorColor",
+        _ => "PrimaryColor"
     };
 
     private void DrawVessels(double planHour)
@@ -314,8 +314,8 @@ public sealed partial class BerthMap : SceneHost
                 RadiusY = 20,
                 Margin = new Thickness(-6),
                 Stroke = selected || dragging
-                    ? Tokens.Brush("InkBrush")
-                    : movable ? Tokens.Brush("InkColor", 0.35) : Tokens.Transparent,
+                    ? Tokens.Brush("OnSurfaceBrush")
+                    : movable ? Tokens.Brush("OnSurfaceColor", 0.35) : Tokens.Transparent,
                 StrokeThickness = selected || dragging ? 2.5 : movable ? 1.2 : 0,
                 StrokeDashArray = movable && !selected && !dragging ? Draw.Dash(5, 4) : null
             });
@@ -334,7 +334,7 @@ public sealed partial class BerthMap : SceneHost
             host.PointerPressed += (_, e) => BeginDrag(vessel, movable, e, Canvas.GetLeft(host), Canvas.GetTop(host));
             Scene.Place(host.At(x, y));
 
-            var name = Scene.Place(Draw.Label(vessel.Name, x + 80, y + 36, 15, Tokens.Brush("InkBrush"),
+            var name = Scene.Place(Draw.Label(vessel.Name, x + 80, y + 36, 15, Tokens.Brush("OnSurfaceBrush"),
                 "BodyStrongFont", TextAlignment.Center, 220));
             _hulls[vessel.Id] = (host, name);
         }

@@ -21,7 +21,7 @@
 
     <StackPanel VerticalAlignment="Center" Spacing="{StaticResource Space8}">
       <TextBlock Style="{StaticResource GreetingText}" TextWrapping="Wrap">
-        <Run Text="Good evening, " /><Run Text="{x:Bind ViewModel.GreetingName}" Foreground="{ThemeResource AccentDarkBrush}" />
+        <Run Text="Good evening, " /><Run Text="{x:Bind ViewModel.GreetingName}" Foreground="{ThemeResource PrimaryBrush}" />
       </TextBlock>
       <TextBlock Text="{x:Bind ViewModel.Subtitle, Mode=OneWay}" Style="{StaticResource DateLineText}" TextWrapping="Wrap" />
     </StackPanel>
@@ -47,18 +47,18 @@
         <TextBlock Text="{x:Bind ViewModel.Inbound, Mode=OneWay}" Style="{StaticResource MetricText}" />
       </StackPanel>
 
-      <Rectangle Width="1" Fill="{ThemeResource HairlineStrongBrush}" />
+      <Rectangle Width="1" Fill="{ThemeResource OutlineBrush}" />
 
       <!-- A link to the queue: scrolls it into view and focuses its heading -->
       <Button Style="{StaticResource BareButton}" Command="{x:Bind ViewModel.State.Navigation.RevealNeedsYouCommand}"
               AutomationProperties.Name="{x:Bind ViewModel.NeedsYouLink, Mode=OneWay}">
         <StackPanel Style="{StaticResource FigureStack}">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-            <Rectangle Width="8" Height="8" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Center" />
+            <Rectangle Width="8" Height="8" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
             <TextBlock Text="Needs you" Style="{StaticResource FigureLabelText}" />
           </StackPanel>
           <TextBlock Text="{x:Bind ViewModel.NeedsYouText, Mode=OneWay}" Style="{StaticResource MetricText}"
-                     Foreground="{ThemeResource AlertInkBrush}" />
+                     Foreground="{ThemeResource ErrorBrush}" />
         </StackPanel>
       </Button>
     </StackPanel>
@@ -75,9 +75,9 @@
       </utu:ShadowContainer.RenderTransform>
       <utu:ShadowContainer.Shadows>
         <utu:ShadowCollection>
-          <utu:Shadow Spread="1" BlurRadius="0" Color="{ThemeResource ShadowRingColor}" Opacity="0.08" />
-          <utu:Shadow OffsetY="1" BlurRadius="2" Color="{StaticResource ShadowColor}" Opacity="0.06" />
-          <utu:Shadow OffsetY="12" BlurRadius="28" Color="{StaticResource ShadowColor}" Opacity="0.08" />
+          <utu:Shadow Spread="1" BlurRadius="0" Color="{ThemeResource OnSurfaceColor}" Opacity="0.08" />
+          <utu:Shadow OffsetY="1" BlurRadius="2" Color="{ThemeResource ShadowColor}" Opacity="0.06" />
+          <utu:Shadow OffsetY="12" BlurRadius="28" Color="{ThemeResource ShadowColor}" Opacity="0.08" />
         </utu:ShadowCollection>
       </utu:ShadowContainer.Shadows>
 
@@ -89,8 +89,8 @@
 
         <!-- xaml-lint: allow card - the ID card's clip slot, a 28x4 punched mark -->
         <Border Width="28" Height="4" CornerRadius="2" Margin="0,-8,0,0" VerticalAlignment="Top"
-                Background="{ThemeResource PaperBrush}"
-                BorderBrush="{ThemeResource HairlineStrongBrush}" BorderThickness="1" />
+                Background="{ThemeResource BackgroundBrush}"
+                BorderBrush="{ThemeResource OutlineBrush}" BorderThickness="1" />
 
         <!-- The sub-line spans under the badge: in the badge's column alone it would clip at 252 px -->
         <Grid ColumnSpacing="{StaticResource Space12}" RowSpacing="{StaticResource Space4}">
@@ -104,7 +104,7 @@
             <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
           <Grid Grid.RowSpan="2" Width="36" Height="36" VerticalAlignment="Center">
-            <Ellipse Fill="{ThemeResource AccentBrush}" />
+            <Ellipse Fill="{ThemeResource PrimaryBrush}" />
             <TextBlock Text="{x:Bind ViewModel.Operator.Initials}" Style="{StaticResource CardInitialsText}" />
           </Grid>
           <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Operator.Name}" Style="{StaticResource CardNameText}"
@@ -122,10 +122,10 @@
           </Grid.ColumnDefinitions>
           <ProgressBar controls:Slide.Value="{x:Bind ViewModel.ShiftProgress, Mode=OneWay}" Maximum="1" VerticalAlignment="Center"
                        Height="3" MinHeight="3" CornerRadius="1.5"
-                       Foreground="{ThemeResource AccentBrush}" Background="{ThemeResource HairlineBrush}"
+                       Foreground="{ThemeResource PrimaryBrush}" Background="{ThemeResource OutlineVariantBrush}"
                        AutomationProperties.Name="Shift progress" />
           <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.OperatorUntil}" Style="{StaticResource TypeMono11}"
-                     Foreground="{ThemeResource TextMutedBrush}" />
+                     Foreground="{ThemeResource OnSurfaceVariantBrush}" />
         </Grid>
       </Grid>
     </utu:ShadowContainer>

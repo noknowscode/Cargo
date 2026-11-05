@@ -19,12 +19,12 @@ public sealed partial class YardViewModel : ObservableObject
         State = state;
         Legend = new[]
         {
-            new LegendItem { Label = "Standard", Swatch = "CargoStandardInvariantBrush" },
-            new LegendItem { Label = "Refrigerated", Swatch = "CargoReeferInvariantBrush" },
-            new LegendItem { Label = "Hazardous", Swatch = "CargoHazardInvariantBrush" },
-            new LegendItem { Label = "Inspection", Swatch = "CargoOversizeInvariantBrush" },
-            new LegendItem { Label = "Restricted", Swatch = "RestrictedBrush" },
-            new LegendItem { Label = "Available slot", Swatch = "InkColor", Strength = 0.12 }
+            new LegendItem { Label = "Standard", Swatch = "CargoStandardColor" },
+            new LegendItem { Label = "Refrigerated", Swatch = "CargoReeferColor" },
+            new LegendItem { Label = "Hazardous", Swatch = "CargoHazardColor" },
+            new LegendItem { Label = "Inspection", Swatch = "CargoOversizeColor" },
+            new LegendItem { Label = "Restricted", Swatch = "ErrorBrush" },
+            new LegendItem { Label = "Available slot", Swatch = "OnSurfaceColor", Strength = 0.12 }
         };
 
         Refresh();
@@ -91,7 +91,7 @@ public sealed partial class YardViewModel : ObservableObject
                 "CargoReeferColor" => "Reefer −18°C",
                 "CargoHazardColor" => $"IMDG class {3 + (int)(Noise.H(seed) * 6)}",
                 "CargoOversizeColor" => "Awaiting exam",
-                "RestrictedColor" => "Bonded",
+                "ErrorColor" => "Bonded",
                 _ => Noise.H(seed) > 0.7 ? "Empty" : "Laden"
             };
 

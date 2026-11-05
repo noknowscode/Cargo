@@ -56,7 +56,7 @@ public sealed partial class BayScene : SceneHost
         for (var row = 0; row < BayView.Rows; row++)
         {
             Scene.Place(Draw.Text((BayView.Rows - row).ToString("D2"), 10, 100 - row * 22, 10.5,
-                Tokens.Brush("TextMutedBrush"), "MonoMediumFont", TextAlignment.Right, 48));
+                Tokens.Brush("OnSurfaceVariantBrush"), "MonoMediumFont", TextAlignment.Right, 48));
         }
 
         foreach (var (column, row, cargo, ashore) in bay.Cells)
@@ -66,21 +66,21 @@ public sealed partial class BayScene : SceneHost
 
             if (ashore)
             {
-                var slot = Draw.Rect(x, y, 36, 21, Tokens.Brush("PaperWarmBrush"), 1.5,
-                    Tokens.Brush("TextFaintBrush"), 1);
+                var slot = Draw.Rect(x, y, 36, 21, Tokens.Brush("BackgroundBrush"), 1.5,
+                    Tokens.Brush("OnSurfaceVariantBrush"), 1);
                 slot.StrokeDashArray = Draw.Dash(3, 2);
                 Scene.Place(slot);
                 continue;
             }
 
             var color = Tokens.Paint(cargo.Token());
-            Scene.Place(Draw.Rect(x, y, 36, 21, Tokens.Of(color), 1.5, Tokens.Brush("InkColor", 0.25), 1));
+            Scene.Place(Draw.Rect(x, y, 36, 21, Tokens.Of(color), 1.5, Tokens.Brush("OnSurfaceColor", 0.25), 1));
             Scene.Place(Draw.Rect(x, y, 36, 4, Tokens.Of(Tokens.Shade(color, 30))));
         }
 
         // Bay badge on the hatch cover
-        Scene.Place(Draw.Rect(166, 138, 28, 18, Tokens.Brush("AccentBrush"), 6));
-        Scene.Place(Draw.Text(bay.Number, 166, 140, 11, Tokens.Brush("SurfaceBrush"),
+        Scene.Place(Draw.Rect(166, 138, 28, 18, Tokens.Brush("PrimaryBrush"), 6));
+        Scene.Place(Draw.Text(bay.Number, 166, 140, 11, Tokens.Brush("OnPrimaryBrush"),
             "MonoMediumFont", TextAlignment.Center, 28));
 
         Scene.Place(Draw.Rect(0, 176, 360, 14, Tokens.Brush("SeaFlatBrush", 0.85)));

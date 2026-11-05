@@ -66,16 +66,22 @@ public sealed partial class ScannerOverlay : UserControl
 
     public ScannerViewModel? ViewModel => DataContext as ScannerViewModel;
 
-    // The scanner's stage is dark in both themes, so its chrome takes the invariant on-dark tokens
+    // The scanner's stage is the Dark theme in both themes (RequestedTheme on its panel), so its chrome takes the
+    // Dark palette's roles and colours whatever the window's theme
 
-    public static Brush XrayGround(bool xray) => xray ? Tokens.Brush("AccentBrightColor", 0.2) : Tokens.Transparent;
+    private static Brush Night(string key, double opacity = 1) => Tokens.Brush(key, opacity, ElementTheme.Dark);
 
-    public static Brush XrayEdge(bool xray) => Tokens.Brush(xray ? "AccentBrightInvariantBrush" : "HairlineOnDarkBrush");
+    /// <summary>A data tone on the dark stage.</summary>
+    public static Brush Tone(string key) => Night(key);
 
-    public static Brush XrayInk(bool xray) => Tokens.Brush(xray ? "AccentPaleInvariantBrush" : "TextOnDarkBrush");
+    public static Brush XrayGround(bool xray) => xray ? Night("PrimaryColor", 0.2) : Tokens.Transparent;
+
+    public static Brush XrayEdge(bool xray) => Night(xray ? "PrimaryBrush" : "OutlineVariantBrush");
+
+    public static Brush XrayInk(bool xray) => Night(xray ? "PrimaryBrush" : "OnSurfaceBrush");
 
     /// <summary>The preset the box is turned to is lit.</summary>
     public static Brush PresetGround(bool current) => current ? Tokens.Brush("DeckWhiteColor", 0.16) : Tokens.Transparent;
 
-    public static Brush FlagInk(bool flagged) => Tokens.Brush(flagged ? "ScanAnomalyColor" : "SeaGreenColor");
+    public static Brush FlagInk(bool flagged) => Night(flagged ? "ScanAnomalyColor" : "SeaGreenColor");
 }

@@ -13,7 +13,7 @@
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock Text="Sea &amp; weather" Style="{StaticResource CardTitleText}" />
-        <TextBlock VerticalAlignment="Center" Style="{StaticResource CaptionText}" Foreground="{ThemeResource TextFaintBrush}"
+        <TextBlock VerticalAlignment="Center" Style="{StaticResource CaptionText}" Foreground="{ThemeResource OnSurfaceVariantBrush}"
                    Grid.Row="{utu:Responsive Narrowest=1, Narrow=0}" HorizontalAlignment="{utu:Responsive Narrowest=Left, Narrow=Right}">
           <Run Text="Outer harbour · " /><Run Text="{x:Bind ViewModel.Now, Mode=OneWay}" />
         </TextBlock>

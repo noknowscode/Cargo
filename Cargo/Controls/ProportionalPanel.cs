@@ -67,7 +67,7 @@ public sealed partial class ProportionalPanel : Panel
             Children.Add(block);
         }
 
-        Children.Add(new Rectangle { Width = 1.5, Fill = Tokens.Brush("InkBrush") });
+        Children.Add(new Rectangle { Width = 1.5, Fill = Tokens.Brush("OnSurfaceBrush") });
         InvalidateArrange();
     }
 

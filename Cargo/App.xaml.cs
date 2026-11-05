@@ -74,7 +74,7 @@ public partial class App : Application
 #if __DESKTOP__
         // The native window shows its own ground before the first frame and while it resizes: give it the page's,
         // so a dark launch does not open on a white window (Skia desktop is the head with this API)
-        Uno.UI.Xaml.WindowHelper.SetBackground(MainWindow, Tokens.Brush("PaperBrush"));
+        Uno.UI.Xaml.WindowHelper.SetBackground(MainWindow, Tokens.Brush("BackgroundBrush"));
 #endif
 
 #if DEBUG && !NO_UNO_STUDIO

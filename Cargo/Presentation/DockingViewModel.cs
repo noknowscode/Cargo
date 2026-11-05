@@ -205,9 +205,9 @@ public sealed partial class DockingViewModel : ObservableObject
                         segment.Label,
                         segment.Start / PlanHours,
                         (Math.Min(segment.End, PlanHours) - segment.Start) / PlanHours,
-                        past ? null : "RestrictedBrush",
-                        past ? "TextMutedBrush" : "SurfaceBrush",
-                        past ? "TextFaintBrush" : null));
+                        past ? null : "ErrorBrush",
+                        past ? "OnSurfaceVariantBrush" : "SurfaceBrush",
+                        past ? "OnSurfaceVariantBrush" : null));
                     spoken.Add(past ? $"earlier {segment.Label}" : $"closed, {segment.Label}");
                 }
             }
@@ -231,9 +231,9 @@ public sealed partial class DockingViewModel : ObservableObject
                     vessel.Name,
                     start / PlanHours,
                     (end - start) / PlanHours,
-                    conflicted ? "AlertInkBrush" : reserved ? "AccentBrush" : "NavyBrush",
+                    conflicted ? "ErrorBrush" : reserved ? "PrimaryBrush" : "NavyBrush",
                     "SurfaceBrush",
-                    conflicted || reserved ? "InkBrush" : null,
+                    conflicted || reserved ? "OnSurfaceBrush" : null,
                     Dashed: reserved && !conflicted));
                 spoken.Add($"{vessel.Name} {(conflicted ? "in conflict" : reserved ? "reserved" : "alongside")} " +
                            $"{ShiftClock.Format(start % 24)} to {ShiftClock.Format(end % 24)}");

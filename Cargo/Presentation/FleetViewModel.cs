@@ -213,8 +213,8 @@ public sealed partial class FleetViewModel : ObservableObject
         {
             new LegendItem { Label = "On time", Swatch = "SeaGreenBrush" },
             new LegendItem { Label = "Running late", Swatch = "OrangeBrush" },
-            new LegendItem { Label = "Lock", Swatch = "InkBrush" },
-            new LegendItem { Label = "Warning", Swatch = "AlertBrush" }
+            new LegendItem { Label = "Lock", Swatch = "OnSurfaceBrush" },
+            new LegendItem { Label = "Warning", Swatch = "ErrorBrush" }
         };
 
         Lockings = PortData.Lockings.Select(l => new LockingRow

@@ -17,7 +17,7 @@ public static class Paint
     public static Brush Swatch(string key, double strength) => Tokens.Brush(key, strength);
 
     /// <summary>A data tone as text ink: ink when the data names none.</summary>
-    public static Brush Ink(string? key) => Tokens.Brush(key ?? "InkBrush");
+    public static Brush Ink(string? key) => Tokens.Brush(key ?? "OnSurfaceBrush");
 
     /// <summary>
     /// The text beside a status fill: the darker ink variant of the fill's colour (the status fills are too light to
@@ -28,26 +28,26 @@ public static class Paint
         var t when t.StartsWith("Orange", StringComparison.Ordinal) => "OrangeInkBrush",
         var t when t.StartsWith("Amber", StringComparison.Ordinal) => "AmberInkBrush",
         var t when t.StartsWith("SeaGreen", StringComparison.Ordinal) => "SeaGreenInkBrush",
-        var t when t.StartsWith("Accent", StringComparison.Ordinal) => "AccentDarkBrush",
-        var t when t.StartsWith("Alert", StringComparison.Ordinal) => "AlertInkBrush",
-        _ => "InkBrush"
+        var t when t.StartsWith("Primary", StringComparison.Ordinal) => "PrimaryBrush",
+        var t when t.StartsWith("Error", StringComparison.Ordinal) => "ErrorBrush",
+        _ => "OnSurfaceBrush"
     });
 
     /// <summary>A status as its fill (a dot, a swatch).</summary>
     public static Brush StatusFill(Standing standing) => Tokens.Brush(standing switch
     {
-        Standing.Done => "TextFaintBrush",
+        Standing.Done => "OnSurfaceVariantBrush",
         Standing.Late => "OrangeBrush",
-        Standing.Blocked => "AlertBrush",
+        Standing.Blocked => "ErrorBrush",
         _ => "SeaGreenBrush"
     });
 
     /// <summary>A status written out, in the ink variant of its fill.</summary>
     public static Brush StatusInk(Standing standing) => Tokens.Brush(standing switch
     {
-        Standing.Done => "TextMutedBrush",
+        Standing.Done => "OnSurfaceVariantBrush",
         Standing.Late => "OrangeInkBrush",
-        Standing.Blocked => "AlertBrush",
+        Standing.Blocked => "ErrorBrush",
         _ => "SeaGreenInkBrush"
     });
 
@@ -67,13 +67,13 @@ public static class Paint
     public static Geometry Icon(string data) => Geo.Path(data);
 
     /// <summary>Ink on the current item, muted on the rest (header tabs, in-page tabs).</summary>
-    public static Brush CurrentInk(bool current) => Tokens.Brush(current ? "InkBrush" : "TextMutedBrush");
+    public static Brush CurrentInk(bool current) => Tokens.Brush(current ? "OnSurfaceBrush" : "OnSurfaceVariantBrush");
 
     /// <summary>A tab's underline or a selection mark: shown on the current item only.</summary>
     public static double Shown(bool current) => current ? 1 : 0;
 
     /// <summary>A card's edge: ink when it is the one selected, a hairline otherwise.</summary>
-    public static Brush SelectedEdge(bool selected) => Tokens.Brush(selected ? "InkBrush" : "HairlineBrush");
+    public static Brush SelectedEdge(bool selected) => Tokens.Brush(selected ? "OnSurfaceBrush" : "OutlineVariantBrush");
 
     /// <summary>A status fill: orange when it runs late or warns, sea green when on time.</summary>
     public static Brush LateFill(bool late) => Tokens.Brush(late ? "OrangeBrush" : "SeaGreenBrush");

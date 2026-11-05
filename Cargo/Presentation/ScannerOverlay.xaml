@@ -13,7 +13,7 @@
        A short window 600 to 999 wide (a phone on its side, 844 x 390) has no height for the stage over the result, so
        the result goes back beside the stage, 300 wide, and the panel takes the window's edges (the Short state). -->
   <!-- Modal to the keyboard: focus moves to Close when it opens, Tab cycles inside it, Escape closes it -->
-  <Grid Background="{StaticResource PageDimInvariantBrush}" TabFocusNavigation="Cycle" KeyDown="OnKeyDown"
+  <Grid Background="{ThemeResource SimpleBackgroundUtilitiesOverlayBrush}" TabFocusNavigation="Cycle" KeyDown="OnKeyDown"
         SizeChanged="OnSizeChanged">
     <VisualStateManager.VisualStateGroups>
       <VisualStateGroup x:Name="HeightStates">
@@ -38,8 +38,10 @@
       </VisualStateGroup>
     </VisualStateManager.VisualStateGroups>
   <!-- Where the panel reaches a phone's status bar, gesture bar or cutout (the window's edges), SafeArea pads its content
-       into the visible bounds and the ink runs on behind them; it pads nothing where the panel sits inside them -->
-  <Grid x:Name="Panel" Background="{StaticResource InkDeepInvariantBrush}" MaxWidth="1320" MaxHeight="820"
+       into the visible bounds and the ink runs on behind them; it pads nothing where the panel sits inside them.
+       The scanner is a dark stage in both themes: the panel takes the Dark theme, so its role brushes are the Dark
+       palette's (code-behind and the 3D box ask Tokens for ElementTheme.Dark) -->
+  <Grid x:Name="Panel" RequestedTheme="Dark" Background="{ThemeResource BackgroundBrush}" MaxWidth="1320" MaxHeight="820"
         CornerRadius="{utu:Responsive Narrowest='0', Narrow={StaticResource RadiusCard}}"
         Margin="{utu:Responsive Narrowest='0', Narrow={StaticResource Inset24}, Normal='48'}"
         utu:SafeArea.Insets="VisibleBounds">
@@ -76,14 +78,14 @@
         </Grid.ColumnDefinitions>
         <StackPanel Spacing="{StaticResource Space8}">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-            <Ellipse Width="7" Height="7" Fill="{StaticResource AccentBrightInvariantBrush}" VerticalAlignment="Center" />
+            <Ellipse Width="7" Height="7" Fill="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
             <TextBlock Text="{x:Bind ViewModel.ScanMode, Mode=OneWay}" Style="{StaticResource TypeMonoMedium11}"
-                       Foreground="{StaticResource AccentBrightInvariantBrush}" />
+                       Foreground="{ThemeResource PrimaryBrush}" />
           </StackPanel>
           <TextBlock Text="{x:Bind ViewModel.ContainerId, Mode=OneWay}" Style="{StaticResource TypeMonoMedium24}"
-                     Foreground="{StaticResource TextOnDarkStrongBrush}" />
+                     Foreground="{ThemeResource OnSurfaceBrush}" />
           <TextBlock x:Name="ScanMeta" Text="{x:Bind ViewModel.ContainerMeta, Mode=OneWay}" Style="{StaticResource SubtitleText}"
-                     Foreground="{StaticResource TextOnDarkMutedBrush}" TextWrapping="Wrap" />
+                     Foreground="{ThemeResource OnSurfaceVariantBrush}" TextWrapping="Wrap" />
         </StackPanel>
         <Button x:Name="CloseButton" Grid.Column="1" Style="{StaticResource CloseOnDarkButton}" Content="×" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}"
                 Width="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=34}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=34}"
@@ -113,18 +115,18 @@
                 <Button Style="{StaticResource BareButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Label}"
                         AutomationProperties.Name="{x:Bind AccessibleName}">
                   <!-- xaml-lint: allow card - a view-preset toggle; the Simple theme ships no segmented style -->
-                  <Border Background="{x:Bind local:ScannerOverlay.PresetGround(IsCurrent)}" BorderBrush="{StaticResource HairlineOnDarkBrush}"
+                  <Border Background="{x:Bind local:ScannerOverlay.PresetGround(IsCurrent)}" BorderBrush="{ThemeResource OutlineVariantBrush}"
                           BorderThickness="1" CornerRadius="{StaticResource RadiusControl}" Padding="{StaticResource Inset12x7}"
                           MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=0}">
                     <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium12}" VerticalAlignment="Center"
-                               Foreground="{StaticResource TextOnDarkStrongBrush}" />
+                               Foreground="{ThemeResource OnSurfaceBrush}" />
                   </Border>
                 </Button>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
-          <Rectangle Width="1" Height="20" Fill="{StaticResource HairlineOnDarkBrush}" Margin="{StaticResource InsetX6}" VerticalAlignment="Center"
+          <Rectangle Width="1" Height="20" Fill="{ThemeResource OutlineVariantBrush}" Margin="{StaticResource InsetX6}" VerticalAlignment="Center"
                      Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}" />
 
           <Button Style="{StaticResource BareButton}" Command="{x:Bind ViewModel.ToggleXrayCommand, Mode=OneWay}"
@@ -144,52 +146,49 @@
 
           <!-- Phones leave the hint out (a touch drag is the expected gesture) to keep the stage tall enough for the box -->
           <TextBlock x:Name="RotateHint" Text="Drag to rotate" Style="{StaticResource CaptionText}" Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}"
-                     Foreground="{StaticResource TextOnDarkMutedBrush}" VerticalAlignment="Center" Margin="{StaticResource GapStart10}" />
+                     Foreground="{ThemeResource OnSurfaceVariantBrush}" VerticalAlignment="Center" Margin="{StaticResource GapStart10}" />
         </controls:FlowPanel>
 
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}" VerticalAlignment="Center"
                     Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}">
           <Button Style="{StaticResource GhostButton}" Content="−" Command="{x:Bind ViewModel.ZoomOutCommand, Mode=OneWay}" AutomationProperties.Name="Zoom out"
                   Width="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
-                  CornerRadius="{StaticResource RadiusGroup}" Padding="0" Background="{StaticResource HairlineOnDarkBrush}"
-                  Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
+                  CornerRadius="{StaticResource RadiusGroup}" Padding="0" />
           <Button Style="{StaticResource GhostButton}" Content="+" Command="{x:Bind ViewModel.ZoomInCommand, Mode=OneWay}" AutomationProperties.Name="Zoom in"
                   Width="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}" Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
-                  CornerRadius="{StaticResource RadiusGroup}" Padding="0" Background="{StaticResource HairlineOnDarkBrush}"
-                  Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
+                  CornerRadius="{StaticResource RadiusGroup}" Padding="0" />
           <Button AutomationProperties.Name="Reset view" Style="{StaticResource GhostButton}" Content="Reset view" Command="{x:Bind ViewModel.ResetViewCommand, Mode=OneWay}"
                   Height="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
-                  CornerRadius="{StaticResource RadiusGroup}" Padding="{StaticResource InsetX12}" Background="{StaticResource HairlineOnDarkBrush}"
-                  Foreground="{StaticResource TextOnDarkStrongBrush}" BorderBrush="{StaticResource HairlineOnDarkBrush}" />
+                  CornerRadius="{StaticResource RadiusGroup}" Padding="{StaticResource InsetX12}" />
         </StackPanel>
       </Grid>
     </Grid>
 
     <!-- ── Scan result ──────────────────────────────────────────── -->
-    <ScrollViewer AutomationProperties.Name="Scan result" x:Name="Result" Background="{StaticResource InkDeepInvariantBrush}" VerticalScrollBarVisibility="Auto"
+    <ScrollViewer AutomationProperties.Name="Scan result" x:Name="Result" Background="{ThemeResource BackgroundBrush}" VerticalScrollBarVisibility="Auto"
                   Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                   Grid.RowSpan="{utu:Responsive Narrowest=1, Normal=2}"
                   Width="{utu:Responsive Narrowest=NaN, Normal=360}" MaxHeight="{utu:Responsive Narrowest=200, Normal=820}"
-                  BorderBrush="{StaticResource HairlineOnDarkBrush}" BorderThickness="{utu:Responsive Narrowest='0,1,0,0', Normal='0'}">
+                  BorderBrush="{ThemeResource OutlineVariantBrush}" BorderThickness="{utu:Responsive Narrowest='0,1,0,0', Normal='0'}">
       <!-- The inset is on the content, not the ScrollViewer: with a set width Uno let the content run under a
            ScrollViewer's right padding -->
       <StackPanel Spacing="{StaticResource Space18}" Padding="{utu:Responsive Narrowest='16,18', Normal='24,26'}">
         <StackPanel Spacing="{StaticResource Space8}">
           <TextBlock Text="SCAN RESULT" Style="{StaticResource TypeMonoMedium11}"
-                     Foreground="{StaticResource AccentBrightInvariantBrush}" />
+                     Foreground="{ThemeResource PrimaryBrush}" />
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space10}">
-            <Ellipse Width="10" Height="10" Fill="{x:Bind local:Paint.Tone(ViewModel.VerdictTone), Mode=OneWay}" VerticalAlignment="Center" />
+            <Ellipse Width="10" Height="10" Fill="{x:Bind local:ScannerOverlay.Tone(ViewModel.VerdictTone), Mode=OneWay}" VerticalAlignment="Center" />
             <TextBlock Text="{x:Bind ViewModel.Verdict, Mode=OneWay}" Style="{StaticResource TypeStrong18}"
-                       Foreground="{StaticResource TextOnDarkStrongBrush}" />
+                       Foreground="{ThemeResource OnSurfaceBrush}" />
           </StackPanel>
           <TextBlock Text="{x:Bind ViewModel.VerdictNote, Mode=OneWay}" Style="{StaticResource SubtitleText}"
-                     Foreground="{StaticResource TextOnDarkMutedBrush}" TextWrapping="Wrap" LineHeight="19" />
+                     Foreground="{ThemeResource OnSurfaceVariantBrush}" TextWrapping="Wrap" LineHeight="19" />
         </StackPanel>
 
-        <Border Height="1" Background="{StaticResource HairlineOnDarkBrush}" />
+        <Border Height="1" Background="{ThemeResource OutlineVariantBrush}" />
         <StackPanel Spacing="{StaticResource Space12}">
           <TextBlock Text="DENSITY MAP" Style="{StaticResource TypeMonoMedium11}"
-                     Foreground="{StaticResource AccentBrightInvariantBrush}" />
+                     Foreground="{ThemeResource PrimaryBrush}" />
           <controls:CompositionBar AutomationProperties.Name="Density map" BarHeight="10" Slices="{x:Bind ViewModel.DensitySlices, Mode=OneWay}" />
           <ItemsControl IsTabStop="False" AutomationProperties.Name="Density by material" ItemsSource="{x:Bind ViewModel.Density, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
@@ -199,21 +198,21 @@
               <DataTemplate x:DataType="local:CompositionSlice">
                 <Grid>
                   <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-                    <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:Paint.Tone(Fill)}" VerticalAlignment="Center" />
+                    <Rectangle Width="9" Height="9" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:ScannerOverlay.Tone(Fill)}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind Label}" Style="{StaticResource BodyText}"
-                               Foreground="{StaticResource TextOnDarkStrongBrush}" />
+                               Foreground="{ThemeResource OnSurfaceBrush}" />
                   </StackPanel>
                   <TextBlock Text="{x:Bind Count}" Style="{StaticResource CaptionText}"
-                             Foreground="{StaticResource TextOnDarkMutedBrush}" HorizontalAlignment="Right" />
+                             Foreground="{ThemeResource OnSurfaceVariantBrush}" HorizontalAlignment="Right" />
                 </Grid>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
         </StackPanel>
 
-        <Border Height="1" Background="{StaticResource HairlineOnDarkBrush}" />
+        <Border Height="1" Background="{ThemeResource OutlineVariantBrush}" />
         <StackPanel Spacing="{StaticResource Space12}">
-          <TextBlock Text="{x:Bind ViewModel.ManifestHeading, Mode=OneWay}" Style="{StaticResource TypeMonoMedium11}" Foreground="{StaticResource AccentBrightInvariantBrush}" />
+          <TextBlock Text="{x:Bind ViewModel.ManifestHeading, Mode=OneWay}" Style="{StaticResource TypeMonoMedium11}" Foreground="{ThemeResource PrimaryBrush}" />
           <ItemsControl IsTabStop="False" AutomationProperties.Name="{x:Bind ViewModel.ManifestHeading, Mode=OneWay}" ItemsSource="{x:Bind ViewModel.Manifest, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space10}" /></ItemsPanelTemplate>
@@ -226,9 +225,9 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                   </Grid.ColumnDefinitions>
-                  <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:Paint.Tone(Tone)}" VerticalAlignment="Center" />
+                  <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{x:Bind local:ScannerOverlay.Tone(Tone)}" VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1" Text="{x:Bind Name}" Style="{StaticResource BodyText}"
-                             Foreground="{StaticResource TextOnDarkStrongBrush}" TextWrapping="Wrap" />
+                             Foreground="{ThemeResource OnSurfaceBrush}" TextWrapping="Wrap" />
                   <TextBlock Grid.Column="2" Text="{x:Bind Flag}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind local:ScannerOverlay.FlagInk(Flagged)}" />
                 </Grid>
               </DataTemplate>
@@ -236,27 +235,25 @@
           </ItemsControl>
         </StackPanel>
 
-        <Border Height="1" Background="{StaticResource HairlineOnDarkBrush}" />
+        <Border Height="1" Background="{ThemeResource OutlineVariantBrush}" />
         <ItemsControl IsTabStop="False" AutomationProperties.Name="Scan facts" ItemsSource="{x:Bind ViewModel.ScanFacts, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate><StackPanel /></ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="local:Fact">
-              <Grid Padding="0,9" BorderBrush="{StaticResource HairlineOnDarkBrush}" BorderThickness="0,0,0,1">
+              <Grid Padding="0,9" BorderBrush="{ThemeResource OutlineVariantBrush}" BorderThickness="0,0,0,1">
                 <TextBlock Text="{x:Bind Key}" Style="{StaticResource BodyText}"
-                           Foreground="{StaticResource TextOnDarkMutedBrush}" />
+                           Foreground="{ThemeResource OnSurfaceVariantBrush}" />
                 <TextBlock Text="{x:Bind Value}" Style="{StaticResource TypeMonoMedium13}"
-                           Foreground="{StaticResource TextOnDarkStrongBrush}" HorizontalAlignment="Right" />
+                           Foreground="{ThemeResource OnSurfaceBrush}" HorizontalAlignment="Right" />
               </Grid>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
         <controls:FlowPanel Spacing="{StaticResource Space8}" RowSpacing="{StaticResource Space8}">
-          <Button AutomationProperties.Name="Close scanner" Style="{StaticResource GhostButton}" Content="Close" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
-                  Background="Transparent" Foreground="{StaticResource TextOnDarkStrongBrush}"
-                  BorderBrush="{StaticResource HairlineOnDarkBrush}" />
+          <Button AutomationProperties.Name="Close scanner" Style="{StaticResource GhostButton}" Content="Close" Command="{x:Bind ViewModel.CloseCommand, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}" />
           <Button AutomationProperties.Name="{x:Bind ViewModel.ScanAction, Mode=OneWay}" Style="{StaticResource AccentButton}" Content="{x:Bind ViewModel.ScanAction, Mode=OneWay}" Width="150" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
                   Command="{x:Bind ViewModel.TakeScanActionCommand, Mode=OneWay}" />
         </controls:FlowPanel>

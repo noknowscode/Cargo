@@ -20,7 +20,7 @@
                  IsTabStop="True" AutomationProperties.HeadingLevel="Level2"
                  AutomationProperties.Name="{x:Bind local:NeedsYouPanel.Spoken(ViewModel.Count), Mode=OneWay}" />
       <!-- xaml-lint: allow card - the count badge, a pill of mono digits -->
-      <Border Background="{ThemeResource AlertInkBrush}" CornerRadius="{StaticResource RadiusPanel}" Padding="{StaticResource Inset10x4}" VerticalAlignment="Center"
+      <Border Background="{ThemeResource ErrorBrush}" CornerRadius="{StaticResource RadiusPanel}" Padding="{StaticResource Inset10x4}" VerticalAlignment="Center"
               Visibility="{x:Bind local:NeedsYouPanel.Shown(ViewModel.Count), Mode=OneWay}"
               AutomationProperties.AccessibilityView="Raw">
         <TextBlock Text="{x:Bind local:NeedsYouPanel.Count(ViewModel.Count), Mode=OneWay}" Style="{StaticResource CountBadgeText}" />
@@ -33,7 +33,7 @@
     <ItemsControl AutomationProperties.Name="Decisions waiting" Grid.Row="1" ItemsSource="{x:Bind ViewModel.Rows, Mode=OneWay}" Margin="{StaticResource GapTop4}" IsTabStop="False">
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="local:DecisionRow">
-          <Grid ColumnSpacing="{StaticResource Space12}" Padding="{StaticResource InsetY16}" BorderBrush="{ThemeResource HairlineBrush}" BorderThickness="0,0,0,1">
+          <Grid ColumnSpacing="{StaticResource Space12}" Padding="{StaticResource InsetY16}" BorderBrush="{ThemeResource OutlineVariantBrush}" BorderThickness="0,0,0,1">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="20" />
               <ColumnDefinition Width="*" />
@@ -46,7 +46,7 @@
 
             <Viewbox Width="{StaticResource IconSize}" Height="{StaticResource IconSize}" VerticalAlignment="Top" Margin="0,1,0,0" AutomationProperties.AccessibilityView="Raw">
               <Grid Width="24" Height="24">
-                <shapes:Path Style="{x:Bind local:NeedsYouPanel.Icon(Decision.Kind)}" Stroke="{ThemeResource AlertBrush}" />
+                <shapes:Path Style="{x:Bind local:NeedsYouPanel.Icon(Decision.Kind)}" Stroke="{ThemeResource ErrorBrush}" />
               </Grid>
             </Viewbox>
 
@@ -59,7 +59,7 @@
               </TextBlock>
               <!-- Why the action was refused, in words; a polite live region, so it is announced -->
               <TextBlock Text="{x:Bind Decision.Refusal, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap"
-                         Foreground="{ThemeResource AlertInkBrush}" AutomationProperties.LiveSetting="Polite"
+                         Foreground="{ThemeResource ErrorBrush}" AutomationProperties.LiveSetting="Polite"
                          Visibility="{x:Bind local:NeedsYouPanel.Said(Decision.Refusal), Mode=OneWay}" />
             </StackPanel>
 

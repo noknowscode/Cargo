@@ -65,15 +65,15 @@ public static class PortData
             }),
 
         new Vessel("nordic", "Nordic Star", "Ferrand-Lowe", "1000019", VesselStatus.Arriving, null,
-            "AccentColor", "07", "Today 21:40", "Thu 18:00", 299, 12.9, 816, "Pending",
+            "PrimaryColor", "07", "Today 21:40", "Thu 18:00", 299, 12.9, 816, "Pending",
             "Gothenburg → Westhaven → Halifax", 0, 0, new CargoMix(64, 20, 2, 2, 12), 11,
             new VesselNote("Pilot boarded 20:35 · 2 tugs assigned", "Discharge starts ~22:30 after mooring."),
             new[]
             {
                 new ClearanceCheck("✓", "ISPS declaration", "18:20", "NavyColor"),
                 new ClearanceCheck("✓", "Crew list verified", "18:31", "NavyColor"),
-                new ClearanceCheck("○", "Manifest reconciled", "on arrival", "TextFaintColor"),
-                new ClearanceCheck("○", "Dangerous goods plan", "on arrival", "TextFaintColor")
+                new ClearanceCheck("○", "Manifest reconciled", "on arrival", "OnSurfaceVariantColor"),
+                new ClearanceCheck("○", "Dangerous goods plan", "on arrival", "OnSurfaceVariantColor")
             },
             PilotAboard: true),
 
@@ -102,15 +102,15 @@ public static class PortData
             }),
 
         new Vessel("levant", "Levant Express", "Morvane", "1000045", VesselStatus.AtAnchor, "Outer roads",
-            "TextFaintColor", null, "Thu 02:30", "Fri 10:00", 347, 14.2, 1310, "Pending",
+            "OnSurfaceVariantColor", null, "Thu 02:30", "Fri 10:00", 347, 14.2, 1310, "Pending",
             "Piraeus → Westhaven → Toronto", 0, 0, new CargoMix(60, 12, 8, 6, 14), 13,
             new VesselNote("Waiting for Berth 06 to clear after Baltic Crown departs", "Assign a berth in Docking."),
             new[]
             {
                 new ClearanceCheck("✓", "ISPS declaration", "16:05", "NavyColor"),
-                new ClearanceCheck("○", "Crew list verified", "pending", "TextFaintColor"),
-                new ClearanceCheck("○", "Manifest reconciled", "pending", "TextFaintColor"),
-                new ClearanceCheck("○", "Dangerous goods plan", "pending", "TextFaintColor")
+                new ClearanceCheck("○", "Crew list verified", "pending", "OnSurfaceVariantColor"),
+                new ClearanceCheck("○", "Manifest reconciled", "pending", "OnSurfaceVariantColor"),
+                new ClearanceCheck("○", "Dangerous goods plan", "pending", "OnSurfaceVariantColor")
             },
             WaitingFor: "06")
     };
@@ -225,7 +225,7 @@ public static class PortData
             "—", "Cleared", "Complete", "RDB-71100-K", "Cleared", "NavyColor"),
 
         new ContainerDef("NRDU8371624", "40 FT HC", "Nereid", "Rotterdam → Westhaven", "Aboard · Bay 03", 0,
-            "TextMutedColor", "23,410 kg", "12.19 × 2.44 × 2.90 m", "Avren Aurora", "Rotterdam", "Westhaven",
+            "OnSurfaceVariantColor", "23,410 kg", "12.19 × 2.44 × 2.90 m", "Avren Aurora", "Rotterdam", "Westhaven",
             "—", "Pre-cleared", "Scheduled", "NRD-60021-M", "Cleared", "NavyColor")
     };
 
@@ -344,7 +344,7 @@ public static class PortData
     {
         new GaugeDef("Sound bar", 12, 4.8, "SeaGreenColor", "↑"),
         new GaugeDef("Halden", 44, 3.6, "SeaGreenColor", "→"),
-        new GaugeDef("Ravensmoor", 85, 2.9, "AlertColor", "↓"),
+        new GaugeDef("Ravensmoor", 85, 2.9, "ErrorColor", "↓"),
         new GaugeDef("Alder Basin", 112, 3.1, "OrangeColor", "↓")
     };
 
@@ -352,13 +352,13 @@ public static class PortData
     {
         new LockDef("Lock 1 · Halden", 28, "Open · upbound", "SeaGreenColor"),
         new LockDef("Lock 2 · Brenner", 64, "Queue 40 min", "OrangeColor"),
-        new LockDef("Lock 3 · Ravensmoor", 97, "Maintenance 22:00–23:30", "AlertColor")
+        new LockDef("Lock 3 · Ravensmoor", 97, "Maintenance 22:00–23:30", "ErrorColor")
     };
 
     public static readonly IReadOnlyList<NoticeDef> Notices = new[]
     {
-        new NoticeDef("Low water · km 85", "Ravensmoor gauge 2.9 m, falling. Max draft 2.6 m after 23:00.", 85, "AlertColor"),
-        new NoticeDef("Lock 3 maintenance", "Ravensmoor closed 22:00–23:30 for gate hydraulics.", 97, "AlertColor"),
+        new NoticeDef("Low water · km 85", "Ravensmoor gauge 2.9 m, falling. Max draft 2.6 m after 23:00.", 85, "ErrorColor"),
+        new NoticeDef("Lock 3 maintenance", "Ravensmoor closed 22:00–23:30 for gate hydraulics.", 97, "ErrorColor"),
         new NoticeDef("Strong cross-current · km 40", "Ebb sets NE across the Halden bend, 1.8 kn until 23:10.", 40, "OrangeColor")
     };
 
@@ -381,7 +381,7 @@ public static class PortData
         new YardZoneDef("C", "Block C", "Refrigerated", 40, 310, 300, 220, "CargoReeferColor", false),
         new YardZoneDef("D", "Block D", "Hazardous", 360, 310, 150, 220, "CargoHazardColor", true),
         new YardZoneDef("E", "Inspection", "Awaiting exam", 590, 310, 220, 220, "CargoOversizeColor", true),
-        new YardZoneDef("F", "Restricted", "Bonded", 830, 310, 230, 220, "RestrictedColor", true)
+        new YardZoneDef("F", "Restricted", "Bonded", 830, 310, 230, 220, "ErrorColor", true)
     };
 
     public static readonly IReadOnlyList<string> ContainerPrefixes = new[]
@@ -393,13 +393,13 @@ public static class PortData
 
     public static readonly IReadOnlyList<SecurityZoneDef> SecurityZones = new[]
     {
-        new SecurityZoneDef("Vessel access", "Quay · escorted", 100, 104, 420, 80, "AccentColor", 0.10, false),
-        new SecurityZoneDef("Vessel access", "Quay · escorted", 580, 104, 420, 80, "AccentColor", 0.10, false),
+        new SecurityZoneDef("Vessel access", "Quay · escorted", 100, 104, 420, 80, "PrimaryColor", 0.10, false),
+        new SecurityZoneDef("Vessel access", "Quay · escorted", 580, 104, 420, 80, "PrimaryColor", 0.10, false),
         new SecurityZoneDef("Container inspection", "X-ray · lanes 1–3", 100, 210, 200, 170, "AmberDeepColor", 0.14, false),
-        new SecurityZoneDef("Customs area", "Bonded holding", 320, 210, 200, 170, "AccentColor", 0.12, false),
-        new SecurityZoneDef("Restricted zone", "Fuel & hazmat", 580, 210, 180, 170, "RestrictedColor", 0.14, true),
+        new SecurityZoneDef("Customs area", "Bonded holding", 320, 210, 200, 170, "PrimaryColor", 0.12, false),
+        new SecurityZoneDef("Restricted zone", "Fuel & hazmat", 580, 210, 180, 170, "ErrorColor", 0.14, true),
         new SecurityZoneDef("Yard · general", "", 780, 210, 220, 170, "ContainerSageColor", 0.10, false),
-        new SecurityZoneDef("Main entrance", "Personnel & visitors", 60, 430, 220, 34, "AccentColor", 0.14, false),
+        new SecurityZoneDef("Main entrance", "Personnel & visitors", 60, 430, 220, 34, "PrimaryColor", 0.14, false),
         new SecurityZoneDef("Truck gates", "Gates 1–3", 540, 430, 480, 34, "AmberDeepColor", 0.10, false)
     };
 
@@ -422,57 +422,57 @@ public static class PortData
 
     public static readonly IReadOnlyList<SecurityEventDef> SecurityEvents = new[]
     {
-        new SecurityEventDef(6.5, "Gate open", "AccentColor"),
-        new SecurityEventDef(7.2, "Kaida Maru cleared", "AccentColor"),
-        new SecurityEventDef(8.1, "X-ray lane 2", "AccentColor"),
-        new SecurityEventDef(9.4, "Driver ID rejected", "RestrictedColor"),
-        new SecurityEventDef(11, "Customs batch 14", "AccentColor"),
-        new SecurityEventDef(12.5, "Aurora ISPS", "AccentColor"),
-        new SecurityEventDef(14.2, "Aurora alongside", "AccentColor"),
+        new SecurityEventDef(6.5, "Gate open", "PrimaryColor"),
+        new SecurityEventDef(7.2, "Kaida Maru cleared", "PrimaryColor"),
+        new SecurityEventDef(8.1, "X-ray lane 2", "PrimaryColor"),
+        new SecurityEventDef(9.4, "Driver ID rejected", "ErrorColor"),
+        new SecurityEventDef(11, "Customs batch 14", "PrimaryColor"),
+        new SecurityEventDef(12.5, "Aurora ISPS", "PrimaryColor"),
+        new SecurityEventDef(14.2, "Aurora alongside", "PrimaryColor"),
         new SecurityEventDef(16.7, "LNHU hold", "OrangeColor"),
-        new SecurityEventDef(18.3, "Seal audit", "AccentColor"),
+        new SecurityEventDef(18.3, "Seal audit", "PrimaryColor"),
         new SecurityEventDef(19.6, "MRVU weight hold", "OrangeColor"),
-        new SecurityEventDef(20.7, "Baltic dep. clearance", "AccentColor")
+        new SecurityEventDef(20.7, "Baltic dep. clearance", "PrimaryColor")
     };
 
     public static readonly IReadOnlyList<SecurityRecordDef> SecurityRecords = new[]
     {
-        new SecurityRecordDef("Container seal validation", "412", "AccentColor"),
-        new SecurityRecordDef("Customs clearance", "388", "AccentColor"),
-        new SecurityRecordDef("Cargo inspection", "38", "AccentColor"),
-        new SecurityRecordDef("Driver verification", "221", "AccentColor"),
-        new SecurityRecordDef("Vehicle access", "236", "AccentColor"),
-        new SecurityRecordDef("Employee access", "612", "AccentColor"),
-        new SecurityRecordDef("Restricted zone access", "19", "RestrictedColor"),
+        new SecurityRecordDef("Container seal validation", "412", "PrimaryColor"),
+        new SecurityRecordDef("Customs clearance", "388", "PrimaryColor"),
+        new SecurityRecordDef("Cargo inspection", "38", "PrimaryColor"),
+        new SecurityRecordDef("Driver verification", "221", "PrimaryColor"),
+        new SecurityRecordDef("Vehicle access", "236", "PrimaryColor"),
+        new SecurityRecordDef("Employee access", "612", "PrimaryColor"),
+        new SecurityRecordDef("Restricted zone access", "19", "ErrorColor"),
         new SecurityRecordDef("Security incidents", "1", "OrangeColor")
     };
 
     public static readonly IReadOnlyList<AccessZoneDef> AccessZones = new[]
     {
-        new AccessZoneDef("Quay / vessel access", 0, 0, 520, 40, "AccentColor"),
+        new AccessZoneDef("Quay / vessel access", 0, 0, 520, 40, "PrimaryColor"),
         new AccessZoneDef("Inspection", 20, 56, 120, 60, "AmberDeepColor"),
-        new AccessZoneDef("Customs", 150, 56, 120, 60, "AccentColor"),
-        new AccessZoneDef("Restricted", 280, 56, 100, 60, "RestrictedColor"),
+        new AccessZoneDef("Customs", 150, 56, 120, 60, "PrimaryColor"),
+        new AccessZoneDef("Restricted", 280, 56, 100, 60, "ErrorColor"),
         new AccessZoneDef("Yard", 390, 56, 110, 60, "ContainerSageColor"),
-        new AccessZoneDef("Admin", 20, 130, 150, 50, "TextMutedColor"),
+        new AccessZoneDef("Admin", 20, 130, 150, 50, "OnSurfaceVariantColor"),
         new AccessZoneDef("Gates", 190, 130, 190, 50, "AmberDeepColor"),
         new AccessZoneDef("Rail head", 390, 130, 110, 50, "ContainerOliveColor")
     };
 
     public static readonly IReadOnlyList<PersonDef> People = new[]
     {
-        new PersonDef("Elena Marsh", "Berth supervisor", "WPA-0142 · Level 3", new[] { 0, 1, 2, 4, 5, 6, 7 }, "AccentColor"),
-        new PersonDef("Tomas Okafor", "Crane operator", "WPA-2210 · Level 2", new[] { 0, 4 }, "AccentColor"),
+        new PersonDef("Elena Marsh", "Berth supervisor", "WPA-0142 · Level 3", new[] { 0, 1, 2, 4, 5, 6, 7 }, "PrimaryColor"),
+        new PersonDef("Tomas Okafor", "Crane operator", "WPA-2210 · Level 2", new[] { 0, 4 }, "PrimaryColor"),
         new PersonDef("Priya Nair", "Customs officer", "Customs 7731 · Federal", new[] { 1, 2, 3, 5, 6 }, "AmberDeepColor"),
-        new PersonDef("Marcus Feld", "Security patrol", "WPA-0907 · Level 4", new[] { 0, 1, 2, 3, 4, 5, 6, 7 }, "RestrictedColor")
+        new PersonDef("Marcus Feld", "Security patrol", "WPA-0907 · Level 4", new[] { 0, 1, 2, 3, 4, 5, 6, 7 }, "ErrorColor")
     };
 
     public static readonly IReadOnlyList<VehicleDef> Vehicles = new[]
     {
-        new VehicleDef("TRK 4471", "J. Alvarez", "RDBU 552901 6", "Gate 2 · out", "Authorized", "AccentColor", "19:48", "ContainerSageColor"),
-        new VehicleDef("TRK 1029", "S. Brennan", "AVRU 482193 4", "Gate 1 · in", "Authorized", "AccentColor", "20:12", "AccentColor"),
+        new VehicleDef("TRK 4471", "J. Alvarez", "RDBU 552901 6", "Gate 2 · out", "Authorized", "PrimaryColor", "19:48", "ContainerSageColor"),
+        new VehicleDef("TRK 1029", "S. Brennan", "AVRU 482193 4", "Gate 1 · in", "Authorized", "PrimaryColor", "20:12", "PrimaryColor"),
         new VehicleDef("TRK 8834", "—", "—", "Gate 3 · in", "Awaiting driver ID", "OrangeColor", "20:41", "CargoEmptyColor"),
-        new VehicleDef("TRK 2207", "L. Kowalski", "RVBU 771034 9", "Gate 2 · in", "Authorized", "AccentColor", "20:52", "CargoReeferColor")
+        new VehicleDef("TRK 2207", "L. Kowalski", "RVBU 771034 9", "Gate 2 · in", "Authorized", "PrimaryColor", "20:52", "CargoReeferColor")
     };
 
     public static readonly IReadOnlyList<InspectionStepDef> InspectionSteps = new[]
@@ -487,12 +487,12 @@ public static class PortData
 
     public static readonly IReadOnlyList<InspectionLogDef> InspectionLog = new[]
     {
-        new InspectionLogDef("18:02", "✓", "Gate 1 entry · TRK 3391 · driver verified", "AccentColor"),
-        new InspectionLogDef("18:09", "✓", "Seal MRV-77201-A photographed and matched", "AccentColor"),
-        new InspectionLogDef("18:11", "✓", "Manifest reconciled with booking 88210", "AccentColor"),
+        new InspectionLogDef("18:02", "✓", "Gate 1 entry · TRK 3391 · driver verified", "PrimaryColor"),
+        new InspectionLogDef("18:09", "✓", "Seal MRV-77201-A photographed and matched", "PrimaryColor"),
+        new InspectionLogDef("18:11", "✓", "Manifest reconciled with booking 88210", "PrimaryColor"),
         new InspectionLogDef("19:36", "!", "Weighbridge 2: 25,920 kg vs declared 24,120 kg", "OrangeColor"),
-        new InspectionLogDef("19:40", "✓", "X-ray lane 2: dense mass detected bay 3, consistent with machinery", "AccentColor"),
-        new InspectionLogDef("19:42", "○", "Hold placed · physical inspection scheduled 21:15", "TextFaintColor")
+        new InspectionLogDef("19:40", "✓", "X-ray lane 2: dense mass detected bay 3, consistent with machinery", "PrimaryColor"),
+        new InspectionLogDef("19:42", "○", "Hold placed · physical inspection scheduled 21:15", "OnSurfaceVariantColor")
     };
 
     // ── Activity ──────────────────────────────────────────────────────────────
@@ -516,11 +516,11 @@ public static class PortData
     public static readonly IReadOnlyDictionary<string, (string Icon, string Tone)> ActivityIcons =
         new Dictionary<string, (string, string)>
         {
-            ["gate"] = ("M3 7h11v9H3zM14 10h4l3 3v3h-7M6 19a2 2 0 100-4 2 2 0 000 4M17 19a2 2 0 100-4 2 2 0 000 4", "AccentColor"),
+            ["gate"] = ("M3 7h11v9H3zM14 10h4l3 3v3h-7M6 19a2 2 0 100-4 2 2 0 000 4M17 19a2 2 0 100-4 2 2 0 000 4", "PrimaryColor"),
             ["warn"] = ("M12 3l10 18H2zM12 10v5M12 18v.5", "OrangeColor"),
-            ["vessel"] = ("M3 15l2 5h14l2-5zM5 15V9h14v6M9 9V5h6v4", "InkRaisedColor"),
-            ["security"] = ("M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4", "AccentColor"),
-            ["container"] = ("M3 8h18v10H3zM7 8v10M11 8v10M15 8v10", "AccentColor")
+            ["vessel"] = ("M3 15l2 5h14l2-5zM5 15V9h14v6M9 9V5h6v4", "OnSurfaceColor"),
+            ["security"] = ("M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4", "PrimaryColor"),
+            ["container"] = ("M3 8h18v10H3zM7 8v10M11 8v10M15 8v10", "PrimaryColor")
         };
 
     // ── Series ────────────────────────────────────────────────────────────────

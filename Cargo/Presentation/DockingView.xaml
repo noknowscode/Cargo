@@ -35,11 +35,11 @@
                           Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
                           Margin="{utu:Responsive Narrowest={StaticResource GapTop10}, Wide='0'}">
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource AccentBrush}" Opacity="0.35" VerticalAlignment="Center" />
+          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource PrimaryBrush}" Opacity="0.35" VerticalAlignment="Center" />
           <TextBlock Text="Available" Style="{StaticResource CaptionText}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource AccentBrush}" VerticalAlignment="Center" />
+          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
           <TextBlock Text="Reserved" Style="{StaticResource CaptionText}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
@@ -47,11 +47,11 @@
           <TextBlock Text="Occupied" Style="{StaticResource CaptionText}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource RestrictedBrush}" VerticalAlignment="Center" />
+          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
           <TextBlock Text="Restricted" Style="{StaticResource CaptionText}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Center" />
+          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
           <TextBlock Text="Conflict" Style="{StaticResource CaptionText}" />
         </StackPanel>
       </controls:FlowPanel>
@@ -84,7 +84,7 @@
           <TextBlock Style="{StaticResource CaptionText}" VerticalAlignment="Center">
             <Run Text="Viewing " /><Run Text="{x:Bind ViewModel.PlanLabel, Mode=OneWay}"
                                         FontFamily="{StaticResource MonoMediumFont}"
-                                        Foreground="{ThemeResource InkBrush}" />
+                                        Foreground="{ThemeResource OnSurfaceBrush}" />
           </TextBlock>
         </StackPanel>
 
@@ -116,10 +116,10 @@
                 HorizontalAlignment="{utu:Responsive Narrowest=Stretch, Narrow=Right}"
                 Margin="{utu:Responsive Narrowest={StaticResource GapTop12}, Narrow='0'}">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" HorizontalAlignment="Center">
-            <shapes:Path Data="M4 17l5-5 4 4 7-8M15 8h5v5" Stroke="{ThemeResource PaperBrush}" StrokeThickness="2"
+            <shapes:Path Data="M4 17l5-5 4 4 7-8M15 8h5v5" Stroke="{ThemeResource OnSurfaceInverseBrush}" StrokeThickness="2"
                          Width="{StaticResource IconSizeSmall}" Height="{StaticResource IconSizeSmall}" Stretch="Uniform" VerticalAlignment="Center" />
             <TextBlock Text="Optimize traffic" Style="{StaticResource TypeMedium13}"
-                       Foreground="{ThemeResource PaperBrush}" />
+                       Foreground="{ThemeResource OnSurfaceInverseBrush}" />
           </StackPanel>
         </Button>
       </Grid>
@@ -192,9 +192,9 @@
                       <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{x:Bind Berth}" Style="{StaticResource TypeMonoMedium12}"
-                               Foreground="{ThemeResource TextMutedBrush}" VerticalAlignment="Center" />
+                               Foreground="{ThemeResource OnSurfaceVariantBrush}" VerticalAlignment="Center" />
                     <!-- xaml-lint: allow card - the track of a timeline bar, not a card -->
-                    <Border Grid.Column="1" Height="26" CornerRadius="7" Background="{ThemeResource SurfaceSunkBrush}">
+                    <Border Grid.Column="1" Height="26" CornerRadius="7" Background="{ThemeResource SurfaceVariantBrush}">
                       <controls:ProportionalPanel Segments="{x:Bind Segments}" NowFraction="{x:Bind NowFraction, Mode=OneWay}" />
                     </Border>
                   </Grid>
@@ -250,7 +250,7 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
-          <Border Height="1" Background="{ThemeResource HairlineBrush}" />
+          <Border Height="1" Background="{ThemeResource OutlineVariantBrush}" />
           <TextBlock Text="{x:Bind ViewModel.SelectedNote, Mode=OneWay}" Style="{StaticResource SubtitleText}"
                      TextWrapping="Wrap" LineHeight="19" />
 
@@ -269,7 +269,7 @@
                           MinHeight="{StaticResource TouchTarget}"
                           AutomationProperties.Name="{x:Bind AccessibleName, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind AccessibleName, Mode=OneWay}">
                     <StackPanel Spacing="{StaticResource Space2}" HorizontalAlignment="Center">
-                      <TextBlock Text="{x:Bind Number}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource InkBrush}"
+                      <TextBlock Text="{x:Bind Number}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource OnSurfaceBrush}"
                                  HorizontalAlignment="Center" />
                       <TextBlock Text="{x:Bind Caption, Mode=OneWay}" Style="{StaticResource TypeMedium11}"
                                  Foreground="{x:Bind local:DockingView.ChoiceInk(Fits), Mode=OneWay}"

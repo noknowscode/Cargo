@@ -52,11 +52,11 @@ public sealed partial class VolumeChart : SceneHost
                 DrawColumn(_settled, 6 + i * 42, PortData.Volume[index], live: false);
             }
 
-            _settled.Place(Draw.Rule(0, 104, 300, 104, Tokens.Brush("InkColor", 0.14)));
-            _settled.Place(Draw.Text("14:00", 0, 108, 11, Tokens.Brush("TextFaintBrush")));
-            _settled.Place(Draw.Label(ShiftClock.Format(hour - 3), 150, 108, 11, Tokens.Brush("TextFaintBrush"),
+            _settled.Place(Draw.Rule(0, 104, 300, 104, Tokens.Brush("OnSurfaceColor", 0.14)));
+            _settled.Place(Draw.Text("14:00", 0, 108, 11, Tokens.Brush("OnSurfaceVariantBrush")));
+            _settled.Place(Draw.Label(ShiftClock.Format(hour - 3), 150, 108, 11, Tokens.Brush("OnSurfaceVariantBrush"),
                 alignment: TextAlignment.Center, width: 80));
-            _settled.Place(Draw.Label(ShiftClock.Format(hour), 300, 108, 11, Tokens.Brush("TextFaintBrush"),
+            _settled.Place(Draw.Label(ShiftClock.Format(hour), 300, 108, 11, Tokens.Brush("OnSurfaceVariantBrush"),
                 alignment: TextAlignment.Right, width: 80));
         }
 
@@ -83,7 +83,7 @@ public sealed partial class VolumeChart : SceneHost
             var partial = live && j == blocks - 1 && value % 20 != 0;
             var y = 94 - j * 10.5;
             var token = live
-                ? "AccentColor"
+                ? "PrimaryColor"
                 : j % 4 == 1 ? "CargoHazardColor" : j % 4 == 3 ? "CargoOversizeColor" : "CargoStandardColor";
             var color = Tokens.Color(token);
             var opacity = partial ? 0.45 : live ? 1 : 0.8;
@@ -92,7 +92,7 @@ public sealed partial class VolumeChart : SceneHost
             layer.Place(Draw.Rect(x, y, 20, 2, Tokens.Brush("DeckWhiteColor", 0.35 * opacity)));
             for (var rib = 1; rib <= 3; rib++)
             {
-                layer.Place(Draw.Rule(x + rib * 5, y, x + rib * 5, y + 9, Tokens.Brush("InkColor", 0.18 * opacity), 0.8));
+                layer.Place(Draw.Rule(x + rib * 5, y, x + rib * 5, y + 9, Tokens.Brush("OnSurfaceColor", 0.18 * opacity), 0.8));
             }
         }
     }
@@ -115,14 +115,14 @@ public sealed partial class FlowChart : SceneHost
         var leaving = Geo.MakeSeries(PortData.CargoOut, 300, 132, 14);
 
         Scene.Place(new Path { Data = leaving.Area, Fill = Draw.Fade("AmberColor", 0.30) });
-        Scene.Place(new Path { Data = entering.Area, Fill = Draw.Fade("AccentColor", 0.26) });
+        Scene.Place(new Path { Data = entering.Area, Fill = Draw.Fade("PrimaryColor", 0.26) });
         Scene.Place(new Path { Data = leaving.Stroke, Stroke = Tokens.Brush("AmberBrush"), StrokeThickness = 1.8 });
-        Scene.Place(new Path { Data = entering.Stroke, Stroke = Tokens.Brush("AccentBrush"), StrokeThickness = 1.8 });
+        Scene.Place(new Path { Data = entering.Stroke, Stroke = Tokens.Brush("PrimaryBrush"), StrokeThickness = 1.8 });
 
-        Scene.Place(Draw.Rule(0, 132, 300, 132, Tokens.Brush("InkColor", 0.1)));
-        Scene.Place(Draw.Text("00:00", 0, 136, 12, Tokens.Brush("TextFaintBrush")));
-        Scene.Place(Draw.Label("12:00", 150, 136, 12, Tokens.Brush("TextFaintBrush"), alignment: TextAlignment.Center, width: 80));
-        Scene.Place(Draw.Label("24:00", 300, 136, 12, Tokens.Brush("TextFaintBrush"), alignment: TextAlignment.Right, width: 80));
+        Scene.Place(Draw.Rule(0, 132, 300, 132, Tokens.Brush("OnSurfaceColor", 0.1)));
+        Scene.Place(Draw.Text("00:00", 0, 136, 12, Tokens.Brush("OnSurfaceVariantBrush")));
+        Scene.Place(Draw.Label("12:00", 150, 136, 12, Tokens.Brush("OnSurfaceVariantBrush"), alignment: TextAlignment.Center, width: 80));
+        Scene.Place(Draw.Label("24:00", 300, 136, 12, Tokens.Brush("OnSurfaceVariantBrush"), alignment: TextAlignment.Right, width: 80));
     }
 }
 
@@ -144,7 +144,7 @@ public sealed partial class TideChart : SceneHost
 
         var x = Math.Clamp((PortData.NowHours - 18) / 12 * 600, 0, 600);
         var y = tide.At((PortData.NowHours - 18) * 2);
-        Scene.Place(Draw.Rule(x, 4, x, 62, Tokens.Brush("InkBrush"), 1, dash: Draw.Dash(3, 3)));
-        Scene.Place(Draw.Dot(x, y, 4, Tokens.Brush("AccentBrush"), Tokens.Brush("SurfaceBrush"), 2));
+        Scene.Place(Draw.Rule(x, 4, x, 62, Tokens.Brush("OnSurfaceBrush"), 1, dash: Draw.Dash(3, 3)));
+        Scene.Place(Draw.Dot(x, y, 4, Tokens.Brush("PrimaryBrush"), Tokens.Brush("SurfaceBrush"), 2));
     }
 }

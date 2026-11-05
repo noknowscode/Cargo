@@ -4,20 +4,277 @@
        xmlns:utus="using:Uno.Toolkit.UI.Simple"
              xmlns:utu="using:Uno.Toolkit.UI">
   <!-- No RequestedTheme: the app follows the device unless the dispatcher picks Light or Dark in the account menu
-       (Uno.Extensions' theme service applies and saves it on the window content), and Themes/Tokens.xaml carries
-       both palettes. -->
+       (Uno.Extensions' theme service applies and saves it on the window content). -->
 
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-        <utus:SimpleToolkitTheme />
+        <!-- The look comes from the Simple theme. Its palette is the design's, in Styles/ColorPaletteOverride.xaml (the
+             file Uno Platform Studio's Themes tab edits); pages use the role brushes it generates (OnSurfaceBrush,
+             PrimaryBrush, OutlineVariantBrush...) and the theme's Space*, Radius* and type-scale tokens. -->
+        <utus:SimpleToolkitTheme>
+          <utus:SimpleToolkitTheme.Colors>
+            <ut:ThemeColors xmlns:ut="using:Uno.Themes" OverrideSource="ms-appx:///Styles/ColorPaletteOverride.xaml" />
+          </utus:SimpleToolkitTheme.Colors>
+        </utus:SimpleToolkitTheme>
         <ResourceDictionary Source="ms-appx:///Themes/Tokens.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/Layout.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/MotionTokens.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/Icons.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/Styles.xaml" />
       </ResourceDictionary.MergedDictionaries>
+
+      <!--
+        The colours no palette role covers: statuses, data series, the maps and the harbour plant, cargo classes and
+        liveries. Every colour with a role (text, page, panels, accent, alert, rules) is the palette's, used through
+        the role's brush. Pages take these through {ThemeResource}; code asks Themes/Tokens.cs, which resolves them
+        for the window's theme and raises ThemeChanged so canvas and Skia scenes re-read (Controls/Live.cs).
+
+        Dark is the same dispatch desk at night: the three blues (Primary, Water, Navy) re-spaced so they stay apart,
+        status inks re-picked for a dark ground, and the 3D harbour lit for night (dark ground and water, the same
+        paint under a lower light). Every status ink holds >= 4.5:1 on the Background and Surface it is set on (Light
+        >= 4.9:1, Dark >= 7:1). "Default" is the Dark dictionary (the WinUI convention).
+      -->
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+          <!-- Data: Navy is a vessel or what happened (filled markers, hulls, cargo in); Water is the tide, cargo out,
+               the waterline and wake -->
+          <Color x:Key="NavyColor">#FF0F4A6E</Color>
+          <Color x:Key="WaterColor">#FF5598C4</Color>
+          <!-- Status: fills, and their ink variants for text -->
+          <Color x:Key="SeaGreenColor">#FF1E8F7A</Color>
+          <Color x:Key="SeaGreenInkColor">#FF146B5B</Color>
+          <Color x:Key="AmberColor">#FFE0A72F</Color>
+          <Color x:Key="AmberDeepColor">#FFC9A227</Color>
+          <Color x:Key="AmberInkColor">#FF8A6307</Color>
+          <Color x:Key="OrangeColor">#FFD9822B</Color>
+          <Color x:Key="OrangeInkColor">#FF9A5212</Color>
+          <!-- Empty boxes stay a quiet neutral on either ground -->
+          <Color x:Key="CargoEmptyColor">#FFD8D4CA</Color>
+
+          <!-- Ship glyphs (Next 6 h): container greys for the deck stacks -->
+          <Color x:Key="GlyphBoxPaleColor">#FFD3D8DA</Color>
+          <Color x:Key="GlyphBoxLightColor">#FFC4CBCE</Color>
+          <Color x:Key="GlyphBoxSlateColor">#FF8A9399</Color>
+          <Color x:Key="GlyphBoxMistColor">#FFB9C0C4</Color>
+          <Color x:Key="GlyphBoxStoneColor">#FFA3AFB6</Color>
+          <Color x:Key="GlyphBridgeColor">#FFE7EAEB</Color>
+
+          <!-- Maps: land, roads, quays, water, and the hulls and plant drawn on them -->
+          <Color x:Key="LandColor">#FFE6E7E2</Color>
+          <Color x:Key="RoadColor">#FFDDD7CA</Color>
+          <Color x:Key="QuayColor">#FF5F6B76</Color>
+          <Color x:Key="QuayEdgeColor">#FF2C3944</Color>
+          <Color x:Key="ShallowsColor">#FFCBDCE5</Color>
+          <Color x:Key="SeaLightColor">#FFD6E3EC</Color>
+          <Color x:Key="SeaMidColor">#FFB9CDDB</Color>
+          <Color x:Key="SeaFlatColor">#FFBFD3E0</Color>
+          <Color x:Key="RiverBankColor">#FFDCDED8</Color>
+          <Color x:Key="RiverEdgeColor">#FFC7D6D2</Color>
+          <Color x:Key="RiverLightColor">#FF8FB9B3</Color>
+          <Color x:Key="RiverDeepColor">#FF4F8F8A</Color>
+          <Color x:Key="RiverDeepClearColor">#004F8F8A</Color>
+          <Color x:Key="ApronLineColor">#FF6B757C</Color>
+          <Color x:Key="HullColor">#FF243442</Color>
+          <Color x:Key="BootToppingColor">#FFA94E3F</Color>
+          <Color x:Key="BridgeColor">#FF31495B</Color>
+          <Color x:Key="SteelColor">#FF1F2629</Color>
+
+          <!-- Harbour scene (3D stage): the ground, water and light. Light is the high-key daytime miniature -->
+          <Color x:Key="HarbourStageColor">#FFEDF0F1</Color>
+          <!-- A lit face: the night light level (below) dims it to about #252B2F -->
+          <Color x:Key="HarbourLandColor">#FFE5E5E1</Color>
+          <Color x:Key="HarbourQuaySideColor">#FFB3B6B7</Color>
+          <Color x:Key="HarbourApronColor">#FFDDDDD8</Color>
+          <Color x:Key="HarbourPadColor">#FFDADAD4</Color>
+          <Color x:Key="HarbourRoadColor">#FFCDCEC9</Color>
+          <Color x:Key="HarbourMarkColor">#FFF7F7F4</Color>
+          <Color x:Key="HarbourRailColor">#FF9398A0</Color>
+          <Color x:Key="HarbourSafetyColor">#FFD2BC82</Color>
+          <Color x:Key="HarbourSeaNearColor">#FFA8CAD6</Color>
+          <Color x:Key="HarbourSeaFarColor">#FFC9DDE4</Color>
+          <!-- Soundings, isobaths and the chart text on the water -->
+          <Color x:Key="HarbourDepthInkColor">#FF1E384C</Color>
+          <Color x:Key="HarbourShadowColor">#FF3A427A</Color>
+          <!-- Shaded faces drift toward it -->
+          <Color x:Key="HarbourSkyTintColor">#FF96A4CC</Color>
+          <Color x:Key="HarbourWakeColor">#FFFFFFFF</Color>
+          <Color x:Key="HarbourGlintColor">#FFFFFAEE</Color>
+          <!-- Painted berth numbers and the quay sign -->
+          <Color x:Key="HarbourSignColor">#FF464E54</Color>
+          <!-- Scales every lit face of the 3D model (paint colours stay invariant): daylight -->
+          <x:Double x:Key="HarbourLightLevel">1</x:Double>
+          <!-- How far a model's top edges lift toward white -->
+          <x:Double x:Key="HarbourEdgeLift">0.42</x:Double>
+
+          <SolidColorBrush x:Key="NavyBrush" Color="{StaticResource NavyColor}" />
+          <SolidColorBrush x:Key="WaterBrush" Color="{StaticResource WaterColor}" />
+          <SolidColorBrush x:Key="SeaGreenInkBrush" Color="{StaticResource SeaGreenInkColor}" />
+          <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource AmberColor}" />
+          <SolidColorBrush x:Key="OrangeBrush" Color="{StaticResource OrangeColor}" />
+          <SolidColorBrush x:Key="OrangeInkBrush" Color="{StaticResource OrangeInkColor}" />
+          <SolidColorBrush x:Key="LandBrush" Color="{StaticResource LandColor}" />
+          <SolidColorBrush x:Key="SeaFlatBrush" Color="{StaticResource SeaFlatColor}" />
+          <SolidColorBrush x:Key="HarbourStageBrush" Color="{StaticResource HarbourStageColor}" />
+          <!-- Water-level charts share the river map's water: the deep water as the line, a fade below it -->
+          <SolidColorBrush x:Key="WaterLineBrush" Color="{StaticResource RiverDeepColor}" />
+          <LinearGradientBrush x:Key="WaterFadeBrush" StartPoint="0,0" EndPoint="0,1" Opacity="0.34">
+            <GradientStop Offset="0" Color="{StaticResource RiverDeepColor}" />
+            <GradientStop Offset="1" Color="{StaticResource RiverDeepClearColor}" />
+          </LinearGradientBrush>
+          <!-- The tide lane's area: water at 30% fading to 4% -->
+          <SolidColorBrush x:Key="TideFillTopBrush" Color="{StaticResource WaterColor}" Opacity="0.3" />
+          <SolidColorBrush x:Key="TideFillBottomBrush" Color="{StaticResource WaterColor}" Opacity="0.04" />
+          <!-- Toolkit cards: the panels are static, so pointer-over keeps the surface (a hover tint reads as clickable) -->
+          <StaticResource x:Key="CardContentBackgroundPointerOver" ResourceKey="SurfaceBrush" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="Default">
+          <Color x:Key="NavyColor">#FFA9C6DD</Color>
+          <Color x:Key="WaterColor">#FF4A86B0</Color>
+          <Color x:Key="SeaGreenColor">#FF3DB89C</Color>
+          <Color x:Key="SeaGreenInkColor">#FF5CCDB0</Color>
+          <Color x:Key="AmberColor">#FFE6B04A</Color>
+          <Color x:Key="AmberDeepColor">#FFD9B444</Color>
+          <Color x:Key="AmberInkColor">#FFE5C064</Color>
+          <Color x:Key="OrangeColor">#FFE39343</Color>
+          <Color x:Key="OrangeInkColor">#FFF0A866</Color>
+          <Color x:Key="CargoEmptyColor">#FF6B6861</Color>
+
+          <Color x:Key="GlyphBoxPaleColor">#FF8B959A</Color>
+          <Color x:Key="GlyphBoxLightColor">#FF7A848A</Color>
+          <Color x:Key="GlyphBoxSlateColor">#FF5C666C</Color>
+          <Color x:Key="GlyphBoxMistColor">#FF6E787E</Color>
+          <Color x:Key="GlyphBoxStoneColor">#FF66727A</Color>
+          <Color x:Key="GlyphBridgeColor">#FFC9CED1</Color>
+
+          <Color x:Key="LandColor">#FF1D2427</Color>
+          <Color x:Key="RoadColor">#FF2F3538</Color>
+          <Color x:Key="QuayColor">#FF7D8994</Color>
+          <Color x:Key="QuayEdgeColor">#FFAEB9C1</Color>
+          <Color x:Key="ShallowsColor">#FF1C3240</Color>
+          <Color x:Key="SeaLightColor">#FF15232D</Color>
+          <Color x:Key="SeaMidColor">#FF1A2C38</Color>
+          <Color x:Key="SeaFlatColor">#FF182934</Color>
+          <Color x:Key="RiverBankColor">#FF22292C</Color>
+          <Color x:Key="RiverEdgeColor">#FF2B3B3A</Color>
+          <Color x:Key="RiverLightColor">#FF2C5955</Color>
+          <Color x:Key="RiverDeepColor">#FF4F9A94</Color>
+          <Color x:Key="RiverDeepClearColor">#004F9A94</Color>
+          <Color x:Key="ApronLineColor">#FF7E888F</Color>
+          <Color x:Key="HullColor">#FF60758A</Color>
+          <Color x:Key="BootToppingColor">#FFB05A4A</Color>
+          <Color x:Key="BridgeColor">#FF7790A3</Color>
+          <Color x:Key="SteelColor">#FFB4BEC4</Color>
+
+          <!-- Harbour scene: the same model at night -->
+          <Color x:Key="HarbourStageColor">#FF12181C</Color>
+          <Color x:Key="HarbourLandColor">#FF3F4950</Color>
+          <Color x:Key="HarbourQuaySideColor">#FF5A686F</Color>
+          <Color x:Key="HarbourApronColor">#FF2A3135</Color>
+          <Color x:Key="HarbourPadColor">#FF2D3438</Color>
+          <Color x:Key="HarbourRoadColor">#FF353C40</Color>
+          <Color x:Key="HarbourMarkColor">#FF5E676D</Color>
+          <Color x:Key="HarbourRailColor">#FF6B737B</Color>
+          <Color x:Key="HarbourSafetyColor">#FF8F7E4F</Color>
+          <Color x:Key="HarbourSeaNearColor">#FF183140</Color>
+          <Color x:Key="HarbourSeaFarColor">#FF14232C</Color>
+          <Color x:Key="HarbourDepthInkColor">#FF9EBDD1</Color>
+          <Color x:Key="HarbourShadowColor">#FF000000</Color>
+          <Color x:Key="HarbourSkyTintColor">#FF2B3655</Color>
+          <Color x:Key="HarbourWakeColor">#FFA9BFCC</Color>
+          <Color x:Key="HarbourGlintColor">#FF5C7383</Color>
+          <Color x:Key="HarbourSignColor">#FFAAB4BA</Color>
+          <x:Double x:Key="HarbourLightLevel">0.62</x:Double>
+          <x:Double x:Key="HarbourEdgeLift">0.22</x:Double>
+
+          <SolidColorBrush x:Key="NavyBrush" Color="{StaticResource NavyColor}" />
+          <SolidColorBrush x:Key="WaterBrush" Color="{StaticResource WaterColor}" />
+          <SolidColorBrush x:Key="SeaGreenInkBrush" Color="{StaticResource SeaGreenInkColor}" />
+          <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource AmberColor}" />
+          <SolidColorBrush x:Key="OrangeBrush" Color="{StaticResource OrangeColor}" />
+          <SolidColorBrush x:Key="OrangeInkBrush" Color="{StaticResource OrangeInkColor}" />
+          <SolidColorBrush x:Key="LandBrush" Color="{StaticResource LandColor}" />
+          <SolidColorBrush x:Key="SeaFlatBrush" Color="{StaticResource SeaFlatColor}" />
+          <SolidColorBrush x:Key="HarbourStageBrush" Color="{StaticResource HarbourStageColor}" />
+          <SolidColorBrush x:Key="WaterLineBrush" Color="{StaticResource RiverDeepColor}" />
+          <LinearGradientBrush x:Key="WaterFadeBrush" StartPoint="0,0" EndPoint="0,1" Opacity="0.34">
+            <GradientStop Offset="0" Color="{StaticResource RiverDeepColor}" />
+            <GradientStop Offset="1" Color="{StaticResource RiverDeepClearColor}" />
+          </LinearGradientBrush>
+          <SolidColorBrush x:Key="TideFillTopBrush" Color="{StaticResource WaterColor}" Opacity="0.3" />
+          <SolidColorBrush x:Key="TideFillBottomBrush" Color="{StaticResource WaterColor}" Opacity="0.04" />
+          <StaticResource x:Key="CardContentBackgroundPointerOver" ResourceKey="SurfaceBrush" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+
+      <!-- Invariant: paint. Cargo classes, container liveries and white paint mean the same thing on either ground, and
+           every class colour holds >= 3:1 against both the Light Background and the Dark Surface -->
+      <!-- White paint and white marks on coloured boxes, hulls and water -->
+      <Color x:Key="DeckWhiteColor">#FFF5F4EF</Color>
+      <Color x:Key="CargoStandardColor">#FF4F79A0</Color>
+      <Color x:Key="CargoReeferColor">#FF8CB4CA</Color>
+      <Color x:Key="CargoHazardColor">#FFC65C45</Color>
+      <Color x:Key="CargoOversizeColor">#FFC9A311</Color>
+      <Color x:Key="ContainerRustColor">#FF7A4A3A</Color>
+      <Color x:Key="ContainerMagentaColor">#FFC94F9A</Color>
+      <Color x:Key="ContainerOliveColor">#FF5B7C4A</Color>
+      <Color x:Key="ContainerSageColor">#FF8A8F7A</Color>
+
+      <!-- Invariant: the 3D model's paint. The scene's light (HarbourLightLevel) makes it day or night, not the paint.
+           Saturated colour in the scene is status only (Amber reserved, Error restricted); everything else is muted -->
+      <Color x:Key="HarbourTreeColor">#FF8FAE86</Color>
+      <Color x:Key="HarbourTreeLightColor">#FFA9C49F</Color>
+      <Color x:Key="HarbourSteelColor">#FF5E676D</Color>
+      <Color x:Key="HarbourCapColor">#FF2F3538</Color>
+      <Color x:Key="HarbourGlassColor">#FF2C3438</Color>
+      <Color x:Key="HarbourHouseColor">#FFE7E9E9</Color>
+      <Color x:Key="HarbourDeckColor">#FF6F777C</Color>
+      <Color x:Key="HarbourBootColor">#FF8A4B42</Color>
+      <Color x:Key="HarbourCraneColor">#FFA9C3D6</Color>
+      <Color x:Key="HarbourCraneDarkColor">#FF7F95A6</Color>
+      <Color x:Key="HarbourRtgColor">#FFD4BA6E</Color>
+      <Color x:Key="HarbourTugColor">#FFB07F76</Color>
+      <Color x:Key="HarbourBuoyPortColor">#FFA8584E</Color>
+      <Color x:Key="HarbourBuoyStarboardColor">#FF4E7F5E</Color>
+      <Color x:Key="HarbourBuildingColor">#FFDADCDC</Color>
+      <Color x:Key="HarbourRoofColor">#FFC9CDCF</Color>
+      <Color x:Key="HarbourShedColor">#FFC9CCCD</Color>
+      <Color x:Key="HarbourShedRoofColor">#FFB8BDBF</Color>
+      <Color x:Key="HarbourVentColor">#FFB9BEC1</Color>
+
+      <!-- Container liveries, desaturated. No green (reads as status) and no signal red -->
+      <Color x:Key="LiveryBlueColor">#FF7FA6C4</Color>
+      <Color x:Key="LiveryRustColor">#FF9C6B57</Color>
+      <Color x:Key="LiveryOrangeColor">#FFC98A4E</Color>
+      <Color x:Key="LiveryMagentaColor">#FFA0708F</Color>
+      <Color x:Key="LiveryWhiteColor">#FFD8DADB</Color>
+      <Color x:Key="LiveryGreyColor">#FFA4A9AC</Color>
+      <Color x:Key="LiveryBeigeColor">#FFCDB67E</Color>
+      <Color x:Key="LiveryNavyColor">#FF52657A</Color>
+      <Color x:Key="LiveryOxideColor">#FF8E5E55</Color>
+
+      <!-- Operator hull and funnel colours -->
+      <Color x:Key="HullAvrenColor">#FF2F3A48</Color>
+      <Color x:Key="FunnelAvrenColor">#FFD9C084</Color>
+      <Color x:Key="HullTomoeColor">#FF5E4458</Color>
+      <Color x:Key="FunnelTomoeColor">#FFA0708F</Color>
+      <Color x:Key="HullRavnbyColor">#FF53708A</Color>
+      <Color x:Key="FunnelRavnbyColor">#FFD8DADB</Color>
+      <Color x:Key="HullFerrandColor">#FF3B4A5C</Color>
+      <Color x:Key="FunnelFerrandColor">#FFC98A4E</Color>
+      <Color x:Key="HullMorvaneColor">#FF34455E</Color>
+      <Color x:Key="FunnelMorvaneColor">#FF8FB3CF</Color>
+
+      <!-- X-ray / scanner: the radial well behind the 3D box and the material classes, the same in both themes (the
+           scanner's stage is the Dark theme in both, see Presentation/ScannerOverlay.xaml) -->
+      <Color x:Key="ScanStageInnerColor">#FF132A2B</Color>
+      <Color x:Key="ScanStageOuterColor">#FF0B1112</Color>
+      <Color x:Key="ScanOrganicColor">#FFFF9A3C</Color>
+      <Color x:Key="ScanMetallicColor">#FF4FB3A9</Color>
+      <Color x:Key="ScanMixedColor">#FF7BD6B5</Color>
+      <Color x:Key="ScanAnomalyColor">#FFFF4D4D</Color>
 
       <!--
         Cargo's size classes (owner decision 6), the one layout every {utu:Responsive} and utu:ResponsiveView in the

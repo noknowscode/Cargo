@@ -275,7 +275,7 @@ public sealed class HarbourRenderer : IDisposable
         {
             if (berth.State == BerthState.Restricted)
             {
-                BerthTile(canvas, berth, _pal.WithAlpha("AlertColor", .16), _pal["AlertColor"], dashed: true);
+                BerthTile(canvas, berth, _pal.WithAlpha("ErrorColor", .16), _pal["ErrorColor"], dashed: true);
             }
         }
 
@@ -317,7 +317,7 @@ public sealed class HarbourRenderer : IDisposable
         // Berth numbers painted on the quay: in the world rather than floating over it.
         foreach (var berth in _world.Berths)
         {
-            var color = berth.State == BerthState.Restricted ? _pal["AlertColor"] : _pal.WithAlpha("HarbourSignColor", .6);
+            var color = berth.State == BerthState.Restricted ? _pal["ErrorColor"] : _pal.WithAlpha("HarbourSignColor", .6);
             GroundText(canvas, berth.Number, berth.X - 34, -17, HarbourWorld.QuayZ + .02, color, 9);
         }
 
@@ -468,13 +468,13 @@ public sealed class HarbourRenderer : IDisposable
         }
 
         var k = state.Needs;
-        BerthTile(canvas, berth, _pal.WithAlpha("AccentColor", .12 * k), _pal.WithAlpha("AccentColor", k), dashed: true);
-        GroundText(canvas, berth.Number, berth.X - 34, -17, HarbourWorld.QuayZ + .02, _pal.WithAlpha("AccentColor", k), 9);
+        BerthTile(canvas, berth, _pal.WithAlpha("PrimaryColor", .12 * k), _pal.WithAlpha("PrimaryColor", k), dashed: true);
+        GroundText(canvas, berth.Number, berth.X - 34, -17, HarbourWorld.QuayZ + .02, _pal.WithAlpha("PrimaryColor", k), 9);
 
         var bow = new P2(vessel.X + Math.Cos(vessel.Heading) * (vessel.Length / 2 + 2), vessel.Y + Math.Sin(vessel.Heading) * (vessel.Length / 2 + 2));
         // The dash runs 6 on, 5 off: a falling phase walks the pattern from the bow toward the berth
         var phase = state.Creep ? (float)(11 - seconds / 1.2 % 1 * 11) : 0;
-        Route(canvas, bow, new P2(berth.X + 72, 50), new P2(berth.X, 7.3), _pal.WithAlpha("AccentColor", k), 2f, phase);
+        Route(canvas, bow, new P2(berth.X + 72, 50), new P2(berth.X, 7.3), _pal.WithAlpha("PrimaryColor", k), 2f, phase);
     }
 
     private void Route(SKCanvas canvas, P2 from, P2 control, P2 to, SKColor color, float width, float phase = 0)
@@ -556,9 +556,9 @@ public sealed class HarbourRenderer : IDisposable
     {
         // Restricted perimeter around the terminal and the hold at the inspection lane.
         TraceGround(new[] { new P2(-490, -1), new P2(490, -1), new P2(490, -136), new P2(-490, -136) }, HarbourWorld.QuayZ + .02);
-        _fill.Color = _pal.WithAlpha("AccentColor", .06);
+        _fill.Color = _pal.WithAlpha("PrimaryColor", .06);
         canvas.DrawPath(_path, _fill);
-        _stroke.Color = _pal.WithAlpha("AccentColor", .8);
+        _stroke.Color = _pal.WithAlpha("PrimaryColor", .8);
         _stroke.StrokeWidth = 1.4f;
         _stroke.PathEffect = _dashTile;
         canvas.DrawPath(_path, _stroke);
@@ -570,11 +570,11 @@ public sealed class HarbourRenderer : IDisposable
         GroundText(canvas, "TRUCK GATE", 0, -140, HarbourWorld.QuayZ + .03, _pal["AmberDeepColor"], 4);
 
         var hold = _camera.Project(375, -98, HarbourWorld.QuayZ + 3.5);
-        _fill.Color = _pal.WithAlpha("AlertColor", .28);
+        _fill.Color = _pal.WithAlpha("ErrorColor", .28);
         canvas.DrawCircle(hold.X, hold.Y, (float)Math.Max(6, 9 * _camera.Scale), _fill);
-        _fill.Color = _pal["AlertColor"];
+        _fill.Color = _pal["ErrorColor"];
         canvas.DrawCircle(hold.X, hold.Y, (float)Math.Max(2.5, 3 * _camera.Scale), _fill);
-        GroundText(canvas, "HOLD · MRVU 918204 1", 375, -108, HarbourWorld.QuayZ + .03, _pal["AlertInkColor"], 3.2f);
+        GroundText(canvas, "HOLD · MRVU 918204 1", 375, -108, HarbourWorld.QuayZ + .03, _pal["ErrorColor"], 3.2f);
     }
 
     // ── Objects ────────────────────────────────────────────────────────────────
@@ -736,17 +736,17 @@ public sealed class HarbourRenderer : IDisposable
         if (state.HoveredBerth is { } hovered && hovered >= 0 && hovered < _world.Berths.Count)
         {
             var berth = _world.Berths[hovered];
-            BerthTile(canvas, berth, _pal.WithAlpha("InkColor", .05), _pal.WithAlpha("InkColor", .55), dashed: true);
+            BerthTile(canvas, berth, _pal.WithAlpha("OnSurfaceColor", .05), _pal.WithAlpha("OnSurfaceColor", .55), dashed: true);
         }
 
         if (state.HoveredVessel is { } hover && hover != state.SelectedVessel)
         {
-            Outline(canvas, hover, _pal.WithAlpha("InkColor", .45), 1);
+            Outline(canvas, hover, _pal.WithAlpha("OnSurfaceColor", .45), 1);
         }
 
         if (state.SelectedVessel is { } selected)
         {
-            Outline(canvas, selected, _pal["InkColor"], 1.6f);
+            Outline(canvas, selected, _pal["OnSurfaceColor"], 1.6f);
         }
     }
 
@@ -862,7 +862,7 @@ public sealed class HarbourRenderer : IDisposable
         foreach (var (id, (anchor, tag)) in Leaders)
         {
             _stroke.StrokeWidth = 1.25f;
-            _stroke.Color = _pal["InkColor"];
+            _stroke.Color = _pal["OnSurfaceColor"];
             canvas.DrawLine(anchor, tag, _stroke);
 
             var status = PortData.Vessel(id).Status;

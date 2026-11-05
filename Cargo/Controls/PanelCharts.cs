@@ -94,7 +94,7 @@ public sealed partial class TickBar : StackPanel
     }
 
     /// <summary>Token for the lit ticks, e.g. "SeaGreenBrush".</summary>
-    public string LitToken { get; set; } = "AccentBrush";
+    public string LitToken { get; set; } = "PrimaryBrush";
 
     public int Count { get; set; } = 30;
 
@@ -140,7 +140,7 @@ public sealed partial class TickBar : StackPanel
             var on = i < lit;
             var tick = (Rectangle)Children[i];
             tick.Height = on ? i % 5 == 0 ? TallHeight : LitHeight : OffHeight;
-            tick.Fill = on ? Tokens.Brush(LitToken) : Tokens.Brush("InkColor", 0.12);
+            tick.Fill = on ? Tokens.Brush(LitToken) : Tokens.Brush("OnSurfaceColor", 0.12);
         }
     }
 }

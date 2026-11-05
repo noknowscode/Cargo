@@ -37,7 +37,7 @@ public sealed class InspectionLog
             return false;
         }
 
-        Add("✓", text, "AccentBrush");
+        Add("✓", text, "PrimaryBrush");
         return true;
     }
 }

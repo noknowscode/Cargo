@@ -102,7 +102,7 @@ public sealed partial class VesselDetailViewModel : ObservableObject
             var ukc = BerthFacts.UnderKeel(vessel, berth);
             facts.Add(Fact("Berth depth", $"{berth.Depth:0.0} m"));
             // A tight under-keel on the pending arrival is part of the decision, so it takes the status ink
-            facts.Add(Fact("Under-keel", $"{ukc:0.0} m", needs && ukc < 1 ? "AlertInkBrush" : null));
+            facts.Add(Fact("Under-keel", $"{ukc:0.0} m", needs && ukc < 1 ? "ErrorBrush" : null));
         }
 
         SetFacts(facts);
