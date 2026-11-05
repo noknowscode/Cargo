@@ -41,7 +41,7 @@ public sealed partial class StackTiers : SceneHost
                 Scene.Place(Draw.Rule(110 + r * 20, top, 110 + r * 20, top + 30, ribs));
             }
 
-            Scene.Place(Draw.Text(id, 98, top + 8, 10.5, Tokens.Brush("DeckWhiteColor", 0.92), "MonoMediumFont"));
+            Scene.Place(Draw.Text(id, 98, top + 8, 10.5, Tokens.Brush("DeckWhiteColor", 0.92), "MonoMedium"));
             Scene.Place(Draw.Text(tag, 135, top + 9, 9.5, Tokens.Brush("DeckWhiteColor", 0.8),
                 alignment: TextAlignment.Right, width: 120));
         }

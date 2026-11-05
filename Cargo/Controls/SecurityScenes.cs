@@ -41,7 +41,7 @@ public sealed partial class SecurityZoneMap : SceneHost
             Scene.Place(box);
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(box,
                 string.IsNullOrEmpty(zone.Sub) ? zone.Label : $"{zone.Label}, {zone.Sub}");
-            Scene.Place(Draw.Text(zone.Label, zone.X + 12, zone.Y + 8, 15, Tokens.Brush("OnSurfaceBrush"), "BodyStrongFont"));
+            Scene.Place(Draw.Text(zone.Label, zone.X + 12, zone.Y + 8, 15, Tokens.Brush("OnSurfaceBrush"), "BodyStrong"));
             if (!string.IsNullOrEmpty(zone.Sub))
             {
                 Scene.Place(Draw.Text(zone.Sub, zone.X + 12, zone.Y + 28, 13, Tokens.Brush("OnSurfaceVariantBrush")));
@@ -63,7 +63,7 @@ public sealed partial class SecurityZoneMap : SceneHost
             Scene.Place(Draw.Rect(x, y, 44, 18, Tokens.Brush("SurfaceBrush"), 4,
                 Tokens.Brush(main ? "PrimaryBrush" : "AmberDeepBrush"), 1.5));
             Scene.Place(Draw.Text(label, x, y + 22, 11.5, Tokens.Brush(main ? "PrimaryBrush" : "AmberDeepBrush"),
-                "BodyStrongFont", TextAlignment.Center, 44));
+                "BodyStrong", TextAlignment.Center, 44));
         }
 
         foreach (var point in PortData.AccessPoints)
@@ -122,7 +122,7 @@ public sealed partial class SecurityTimeline : SceneHost
             var labelY = up ? 24 - lane * 16 : 86 + lane * 16;
             var alignment = x < 60 ? TextAlignment.Left : x > 940 ? TextAlignment.Right : TextAlignment.Center;
             Scene.Place(Draw.Label(item.Label, x, labelY, 15, Tokens.Brush("OnSurfaceBrush"),
-                "BodyMediumFont", alignment, 180));
+                "BodyMedium", alignment, 180));
         }
 
         foreach (var (label, x, alignment) in new[]
@@ -133,7 +133,7 @@ public sealed partial class SecurityTimeline : SceneHost
                      ("24:00", 1000d, TextAlignment.Right)
                  })
         {
-            Scene.Place(Draw.Label(label, x, 144, 14, Tokens.Brush("OnSurfaceVariantBrush"), "BodyFont", alignment, 120));
+            Scene.Place(Draw.Label(label, x, 144, 14, Tokens.Brush("OnSurfaceVariantBrush"), "Body", alignment, 120));
         }
     }
 }
@@ -179,7 +179,7 @@ public sealed partial class AccessZoneMap : SceneHost
             Scene.Place(box);
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(box, $"{zone.Label}, {(ok ? "authorized" : "not authorized")}");
             Scene.Place(Draw.Text(zone.Label, zone.X + 10, zone.Y + zone.H / 2 - 8, 10.5,
-                Tokens.Brush(ok ? "OnSurfaceBrush" : "OnSurfaceVariantBrush"), ok ? "BodyStrongFont" : "BodyFont"));
+                Tokens.Brush(ok ? "OnSurfaceBrush" : "OnSurfaceVariantBrush"), ok ? "BodyStrong" : "Body"));
         }
     }
 }
@@ -209,7 +209,7 @@ public sealed partial class InspectionDiagram : SceneHost
 
         // Markings sit on the long side face of the box, where a real one carries them
         Scene.Place(Draw.Rect(340, 266, 152, 22, Tokens.Brush("SurfaceBrush", 0.92), 4));
-        Scene.Place(Draw.Text("MRVU 918204 1", 349, 269, 13, Tokens.Brush("OnSurfaceBrush"), "MonoMediumFont"));
+        Scene.Place(Draw.Text("MRVU 918204 1", 349, 269, 13, Tokens.Brush("OnSurfaceBrush"), "MonoMedium"));
         Scene.Place(Draw.Text("MAX GROSS 32,500 KG · TARE 3,940 KG", 349, 293, 10.5,
             Tokens.Brush("DeckWhiteColor", 0.85)));
 
@@ -217,12 +217,12 @@ public sealed partial class InspectionDiagram : SceneHost
         Scene.Place(Draw.Dot(212, 318, 5, Tokens.Brush("CargoOversizeColor"), Tokens.Brush("SurfaceBrush"), 2));
         Scene.Place(Draw.Rule(207, 318, 150, 340, Tokens.Brush("AmberDeepBrush"), 1.2));
         Scene.Place(Draw.Text("Seal MRV-77201-A", 0, 332, 10.5, Tokens.Brush("OnSurfaceVariantBrush"),
-            "MonoFont", TextAlignment.Right, 146));
+            "Mono", TextAlignment.Right, 146));
 
         // The variance itself
         Scene.Place(Draw.Dot(600, 306, 30, Tokens.Brush("OrangeColor", 0.16)));
         Scene.Place(Draw.Dot(600, 306, 12, Tokens.Brush("OrangeBrush"), Tokens.Brush("SurfaceBrush"), 2.5));
-        Scene.Place(Draw.Label("!", 600, 297, 13, Tokens.Brush("SurfaceBrush"), "BodyStrongFont", TextAlignment.Center, 40));
+        Scene.Place(Draw.Label("!", 600, 297, 13, Tokens.Brush("SurfaceBrush"), "BodyStrong", TextAlignment.Center, 40));
 
         foreach (var step in PortData.InspectionSteps)
         {
@@ -236,8 +236,8 @@ public sealed partial class InspectionDiagram : SceneHost
             Scene.Place(Draw.Dot(step.X - 82, step.Y, 14, Tokens.Brush(badge)));
             Scene.Place(Draw.Text(ok ? "✓" : warn ? "!" : "○", step.X - 102, step.Y - 9, 14,
                 Tokens.Brush(step.Kind == "pending" ? "OnSurfaceVariantBrush" : ok ? "OnPrimaryBrush" : "SurfaceBrush"),
-                "BodyStrongFont", TextAlignment.Center, 40));
-            Scene.Place(Draw.Text(step.Label, step.X - 58, step.Y - 16, 13.5, Tokens.Brush("OnSurfaceBrush"), "BodyStrongFont"));
+                "BodyStrong", TextAlignment.Center, 40));
+            Scene.Place(Draw.Text(step.Label, step.X - 58, step.Y - 16, 13.5, Tokens.Brush("OnSurfaceBrush"), "BodyStrong"));
             Scene.Place(Draw.Text(step.Detail, step.X - 58, step.Y + 3, 11.5,
                 Tokens.Brush(warn ? "OrangeInkBrush" : "OnSurfaceVariantBrush")));
         }

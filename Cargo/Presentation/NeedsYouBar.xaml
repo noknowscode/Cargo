@@ -31,7 +31,7 @@
       <Grid VerticalAlignment="Center" AutomationProperties.AccessibilityView="Raw">
         <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource ErrorBrush}"
                    Visibility="{x:Bind ViewModel.IsPending, Mode=OneWay}" />
-        <FontIcon Glyph="&#xE73E;" FontSize="{StaticResource GlyphSizeSmall}" Foreground="{ThemeResource OnSurfaceBrush}"
+        <FontIcon Glyph="&#xE73E;" FontSize="{StaticResource CaptionSmallFontSize}" Foreground="{ThemeResource OnSurfaceBrush}"
                   Visibility="{x:Bind ViewModel.IsDone, Mode=OneWay}" />
       </Grid>
 

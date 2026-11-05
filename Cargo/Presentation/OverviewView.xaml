@@ -80,22 +80,22 @@
                                   Visibility="{utu:Responsive Narrowest=Visible, Narrow=Collapsed}">
             <StackPanel Spacing="{StaticResource Space2}">
               <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space4}"><Rectangle Width="12" Height="3" RadiusX="1.5" RadiusY="1.5" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" /><TextBlock AutomationProperties.AccessibilityView="Raw" Text="VESSELS" Style="{StaticResource CapsLabelText}" /></StackPanel>
-              <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.VesselsValue, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="{StaticResource GapTop6}" />
+              <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.VesselsValue, Mode=OneWay}" Style="{StaticResource HeadlineMedium}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="{StaticResource GapTop6}" />
               <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.VesselsSub, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
             </StackPanel>
             <StackPanel Spacing="{StaticResource Space2}">
               <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space4}"><Rectangle Width="12" Height="3" RadiusX="1.5" RadiusY="1.5" Fill="{ThemeResource WaterBrush}" VerticalAlignment="Center" /><TextBlock AutomationProperties.AccessibilityView="Raw" Text="TIDE" Style="{StaticResource CapsLabelText}" /></StackPanel>
-              <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.TideValue, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="{StaticResource GapTop6}" />
+              <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.TideValue, Mode=OneWay}" Style="{StaticResource HeadlineMedium}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="{StaticResource GapTop6}" />
               <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.TideSub, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
             </StackPanel>
             <StackPanel Spacing="{StaticResource Space2}">
               <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space4}"><Rectangle Width="12" Height="3" RadiusX="1.5" RadiusY="1.5" Fill="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" /><TextBlock AutomationProperties.AccessibilityView="Raw" Text="MOVES" Style="{StaticResource CapsLabelText}" /></StackPanel>
-              <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.MovesValue, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="{StaticResource GapTop6}" />
+              <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.MovesValue, Mode=OneWay}" Style="{StaticResource HeadlineMedium}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="{StaticResource GapTop6}" />
               <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.MovesPeak, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
             </StackPanel>
             <StackPanel Spacing="{StaticResource Space2}">
               <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space4}"><Rectangle Width="12" Height="3" RadiusX="1.5" RadiusY="1.5" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" /><Rectangle Width="12" Height="3" RadiusX="1.5" RadiusY="1.5" Fill="{ThemeResource WaterBrush}" VerticalAlignment="Center" /><TextBlock AutomationProperties.AccessibilityView="Raw" Text="CARGO" Style="{StaticResource CapsLabelText}" /></StackPanel>
-              <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.CargoValue, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="{StaticResource GapTop6}" />
+              <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.CargoValue, Mode=OneWay}" Style="{StaticResource HeadlineMedium}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="{StaticResource GapTop6}" />
               <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.CargoSub, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
             </StackPanel>
           </controls:TileGridPanel>
@@ -138,7 +138,7 @@
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="VESSELS" Style="{StaticResource CapsLabelText}" Margin="0,0,0,0" />
               </StackPanel>
               <StackPanel Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}">
-                <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.VesselsValue, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="0,8,0,2" />
+                <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.VesselsValue, Mode=OneWay}" Style="{StaticResource HeadlineMedium}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="0,8,0,2" />
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.VesselsSub, Mode=OneWay}" Style="{StaticResource CaptionText}" />
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="arrivals ↑ departures ↓" Style="{StaticResource CaptionText}" />
               </StackPanel>
@@ -148,7 +148,7 @@
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="TIDE" Style="{StaticResource CapsLabelText}" Margin="0,0,0,0" />
               </StackPanel>
               <StackPanel Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}">
-                <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.TideValue, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="0,8,0,2" />
+                <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.TideValue, Mode=OneWay}" Style="{StaticResource HeadlineMedium}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="0,8,0,2" />
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.TideSub, Mode=OneWay}" Style="{StaticResource CaptionText}" />
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="wind 14 kn SW" Style="{StaticResource CaptionText}" />
               </StackPanel>
@@ -158,7 +158,7 @@
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="MOVES" Style="{StaticResource CapsLabelText}" Margin="0,0,0,0" />
               </StackPanel>
               <StackPanel Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}">
-                <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.MovesValue, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="0,8,0,2" />
+                <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.MovesValue, Mode=OneWay}" Style="{StaticResource HeadlineMedium}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="0,8,0,2" />
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="per hour, 06:00 → now" Style="{StaticResource CaptionText}" />
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.MovesPeak, Mode=OneWay}" Style="{StaticResource CaptionText}" />
               </StackPanel>
@@ -168,7 +168,7 @@
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="CARGO" Style="{StaticResource CapsLabelText}" Margin="0,0,0,0" />
               </StackPanel>
               <StackPanel Visibility="{utu:Responsive Narrowest=Collapsed, Narrow=Visible}">
-                <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.CargoValue, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="0,8,0,2" />
+                <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.CargoValue, Mode=OneWay}" Style="{StaticResource HeadlineMedium}" Foreground="{ThemeResource OnSurfaceBrush}" Margin="0,8,0,2" />
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.CargoSub, Mode=OneWay}" Style="{StaticResource CaptionText}" />
                 <TextBlock AutomationProperties.AccessibilityView="Raw" Text="{x:Bind ViewModel.Timeline.CargoSince, Mode=OneWay}" Style="{StaticResource CaptionText}" />
               </StackPanel>
@@ -211,7 +211,7 @@
                       <ColumnDefinition Width="92" /><ColumnDefinition Width="76" /><ColumnDefinition Width="76" /><ColumnDefinition Width="72" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{x:Bind Time}" Style="{StaticResource TypeMono13}" Foreground="{ThemeResource OnSurfaceVariantBrush}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="1" Text="{x:Bind Vessels}" Style="{StaticResource TypeBody13}" Foreground="{ThemeResource OnSurfaceBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="1" Text="{x:Bind Vessels}" Style="{StaticResource BodyMedium}" Foreground="{ThemeResource OnSurfaceBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                     <TextBlock Grid.Column="2" Text="{x:Bind Tide}" Style="{StaticResource TypeMono13}" Foreground="{ThemeResource OnSurfaceBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
                     <TextBlock Grid.Column="3" Text="{x:Bind Moves, Mode=OneWay}" Style="{StaticResource TypeMono13}" Foreground="{ThemeResource OnSurfaceBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
                     <TextBlock Grid.Column="4" Text="{x:Bind In, Mode=OneWay}" Style="{StaticResource TypeMono13}" Foreground="{ThemeResource OnSurfaceBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />

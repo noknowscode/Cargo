@@ -280,7 +280,8 @@ public sealed partial class ContainerScanner : Panel
             var label = new TextBlock
             {
                 Text = block.Item.Name.Split(" · ")[0],
-                FontFamily = (FontFamily)Application.Current.Resources["MonoMediumFont"],
+                FontFamily = Tokens.Font("MonoFontFamily"),
+                FontWeight = Draw.Weight("MonoMedium"),
                 FontSize = 9,
                 Foreground = Tokens.Brush("OnSurfaceBrush", 1, ElementTheme.Dark)
             };

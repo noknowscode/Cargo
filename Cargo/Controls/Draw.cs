@@ -151,7 +151,7 @@ internal static class Draw
     /// inside the scene instead of hanging off the left edge.
     /// </summary>
     public static TextBlock Label(string text, double anchorX, double y, double size, Brush? fill,
-        string fontKey = "BodyFont", TextAlignment alignment = TextAlignment.Left, double width = 180)
+        string face = "Body", TextAlignment alignment = TextAlignment.Left, double width = 180)
     {
         var left = alignment switch
         {
@@ -160,18 +160,30 @@ internal static class Draw
             _ => anchorX
         };
 
-        return Text(text, left, y, size, fill, fontKey, alignment, width);
+        return Text(text, left, y, size, fill, face, alignment, width);
     }
 
+    /// <summary>
+    /// A face for text placed in code: "Body", "BodyMedium", "BodyStrong", "Mono" or "MonoMedium", the theme's
+    /// DefaultFontFamily (Archivo) or the app's MonoFontFamily (IBM Plex Mono) at that weight.
+    /// </summary>
+    public static Windows.UI.Text.FontWeight Weight(string face) => face switch
+    {
+        "BodyMedium" or "MonoMedium" => Microsoft.UI.Text.FontWeights.Medium,
+        "BodyStrong" => Microsoft.UI.Text.FontWeights.SemiBold,
+        _ => Microsoft.UI.Text.FontWeights.Normal
+    };
+
     public static TextBlock Text(string text, double x, double y, double size, Brush? fill,
-        string fontKey = "BodyFont", TextAlignment alignment = TextAlignment.Left, double width = 0)
+        string face = "Body", TextAlignment alignment = TextAlignment.Left, double width = 0)
     {
         var block = new TextBlock
         {
             Text = text,
             FontSize = size,
             Foreground = fill,
-            FontFamily = (FontFamily)Application.Current.Resources[fontKey],
+            FontFamily = Tokens.Font(face.StartsWith("Mono", StringComparison.Ordinal) ? "MonoFontFamily" : "DefaultFontFamily"),
+            FontWeight = Weight(face),
             TextAlignment = alignment,
             IsHitTestVisible = false
         };

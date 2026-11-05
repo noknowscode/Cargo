@@ -153,7 +153,7 @@ public sealed partial class RiverMap : SceneHost
             Scene.Place(Draw.Rule(x, y, position.X + normal.X * 66, position.Y + normal.Y * 66,
                 Tokens.Brush("OnSurfaceVariantBrush")));
             Scene.Place(Draw.Label($"km {km}", position.X + normal.X * 78, position.Y + normal.Y * 78 - 7, 10.5,
-                Tokens.Brush("OnSurfaceVariantBrush"), "MonoFont", TextAlignment.Center, 80));
+                Tokens.Brush("OnSurfaceVariantBrush"), "Mono", TextAlignment.Center, 80));
         }
     }
 
@@ -183,7 +183,7 @@ public sealed partial class RiverMap : SceneHost
                 position.X - normal.X * 70 + 15, position.Y - normal.Y * 70 + 15, tone, 1, dash: Draw.Dash(2, 3)));
             Scene.Place(Draw.Rect(x, y, 74, 30, Tokens.Brush("SurfaceBrush", 0.92), 7, tone, 1));
             Scene.Place(Draw.Text(gauge.Name, x + 8, y + 3, 9.5, Tokens.Brush("OnSurfaceVariantBrush")));
-            Scene.Place(Draw.Text($"{gauge.Level:0.0} m {gauge.Trend}", x + 8, y + 15, 11.5, tone, "MonoMediumFont"));
+            Scene.Place(Draw.Text($"{gauge.Level:0.0} m {gauge.Trend}", x + 8, y + 15, 11.5, tone, "MonoMedium"));
         }
     }
 
@@ -203,9 +203,9 @@ public sealed partial class RiverMap : SceneHost
 
             Scene.Place(Draw.Rect(position.X - 46, position.Y - 78, 92, 22, Tokens.Brush("SurfaceBrush", 0.94), 6));
             Scene.Place(Draw.Label(lockDef.Name, position.X, position.Y - 76, 11, Tokens.Brush("OnSurfaceBrush"),
-                "BodyStrongFont", TextAlignment.Center, 200));
+                "BodyStrong", TextAlignment.Center, 200));
             Scene.Place(Draw.Label(lockDef.Status, position.X, position.Y + 60, 10.5,
-                Tokens.Brush(lockDef.Tone), "BodyFont", TextAlignment.Center, 200));
+                Tokens.Brush(lockDef.Tone), "Body", TextAlignment.Center, 200));
         }
     }
 
@@ -219,7 +219,7 @@ public sealed partial class RiverMap : SceneHost
 
             Scene.Place(Draw.Dot(x, y, 22, Tokens.Brush(notice.Tone, 0.14)));
             Scene.Place(Draw.Dot(x, y, 9, Tokens.Brush("SurfaceBrush"), Tokens.Brush(notice.Tone), 2));
-            Scene.Place(Draw.Label("!", x, y - 9, 11, Tokens.Brush(notice.Tone), "BodyStrongFont",
+            Scene.Place(Draw.Label("!", x, y - 9, 11, Tokens.Brush(notice.Tone), "BodyStrong",
                 TextAlignment.Center, 40));
         }
     }
@@ -276,7 +276,7 @@ public sealed partial class RiverMap : SceneHost
             var tag = Scene.Place(Draw.Rect(0, 0, width, 20, Tokens.Brush("SurfaceInverseColor", 0.86), 6));
             var dot = Scene.Place(Draw.Dot(0, 0, 3.5, Tokens.Brush(late ? "OrangeBrush" : "SeaGreenBrush")));
             var name = Scene.Place(Draw.Label(vessel.Name, 0, 0, 11.5,
-                Tokens.Brush("OnSurfaceInverseBrush"), "BodyStrongFont", TextAlignment.Center, 200));
+                Tokens.Brush("OnSurfaceInverseBrush"), "BodyStrong", TextAlignment.Center, 200));
 
             _boats.Add((vessel, button, heading, tag, dot, name, width));
         }

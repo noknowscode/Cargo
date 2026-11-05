@@ -142,7 +142,7 @@
                       <TextBlock Grid.Row="1" Text="{x:Bind Detail}" Style="{StaticResource CaptionText}"
                                  TextTrimming="CharacterEllipsis" />
                       <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind Eta}" Style="{StaticResource CaptionText}"
-                                 FontFamily="{StaticResource MonoFont}" />
+                                 FontFamily="{StaticResource MonoFontFamily}" />
                     </Grid>
                   </Border>
                 </Button>
@@ -180,7 +180,7 @@
                              Foreground="{ThemeResource OnSurfaceVariantBrush}" VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1" Style="{StaticResource BodyText}" VerticalAlignment="Center"
                              TextTrimming="CharacterEllipsis">
-                    <Run Text="{x:Bind Lock}" FontFamily="{StaticResource BodyStrongFont}" /><Run Text=" · " /><Run Text="{x:Bind Vessel}" />
+                    <Run Text="{x:Bind Lock}" FontWeight="SemiBold" /><Run Text=" · " /><Run Text="{x:Bind Vessel}" />
                   </TextBlock>
                   <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{StaticResource Space6}">
                     <Ellipse Width="6" Height="6" Fill="{x:Bind local:Paint.StatusFill(Standing)}" VerticalAlignment="Center" />

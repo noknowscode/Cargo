@@ -78,6 +78,7 @@ public sealed partial class NeedsYouPanel : UserControl
 
     public static Brush WhenInk(bool late) => Tokens.Brush(late ? "ErrorBrush" : "OnSurfaceVariantBrush");
 
-    public static FontFamily WhenFace(bool late) =>
-        (FontFamily)Application.Current.Resources[late ? "BodyStrongFont" : "BodyFont"];
+    /// <summary>A late deadline is set in the strong weight.</summary>
+    public static Windows.UI.Text.FontWeight WhenWeight(bool late) =>
+        late ? Microsoft.UI.Text.FontWeights.SemiBold : Microsoft.UI.Text.FontWeights.Normal;
 }

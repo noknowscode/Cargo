@@ -154,6 +154,12 @@ public static class Tokens
         return Windows.UI.Color.FromArgb(source.A, Clamp(source.R + delta), Clamp(source.G + delta), Clamp(source.B + delta));
     }
 
+    /// <summary>
+    /// A font family resource: the theme's <c>DefaultFontFamily</c> (set on the theme in App.xaml) or a family of the
+    /// type scale (Styles/TypographyOverride.xaml), for text that code places.
+    /// </summary>
+    public static FontFamily Font(string key) => Find(key, Theme) as FontFamily ?? FontFamily.XamlAutoFontFamily;
+
     /// <summary>A number from App.xaml's theme dictionaries for the current theme (e.g. <c>HarbourLightLevel</c>).</summary>
     public static double Number(string key, double fallback) => Find(key, Theme) is double d ? d : fallback;
 

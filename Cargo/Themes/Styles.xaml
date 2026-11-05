@@ -4,266 +4,196 @@
                     xmlns:controls="using:Cargo.Controls">
 
   <!-- ============================================================
-       Type ramp
-       Display type is Bricolage Grotesque; UI text Archivo; every
-       figure that has to line up in a column is IBM Plex Mono.
-       Sizes come from the design ramp only: 11 12 13 14 15 18 20 24 30 40
-       (docs/design/overview-timeline/EXTRACTION.md §1 Fonts).
+       Type
+       The theme's semantic text styles (DisplayLarge ... CaptionSmall) carry the design's ramp, set once in
+       Styles/TypographyOverride.xaml over DefaultFontFamily (Archivo). Pages use them directly. The styles below add
+       only what a semantic style does not say: a heavier weight at a small size, the mono face for figures that line
+       up in a column, the display face at 15, and a role's colour.
 
-       Type* styles set family and size and nothing else, so the text keeps
-       the colour it inherits (a label inside a button stays the button's
-       colour). The role styles further down add their colour.
+       The Type* styles set no colour, so the text keeps the colour it inherits (a label inside a button stays the
+       button's colour). The role styles further down add their colour.
        ============================================================ -->
 
-  <Style x:Key="TypeBody11" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
-    <Setter Property="FontSize" Value="11" />
+  <!-- Archivo SemiBold at the small sizes: caps labels, list states, initials, action labels -->
+  <Style x:Key="TypeStrong11" TargetType="TextBlock" BasedOn="{StaticResource LabelExtraSmall}">
+    <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
-  <Style x:Key="TypeBody12" TargetType="TextBlock" BasedOn="{StaticResource TypeBody11}">
-    <Setter Property="FontSize" Value="12" />
+  <Style x:Key="TypeStrong12" TargetType="TextBlock" BasedOn="{StaticResource LabelSmall}">
+    <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
-  <Style x:Key="TypeBody13" TargetType="TextBlock" BasedOn="{StaticResource TypeBody11}">
-    <Setter Property="FontSize" Value="13" />
+  <Style x:Key="TypeStrong13" TargetType="TextBlock" BasedOn="{StaticResource LabelMedium}">
+    <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
-  <Style x:Key="TypeBody14" TargetType="TextBlock" BasedOn="{StaticResource TypeBody11}">
-    <Setter Property="FontSize" Value="14" />
-  </Style>
-  <Style x:Key="TypeBody15" TargetType="TextBlock" BasedOn="{StaticResource TypeBody11}">
-    <Setter Property="FontSize" Value="15" />
+  <Style x:Key="TypeMedium15" TargetType="TextBlock" BasedOn="{StaticResource BodyLarge}">
+    <Setter Property="FontWeight" Value="Medium" />
   </Style>
 
-  <Style x:Key="TypeMedium11" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
-    <Setter Property="FontSize" Value="11" />
+  <!-- IBM Plex Mono for every figure that lines up: Regular at 11-13, Medium at 11-24 -->
+  <Style x:Key="TypeMono11" TargetType="TextBlock" BasedOn="{StaticResource CaptionSmall}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
   </Style>
-  <Style x:Key="TypeMedium12" TargetType="TextBlock" BasedOn="{StaticResource TypeMedium11}">
-    <Setter Property="FontSize" Value="12" />
+  <Style x:Key="TypeMono12" TargetType="TextBlock" BasedOn="{StaticResource BodySmall}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
   </Style>
-  <Style x:Key="TypeMedium13" TargetType="TextBlock" BasedOn="{StaticResource TypeMedium11}">
-    <Setter Property="FontSize" Value="13" />
+  <Style x:Key="TypeMono13" TargetType="TextBlock" BasedOn="{StaticResource BodyMedium}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
   </Style>
-  <Style x:Key="TypeMedium14" TargetType="TextBlock" BasedOn="{StaticResource TypeMedium11}">
-    <Setter Property="FontSize" Value="14" />
+  <Style x:Key="TypeMonoMedium11" TargetType="TextBlock" BasedOn="{StaticResource LabelExtraSmall}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
   </Style>
-  <Style x:Key="TypeMedium15" TargetType="TextBlock" BasedOn="{StaticResource TypeMedium11}">
-    <Setter Property="FontSize" Value="15" />
+  <Style x:Key="TypeMonoMedium12" TargetType="TextBlock" BasedOn="{StaticResource LabelSmall}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
   </Style>
-
-  <Style x:Key="TypeStrong11" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
-    <Setter Property="FontSize" Value="11" />
+  <Style x:Key="TypeMonoMedium13" TargetType="TextBlock" BasedOn="{StaticResource LabelMedium}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
   </Style>
-  <Style x:Key="TypeStrong12" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong11}">
-    <Setter Property="FontSize" Value="12" />
+  <Style x:Key="TypeMonoMedium14" TargetType="TextBlock" BasedOn="{StaticResource LabelLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
   </Style>
-  <Style x:Key="TypeStrong13" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong11}">
-    <Setter Property="FontSize" Value="13" />
+  <Style x:Key="TypeMonoMedium15" TargetType="TextBlock" BasedOn="{StaticResource BodyLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
+    <Setter Property="FontWeight" Value="Medium" />
   </Style>
-  <Style x:Key="TypeStrong14" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong11}">
-    <Setter Property="FontSize" Value="14" />
+  <Style x:Key="TypeMonoMedium18" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
+    <Setter Property="FontWeight" Value="Medium" />
   </Style>
-  <Style x:Key="TypeStrong15" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong11}">
-    <Setter Property="FontSize" Value="15" />
+  <Style x:Key="TypeMonoMedium20" TargetType="TextBlock" BasedOn="{StaticResource HeadlineMedium}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
+    <Setter Property="FontWeight" Value="Medium" />
   </Style>
-  <Style x:Key="TypeStrong18" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong11}">
-    <Setter Property="FontSize" Value="18" />
-  </Style>
-  <Style x:Key="TypeStrong20" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong11}">
-    <Setter Property="FontSize" Value="20" />
-  </Style>
-
-  <Style x:Key="TypeMono11" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
-    <Setter Property="FontSize" Value="11" />
-  </Style>
-  <Style x:Key="TypeMono12" TargetType="TextBlock" BasedOn="{StaticResource TypeMono11}">
-    <Setter Property="FontSize" Value="12" />
+  <Style x:Key="TypeMonoMedium24" TargetType="TextBlock" BasedOn="{StaticResource DisplaySmall}">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
+    <Setter Property="FontWeight" Value="Medium" />
   </Style>
 
-  <Style x:Key="TypeMono13" TargetType="TextBlock" BasedOn="{StaticResource TypeMono11}">
-    <Setter Property="FontSize" Value="13" />
+  <!-- Bricolage Grotesque at 15: card titles -->
+  <Style x:Key="TypeDisplay15" TargetType="TextBlock" BasedOn="{StaticResource TitleMedium}">
+    <Setter Property="FontFamily" Value="{StaticResource DisplayFontFamily}" />
   </Style>
 
-  <Style x:Key="TypeMonoMedium11" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource MonoMediumFont}" />
-    <Setter Property="FontSize" Value="11" />
-  </Style>
-  <Style x:Key="TypeMonoMedium12" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium11}">
-    <Setter Property="FontSize" Value="12" />
-  </Style>
-  <Style x:Key="TypeMonoMedium13" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium11}">
-    <Setter Property="FontSize" Value="13" />
-  </Style>
-  <Style x:Key="TypeMonoMedium14" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium11}">
-    <Setter Property="FontSize" Value="14" />
-  </Style>
-  <Style x:Key="TypeMonoMedium18" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium11}">
-    <Setter Property="FontSize" Value="18" />
-  </Style>
-  <Style x:Key="TypeMonoMedium20" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium11}">
-    <Setter Property="FontSize" Value="20" />
-  </Style>
-  <Style x:Key="TypeMonoMedium24" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium11}">
-    <Setter Property="FontSize" Value="24" />
-  </Style>
-
-  <Style x:Key="TypeDisplay15" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
-    <Setter Property="FontSize" Value="15" />
-  </Style>
-  <Style x:Key="GreetingText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
-    <Setter Property="FontSize" Value="40" />
+  <!-- ── Role styles: a semantic style and its colour ─────────── -->
+  <!-- The greeting and page titles: DisplayLarge on a 44 line. A page title wraps on a phone ("Fleet & waterways" is
+       wider than 328 px at 40) -->
+  <Style x:Key="GreetingText" TargetType="TextBlock" BasedOn="{StaticResource DisplayLarge}">
     <Setter Property="LineHeight" Value="44" />
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
-
-  <!-- A page title wraps on a phone ("Fleet & waterways" is wider than 328 px at 40) -->
-  <Style x:Key="PageTitleText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
-    <Setter Property="FontSize" Value="40" />
+  <Style x:Key="PageTitleText" TargetType="TextBlock" BasedOn="{StaticResource DisplayLarge}">
     <Setter Property="LineHeight" Value="44" />
     <Setter Property="TextWrapping" Value="WrapWholeWords" />
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
-  <Style x:Key="EyebrowText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource MonoMediumFont}" />
-    <Setter Property="FontSize" Value="11" />
+  <Style x:Key="EyebrowText" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium11}">
     <Setter Property="Foreground" Value="{ThemeResource PrimaryBrush}" />
   </Style>
 
-  <Style x:Key="CardTitleText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
-    <Setter Property="FontSize" Value="15" />
+  <Style x:Key="CardTitleText" TargetType="TextBlock" BasedOn="{StaticResource TypeDisplay15}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
-  <Style x:Key="PanelTitleText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
-    <Setter Property="FontSize" Value="14" />
+  <Style x:Key="PanelTitleText" TargetType="TextBlock" BasedOn="{StaticResource TitleSmall}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
-  <Style x:Key="BodyText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
-    <Setter Property="FontSize" Value="13" />
+  <Style x:Key="BodyText" TargetType="TextBlock" BasedOn="{StaticResource BodyMedium}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
-  <Style x:Key="BodyStrongText" TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
-    <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
+  <Style x:Key="BodyStrongText" TargetType="TextBlock" BasedOn="{StaticResource LabelMedium}">
+    <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
-  <Style x:Key="CaptionText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
-    <Setter Property="FontSize" Value="12" />
+  <Style x:Key="CaptionText" TargetType="TextBlock" BasedOn="{StaticResource BodySmall}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
   </Style>
 
-  <!-- Role styles at the ramp's in-between steps: the role's colour on a Type* size -->
-  <Style x:Key="SubtitleText" TargetType="TextBlock" BasedOn="{StaticResource TypeBody13}">
+  <Style x:Key="SubtitleText" TargetType="TextBlock" BasedOn="{StaticResource BodyMedium}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
   </Style>
-  <Style x:Key="BodySmallText" TargetType="TextBlock" BasedOn="{StaticResource TypeBody12}">
+  <Style x:Key="BodySmallText" TargetType="TextBlock" BasedOn="{StaticResource BodySmall}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
-  <Style x:Key="BodyLargeText" TargetType="TextBlock" BasedOn="{StaticResource TypeBody14}">
+  <Style x:Key="BodyLargeText" TargetType="TextBlock" BasedOn="{StaticResource CaptionLarge}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
-  <Style x:Key="BodyStrongSmallText" TargetType="TextBlock" BasedOn="{StaticResource TypeMedium12}">
+  <Style x:Key="BodyStrongSmallText" TargetType="TextBlock" BasedOn="{StaticResource LabelSmall}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
-  <Style x:Key="BodyStrongLargeText" TargetType="TextBlock" BasedOn="{StaticResource TypeMedium14}">
+  <Style x:Key="BodyStrongLargeText" TargetType="TextBlock" BasedOn="{StaticResource LabelLarge}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
-  <Style x:Key="TitleText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong15}">
+  <Style x:Key="TitleText" TargetType="TextBlock" BasedOn="{StaticResource TitleMedium}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
-  <Style x:Key="MicroText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
-    <Setter Property="FontSize" Value="11" />
+  <Style x:Key="MicroText" TargetType="TextBlock" BasedOn="{StaticResource CaptionSmall}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
   </Style>
 
-  <!-- Headline figures: Archivo 600 (the design keeps Bricolage for the wordmark and headings) -->
-  <Style x:Key="MetricText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
-    <Setter Property="FontSize" Value="30" />
+  <!-- Headline figures: Archivo 600 on a tight line (the design keeps Bricolage for the wordmark and headings) -->
+  <Style x:Key="MetricText" TargetType="TextBlock" BasedOn="{StaticResource HeadlineLarge}">
     <Setter Property="LineHeight" Value="30" />
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
   <!-- Status lists (Berths): a caps state line, the name, a muted meta line, a mono time -->
-  <Style x:Key="ListStateText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
-    <Setter Property="FontSize" Value="11" />
+  <Style x:Key="ListStateText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong11}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
   </Style>
 
-  <Style x:Key="ListNameText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
-    <Setter Property="FontSize" Value="15" />
+  <Style x:Key="ListNameText" TargetType="TextBlock" BasedOn="{StaticResource TitleMedium}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
     <Setter Property="TextTrimming" Value="CharacterEllipsis" />
   </Style>
 
-  <Style x:Key="ListMetaText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
-    <Setter Property="FontSize" Value="13" />
+  <Style x:Key="ListMetaText" TargetType="TextBlock" BasedOn="{StaticResource BodyMedium}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
     <Setter Property="TextTrimming" Value="CharacterEllipsis" />
   </Style>
 
+  <!-- RollingText is a control, not a TextBlock: its figures take the ramp's keys directly -->
   <Style x:Key="ListTimeFigure" TargetType="controls:RollingText">
-    <Setter Property="FontFamily" Value="{StaticResource MonoMediumFont}" />
-    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
+    <Setter Property="FontSize" Value="{StaticResource LabelMediumFontSize}" />
+    <Setter Property="FontWeight" Value="Medium" />
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
   <!-- The berth chip: the list's version of the harbour's painted number -->
-  <Style x:Key="PlateText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource MonoMediumFont}" />
-    <Setter Property="FontSize" Value="13" />
+  <Style x:Key="PlateText" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium13}">
     <Setter Property="HorizontalAlignment" Value="Center" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
   <!-- Detail panels: one big figure, lead text, facts as a muted key over a mono value -->
   <Style x:Key="DetailFigure" TargetType="controls:RollingText">
-    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
-    <Setter Property="FontSize" Value="30" />
+    <Setter Property="FontFamily" Value="{StaticResource DisplayMediumFontFamily}" />
+    <Setter Property="FontSize" Value="{StaticResource DisplayMediumFontSize}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
-  <Style x:Key="LeadText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
-    <Setter Property="FontSize" Value="14" />
+  <Style x:Key="LeadText" TargetType="TextBlock" BasedOn="{StaticResource CaptionLarge}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
   </Style>
 
-  <Style x:Key="FactKeyText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
-    <Setter Property="FontSize" Value="12" />
+  <Style x:Key="FactKeyText" TargetType="TextBlock" BasedOn="{StaticResource BodySmall}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
   </Style>
 
-  <Style x:Key="FactValueText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource MonoMediumFont}" />
-    <Setter Property="FontSize" Value="15" />
+  <Style x:Key="FactValueText" TargetType="TextBlock" BasedOn="{StaticResource TypeMonoMedium15}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
-  <Style x:Key="ActionLabelText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
-    <Setter Property="FontSize" Value="13" />
-  </Style>
+  <Style x:Key="ActionLabelText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong13}" />
 
   <!-- Header clock: minutes roll, seconds tick plainly -->
   <Style x:Key="HeaderClockFigure" TargetType="controls:RollingText">
-    <Setter Property="FontFamily" Value="{StaticResource MonoMediumFont}" />
-    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontFamily" Value="{StaticResource MonoFontFamily}" />
+    <Setter Property="FontSize" Value="{StaticResource LabelLargeFontSize}" />
+    <Setter Property="FontWeight" Value="Medium" />
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
@@ -271,19 +201,17 @@
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
-  <!-- The header wordmark: the design's one size off the ramp -->
-  <Style x:Key="WordmarkText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
-    <Setter Property="FontSize" Value="19" />
+  <!-- The header wordmark: the design's one size off the ramp (HeadlineSmall, 19) -->
+  <Style x:Key="WordmarkText" TargetType="TextBlock" BasedOn="{StaticResource HeadlineSmall}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
   <!-- Masthead: the date under the greeting and the duty operator's ID card -->
-  <Style x:Key="DateLineText" TargetType="TextBlock" BasedOn="{StaticResource TypeBody15}">
+  <Style x:Key="DateLineText" TargetType="TextBlock" BasedOn="{StaticResource BodyLarge}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
   </Style>
 
-  <Style x:Key="CardNameText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong14}">
+  <Style x:Key="CardNameText" TargetType="TextBlock" BasedOn="{StaticResource TitleSmall}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
@@ -298,7 +226,7 @@
   </Style>
 
   <!-- Panel headings on Overview (Today at North Quay, Needs you, Next 6 h, Activity): 18/600 -->
-  <Style x:Key="PanelHeadingText" TargetType="TextBlock" BasedOn="{StaticResource TypeStrong18}">
+  <Style x:Key="PanelHeadingText" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
@@ -380,14 +308,12 @@
     <Setter Property="Padding" Value="{StaticResource GapTop18}" />
   </Style>
 
-  <Style x:Key="SectionHeadText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
-    <Setter Property="FontSize" Value="24" />
+  <Style x:Key="SectionHeadText" TargetType="TextBlock" BasedOn="{StaticResource DisplaySmall}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
   </Style>
 
-  <Style x:Key="PageSubtitleText" TargetType="TextBlock" BasedOn="{StaticResource CaptionText}">
-    <Setter Property="FontSize" Value="14" />
+  <Style x:Key="PageSubtitleText" TargetType="TextBlock" BasedOn="{StaticResource CaptionLarge}">
+    <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
   </Style>
 
   <!-- Masthead figures: a number and what it counts, baseline-aligned -->
@@ -397,21 +323,17 @@
     <Setter Property="VerticalAlignment" Value="Bottom" />
   </Style>
 
-  <Style x:Key="FigureLabelText" TargetType="TextBlock" BasedOn="{StaticResource CaptionText}">
-    <Setter Property="FontSize" Value="13" />
+  <Style x:Key="FigureLabelText" TargetType="TextBlock" BasedOn="{StaticResource SubtitleText}">
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
-  <Style x:Key="MetricLabelText" TargetType="TextBlock" BasedOn="{StaticResource CaptionText}">
-    <Setter Property="FontSize" Value="13" />
+  <Style x:Key="MetricLabelText" TargetType="TextBlock" BasedOn="{StaticResource SubtitleText}">
     <Setter Property="VerticalAlignment" Value="Bottom" />
     <Setter Property="Margin" Value="{StaticResource GapBottom4}" />
   </Style>
 
   <!-- Status as a dot and a word; the word takes the ink variant of the status colour -->
-  <Style x:Key="StatusText" TargetType="TextBlock">
-    <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
-    <Setter Property="FontSize" Value="12" />
+  <Style x:Key="StatusText" TargetType="TextBlock" BasedOn="{StaticResource LabelSmall}">
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
@@ -433,8 +355,9 @@
   <Style x:Key="PrimaryButton" TargetType="Button">
     <Setter Property="Background" Value="{ThemeResource SurfaceInverseBrush}" />
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceInverseBrush}" />
-    <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
-    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontFamily" Value="{StaticResource LabelMediumFontFamily}" />
+    <Setter Property="FontSize" Value="{StaticResource LabelMediumFontSize}" />
+    <Setter Property="FontWeight" Value="Medium" />
     <Setter Property="Padding" Value="14,10" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusGroup}" />
     <Setter Property="BorderThickness" Value="0" />
@@ -482,8 +405,7 @@
   <!-- The secondary action: the theme's tonal button (SurfaceVariant, an Outline edge, OnSurface text; its hover and
        press are the theme's state colours), at the design's size -->
   <Style x:Key="GhostButton" TargetType="Button" BasedOn="{StaticResource FilledTonalButtonStyle}">
-    <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
-    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontSize" Value="{StaticResource LabelMediumFontSize}" />
     <Setter Property="Padding" Value="14,10" />
     <Setter Property="MinHeight" Value="0" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusGroup}" />
@@ -492,8 +414,7 @@
 
   <!-- The accent action: the theme's filled button (Primary with OnPrimary), at the design's size -->
   <Style x:Key="PrimaryActionButton" TargetType="Button" BasedOn="{StaticResource FilledButtonStyle}">
-    <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
-    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontSize" Value="{StaticResource LabelMediumFontSize}" />
     <Setter Property="Padding" Value="14,10" />
     <Setter Property="MinHeight" Value="0" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusGroup}" />
@@ -502,7 +423,7 @@
 
   <!-- The accent action on the scanner's stage (the Dark theme in both themes), in the strong weight -->
   <Style x:Key="AccentButton" TargetType="Button" BasedOn="{StaticResource PrimaryActionButton}">
-    <Setter Property="FontFamily" Value="{StaticResource BodyStrongFont}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
 
   <!-- Transparent hit target: rows, cards, map furniture. Own template: no chrome at all, so selectable rows keep
@@ -598,8 +519,9 @@
     <Setter Property="Height" Value="44" />
     <Setter Property="Padding" Value="16,0,14,0" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusGroup}" />
-    <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
-    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontFamily" Value="{StaticResource LabelLargeFontFamily}" />
+    <Setter Property="FontSize" Value="{StaticResource LabelLargeFontSize}" />
+    <Setter Property="FontWeight" Value="Medium" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="HorizontalContentAlignment" Value="Left" />
   </Style>
@@ -616,7 +538,7 @@
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
   </Style>
 
-  <Style x:Key="KeyRowText" TargetType="TextBlock" BasedOn="{StaticResource TypeBody13}">
+  <Style x:Key="KeyRowText" TargetType="TextBlock" BasedOn="{StaticResource BodyMedium}">
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
@@ -627,14 +549,14 @@
     <Setter Property="Height" Value="44" />
     <Setter Property="Padding" Value="{StaticResource InsetX16}" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
-    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontSize" Value="{StaticResource LabelLargeFontSize}" />
   </Style>
 
   <Style x:Key="QueueSecondaryButton" TargetType="Button" BasedOn="{StaticResource GhostButton}">
     <Setter Property="Height" Value="44" />
     <Setter Property="Padding" Value="{StaticResource InsetX16}" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
-    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontSize" Value="{StaticResource LabelLargeFontSize}" />
     <Setter Property="Background" Value="{ThemeResource SurfaceBrush}" />
   </Style>
 
@@ -642,15 +564,17 @@
   <Style x:Key="ToggleSegmentButton" TargetType="Button" BasedOn="{StaticResource BareButton}">
     <Setter Property="Width" Value="72" />
     <Setter Property="Height" Value="40" />
-    <Setter Property="FontFamily" Value="{StaticResource BodyMediumFont}" />
-    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontFamily" Value="{StaticResource LabelMediumFontFamily}" />
+    <Setter Property="FontSize" Value="{StaticResource LabelMediumFontSize}" />
+    <Setter Property="FontWeight" Value="Medium" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
   <!-- The × that closes a detail panel, top-right of its header: a 32 px target (44 where pages ask for touch) -->
   <Style x:Key="CloseButton" TargetType="Button" BasedOn="{StaticResource BareButton}">
-    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontFamily" Value="{StaticResource TitleLargeFontFamily}" />
+    <Setter Property="FontSize" Value="{StaticResource TitleLargeFontSize}" />
     <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
     <Setter Property="MinWidth" Value="32" />
     <Setter Property="MinHeight" Value="32" />
@@ -662,7 +586,7 @@
 
   <!-- The same × as a round tonal button on the scanner's stage (the Dark theme in both themes) -->
   <Style x:Key="CloseOnDarkButton" TargetType="Button" BasedOn="{StaticResource GhostButton}">
-    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontSize" Value="{StaticResource TitleLargeFontSize}" />
     <Setter Property="Width" Value="34" />
     <Setter Property="Height" Value="34" />
     <Setter Property="CornerRadius" Value="17" />

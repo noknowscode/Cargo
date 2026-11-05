@@ -55,7 +55,7 @@
               <TextBlock Style="{StaticResource SubtitleText}" TextWrapping="Wrap">
                 <Run Text="{x:Bind Decision.Sub}" /><Run Text="{x:Bind local:NeedsYouPanel.Separator(Decision.When), Mode=OneWay}" /><Run Text="{x:Bind Decision.When, Mode=OneWay}"
                      Foreground="{x:Bind local:NeedsYouPanel.WhenInk(Decision.IsLate), Mode=OneWay}"
-                     FontFamily="{x:Bind local:NeedsYouPanel.WhenFace(Decision.IsLate), Mode=OneWay}" />
+                     FontWeight="{x:Bind local:NeedsYouPanel.WhenWeight(Decision.IsLate), Mode=OneWay}" />
               </TextBlock>
               <!-- Why the action was refused, in words; a polite live region, so it is announced -->
               <TextBlock Text="{x:Bind Decision.Refusal, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap"

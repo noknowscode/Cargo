@@ -12,13 +12,14 @@
         <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
         <!-- The look comes from the Simple theme. Its palette is the design's, in Styles/ColorPaletteOverride.xaml (the
              file Uno Platform Studio's Themes tab edits); pages use the role brushes it generates (OnSurfaceBrush,
-             PrimaryBrush, OutlineVariantBrush...) and the theme's Space*, Radius* and type-scale tokens. -->
-        <utus:SimpleToolkitTheme>
+             PrimaryBrush, OutlineVariantBrush...) and the theme's Space*, Radius* and type-scale tokens. The type is
+             Archivo (DefaultFontFamily) on the design's ramp (Styles/TypographyOverride.xaml). -->
+        <utus:SimpleToolkitTheme DefaultFontFamily="ms-appx:///Assets/Fonts/Archivo_Regular.ttf#Archivo"
+                                 FontOverrideSource="ms-appx:///Styles/TypographyOverride.xaml">
           <utus:SimpleToolkitTheme.Colors>
             <ut:ThemeColors xmlns:ut="using:Uno.Themes" OverrideSource="ms-appx:///Styles/ColorPaletteOverride.xaml" />
           </utus:SimpleToolkitTheme.Colors>
         </utus:SimpleToolkitTheme>
-        <ResourceDictionary Source="ms-appx:///Themes/Tokens.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/Layout.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/MotionTokens.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/Icons.xaml" />

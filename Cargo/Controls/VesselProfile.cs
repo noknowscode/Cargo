@@ -140,7 +140,7 @@ public sealed partial class VesselProfile : SceneHost
             Scene.Place(pill);
 
             Scene.Place(Draw.Text((i + 1).ToString("D2"), x + bayWidth / 2 - 14, pillTop + 2, 11,
-                Tokens.Brush(i == selected ? "OnPrimaryBrush" : "OnSurfaceInverseBrush"), "MonoMediumFont", TextAlignment.Center, 28));
+                Tokens.Brush(i == selected ? "OnPrimaryBrush" : "OnSurfaceInverseBrush"), "MonoMedium", TextAlignment.Center, 28));
         }
 
         _bayHighlight.Width = bayWidth;
@@ -156,9 +156,9 @@ public sealed partial class VesselProfile : SceneHost
             Scene.Place(Draw.Rule(lineX, deckTop - 16, lineX, deckBottom + 2,
                 Tokens.Brush("SeaGreenBrush"), 1.5, dash: Draw.Dash(4, 4)));
             Scene.Place(Draw.Text("Discharged", lineX - 70, deckTop - 48, 12,
-                Tokens.Brush("SeaGreenInkBrush"), "BodyFont", TextAlignment.Center, 140));
+                Tokens.Brush("SeaGreenInkBrush"), "Body", TextAlignment.Center, 140));
             Scene.Place(Draw.Text($"{vessel.UnloadPercent}%", lineX - 70, deckTop - 36, 18,
-                Tokens.Brush("SeaGreenInkBrush"), "BodyStrongFont", TextAlignment.Center, 140));
+                Tokens.Brush("SeaGreenInkBrush"), "BodyStrong", TextAlignment.Center, 140));
         }
     }
 
@@ -205,11 +205,11 @@ public sealed partial class VesselProfile : SceneHost
 
         Scene.Place(Draw.Rect(mid - 29, y - 9, 58, 18, Tokens.Brush("BackgroundBrush")));
         Scene.Place(Draw.Text($"{vessel.Length} m", mid - 29, y - 8, 11, Tokens.Brush("OnSurfaceBrush"),
-            "MonoMediumFont", TextAlignment.Center, 58));
+            "MonoMedium", TextAlignment.Center, 58));
 
         var draftX = sternX - 40;
         Scene.Place(Draw.Rule(draftX, waterline, draftX, 286, faint, 1, dash: Draw.Dash(3, 3)));
         Scene.Place(Draw.Label($"↕ {vessel.Draft} m draft", draftX - 8, 272, 11, Tokens.Brush("OnSurfaceBrush"),
-            "MonoMediumFont", TextAlignment.Right, 160));
+            "MonoMedium", TextAlignment.Right, 160));
     }
 }

@@ -129,7 +129,7 @@
       </utu:ShadowContainer.Shadows>
       <Button Style="{StaticResource HudSummaryButton}" AutomationProperties.Name="Camera view">
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
-          <TextBlock x:Name="CameraLabel" Text="Overview" Style="{StaticResource TypeMedium14}" VerticalAlignment="Center" />
+          <TextBlock x:Name="CameraLabel" Text="Overview" Style="{StaticResource LabelLarge}" VerticalAlignment="Center" />
           <Viewbox Width="16" Height="16" VerticalAlignment="Center">
             <Grid Width="24" Height="24">
               <shapes:Path Style="{StaticResource ChevronDownIcon}" Stroke="{ThemeResource OnSurfaceBrush}" />

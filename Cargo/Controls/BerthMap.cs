@@ -142,7 +142,7 @@ public sealed partial class BerthMap : SceneHost
         }
 
         // Anchorage
-        Scene.Place(Draw.Text("ANCHORAGE", 700, 346, 12, Tokens.Brush("OnSurfaceVariantBrush"), "BodyMediumFont"));
+        Scene.Place(Draw.Text("ANCHORAGE", 700, 346, 12, Tokens.Brush("OnSurfaceVariantBrush"), "BodyMedium"));
         Scene.Place(Draw.Rule(700, 440, 1170, 440, Tokens.Brush("OnSurfaceVariantBrush"), 1, dash: Draw.Dash(3, 5)));
 
         // Nordic Star's approach
@@ -176,11 +176,11 @@ public sealed partial class BerthMap : SceneHost
                 $"Berth {berth.Number}, {berth.Depth:0.0} m, {(conflict ? "conflict" : status.Label().ToLowerInvariant())}"
                 + (holder is null ? string.Empty : $", {holder.Name}"));
             Scene.Place(Draw.Text(berth.Number, x, 228, 16, Tokens.Brush("OnSurfaceBrush"),
-                "MonoMediumFont", TextAlignment.Center, 132));
+                "MonoMedium", TextAlignment.Center, 132));
             _statusLabels[i] = Scene.Place(Draw.Text(conflict ? "Conflict" : status.Label(),
-                x, 248, 14, Tokens.Transparent, "BodyMediumFont", TextAlignment.Center, 132));
+                x, 248, 14, Tokens.Transparent, "BodyMedium", TextAlignment.Center, 132));
             Scene.Place(Draw.Text($"{berth.Depth:0.0} m", x, 218, 10.5, Tokens.Brush("OnSurfaceVariantBrush"),
-                "BodyFont", TextAlignment.Center, 132));
+                "Body", TextAlignment.Center, 132));
         }
     }
 
@@ -335,7 +335,7 @@ public sealed partial class BerthMap : SceneHost
             Scene.Place(host.At(x, y));
 
             var name = Scene.Place(Draw.Label(vessel.Name, x + 80, y + 36, 15, Tokens.Brush("OnSurfaceBrush"),
-                "BodyStrongFont", TextAlignment.Center, 220));
+                "BodyStrong", TextAlignment.Center, 220));
             _hulls[vessel.Id] = (host, name);
         }
     }

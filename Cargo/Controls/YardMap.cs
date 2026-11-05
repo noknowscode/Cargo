@@ -68,7 +68,7 @@ public sealed partial class YardMap : SceneHost
             }
 
             Scene.Place(box);
-            Scene.Place(Draw.Text(zone.Name, zone.X + 14, zone.Y + 8, 13, Tokens.Brush("OnSurfaceBrush"), "BodyStrongFont"));
+            Scene.Place(Draw.Text(zone.Name, zone.X + 14, zone.Y + 8, 13, Tokens.Brush("OnSurfaceBrush"), "BodyStrong"));
             Scene.Place(Draw.Text(zone.Sub, zone.X + 14, zone.Y + 26, 12, Tokens.Brush("OnSurfaceVariantBrush")));
         }
 

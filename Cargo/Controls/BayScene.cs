@@ -56,7 +56,7 @@ public sealed partial class BayScene : SceneHost
         for (var row = 0; row < BayView.Rows; row++)
         {
             Scene.Place(Draw.Text((BayView.Rows - row).ToString("D2"), 10, 100 - row * 22, 10.5,
-                Tokens.Brush("OnSurfaceVariantBrush"), "MonoMediumFont", TextAlignment.Right, 48));
+                Tokens.Brush("OnSurfaceVariantBrush"), "MonoMedium", TextAlignment.Right, 48));
         }
 
         foreach (var (column, row, cargo, ashore) in bay.Cells)
@@ -81,7 +81,7 @@ public sealed partial class BayScene : SceneHost
         // Bay badge on the hatch cover
         Scene.Place(Draw.Rect(166, 138, 28, 18, Tokens.Brush("PrimaryBrush"), 6));
         Scene.Place(Draw.Text(bay.Number, 166, 140, 11, Tokens.Brush("OnPrimaryBrush"),
-            "MonoMediumFont", TextAlignment.Center, 28));
+            "MonoMedium", TextAlignment.Center, 28));
 
         Scene.Place(Draw.Rect(0, 176, 360, 14, Tokens.Brush("SeaFlatBrush", 0.85)));
     }
