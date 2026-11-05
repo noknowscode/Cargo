@@ -10,12 +10,12 @@
     "ios"
   ],
   "sourcePath": "Cargo/Cargo.csproj",
-  "iconUrl": "https://raw.githubusercontent.com/unoplatform/Uno.Samples/master/studio/cargo/.studiolive/icon.png",
+  "iconUrl": "https://raw.githubusercontent.com/noknowscode/Cargo/studio/.studiolive/icon.png",
   "screenshots": [
-    "https://raw.githubusercontent.com/unoplatform/Uno.Samples/master/studio/cargo/.studiolive/screenshots/overview-desktop.png",
-    "https://raw.githubusercontent.com/unoplatform/Uno.Samples/master/studio/cargo/.studiolive/screenshots/inspection-desktop.png",
-    "https://raw.githubusercontent.com/unoplatform/Uno.Samples/master/studio/cargo/.studiolive/screenshots/overview-phone.png",
-    "https://raw.githubusercontent.com/unoplatform/Uno.Samples/master/studio/cargo/.studiolive/screenshots/berths-phone.png"
+    "https://raw.githubusercontent.com/noknowscode/Cargo/studio/.studiolive/screenshots/overview-desktop.png",
+    "https://raw.githubusercontent.com/noknowscode/Cargo/studio/.studiolive/screenshots/inspection-desktop.png",
+    "https://raw.githubusercontent.com/noknowscode/Cargo/studio/.studiolive/screenshots/overview-phone.png",
+    "https://raw.githubusercontent.com/noknowscode/Cargo/studio/.studiolive/screenshots/berths-phone.png"
   ],
   "showcase": {
     "summary": "A port dispatcher's evening shift in one dashboard: a live 3D harbour, berth planning, container inspection and river traffic.",
