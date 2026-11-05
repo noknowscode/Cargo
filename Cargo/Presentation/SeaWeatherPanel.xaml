@@ -20,42 +20,42 @@
       </Grid>
 
       <!-- Three by two from 1000 px, fewer across below (TileGridPanel) -->
-      <controls:TileGridPanel AutomationProperties.Name="Sea and weather readings" Margin="{StaticResource GapTop12}" Gap="12" MinTileWidth="{utu:Responsive Narrowest=240, Normal=280}">
+      <controls:TileGridPanel AutomationProperties.Name="Sea and weather readings" Margin="{StaticResource Space150TopThickness}" Gap="12" MinTileWidth="{utu:Responsive Narrowest=240, Normal=280}">
 
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
           <TextBlock Text="Wind" Style="{StaticResource MicroText}" VerticalAlignment="Bottom" />
           <TextBlock Text="14 kn SW · gusts 21" Style="{StaticResource BodyStrongText}" VerticalAlignment="Bottom" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
           <TextBlock Text="Swell" Style="{StaticResource MicroText}" VerticalAlignment="Bottom" />
           <TextBlock Text="0.6 m · 7 s · W" Style="{StaticResource BodyStrongText}" VerticalAlignment="Bottom" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
           <TextBlock Text="Current" Style="{StaticResource MicroText}" VerticalAlignment="Bottom" />
           <TextBlock Text="1.1 kn flood" Style="{StaticResource BodyStrongText}" VerticalAlignment="Bottom" />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
           <TextBlock Text="Visibility" Style="{StaticResource MicroText}" VerticalAlignment="Bottom" />
           <TextBlock Text="10 km · no fog" Style="{StaticResource BodyStrongText}" VerticalAlignment="Bottom" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
           <TextBlock Text="Channel depth" Style="{StaticResource MicroText}" VerticalAlignment="Bottom" />
           <TextBlock Text="16.9 m at HW" Style="{StaticResource BodyStrongText}" VerticalAlignment="Bottom" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
           <TextBlock Text="Pilotage" Style="{StaticResource MicroText}" VerticalAlignment="Bottom" />
           <TextBlock Text="Open · no restrictions" Style="{StaticResource BodyStrongText}"
                      Foreground="{ThemeResource SeaGreenInkBrush}" VerticalAlignment="Bottom" />
         </StackPanel>
       </controls:TileGridPanel>
 
-      <Grid Margin="{StaticResource GapTop14}">
+      <Grid Margin="{StaticResource Space150TopThickness}">
         <TextBlock Text="Tide · Port of Westhaven" Style="{StaticResource CaptionText}" />
         <TextBlock Text="HW 23:10 · +2.1 m" Style="{StaticResource CaptionText}" HorizontalAlignment="Right" />
       </Grid>
-      <controls:TideChart AutomationProperties.Name="Tide at the port of Westhaven" Height="78" Margin="{StaticResource GapTop6}" />
-      <Grid Margin="{StaticResource GapTop2}">
+      <controls:TideChart AutomationProperties.Name="Tide at the port of Westhaven" Height="78" Margin="{StaticResource Space075TopThickness}" />
+      <Grid Margin="{StaticResource Space025TopThickness}">
         <TextBlock Text="18:00" Style="{StaticResource MicroText}" HorizontalAlignment="Left" />
         <TextBlock Text="00:00" Style="{StaticResource MicroText}" HorizontalAlignment="Center" />
         <TextBlock Text="06:00" Style="{StaticResource MicroText}" HorizontalAlignment="Right" />

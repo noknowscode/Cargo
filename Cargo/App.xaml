@@ -13,8 +13,11 @@
         <!-- The look comes from the Simple theme. Its palette is the design's, in Styles/ColorPaletteOverride.xaml (the
              file Uno Platform Studio's Themes tab edits); pages use the role brushes it generates (OnSurfaceBrush,
              PrimaryBrush, OutlineVariantBrush...) and the theme's Space*, Radius* and type-scale tokens. The type is
-             Archivo (DefaultFontFamily) on the design's ramp (Styles/TypographyOverride.xaml). -->
-        <utus:SimpleToolkitTheme DefaultFontFamily="ms-appx:///Assets/Fonts/Archivo_Regular.ttf#Archivo"
+             Archivo (DefaultFontFamily) on the design's ramp (Styles/TypographyOverride.xaml). The design's spacing
+             runs on an 8 px unit (Space025 = 2 ... Space500 = 40) and its radii on 4 (Radius100 = 4: tags and rows,
+             Radius200 = 8: controls, Radius300 = 12: panels, Radius400 = 16: cards). -->
+        <utus:SimpleToolkitTheme DefaultSpacing="8" DefaultCornerRadius="4" DefaultDensity="Regular"
+                                 DefaultFontFamily="ms-appx:///Assets/Fonts/Archivo_Regular.ttf#Archivo"
                                  FontOverrideSource="ms-appx:///Styles/TypographyOverride.xaml">
           <utus:SimpleToolkitTheme.Colors>
             <ut:ThemeColors xmlns:ut="using:Uno.Themes" OverrideSource="ms-appx:///Styles/ColorPaletteOverride.xaml" />

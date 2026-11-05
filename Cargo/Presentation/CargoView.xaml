@@ -15,7 +15,7 @@
     </Grid.RowDefinitions>
 
     <!-- The figures sit beside the title from 1280 and wrap under it below -->
-    <Grid Style="{StaticResource Masthead}" RowSpacing="{utu:Responsive Narrowest={StaticResource Space12}, Wide=0}">
+    <Grid Style="{StaticResource Masthead}" RowSpacing="{utu:Responsive Narrowest={StaticResource Space150}, Wide=0}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
@@ -25,26 +25,26 @@
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
-      <StackPanel VerticalAlignment="Bottom" Spacing="{StaticResource Space8}">
+      <StackPanel VerticalAlignment="Bottom" Spacing="{StaticResource Space100}">
         <TextBlock Text="Cargo" Style="{StaticResource PageTitleText}" />
         <TextBlock Text="Containers on the terminal · yard blocks A to D, reefer, inspection and bonded" Style="{StaticResource PageSubtitleText}" TextWrapping="Wrap" />
       </StackPanel>
 
-      <controls:FlowPanel AutomationProperties.Name="Cargo figures" Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" VerticalAlignment="Bottom"
+      <controls:FlowPanel AutomationProperties.Name="Cargo figures" Spacing="{StaticResource Space300}" RowSpacing="{StaticResource Space050}" VerticalAlignment="Bottom"
                           Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}">
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
           <TextBlock Text="{x:Bind ViewModel.OnSite}" Style="{StaticResource MetricText}" />
           <TextBlock Text="on site" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
           <TextBlock Text="{x:Bind ViewModel.Occupancy, Mode=OneWay}" Style="{StaticResource MetricText}" />
           <TextBlock Text="yard occupied" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
           <TextBlock Text="{x:Bind ViewModel.Moves, Mode=OneWay}" Style="{StaticResource MetricText}" />
           <TextBlock Text="moves today" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
           <TextBlock Text="{x:Bind ViewModel.Holds}" Style="{StaticResource MetricText}" Foreground="{ThemeResource OrangeInkBrush}" />
           <TextBlock Text="{x:Bind ViewModel.HoldsLabel}" Style="{StaticResource MetricLabelText}" />
         </StackPanel>

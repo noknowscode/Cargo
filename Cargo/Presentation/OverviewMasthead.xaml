@@ -8,7 +8,7 @@
        the greeting and the card; phones (under 600) drop the card, whose operator and shift are in the account flyout -->
   <!-- The Overview greeting, the shift's headline figures and the duty operator's ID card.
        Figures are ink; colour only marks status, as the mark before each label. -->
-  <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Narrow={StaticResource Space40}}">
+  <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Narrow={StaticResource Space500}}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
@@ -19,20 +19,20 @@
       <ColumnDefinition Width="Auto" />
     </Grid.ColumnDefinitions>
 
-    <StackPanel VerticalAlignment="Center" Spacing="{StaticResource Space8}">
+    <StackPanel VerticalAlignment="Center" Spacing="{StaticResource Space100}">
       <TextBlock Style="{StaticResource GreetingText}" TextWrapping="Wrap">
         <Run Text="Good evening, " /><Run Text="{x:Bind ViewModel.GreetingName}" Foreground="{ThemeResource PrimaryBrush}" />
       </TextBlock>
       <TextBlock Text="{x:Bind ViewModel.Subtitle, Mode=OneWay}" Style="{StaticResource DateLineText}" TextWrapping="Wrap" />
     </StackPanel>
 
-    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space28}" VerticalAlignment="Center" Padding="{StaticResource GapTop4}"
+    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space300}" VerticalAlignment="Center" Padding="{StaticResource Space050TopThickness}"
                 Grid.Row="{utu:Responsive Narrowest=1, Wide=0}"
                 Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
                 Grid.ColumnSpan="{utu:Responsive Narrowest=3, Wide=1}"
-                Margin="{utu:Responsive Narrowest={StaticResource GapTop16}, Wide='0'}">
+                Margin="{utu:Responsive Narrowest={StaticResource Space200TopThickness}, Wide='0'}">
       <StackPanel Style="{StaticResource FigureStack}">
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
           <Ellipse Width="8" Height="8" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" />
           <TextBlock Text="Alongside" Style="{StaticResource FigureLabelText}" />
         </StackPanel>
@@ -40,7 +40,7 @@
       </StackPanel>
 
       <StackPanel Style="{StaticResource FigureStack}">
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
           <Ellipse Width="8" Height="8" Stroke="{ThemeResource NavyBrush}" StrokeThickness="1.6" VerticalAlignment="Center" />
           <TextBlock Text="Inbound" Style="{StaticResource FigureLabelText}" />
         </StackPanel>
@@ -53,8 +53,8 @@
       <Button Style="{StaticResource BareButton}" Command="{x:Bind ViewModel.State.Navigation.RevealNeedsYouCommand}"
               AutomationProperties.Name="{x:Bind ViewModel.NeedsYouLink, Mode=OneWay}">
         <StackPanel Style="{StaticResource FigureStack}">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-            <Rectangle Width="8" Height="8" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
+            <Rectangle Width="8" Height="8" RadiusX="{StaticResource Radius050}" RadiusY="{StaticResource Radius050}" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
             <TextBlock Text="Needs you" Style="{StaticResource FigureLabelText}" />
           </StackPanel>
           <TextBlock Text="{x:Bind ViewModel.NeedsYouText, Mode=OneWay}" Style="{StaticResource MetricText}"
@@ -81,19 +81,19 @@
         </utu:ShadowCollection>
       </utu:ShadowContainer.Shadows>
 
-      <Grid CornerRadius="{StaticResource RadiusPanel}" Padding="16,15,16,12" RowSpacing="{StaticResource Space10}">
+      <Grid CornerRadius="{StaticResource Radius300CornerRadius}" Padding="16,15,16,12" RowSpacing="{StaticResource Space125}">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!-- xaml-lint: allow card - the ID card's clip slot, a 28x4 punched mark -->
-        <Border Width="28" Height="4" CornerRadius="2" Margin="0,-8,0,0" VerticalAlignment="Top"
+        <Border Width="28" Height="4" CornerRadius="{StaticResource Radius050CornerRadius}" Margin="0,-8,0,0" VerticalAlignment="Top"
                 Background="{ThemeResource BackgroundBrush}"
                 BorderBrush="{ThemeResource OutlineBrush}" BorderThickness="1" />
 
         <!-- The sub-line spans under the badge: in the badge's column alone it would clip at 252 px -->
-        <Grid ColumnSpacing="{StaticResource Space12}" RowSpacing="{StaticResource Space4}">
+        <Grid ColumnSpacing="{StaticResource Space150}" RowSpacing="{StaticResource Space050}">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="36" />
             <ColumnDefinition Width="*" />
@@ -115,13 +115,13 @@
                      Style="{StaticResource CaptionText}" />
         </Grid>
 
-        <Grid Grid.Row="1" ColumnSpacing="{StaticResource Space10}">
+        <Grid Grid.Row="1" ColumnSpacing="{StaticResource Space125}">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
           </Grid.ColumnDefinitions>
           <ProgressBar controls:Slide.Value="{x:Bind ViewModel.ShiftProgress, Mode=OneWay}" Maximum="1" VerticalAlignment="Center"
-                       Height="3" MinHeight="3" CornerRadius="1.5"
+                       Height="3" MinHeight="3" CornerRadius="{StaticResource RadiusFullCornerRadius}"
                        Foreground="{ThemeResource PrimaryBrush}" Background="{ThemeResource OutlineVariantBrush}"
                        AutomationProperties.Name="Shift progress" />
           <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.OperatorUntil}" Style="{StaticResource TypeMono11}"

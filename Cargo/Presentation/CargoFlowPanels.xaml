@@ -8,7 +8,7 @@
   <!-- The terminal's throughput: moves this hour by the block, and cargo entering against leaving.
        Moved from Overview, whose timeline now carries moves and cargo on the day's axis. -->
   <!-- Side by side from 1000 px, stacked below -->
-  <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Normal={StaticResource Space40}}" RowSpacing="{utu:Responsive Narrowest={StaticResource Space28}, Normal=0}">
+  <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Normal={StaticResource Space500}}" RowSpacing="{utu:Responsive Narrowest={StaticResource Space300}, Normal=0}">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*" />
       <ColumnDefinition Width="{utu:Responsive Narrowest=0, Normal=*}" />
@@ -21,13 +21,13 @@
     <Border Style="{StaticResource RuledPanel}" Padding="{StaticResource RuledPanelInsetEnd}">
       <StackPanel>
         <TextBlock Text="Container volume" Style="{StaticResource CardTitleText}" />
-        <TextBlock Text="Moves this hour · one block = 20" Style="{StaticResource CaptionText}" Margin="{StaticResource GapTop8}" />
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" Margin="{StaticResource GapTop4}">
+        <TextBlock Text="Moves this hour · one block = 20" Style="{StaticResource CaptionText}" Margin="{StaticResource Space100TopThickness}" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}" Margin="{StaticResource Space050TopThickness}">
           <TextBlock Text="{x:Bind local:CargoFlowPanels.Moves(ViewModel.NowHours), Mode=OneWay}" Style="{StaticResource MetricText}" />
           <TextBlock Text="↑ 12% vs yesterday" Style="{StaticResource BodyStrongSmallText}"
-                     Foreground="{ThemeResource SeaGreenInkBrush}" VerticalAlignment="Bottom" Margin="{StaticResource GapBottom4}" />
+                     Foreground="{ThemeResource SeaGreenInkBrush}" VerticalAlignment="Bottom" Margin="{StaticResource Space050BottomThickness}" />
         </StackPanel>
-        <controls:VolumeChart AutomationProperties.Name="Container moves per hour" Now="{x:Bind ViewModel.NowHours, Mode=OneWay}" Margin="{StaticResource GapTop8}" />
+        <controls:VolumeChart AutomationProperties.Name="Container moves per hour" Now="{x:Bind ViewModel.NowHours, Mode=OneWay}" Margin="{StaticResource Space100TopThickness}" />
       </StackPanel>
     </Border>
 
@@ -36,18 +36,18 @@
       <StackPanel>
         <Grid>
           <TextBlock Text="Cargo flow" Style="{StaticResource CardTitleText}" />
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space12}" HorizontalAlignment="Right" VerticalAlignment="Center">
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space150}" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
               <Ellipse Width="6" Height="6" Fill="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
               <TextBlock Text="Entering" Style="{StaticResource CaptionText}" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
               <Ellipse Width="6" Height="6" Fill="{ThemeResource AmberBrush}" VerticalAlignment="Center" />
               <TextBlock Text="Leaving" Style="{StaticResource CaptionText}" />
             </StackPanel>
           </StackPanel>
         </Grid>
-        <controls:FlowChart AutomationProperties.Name="Cargo entering against leaving" Margin="{StaticResource GapTop14}" />
+        <controls:FlowChart AutomationProperties.Name="Cargo entering against leaving" Margin="{StaticResource Space150TopThickness}" />
       </StackPanel>
     </Border>
   </Grid>

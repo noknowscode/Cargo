@@ -17,7 +17,7 @@
     </Grid.RowDefinitions>
 
     <!-- ── Masthead ─────────────────────────────────────────────── -->
-    <Grid ColumnSpacing="{StaticResource Space20}">
+    <Grid ColumnSpacing="{StaticResource Space250}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
@@ -26,32 +26,32 @@
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
-      <StackPanel Spacing="{StaticResource Space4}">
+      <StackPanel Spacing="{StaticResource Space050}">
         <TextBlock Text="Berth plan" Style="{StaticResource SectionHeadText}" />
         <TextBlock Text="Next 36 hours · drag an arriving vessel onto a berth" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
       </StackPanel>
       <!-- The legend: the map's berth states and the timeline's conflict colour -->
-      <controls:FlowPanel AutomationProperties.Name="Berth plan legend" Spacing="{StaticResource Space14}" RowSpacing="{StaticResource Space6}" VerticalAlignment="Bottom"
+      <controls:FlowPanel AutomationProperties.Name="Berth plan legend" Spacing="{StaticResource Space150}" RowSpacing="{StaticResource Space075}" VerticalAlignment="Bottom"
                           Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
-                          Margin="{utu:Responsive Narrowest={StaticResource GapTop10}, Wide='0'}">
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource PrimaryBrush}" Opacity="0.35" VerticalAlignment="Center" />
+                          Margin="{utu:Responsive Narrowest={StaticResource Space125TopThickness}, Wide='0'}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
+          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource Radius050}" RadiusY="{StaticResource Radius050}" Fill="{ThemeResource PrimaryBrush}" Opacity="0.35" VerticalAlignment="Center" />
           <TextBlock Text="Available" Style="{StaticResource CaptionText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
+          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource Radius050}" RadiusY="{StaticResource Radius050}" Fill="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
           <TextBlock Text="Reserved" Style="{StaticResource CaptionText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
+          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource Radius050}" RadiusY="{StaticResource Radius050}" Fill="{ThemeResource NavyBrush}" VerticalAlignment="Center" />
           <TextBlock Text="Occupied" Style="{StaticResource CaptionText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
+          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource Radius050}" RadiusY="{StaticResource Radius050}" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
           <TextBlock Text="Restricted" Style="{StaticResource CaptionText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
-          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource RadiusMark}" RadiusY="{StaticResource RadiusMark}" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
+          <Rectangle Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}" RadiusX="{StaticResource Radius050}" RadiusY="{StaticResource Radius050}" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
           <TextBlock Text="Conflict" Style="{StaticResource CaptionText}" />
         </StackPanel>
       </controls:FlowPanel>
@@ -59,7 +59,7 @@
 
     <!-- ── Scrubber ─────────────────────────────────────────────── -->
     <utu:CardContentControl AutomationProperties.Name="Plan controls" Style="{StaticResource PanelCard}" Grid.Row="1" Padding="{utu:Responsive Narrowest={StaticResource Inset16x12}, Narrow='18,12'}">
-      <Grid ColumnSpacing="{StaticResource Space18}">
+      <Grid ColumnSpacing="{StaticResource Space200}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="*" />
@@ -73,11 +73,11 @@
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space10}" VerticalAlignment="Center"
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space125}" VerticalAlignment="Center"
                     Grid.ColumnSpan="{utu:Responsive Narrowest=4, Narrow=1}">
           <Button Style="{StaticResource GhostButton}" Content="Now" Padding="{StaticResource Inset12x7}"
-                  MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
-                  CornerRadius="{StaticResource RadiusControl}" Command="{x:Bind ViewModel.NowCommand, Mode=OneWay}"
+                  MinHeight="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}"
+                  CornerRadius="{StaticResource Radius200CornerRadius}" Command="{x:Bind ViewModel.NowCommand, Mode=OneWay}"
                   Background="{x:Bind local:DockingView.NowGround(ViewModel.IsLive), Mode=OneWay}"
                   Foreground="{x:Bind local:DockingView.NowInk(ViewModel.IsLive), Mode=OneWay}"
                   AutomationProperties.Name="Back to now" />
@@ -90,9 +90,9 @@
 
         <Grid VerticalAlignment="Center"
               Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}"
-              Grid.ColumnSpan="{utu:Responsive Narrowest=4, Wide=1}" Margin="{utu:Responsive Narrowest={StaticResource GapTop12}, Wide='0'}">
+              Grid.ColumnSpan="{utu:Responsive Narrowest=4, Wide=1}" Margin="{utu:Responsive Narrowest={StaticResource Space150TopThickness}, Wide='0'}">
           <Slider Style="{StaticResource ScrubSlider}" Minimum="0" Maximum="36"
-                  StepFrequency="0.25" Margin="{StaticResource GapBottom14}" AutomationProperties.Name="Plan time"
+                  StepFrequency="0.25" Margin="{StaticResource Space150BottomThickness}" AutomationProperties.Name="Plan time"
                   Value="{x:Bind ViewModel.Scrub, Mode=TwoWay}" />
           <Grid VerticalAlignment="Bottom" IsHitTestVisible="False">
             <TextBlock Text="00:00" Style="{StaticResource MicroText}" HorizontalAlignment="Left" />
@@ -106,16 +106,16 @@
                    Foreground="{x:Bind local:DockingView.ConflictInk(ViewModel.HasConflicts), Mode=OneWay}" VerticalAlignment="Center"
                    MaxWidth="360" HorizontalAlignment="Left" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"
                    Grid.Row="{utu:Responsive Narrowest=2, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=2}"
-                   Grid.ColumnSpan="{utu:Responsive Narrowest=4, Wide=1}" Margin="{utu:Responsive Narrowest={StaticResource GapTop8}, Wide='0'}" />
+                   Grid.ColumnSpan="{utu:Responsive Narrowest=4, Wide=1}" Margin="{utu:Responsive Narrowest={StaticResource Space100TopThickness}, Wide='0'}" />
 
-        <Button Style="{StaticResource PrimaryButton}" Command="{x:Bind ViewModel.OptimizeCommand, Mode=OneWay}" CornerRadius="{StaticResource RadiusGroup}" Padding="14,8"
+        <Button Style="{StaticResource PrimaryButton}" Command="{x:Bind ViewModel.OptimizeCommand, Mode=OneWay}" CornerRadius="{StaticResource Radius200CornerRadius}" Padding="14,8"
                 AutomationProperties.Name="Optimize traffic"
-                MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}" VerticalAlignment="Center"
+                MinHeight="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}" VerticalAlignment="Center"
                 Grid.Row="{utu:Responsive Narrowest=3, Narrow=0}" Grid.Column="{utu:Responsive Narrowest=0, Narrow=3}"
                 Grid.ColumnSpan="{utu:Responsive Narrowest=4, Narrow=1}"
                 HorizontalAlignment="{utu:Responsive Narrowest=Stretch, Narrow=Right}"
-                Margin="{utu:Responsive Narrowest={StaticResource GapTop12}, Narrow='0'}">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}" HorizontalAlignment="Center">
+                Margin="{utu:Responsive Narrowest={StaticResource Space150TopThickness}, Narrow='0'}">
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}" HorizontalAlignment="Center">
             <shapes:Path Data="M4 17l5-5 4 4 7-8M15 8h5v5" Stroke="{ThemeResource OnSurfaceInverseBrush}" StrokeThickness="2"
                          Width="{StaticResource IconSizeSmall}" Height="{StaticResource IconSizeSmall}" Stretch="Uniform" VerticalAlignment="Center" />
             <TextBlock Text="Optimize traffic" Style="{StaticResource LabelMedium}"
@@ -136,7 +136,7 @@
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
-      <StackPanel Spacing="{StaticResource Space18}">
+      <StackPanel Spacing="{StaticResource Space200}">
         <!-- The hint (what a drag will do, and why a drop was refused) floats over the map's water from 1000 px;
              on a narrower map it would cover the berths, so it sits under it -->
         <Grid>
@@ -145,19 +145,19 @@
             <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
           <utu:CardContentControl AutomationProperties.Name="Berth map" Style="{StaticResource OutlinedPanel}" Padding="0"
-                                  CornerRadius="{StaticResource RadiusCard}" Background="{ThemeResource LandBrush}">
+                                  CornerRadius="{StaticResource Radius400CornerRadius}" Background="{ThemeResource LandBrush}">
             <ContentControl x:Name="MapHost" HorizontalContentAlignment="Stretch" IsTabStop="False" />
           </utu:CardContentControl>
           <utu:CardContentControl Style="{StaticResource OutlinedPanel}" HorizontalAlignment="Left" VerticalAlignment="Bottom"
                                   Grid.Row="{utu:Responsive Narrowest=1, Normal=0}"
-                                  Margin="{utu:Responsive Narrowest={StaticResource GapTop8}, Normal={StaticResource Inset16x14}}" Padding="{StaticResource Inset12x8}" CornerRadius="{StaticResource RadiusControl}">
+                                  Margin="{utu:Responsive Narrowest={StaticResource Space100TopThickness}, Normal={StaticResource Space200Thickness}}" Padding="{StaticResource Inset12x8}" CornerRadius="{StaticResource Radius200CornerRadius}">
             <TextBlock Text="{x:Bind ViewModel.Hint, Mode=OneWay}" Style="{StaticResource SubtitleText}" TextWrapping="Wrap"
                        AutomationProperties.LiveSetting="Polite" />
           </utu:CardContentControl>
         </Grid>
 
         <utu:CardContentControl AutomationProperties.Name="Berth timeline, 36 hours" Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest='16,16,16,14', Narrow='22,20,22,18'}">
-          <StackPanel Spacing="{StaticResource Space12}">
+          <StackPanel Spacing="{StaticResource Space150}">
             <Grid>
               <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -167,9 +167,9 @@
               <TextBlock Text="Dashed edge: reserved for an arrival · red with an ink edge: two vessels overlap"
                          Style="{StaticResource CaptionText}" TextWrapping="Wrap"
                          Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" HorizontalAlignment="{utu:Responsive Narrowest=Left, Wide=Right}"
-                         Margin="{utu:Responsive Narrowest={StaticResource GapTop4}, Wide='0'}" />
+                         Margin="{utu:Responsive Narrowest={StaticResource Space050TopThickness}, Wide='0'}" />
             </Grid>
-            <Grid ColumnSpacing="{StaticResource Space12}">
+            <Grid ColumnSpacing="{StaticResource Space150}">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="34" />
                 <ColumnDefinition Width="*" />
@@ -182,11 +182,11 @@
             </Grid>
             <ItemsControl AutomationProperties.Name="Berth timeline rows" ItemsSource="{x:Bind ViewModel.PlanRows, Mode=OneWay}" IsTabStop="False">
               <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space8}" /></ItemsPanelTemplate>
+                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space100}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:PlanRow">
-                  <Grid ColumnSpacing="{StaticResource Space12}" AutomationProperties.Name="{x:Bind AccessibleName}">
+                  <Grid ColumnSpacing="{StaticResource Space150}" AutomationProperties.Name="{x:Bind AccessibleName}">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="34" />
                       <ColumnDefinition Width="*" />
@@ -194,7 +194,7 @@
                     <TextBlock Text="{x:Bind Berth}" Style="{StaticResource TypeMonoMedium12}"
                                Foreground="{ThemeResource OnSurfaceVariantBrush}" VerticalAlignment="Center" />
                     <!-- xaml-lint: allow card - the track of a timeline bar, not a card -->
-                    <Border Grid.Column="1" Height="26" CornerRadius="7" Background="{ThemeResource SurfaceVariantBrush}">
+                    <Border Grid.Column="1" Height="26" CornerRadius="{StaticResource Radius200CornerRadius}" Background="{ThemeResource SurfaceVariantBrush}">
                       <controls:ProportionalPanel Segments="{x:Bind Segments}" NowFraction="{x:Bind NowFraction, Mode=OneWay}" />
                     </Border>
                   </Grid>
@@ -206,29 +206,29 @@
       </StackPanel>
 
       <!-- ── Selected vessel ──────────────────────────────────────── -->
-      <utu:CardContentControl AutomationProperties.Name="{x:Bind ViewModel.SelectedName, Mode=OneWay}" x:Name="SelectedPanel" Style="{StaticResource PanelCard}" Padding="{StaticResource Inset22x20}" VerticalAlignment="Top"
+      <utu:CardContentControl AutomationProperties.Name="{x:Bind ViewModel.SelectedName, Mode=OneWay}" x:Name="SelectedPanel" Style="{StaticResource PanelCard}" Padding="{StaticResource Space250Thickness}" VerticalAlignment="Top"
                               Visibility="{x:Bind ViewModel.HasSelection, Mode=OneWay}"
                               Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                               Width="{utu:Responsive Narrowest=NaN, Normal=320}"
-                              Margin="{utu:Responsive Narrowest={StaticResource GapTop18}, Normal={StaticResource GapStart18}}">
-        <StackPanel Spacing="{StaticResource Space14}">
-          <Grid ColumnSpacing="{StaticResource Space8}">
+                              Margin="{utu:Responsive Narrowest={StaticResource Space200TopThickness}, Normal={StaticResource Space200LeftThickness}}">
+        <StackPanel Spacing="{StaticResource Space150}">
+          <Grid ColumnSpacing="{StaticResource Space100}">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*" />
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <StackPanel Spacing="{StaticResource Space4}">
+            <StackPanel Spacing="{StaticResource Space050}">
               <TextBlock Text="{x:Bind ViewModel.SelectedName, Mode=OneWay}" Style="{StaticResource TitleLarge}" TextTrimming="CharacterEllipsis" />
               <TextBlock Text="{x:Bind ViewModel.SelectedStatus, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
             </StackPanel>
             <Button Grid.Column="1" Style="{StaticResource CloseButton}" Content="×" Command="{x:Bind ViewModel.ClearSelectionCommand, Mode=OneWay}"
-                    MinWidth="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
-                    MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=32}"
+                    MinWidth="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=32}"
+                    MinHeight="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=32}"
                     AutomationProperties.Name="Clear selection" ToolTipService.ToolTip="Clear selection" />
           </Grid>
 
           <!-- xaml-lint: allow card - clips the vessel profile image -->
-          <Border CornerRadius="{StaticResource RadiusPanel}" Background="{ThemeResource SurfaceBrush}">
+          <Border CornerRadius="{StaticResource Radius300CornerRadius}" Background="{ThemeResource SurfaceBrush}">
             <Grid Height="120">
               <Rectangle Fill="{ThemeResource SeaFlatBrush}" Height="16" VerticalAlignment="Bottom" />
               <Image Source="{x:Bind local:DockingView.Profile(ViewModel.SelectedProfile), Mode=OneWay}" Stretch="Uniform" Margin="18,6,18,10"
@@ -238,11 +238,11 @@
 
           <ItemsControl AutomationProperties.Name="Selected vessel facts" ItemsSource="{x:Bind ViewModel.SelectedFacts, Mode=OneWay}" IsTabStop="False">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><controls:TwoColumnPanel ColumnSpacing="{StaticResource Space14}" RowSpacing="{StaticResource Space12}" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><controls:TwoColumnPanel ColumnSpacing="{StaticResource Space150}" RowSpacing="{StaticResource Space150}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:Fact">
-                <StackPanel Spacing="{StaticResource Space4}">
+                <StackPanel Spacing="{StaticResource Space050}">
                   <TextBlock Text="{x:Bind Key}" Style="{StaticResource MicroText}" />
                   <TextBlock Text="{x:Bind Value}" Style="{StaticResource BodyStrongLargeText}" TextTrimming="CharacterEllipsis" />
                 </StackPanel>
@@ -256,7 +256,7 @@
 
           <!-- Drag-to-assign without a drag: every berth, with what it says about this vessel. The keyboard and
                touch path to the same rules; a refused choice shows its reason in the hint, as a refused drop does -->
-          <StackPanel Spacing="{StaticResource Space8}" Visibility="{x:Bind ViewModel.CanMove, Mode=OneWay}">
+          <StackPanel Spacing="{StaticResource Space100}" Visibility="{x:Bind ViewModel.CanMove, Mode=OneWay}">
             <TextBlock Text="Move to berth" Style="{StaticResource MicroText}" />
             <ItemsControl AutomationProperties.Name="Move to berth" ItemsSource="{x:Bind ViewModel.BerthChoices, Mode=OneWay}" IsTabStop="False">
               <ItemsControl.ItemsPanel>
@@ -265,10 +265,10 @@
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:BerthChoice">
                   <Button Style="{StaticResource GhostButton}" Command="{x:Bind Assign}" CommandParameter="{x:Bind Number}"
-                          BorderBrush="{x:Bind local:DockingView.ChoiceEdge(Fits), Mode=OneWay}" Padding="{StaticResource Inset4x6}" CornerRadius="{StaticResource RadiusControl}" HorizontalAlignment="Stretch"
-                          MinHeight="{StaticResource TouchTarget}"
+                          BorderBrush="{x:Bind local:DockingView.ChoiceEdge(Fits), Mode=OneWay}" Padding="{StaticResource Space075Thickness}" CornerRadius="{StaticResource Radius200CornerRadius}" HorizontalAlignment="Stretch"
+                          MinHeight="{StaticResource ControlHeightMediumLarge}"
                           AutomationProperties.Name="{x:Bind AccessibleName, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind AccessibleName, Mode=OneWay}">
-                    <StackPanel Spacing="{StaticResource Space2}" HorizontalAlignment="Center">
+                    <StackPanel Spacing="{StaticResource Space025}" HorizontalAlignment="Center">
                       <TextBlock Text="{x:Bind Number}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource OnSurfaceBrush}"
                                  HorizontalAlignment="Center" />
                       <TextBlock Text="{x:Bind Caption, Mode=OneWay}" Style="{StaticResource LabelExtraSmall}"
@@ -282,11 +282,11 @@
           </StackPanel>
 
           <Button AutomationProperties.Name="Release berth" Style="{StaticResource GhostButton}" Content="Release berth"
-                  MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+                  MinHeight="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}"
                   Command="{x:Bind ViewModel.ReleaseCommand, Mode=OneWay}" HorizontalAlignment="Stretch"
                   Visibility="{x:Bind ViewModel.CanRelease, Mode=OneWay}" />
           <Button AutomationProperties.Name="Open vessel profile" Style="{StaticResource PrimaryButton}" Content="Vessel profile →" Command="{x:Bind ViewModel.OpenProfileCommand, Mode=OneWay}"
-                  MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+                  MinHeight="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}"
                   HorizontalAlignment="Stretch" />
         </StackPanel>
       </utu:CardContentControl>

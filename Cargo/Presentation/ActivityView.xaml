@@ -39,28 +39,28 @@
                 <utu:Shadow OffsetY="10" BlurRadius="28" Color="{ThemeResource ShadowColor}" Opacity="0.09" />
               </utu:ShadowCollection>
             </utu:ShadowContainer.Shadows>
-            <Border CornerRadius="{StaticResource RadiusControl}" />
+            <Border CornerRadius="{StaticResource Radius200CornerRadius}" />
           </utu:ShadowContainer>
 
-          <Button Style="{StaticResource BareButton}" Command="{x:Bind Toggle}" CommandParameter="{x:Bind}" Padding="{StaticResource InsetY12}"
+          <Button Style="{StaticResource BareButton}" Command="{x:Bind Toggle}" CommandParameter="{x:Bind}" Padding="{StaticResource Space150VerticalThickness}"
                   AutomationProperties.Name="{x:Bind Title}">
-            <Grid ColumnSpacing="{StaticResource Space12}">
+            <Grid ColumnSpacing="{StaticResource Space150}">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="48" />
                 <ColumnDefinition Width="20" />
                 <ColumnDefinition Width="*" />
               </Grid.ColumnDefinitions>
               <TextBlock Text="{x:Bind Time}" Style="{StaticResource TypeMono13}" Foreground="{ThemeResource OnSurfaceVariantBrush}" />
-              <Viewbox Grid.Column="1" Width="{StaticResource IconSize}" Height="{StaticResource IconSize}" VerticalAlignment="Top" Margin="0,1,0,0" AutomationProperties.AccessibilityView="Raw">
+              <Viewbox Grid.Column="1" Width="{StaticResource IconSizeSmall}" Height="{StaticResource IconSizeSmall}" VerticalAlignment="Top" Margin="0,1,0,0" AutomationProperties.AccessibilityView="Raw">
                 <Grid Width="24" Height="24">
                   <shapes:Path Data="{x:Bind local:ActivityView.Icon(IconData, About)}" Stroke="{x:Bind local:ActivityView.Tone(NeedsAction)}" Style="{StaticResource StrokeIcon}" />
                 </Grid>
               </Viewbox>
-              <StackPanel Grid.Column="2" Spacing="{StaticResource Space2}">
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+              <StackPanel Grid.Column="2" Spacing="{StaticResource Space025}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}">
                   <TextBlock Text="{x:Bind Title}" Style="{StaticResource TypeMedium15}" Foreground="{ThemeResource OnSurfaceBrush}" />
                   <!-- xaml-lint: allow card - the NEEDS ACTION chip, a caps label on an alert tint -->
-                  <Border Background="{ThemeResource ErrorContainerBrush}" CornerRadius="{StaticResource RadiusTag}" Padding="6,3" VerticalAlignment="Center"
+                  <Border Background="{ThemeResource ErrorContainerBrush}" CornerRadius="{StaticResource Radius100CornerRadius}" Padding="6,3" VerticalAlignment="Center"
                           Visibility="{x:Bind NeedsAction}">
                     <TextBlock Text="NEEDS ACTION" Style="{StaticResource TypeStrong11}" Foreground="{ThemeResource OnSurfaceBrush}" />
                   </Border>
@@ -73,15 +73,15 @@
           </Button>
 
           <!-- The detail: when it was logged and, for an entry about an open decision, that decision and its action -->
-          <StackPanel Grid.Row="1" Margin="92,0,0,14" Spacing="{StaticResource Space10}" Opacity="0" Visibility="Collapsed"
+          <StackPanel Grid.Row="1" Margin="92,0,0,14" Spacing="{StaticResource Space125}" Opacity="0" Visibility="Collapsed"
                       controls:Reveal.IsOn="{x:Bind IsExpanded, Mode=OneWay}" controls:Reveal.Grow="True">
             <TextBlock Text="{x:Bind Logged, Mode=OneWay}" Style="{StaticResource TypeMono12}" Foreground="{ThemeResource OnSurfaceVariantBrush}" />
-            <Grid ColumnSpacing="{StaticResource Space12}" Visibility="{x:Bind NeedsAction}">
+            <Grid ColumnSpacing="{StaticResource Space150}" Visibility="{x:Bind NeedsAction}">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
               </Grid.ColumnDefinitions>
-              <StackPanel Spacing="{StaticResource Space2}" VerticalAlignment="Center">
+              <StackPanel Spacing="{StaticResource Space025}" VerticalAlignment="Center">
                 <TextBlock Text="{x:Bind About.Title}" Style="{StaticResource LabelMedium}" Foreground="{ThemeResource OnSurfaceBrush}" TextWrapping="Wrap" />
                 <TextBlock Style="{StaticResource SubtitleText}" TextWrapping="Wrap">
                   <Run Text="{x:Bind About.Sub}" /><Run Text="{x:Bind local:NeedsYouPanel.Separator(About.When), Mode=OneWay}" /><Run Text="{x:Bind About.When, Mode=OneWay}"
@@ -113,13 +113,13 @@
 
   <!-- The shift log, newest first, in two columns -->
   <utu:CardContentControl AutomationProperties.Name="Activity" Style="{StaticResource OutlinedPanel}" Padding="24,24,24,12">
-    <StackPanel Spacing="{StaticResource Space8}">
-      <StackPanel Spacing="{StaticResource Space4}" Margin="{StaticResource GapBottom8}">
+    <StackPanel Spacing="{StaticResource Space100}">
+      <StackPanel Spacing="{StaticResource Space050}" Margin="{StaticResource Space100BottomThickness}">
         <TextBlock Text="Activity" Style="{StaticResource PanelHeadingText}" AutomationProperties.HeadingLevel="Level2" />
         <TextBlock Text="{x:Bind ViewModel.Sub, Mode=OneWay}" Style="{StaticResource SubtitleText}" />
       </StackPanel>
       <TextBlock Text="No activity yet today" Style="{StaticResource SubtitleText}" Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay}" />
-      <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Normal={StaticResource Space24}}">
+      <Grid ColumnSpacing="{utu:Responsive Narrowest=0, Normal={StaticResource Space300}}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="{utu:Responsive Narrowest=0, Normal=*}" />

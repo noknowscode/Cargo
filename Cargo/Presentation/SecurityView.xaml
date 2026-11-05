@@ -8,14 +8,14 @@
 
   <!-- Each tab puts its plan or sheet beside a side column from 1000 px and stacks it below; the tab strip sits
        beside the title from 1000 px, under it below. Capped at 1520 and centred from 1600 -->
-  <Grid MaxWidth="1520" RowSpacing="{StaticResource Space20}" uen:Region.Attached="True"
+  <Grid MaxWidth="1520" RowSpacing="{StaticResource Space250}" uen:Region.Attached="True"
         Padding="{utu:Responsive Narrowest={StaticResource PagePaddingPhone}, Narrow={StaticResource PagePaddingTablet}, Normal='40,24,40,48'}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <Grid ColumnSpacing="{StaticResource Space20}" RowSpacing="{utu:Responsive Narrowest={StaticResource Space16}, Normal=0}">
+    <Grid ColumnSpacing="{StaticResource Space250}" RowSpacing="{utu:Responsive Narrowest={StaticResource Space200}, Normal=0}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
@@ -24,25 +24,25 @@
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
-      <StackPanel Spacing="{StaticResource Space12}">
+      <StackPanel Spacing="{StaticResource Space150}">
         <TextBlock Text="{x:Bind ViewModel.Eyebrow}" Style="{StaticResource EyebrowText}" TextWrapping="Wrap" />
         <TextBlock Text="{x:Bind ViewModel.Title, Mode=OneWay}" Style="{StaticResource PageTitleText}" TextWrapping="Wrap" />
       </StackPanel>
       <!-- xaml-lint: allow card - segmented tab strip; the Simple theme ships no segmented TabBar style -->
-      <Border Background="{ThemeResource SurfaceVariantBrush}" CornerRadius="{StaticResource RadiusPanel}" Padding="{StaticResource Inset4}"
+      <Border Background="{ThemeResource SurfaceVariantBrush}" CornerRadius="{StaticResource Radius300CornerRadius}" Padding="{StaticResource Space050Thickness}"
               VerticalAlignment="Bottom" HorizontalAlignment="Left"
               Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}">
         <ItemsControl AutomationProperties.Name="Security tabs" ItemsSource="{x:Bind ViewModel.Tabs, Mode=OneWay}" IsTabStop="False">
           <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="{StaticResource Space4}" /></ItemsPanelTemplate>
+            <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="{StaticResource Space050}" /></ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="local:PageTab">
               <Button Style="{StaticResource BareButton}" uen:Navigation.Request="{x:Bind Route}"
                       AutomationProperties.Name="{x:Bind AccessibleName}">
                 <!-- xaml-lint: allow card - the current-tab highlight inside the segmented strip; 44 px tall below 1000 -->
-                <Border Background="{x:Bind local:SecurityView.TabGround(IsCurrent)}" CornerRadius="{StaticResource RadiusGroup}" Padding="{StaticResource Inset14x7}"
-                        MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=0}">
+                <Border Background="{x:Bind local:SecurityView.TabGround(IsCurrent)}" CornerRadius="{StaticResource Radius200CornerRadius}" Padding="{StaticResource Inset14x7}"
+                        MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}">
                   <TextBlock Text="{x:Bind Label}" Style="{StaticResource LabelMedium}"
                              Foreground="{x:Bind local:Paint.CurrentInk(IsCurrent)}" VerticalAlignment="Center" />
                 </Border>
@@ -67,32 +67,32 @@
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
-      <StackPanel Spacing="{StaticResource Space18}">
+      <StackPanel Spacing="{StaticResource Space200}">
         <utu:CardContentControl AutomationProperties.Name="Security zone map" Style="{StaticResource OutlinedPanel}" Padding="0"
-                                CornerRadius="{StaticResource RadiusCard}" Background="{ThemeResource LandBrush}">
+                                CornerRadius="{StaticResource Radius400CornerRadius}" Background="{ThemeResource LandBrush}">
           <controls:SecurityZoneMap />
         </utu:CardContentControl>
 
         <utu:CardContentControl AutomationProperties.Name="Security timeline" Style="{StaticResource PanelCard}" Padding="22,20,22,18">
-          <StackPanel Spacing="{StaticResource Space12}">
+          <StackPanel Spacing="{StaticResource Space150}">
             <Grid>
               <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
               </Grid.RowDefinitions>
               <TextBlock Text="Security timeline" Style="{StaticResource CardTitleText}" />
-              <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space12}" VerticalAlignment="Center"
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space150}" VerticalAlignment="Center"
                           Grid.Row="{utu:Responsive Narrowest=1, Narrow=0}" HorizontalAlignment="{utu:Responsive Narrowest=Left, Narrow=Right}"
-                          Margin="{utu:Responsive Narrowest={StaticResource GapTop6}, Narrow='0'}">
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
+                          Margin="{utu:Responsive Narrowest={StaticResource Space075TopThickness}, Narrow='0'}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
                   <Ellipse Width="7" Height="7" Fill="{ThemeResource PrimaryBrush}" VerticalAlignment="Center" />
                   <TextBlock Text="clearance" Style="{StaticResource CaptionText}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
                   <Ellipse Width="7" Height="7" Fill="{ThemeResource OrangeBrush}" VerticalAlignment="Center" />
                   <TextBlock Text="hold" Style="{StaticResource CaptionText}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}">
                   <Ellipse Width="7" Height="7" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Center" />
                   <TextBlock Text="incident" Style="{StaticResource CaptionText}" />
                 </StackPanel>
@@ -102,22 +102,22 @@
             <ScrollViewer HorizontalScrollMode="{utu:Responsive Narrowest=Auto, Narrow=Disabled}"
                           HorizontalScrollBarVisibility="{utu:Responsive Narrowest=Auto, Narrow=Disabled}"
                           VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
-              <controls:SecurityTimeline Width="{utu:Responsive Narrowest=720, Narrow=NaN}" Margin="{utu:Responsive Narrowest={StaticResource GapBottom10}, Narrow='0'}" />
+              <controls:SecurityTimeline Width="{utu:Responsive Narrowest=720, Narrow=NaN}" Margin="{utu:Responsive Narrowest={StaticResource Space125BottomThickness}, Narrow='0'}" />
             </ScrollViewer>
           </StackPanel>
         </utu:CardContentControl>
       </StackPanel>
 
-      <StackPanel Spacing="{StaticResource Space14}"
+      <StackPanel Spacing="{StaticResource Space150}"
                   Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                   Width="{utu:Responsive Narrowest=NaN, Normal=340, Wide=380}"
-                  Margin="{utu:Responsive Narrowest={StaticResource GapTop18}, Normal={StaticResource GapStart18}}">
-        <utu:CardContentControl AutomationProperties.Name="Cleared container" Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
-          <StackPanel Spacing="{StaticResource Space8}">
+                  Margin="{utu:Responsive Narrowest={StaticResource Space200TopThickness}, Normal={StaticResource Space200LeftThickness}}">
+        <utu:CardContentControl AutomationProperties.Name="Cleared container" Style="{StaticResource PanelCard}" Padding="{StaticResource Space250Thickness}">
+          <StackPanel Spacing="{StaticResource Space100}">
             <Grid>
               <TextBlock Text="AVRU 482193 4" Style="{StaticResource TypeMonoMedium14}" />
               <!-- xaml-lint: allow card - a status pill, not a card; half-height radius (99 draws an oval on Skia) -->
-              <Border Background="{ThemeResource SurfaceVariantBrush}" CornerRadius="{StaticResource RadiusGroup}" Padding="{StaticResource Inset8x3}"
+              <Border Background="{ThemeResource SurfaceVariantBrush}" CornerRadius="{StaticResource Radius200CornerRadius}" Padding="{StaticResource Inset8x3}"
                       HorizontalAlignment="Right">
                 <TextBlock Text="Cleared" Style="{StaticResource LabelExtraSmall}"
                            Foreground="{ThemeResource PrimaryBrush}" />
@@ -125,11 +125,11 @@
             </Grid>
             <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.ClearedChecks, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space6}" /></ItemsPanelTemplate>
+                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space075}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:CheckRow">
-                  <Grid ColumnSpacing="{StaticResource Space8}">
+                  <Grid ColumnSpacing="{StaticResource Space100}">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="Auto" />
                       <ColumnDefinition Width="*" />
@@ -144,12 +144,12 @@
           </StackPanel>
         </utu:CardContentControl>
 
-        <utu:CardContentControl AutomationProperties.Name="Held container" Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}" BorderBrush="{ThemeResource OrangeBrush}">
-          <StackPanel Spacing="{StaticResource Space8}">
+        <utu:CardContentControl AutomationProperties.Name="Held container" Style="{StaticResource PanelCard}" Padding="{StaticResource Space250Thickness}" BorderBrush="{ThemeResource OrangeBrush}">
+          <StackPanel Spacing="{StaticResource Space100}">
             <Grid>
               <TextBlock Text="MRVU 918204 1" Style="{StaticResource TypeMonoMedium14}" />
               <!-- xaml-lint: allow card - a status pill, not a card; half-height radius (99 draws an oval on Skia) -->
-              <Border Background="{ThemeResource SurfaceVariantBrush}" CornerRadius="{StaticResource RadiusGroup}" Padding="{StaticResource Inset8x3}"
+              <Border Background="{ThemeResource SurfaceVariantBrush}" CornerRadius="{StaticResource Radius200CornerRadius}" Padding="{StaticResource Inset8x3}"
                       HorizontalAlignment="Right">
                 <TextBlock Text="Hold" Style="{StaticResource LabelExtraSmall}"
                            Foreground="{ThemeResource OrangeInkBrush}" />
@@ -157,11 +157,11 @@
             </Grid>
             <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.HeldChecks, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space6}" /></ItemsPanelTemplate>
+                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space075}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:CheckRow">
-                  <Grid ColumnSpacing="{StaticResource Space8}">
+                  <Grid ColumnSpacing="{StaticResource Space100}">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="Auto" />
                       <ColumnDefinition Width="*" />
@@ -173,21 +173,21 @@
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Button AutomationProperties.Name="Open inspection" Style="{StaticResource PrimaryButton}" Content="Open inspection →" Margin="{StaticResource GapTop4}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+            <Button AutomationProperties.Name="Open inspection" Style="{StaticResource PrimaryButton}" Content="Open inspection →" Margin="{StaticResource Space050TopThickness}" MinHeight="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}"
                     Command="{x:Bind ViewModel.State.Navigation.OpenInspectionCommand, Mode=OneWay}" HorizontalAlignment="Left" Padding="{StaticResource Inset12x8}" />
           </StackPanel>
         </utu:CardContentControl>
 
-        <utu:CardContentControl AutomationProperties.Name="Security records today" Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
-          <StackPanel Spacing="{StaticResource Space12}">
+        <utu:CardContentControl AutomationProperties.Name="Security records today" Style="{StaticResource PanelCard}" Padding="{StaticResource Space250Thickness}">
+          <StackPanel Spacing="{StaticResource Space150}">
             <TextBlock Text="Records today" Style="{StaticResource PanelTitleText}" />
             <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.Records, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space8}" /></ItemsPanelTemplate>
+                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space100}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:RecordRow">
-                  <Grid ColumnSpacing="{StaticResource Space10}">
+                  <Grid ColumnSpacing="{StaticResource Space125}">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="8" />
                       <ColumnDefinition Width="*" />
@@ -207,7 +207,7 @@
 
     <!-- ══ ACCESS CONTROL ════════════════════════════════════════════ -->
     <Grid uen:Region.Name="access" Visibility="Collapsed"
-          ColumnSpacing="{utu:Responsive Narrowest=0, Normal={StaticResource Space18}}" RowSpacing="{utu:Responsive Narrowest={StaticResource Space24}, Normal=0}">
+          ColumnSpacing="{utu:Responsive Narrowest=0, Normal={StaticResource Space200}}" RowSpacing="{utu:Responsive Narrowest={StaticResource Space300}, Normal=0}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="{utu:Responsive Narrowest=0, Normal=*}" />
@@ -217,7 +217,7 @@
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
-      <StackPanel Spacing="{StaticResource Space14}">
+      <StackPanel Spacing="{StaticResource Space150}">
         <TextBlock Text="Personnel" Style="{StaticResource PanelTitleText}" Foreground="{ThemeResource OnSurfaceVariantBrush}" />
         <ItemsControl IsTabStop="False" AutomationProperties.Name="Personnel" ItemsSource="{x:Bind ViewModel.People, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
@@ -227,23 +227,23 @@
             <DataTemplate x:DataType="local:PersonCard">
               <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Index}"
                       AutomationProperties.Name="{x:Bind AccessibleName}">
-                <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind local:Paint.SelectedEdge(IsSelected)}" Padding="{StaticResource Inset14}">
-                  <Grid ColumnSpacing="{StaticResource Space12}">
+                <utu:CardContentControl Style="{StaticResource OutlinedPanel}" BorderBrush="{x:Bind local:Paint.SelectedEdge(IsSelected)}" Padding="{StaticResource Space150Thickness}">
+                  <Grid ColumnSpacing="{StaticResource Space150}">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="46" />
                       <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <!-- xaml-lint: allow card - avatar swatch -->
-                    <Border Width="46" Height="46" CornerRadius="{StaticResource RadiusPanel}" Background="{x:Bind local:Paint.Tone(Avatar)}">
+                    <Border Width="46" Height="46" CornerRadius="{StaticResource Radius300CornerRadius}" Background="{x:Bind local:Paint.Tone(Avatar)}">
                       <TextBlock Text="{x:Bind Initials}" Style="{StaticResource TitleSmall}"
                                  Foreground="{ThemeResource SurfaceBrush}"
                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
-                    <StackPanel Grid.Column="1" Spacing="{StaticResource Space2}">
+                    <StackPanel Grid.Column="1" Spacing="{StaticResource Space025}">
                       <TextBlock Text="{x:Bind Name}" Style="{StaticResource TitleSmall}" />
                       <TextBlock Text="{x:Bind Role}" Style="{StaticResource CaptionText}" />
                       <TextBlock Text="{x:Bind Credential}" Style="{StaticResource TypeMonoMedium11}"
-                                 Foreground="{ThemeResource PrimaryBrush}" Margin="{StaticResource GapTop4}" />
+                                 Foreground="{ThemeResource PrimaryBrush}" Margin="{StaticResource Space050TopThickness}" />
                     </StackPanel>
                   </Grid>
                 </utu:CardContentControl>
@@ -252,9 +252,9 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <utu:CardContentControl AutomationProperties.Name="{x:Bind ViewModel.ZoneHeading, Mode=OneWay}" Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
-          <StackPanel Spacing="{StaticResource Space10}">
-            <Grid ColumnSpacing="{StaticResource Space12}">
+        <utu:CardContentControl AutomationProperties.Name="{x:Bind ViewModel.ZoneHeading, Mode=OneWay}" Style="{StaticResource PanelCard}" Padding="{StaticResource Space250Thickness}">
+          <StackPanel Spacing="{StaticResource Space125}">
+            <Grid ColumnSpacing="{StaticResource Space150}">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -268,18 +268,18 @@
         </utu:CardContentControl>
       </StackPanel>
 
-      <StackPanel Spacing="{StaticResource Space14}"
+      <StackPanel Spacing="{StaticResource Space150}"
                   Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}">
         <TextBlock Text="Vehicles at gates" Style="{StaticResource PanelTitleText}"
                    Foreground="{ThemeResource OnSurfaceVariantBrush}" />
         <ItemsControl IsTabStop="False" AutomationProperties.Name="Vehicles at gates" ItemsSource="{x:Bind ViewModel.Vehicles, Mode=OneWay}">
           <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space12}" /></ItemsPanelTemplate>
+            <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space150}" /></ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="local:VehicleCard">
               <utu:CardContentControl Style="{StaticResource OutlinedPanel}" AutomationProperties.Name="{x:Bind AccessibleName}">
-                <Grid ColumnSpacing="{StaticResource Space14}" RowSpacing="{StaticResource Space10}">
+                <Grid ColumnSpacing="{StaticResource Space150}" RowSpacing="{StaticResource Space125}">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="92" />
                     <ColumnDefinition Width="*" />
@@ -291,7 +291,7 @@
                   <!-- The truck waiting on its driver's ID: the check the needs-you queue sends you here for -->
                   <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryButton}" Content="Verify driver"
                           Command="{x:Bind Verify}" CommandParameter="{x:Bind Id}" Visibility="{x:Bind AwaitsDriver}"
-                          MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+                          MinHeight="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}"
                           AutomationProperties.Name="{x:Bind local:SecurityView.VerifyName(Id)}" />
                   <controls:YardTruck Tint="{x:Bind local:SecurityView.Livery(Tint)}" Width="92" Height="38" VerticalAlignment="Center" />
                   <ItemsControl IsTabStop="False" Grid.Column="1" ItemsSource="{x:Bind Facts}">
@@ -300,7 +300,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                       <DataTemplate x:DataType="local:Fact">
-                        <StackPanel Spacing="{StaticResource Space2}">
+                        <StackPanel Spacing="{StaticResource Space025}">
                           <TextBlock Text="{x:Bind Key}" Style="{StaticResource MicroText}" />
                           <TextBlock Text="{x:Bind Value}" Style="{StaticResource BodyStrongText}" />
                         </StackPanel>
@@ -327,7 +327,7 @@
       </Grid.RowDefinitions>
 
       <utu:CardContentControl AutomationProperties.Name="Inspection, MRVU 918204 1" Style="{StaticResource PanelCard}" Padding="{utu:Responsive Narrowest='16,16,16,14', Narrow='26,22,26,18'}">
-        <StackPanel Spacing="{StaticResource Space6}">
+        <StackPanel Spacing="{StaticResource Space075}">
           <Grid>
             <Grid.RowDefinitions>
               <RowDefinition Height="Auto" />
@@ -337,23 +337,23 @@
             <TextBlock Text="40 FT HC · Morvane · Westhaven → Le Havre · Lane 2"
                        Style="{StaticResource SubtitleText}" VerticalAlignment="Center" TextWrapping="Wrap"
                        Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" HorizontalAlignment="{utu:Responsive Narrowest=Left, Wide=Right}"
-                       Margin="{utu:Responsive Narrowest={StaticResource GapTop4}, Wide='0'}" />
+                       Margin="{utu:Responsive Narrowest={StaticResource Space050TopThickness}, Wide='0'}" />
           </Grid>
           <!-- The callouts' labels need about 640 px: on a phone the diagram keeps that width and scrolls sideways -->
           <ScrollViewer HorizontalScrollMode="{utu:Responsive Narrowest=Auto, Narrow=Disabled}"
                         HorizontalScrollBarVisibility="{utu:Responsive Narrowest=Auto, Narrow=Disabled}"
                         VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
-            <controls:InspectionDiagram Width="{utu:Responsive Narrowest=640, Narrow=NaN}" Margin="{utu:Responsive Narrowest={StaticResource GapBottom10}, Narrow='0'}" />
+            <controls:InspectionDiagram Width="{utu:Responsive Narrowest=640, Narrow=NaN}" Margin="{utu:Responsive Narrowest={StaticResource Space125BottomThickness}, Narrow='0'}" />
           </ScrollViewer>
         </StackPanel>
       </utu:CardContentControl>
 
-      <StackPanel Spacing="{StaticResource Space14}"
+      <StackPanel Spacing="{StaticResource Space150}"
                   Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
                   Width="{utu:Responsive Narrowest=NaN, Normal=320, Wide=340}"
-                  Margin="{utu:Responsive Narrowest={StaticResource GapTop18}, Normal={StaticResource GapStart18}}">
-        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}" BorderBrush="{ThemeResource OrangeBrush}">
-          <StackPanel Spacing="{StaticResource Space6}">
+                  Margin="{utu:Responsive Narrowest={StaticResource Space200TopThickness}, Normal={StaticResource Space200LeftThickness}}">
+        <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{StaticResource Space250Thickness}" BorderBrush="{ThemeResource OrangeBrush}">
+          <StackPanel Spacing="{StaticResource Space075}">
             <TextBlock Text="⚠ Weight variance" Style="{StaticResource TitleSmall}"
                        Foreground="{ThemeResource OrangeInkBrush}" />
             <TextBlock Style="{StaticResource BodyText}" TextWrapping="Wrap" LineHeight="19"
@@ -361,23 +361,23 @@
           </StackPanel>
         </utu:CardContentControl>
 
-        <utu:CardContentControl AutomationProperties.Name="Inspection log" Style="{StaticResource PanelCard}" Padding="{StaticResource CardInset}">
-          <StackPanel Spacing="{StaticResource Space12}">
+        <utu:CardContentControl AutomationProperties.Name="Inspection log" Style="{StaticResource PanelCard}" Padding="{StaticResource Space250Thickness}">
+          <StackPanel Spacing="{StaticResource Space150}">
             <TextBlock Text="Inspection log" Style="{StaticResource PanelTitleText}" />
             <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.InspectionLog, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space10}" /></ItemsPanelTemplate>
+                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space125}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:CheckRow">
-                  <Grid ColumnSpacing="{StaticResource Space10}">
+                  <Grid ColumnSpacing="{StaticResource Space125}">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="44" />
                       <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{x:Bind Time}" Style="{StaticResource TypeMonoMedium12}"
                                Foreground="{ThemeResource OnSurfaceVariantBrush}" />
-                    <Grid Grid.Column="1" ColumnSpacing="{StaticResource Space8}">
+                    <Grid Grid.Column="1" ColumnSpacing="{StaticResource Space100}">
                       <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -395,10 +395,10 @@
         </utu:CardContentControl>
 
         <!-- Each action is logged above and then stands done (disabled, relabelled) -->
-        <controls:FlowPanel Spacing="{StaticResource Space8}" RowSpacing="{StaticResource Space8}">
-          <Button AutomationProperties.Name="{x:Bind ViewModel.AssignLabel, Mode=OneWay}" Style="{StaticResource PrimaryButton}" Content="{x:Bind ViewModel.AssignLabel, Mode=OneWay}" MinWidth="160" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+        <controls:FlowPanel Spacing="{StaticResource Space100}" RowSpacing="{StaticResource Space100}">
+          <Button AutomationProperties.Name="{x:Bind ViewModel.AssignLabel, Mode=OneWay}" Style="{StaticResource PrimaryButton}" Content="{x:Bind ViewModel.AssignLabel, Mode=OneWay}" MinWidth="160" MinHeight="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}"
                   Command="{x:Bind ViewModel.AssignInspectorCommand}" />
-          <Button AutomationProperties.Name="{x:Bind ViewModel.ReweighLabel, Mode=OneWay}" Style="{StaticResource GhostButton}" Content="{x:Bind ViewModel.ReweighLabel, Mode=OneWay}" MinWidth="160" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+          <Button AutomationProperties.Name="{x:Bind ViewModel.ReweighLabel, Mode=OneWay}" Style="{StaticResource GhostButton}" Content="{x:Bind ViewModel.ReweighLabel, Mode=OneWay}" MinWidth="160" MinHeight="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}"
                   Command="{x:Bind ViewModel.RequestReweighCommand}" />
         </controls:FlowPanel>
       </StackPanel>

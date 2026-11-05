@@ -24,7 +24,4 @@
   <!-- Rolling digits travel this fraction of the font size -->
   <x:Double x:Key="RollTravelEm">0.6</x:Double>
 
-  <!-- Row radius; control 8 and panel 12 live in Tokens.xaml -->
-  <CornerRadius x:Key="RadiusRow">4</CornerRadius>
-
 </ResourceDictionary>
