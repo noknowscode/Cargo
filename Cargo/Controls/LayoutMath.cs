@@ -2,7 +2,7 @@ namespace Cargo.Controls;
 
 /// <summary>
 /// The arithmetic behind <see cref="FlowPanel"/> and <see cref="TileGridPanel"/>, kept apart from the panels so
-/// Cargo.Tests can check it without creating a XAML object.
+/// the unit tests can check it without creating a XAML object.
 /// </summary>
 public static class LayoutMath
 {

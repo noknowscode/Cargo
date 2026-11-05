@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schemas.platform.uno/sample/v1",
+  "id": "cargo",
+  "displayName": "Westhaven Port Authority",
+  "description": "A port operations dashboard for the duty dispatcher of Westhaven, a fictional container port: an orbitable 3D harbour, berth planning with drag-to-assign, conflict checks and an optimiser, a container explorer with a 3D inspection scanner, river traffic with crew chat, and port security. Built with MVVM (CommunityToolkit.Mvvm partial properties and x:Bind), Uno Navigation, the Uno Toolkit and the Simple theme in Light and Dark, with SkiaSharp scenes on SKCanvasElement. Every figure is in memory, so it runs with no backend.",
+  "platforms": [
+    "desktop",
+    "wasm",
+    "android",
+    "ios"
+  ],
+  "sourcePath": "Cargo/Cargo.csproj",
+  "userConversation": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "Build a port operations dashboard for the evening dispatcher of Westhaven, a fictional container port:\n- an Overview with an orbitable 3D harbour, the headline figures over it, the shift's timeline, what needs the dispatcher and the next six hours\n- Berths: a berth map where an arriving vessel is dragged onto a berth, a 36-hour scrubber, conflict checks, an optimiser, and a vessel's side profile with its bays\n- Cargo: a filterable container explorer with each box's journey, the yard's block map, and a 3D inspection scanner with X-ray\n- Waterways: a 120 km river map with locks, gauges and notices, and a chat with each crew\n- Security: zones, access control per badge, and the inspection of a held container\n- Light and Dark, reduced motion, and layouts from phone to wide desktop\n\nUse MVVM with the CommunityToolkit, Uno Navigation, the Uno Toolkit and the Simple theme, and draw the harbour with SkiaSharp. Keep every figure in memory."
+      },
+      {
+        "role": "assistant",
+        "content": "Here's **Westhaven Port Authority**. It's built and running in the preview: the 3D harbour on Overview, berth planning, the container explorer and scanner, the river and its crews, and security, in Light and Dark."
+      }
+    ],
+    "suggestedPrompts": [
+      "Keep the berth plan, the logged scans and the crew messages across a relaunch",
+      "Let the dispatcher release the hold on MRVU 918204 1 once the inspection is done",
+      "Move the 3D ships to the berths the plan gives them",
+      "Add a French translation of every screen"
+    ]
+  },
+  "agentContext": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "Cargo is an operations dashboard for the duty dispatcher of Westhaven, a fictional container port: a live 3D harbour, berths, containers, river traffic and security in one app."
+      },
+      {
+        "role": "assistant",
+        "content": "Cargo (Westhaven Port Authority) is an Uno Platform single-project app at Cargo/Cargo.csproj (Uno.Sdk 7.0.0-dev.115, pinned in global.json; heads net10.0-desktop, net10.0-browserwasm, net10.0-android, net10.0-ios and net10.0-windows10.0.19041 for WinAppSDK). Cargo/Liveline/ is a vendored tide-chart control, folded into the app project. The unit tests (276, NUnit) live in the development repository, noknowscode/Cargo.\n\n**Key files:**\n- Cargo/App.xaml (+ .cs): the hosting builder, DI (the PortState store as a singleton, ScannerCamera, the five section view models), the route tree (Shell > Main > one view-less route per section; Security's zones, access and inspection tabs nest under security) and DefaultResponsiveLayout (Narrowest 0, Narrow 600, Normal 1000, Wide 1280, Widest 1600), which every {utu:Responsive} uses.\n- Cargo/Domain/: PortData.cs (every figure, in memory, the design's picture of 20:58), BerthPlan.cs (berth rules, refusals, the optimiser), PortState.cs (the store: the clock and the berth desk) with its parts NavigationState, StageState, ScannerState, YardState, CrewChat, NeedsYouQueue and InspectionLog, and ShiftClock (the time arithmetic).\n- Cargo/Presentation/: one view model per page and embedded panel (MainViewModel, OverviewViewModel, BerthsViewModel, CargoViewModel, FleetViewModel, SecurityViewModel, HarbourViewModel, NeedsYouPanelViewModel and their parts) and the views; MainPage hosts the header and the sections as x:Load panes in a Visibility region; ScannerOverlay is the container scanner.\n- Cargo/Controls/: Harbour/ (HarbourScene, an SKCanvasElement with an orbit camera; HarbourRenderer and HarbourWorld draw the terminal), BerthMap (drag-to-assign), ContainerScanner (a box projected by hand from XAML shapes, with X-ray), TimelineLanes, YardMap, RiverMap.\n- Cargo/Themes/: Tokens.xaml (Light and Dark colours, the only hex), Layout.xaml (spacing, insets, radii), Styles.xaml, Icons.xaml; Tokens.cs resolves palette keys in code for the canvas scenes.\n\n**Patterns:**\n- MVVM with CommunityToolkit.Mvvm, not MVUX: [ObservableProperty] public partial properties and [RelayCommand]. Views bind with x:Bind only, never {Binding}. View models hold states and the data's palette keys; the views pick brushes through static x:Bind functions (Presentation/Paint.cs and each view's code-behind), so every view model runs in the unit tests without a UI.\n- WinUI traps kept: no required or init on XAML-activated types, bool to Visibility only through x:Bind, Uno-only APIs behind #if __DESKTOP__, arrays rather than collection expressions typed IReadOnlyList.\n- The store raises separate signals (StructureChanged, PlanHourChanged, Ticked, HoverChanged, YardChanged) so a hover or a clock tick repaints rather than rebuilds.\n\n**Navigation and theming:** Uno Navigation; the header navigates with uen:Navigation.Request, and jumps that start in the store set NavigationState.Section for MainViewModel to follow. Simple theme plus the Uno Toolkit, Light and Dark through ThemeResource; the account menu's theme (System, Light, Dark) and Reduce motion are saved in local settings.\n\n**What is simulated:** everything. There is no backend: the vessels, berths, containers, river crews and security events are constants in PortData, the clock runs on from 20:58 (DispatcherClock behind IClock), and the vessels' statuses stay as the design drew them. Berth assignments, confirmations, logged scans and crew messages live for the session only.\n\n**Build:** dotnet build Cargo/Cargo.csproj -f net10.0-desktop -p:CargoTargetFrameworks=net10.0-desktop. CargoTargetFrameworks builds one head. Warnings are errors (Directory.Build.props). Hot Design and the App MCP are off in Debug on this SDK (Cargo.csproj says why). Debug-only CARGO_* environment hooks (Domain/DebugHooks.cs) open a section, a tab or the scanner for verification runs.\n\nThe app is built and running. The user may ask me to modify it."
+      }
+    ]
+  }
+}

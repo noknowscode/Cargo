@@ -81,7 +81,7 @@ Answered 2026-09-30 (the user accepted the defaults):
     (Berths step 5: Storyboard, `EaseSmooth`, re-target mid-slide). Generalise `HarbourView`'s
     `MovePill` into a small reusable helper only because three controls now need it.
 - **Liveline (external, `C:\Users\Platform006\Uno-Builds-net10\Liveline`, branch `liveline-window`;
-  since 2026-11-01 a copy lives in this repository under `Liveline/`, on Uno.Sdk 7):**
+  since 2026-11-01 a copy lives in the app project under `Cargo/Liveline/`, on Uno.Sdk 7):**
   - Bump Uno.Sdk 6.5.36 → **6.7.30** (Cargo's pin, latest stable verified 2026-09-30); add
     `net10.0-android;net10.0-ios` (Cargo targets them; today Liveline is desktop + wasm only).
   - New properties: `WindowStart`/`WindowEnd` (x by time, not by index); `Forecast`

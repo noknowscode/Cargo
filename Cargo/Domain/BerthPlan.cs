@@ -58,7 +58,7 @@ public sealed record OptimizeResult(IReadOnlyList<(string VesselId, string Berth
 /// Which berth each vessel holds, and the rules every assignment answers to: a restricted berth takes
 /// nobody, a berth shallower than a vessel's draft cannot take her, and two vessels never share a berth
 /// in overlapping windows. It reads only <see cref="PortData"/>, so the rules are tested without a UI
-/// (Cargo.Tests); <see cref="PortState"/> owns one and raises the change signals around it.
+/// (the unit tests); <see cref="PortState"/> owns one and raises the change signals around it.
 /// </summary>
 public sealed class BerthPlan
 {

@@ -3,7 +3,7 @@ namespace Cargo.Domain;
 /// <summary>
 /// The yard's stacks and the yard map's keyboard path: stacks are keyed "block-row-column" (A-0-0 is block A's top-left
 /// slot), and the arrow keys step to the neighbouring slot in the same block. Kept apart from the map so the store works
-/// the stacks without it and Cargo.Tests can check it.
+/// the stacks without it and the unit tests can check it.
 /// </summary>
 public static class YardGrid
 {

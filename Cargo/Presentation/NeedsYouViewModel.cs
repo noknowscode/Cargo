@@ -5,7 +5,7 @@ namespace Cargo.Presentation;
 /// needs → busy (the confirm is in flight, ~600 ms) → done (with Undo) → needs again on Undo.
 /// With nothing pending it reads "Nothing needs you" in the done style; it is never hidden,
 /// so the masthead does not jump. It exposes states, not brushes: <see cref="NeedsYouBar"/> maps
-/// them to the theme's brushes, so Cargo.Tests drives the state machine without a UI.
+/// them to the theme's brushes, so the unit tests drives the state machine without a UI.
 /// </summary>
 public sealed partial class NeedsYouViewModel : ObservableObject
 {

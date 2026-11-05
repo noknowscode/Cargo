@@ -1,5 +1,9 @@
 # Westhaven Dispatch (Cargo)
 
+- **Owner:** Matthew Mattei (@noknowscode)
+- **Status:** ready for review
+- **What it is:** A port dispatcher's evening shift in one dashboard: a live 3D harbour, berth planning, container inspection and river traffic.
+
 An Uno Platform implementation of the **Quay Port v4** design
 ([Claude Design project](https://claude.ai/design/p/254ce48f-20f1-482a-bfa8-c813390c0840)) — a port
 operations dashboard for the fictional port of Westhaven.
@@ -20,7 +24,6 @@ sits under the same harbour stage: full height on Overview, a 210 px strip every
 ```
 dotnet build Cargo/Cargo.csproj -f net10.0-desktop -p:CargoTargetFrameworks=net10.0-desktop
 dotnet run   --project Cargo/Cargo.csproj -f net10.0-desktop -p:CargoTargetFrameworks=net10.0-desktop
-dotnet test  Cargo.Tests/Cargo.Tests.csproj -p:CargoTargetFrameworks=net10.0
 ```
 
 `CargoTargetFrameworks` narrows the build to one head, so a machine without the Android, iOS or
@@ -29,9 +32,10 @@ wasm-tools workloads can still restore it; leave it out to restore every head.
 Five heads: `net10.0-desktop` (Skia on Windows, macOS and Linux), `net10.0-windows10.0.19041`
 (WinAppSDK, x64 or ARM64), `net10.0-browserwasm`, `net10.0-android` and `net10.0-ios`. Desktop,
 WebAssembly and Android build with 0 warnings on Linux; the Windows and iOS heads build on their own
-OS, in CI (`.github/workflows/ci.yml`). Warnings fail the build (`Directory.Build.props`).
+OS, in the development repository's CI. Warnings fail the build (`Directory.Build.props`).
 
-`Cargo.Tests` (NUnit, 276 tests) covers the logic with no UI in it. The domain: the berth rules, the reasons a berth
+This folder holds the one app project Studio opens. The unit tests (NUnit, 276) live in the development repository,
+[noknowscode/Cargo](https://github.com/noknowscode/Cargo), and cover the logic with no UI in it. The domain: the berth rules, the reasons a berth
 refuses a vessel and the optimiser's report (`Domain/BerthPlan.cs`); the store on a manual clock (`PortState` and its
 parts: the needs-you queue after every berth change and every settled row, Confirm and Undo, countdowns, the status
 lines the plan gives, navigation, the stage, the inspection log, the yard, the crew chat); the schedule and the one
@@ -39,9 +43,8 @@ clock reader (`ShiftClock`); the timeline maths; the container filters; bay view
 panels' arithmetic; the harbour's geometry; the culture rules. The page models: every view model that holds logic,
 from `MainViewModel` (tabs, dots, router sync, tooltips, layers, theme) to the Berths, Cargo, Overview, Waterways
 and Security models, the harbour's tags and the needs-you panel, built as the host builds them on fakes for the dispatcher, navigator, route notifier, theme
-service and logger (`Cargo.Tests/Fakes.cs`). It references the app's plain `net10.0` build, which never starts the
-Uno runtime, so the models hold states and the data's tones, never brushes, geometry or images: the views pick those
-(`Presentation/Paint.cs` and each view's x:Bind mapping functions). It runs in CI's `test` job.
+service and logger. They never start the Uno runtime, so the models hold states and the data's tones, never brushes, geometry or images: the views pick those
+(`Presentation/Paint.cs` and each view's x:Bind mapping functions).
 
 ## Architecture
 
@@ -68,7 +71,7 @@ Uno runtime, so the models hold states and the data's tones, never brushes, geom
   re-recorded it at every quarter-hour step. The store runs on an `IClock` (a
   `DispatcherTimer` in the app, a manual clock in the tests).
 - **Layers.** `Domain/` is the port: its data, the berth rules, the clock arithmetic and the store with its parts; it
-  holds no UI type, which is why Cargo.Tests can drive it and every view model. `Presentation/` holds the view models,
+  holds no UI type, which is why the unit tests can drive it and every view model. `Presentation/` holds the view models,
   the views and the app's `DispatcherClock`; `Controls/` the canvas scenes and the geometry helpers (`Geo`);
   `Themes/` the XAML resources and their code side (`Tokens` for the palette, `Motion` for the reduced-motion choice).
 - **Navigation** is Uno Navigation. The route tree (`App.xaml.cs` `RegisterRoutes`) is
@@ -120,9 +123,8 @@ Uno runtime, so the models hold states and the data's tones, never brushes, geom
 - `Controls/VesselProfile.cs` — the bay grid is laid over the hull render, positioned from
   the deck rect measured inside the sprite, and each bay column is its own hit target. The
   profile takes keyboard focus: the arrow keys open the previous or next bay (Home and End the ends).
-- `Liveline/` — the tide lane's chart control, a copy of Liveline from
-  [noknowscode/uno-lab](https://github.com/noknowscode/uno-lab) (taken at `1289007`) kept in this
-  repository so it builds on its own. Changes made here are not synced back.
+- `Cargo/Liveline/` — the tide lane's chart control, a copy of Liveline from
+  [noknowscode/uno-lab](https://github.com/noknowscode/uno-lab) (taken at `1289007`) folded into the app project, so the sample is one project. Changes made here are not synced back.
 - `Presentation/MainPage.xaml.cs` realizes one section pane per idle turn after the window
   shows, so all five exist about 1.5 s after launch (30 to 370 ms each). A jump before that
   realizes its pane on demand, because paying a section's construction cost on the click is
@@ -178,8 +180,7 @@ leaving their berths, Nordic Star docking) would be new behaviour, not a fix.
 
 **Culture.** Screens format numbers in the machine's culture (a French machine reads "14,2 m
 draft"); the data's own times ("Thu 02:30") are read with the invariant culture through one
-reader, `ShiftClock.ClockHours`. Cargo.Tests runs in en-US whatever the machine's culture is
-(`Cargo.Tests/Culture.cs`), and `CultureTests` checks both rules.
+reader, `ShiftClock.ClockHours`. The unit tests run in en-US whatever the machine's culture is and check both rules.
 
 ## Verification
 

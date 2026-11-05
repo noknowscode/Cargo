@@ -6,7 +6,7 @@ public sealed partial record TimelineEvent(string Id, string Name, double Hour, 
 /// <summary>
 /// The maths behind "Today at North Quay": the axis, the day's movements, the tide's turning points and the
 /// running moves and cargo figures. Pure (it reads only <see cref="PortData"/> and the hour it is given), so
-/// <see cref="Presentation.TimelineViewModel"/> formats it and Cargo.Tests checks it.
+/// <see cref="Presentation.TimelineViewModel"/> formats it and the unit tests checks it.
 /// </summary>
 public static class ShiftTimeline
 {
