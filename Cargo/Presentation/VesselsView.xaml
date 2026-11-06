@@ -73,7 +73,7 @@
                 MinHeight="{utu:Responsive Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
           <Grid>
-            <TextBlock Text="View all in Docking" Style="{StaticResource LabelMedium}" />
+            <TextBlock Text="View all in Docking" Style="{StaticResource TypeMedium13}" />
             <TextBlock Text="↗" Foreground="{ThemeResource OnSurfaceVariantBrush}" HorizontalAlignment="Right"
                        AutomationProperties.AccessibilityView="Raw" />
           </Grid>
@@ -233,7 +233,7 @@
                 <Grid Grid.Column="1" Width="104" Height="104">
                   <controls:DonutChart Radius="38" Thickness="14" Slices="{x:Bind ViewModel.CompositionSlices, Mode=OneWay}" />
                   <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="{x:Bind ViewModel.TeuLabel, Mode=OneWay}" Style="{StaticResource TitleMedium}" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Bind ViewModel.TeuLabel, Mode=OneWay}" Style="{StaticResource TypeStrong15}" HorizontalAlignment="Center" />
                     <TextBlock Text="TEU" Style="{StaticResource MicroText}" HorizontalAlignment="Center" />
                   </StackPanel>
                 </Grid>
@@ -254,7 +254,7 @@
             <!-- xaml-lint: allow card - status pill; half-height radius (99 draws an oval on Skia) -->
             <Border Background="{x:Bind local:VesselsView.SecurityGround(ViewModel.IsCleared), Mode=OneWay}" CornerRadius="{StaticResource RadiusFullCornerRadius}" Padding="{StaticResource Inset10x4}"
                     HorizontalAlignment="Right">
-              <TextBlock Text="{x:Bind ViewModel.Security, Mode=OneWay}" Style="{StaticResource LabelExtraSmall}" Foreground="{x:Bind local:VesselsView.SecurityInk(ViewModel.IsCleared), Mode=OneWay}" />
+              <TextBlock Text="{x:Bind ViewModel.Security, Mode=OneWay}" Style="{StaticResource TypeMedium11}" Foreground="{x:Bind local:VesselsView.SecurityInk(ViewModel.IsCleared), Mode=OneWay}" />
             </Border>
           </Grid>
           <TextBlock Text="{x:Bind ViewModel.Voyage, Mode=OneWay}" Style="{StaticResource BodyLargeText}"
@@ -311,7 +311,7 @@
     <utu:CardContentControl AutomationProperties.Name="{x:Bind ViewModel.BayHeading, Mode=OneWay}" Style="{StaticResource PanelCard}" Grid.Row="2" Padding="{utu:Responsive Narrowest={StaticResource Space200Thickness}, Narrow='22,18'}">
       <StackPanel Spacing="{StaticResource Space150}">
         <controls:FlowPanel Spacing="{StaticResource Space150}" RowSpacing="{StaticResource Space025}">
-          <TextBlock Text="{x:Bind ViewModel.BayHeading, Mode=OneWay}" Style="{StaticResource TitleLarge}" />
+          <TextBlock Text="{x:Bind ViewModel.BayHeading, Mode=OneWay}" Style="{StaticResource TypeStrong18}" />
           <TextBlock Text="{x:Bind ViewModel.BayTotal, Mode=OneWay}" Style="{StaticResource BodyText}"
                      Foreground="{ThemeResource PrimaryBrush}" VerticalAlignment="Bottom" Margin="{StaticResource Space025BottomThickness}" />
           <TextBlock Text="{x:Bind ViewModel.BayRemaining, Mode=OneWay}" Style="{StaticResource SubtitleText}"
@@ -352,11 +352,11 @@
                      Stretch="Uniform" VerticalAlignment="Top" />
               <StackPanel Grid.Column="1" Spacing="{StaticResource Space050}">
                 <TextBlock Text="Unloaded" Style="{StaticResource CaptionText}" Foreground="{ThemeResource SeaGreenInkBrush}" />
-                <TextBlock Text="{x:Bind ViewModel.BayUnloaded, Mode=OneWay}" Style="{StaticResource HeadlineMedium}" Foreground="{ThemeResource SeaGreenInkBrush}" />
+                <TextBlock Text="{x:Bind ViewModel.BayUnloaded, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource SeaGreenInkBrush}" />
               </StackPanel>
               <StackPanel Grid.Column="2" Spacing="{StaticResource Space050}">
                 <TextBlock Text="Remaining" Style="{StaticResource CaptionText}" />
-                <TextBlock Text="{x:Bind ViewModel.BayLeft, Mode=OneWay}" Style="{StaticResource HeadlineMedium}" Foreground="{ThemeResource PrimaryBrush}" />
+                <TextBlock Text="{x:Bind ViewModel.BayLeft, Mode=OneWay}" Style="{StaticResource TypeStrong20}" Foreground="{ThemeResource PrimaryBrush}" />
               </StackPanel>
             </Grid>
             <StackPanel Spacing="{StaticResource Space025}">

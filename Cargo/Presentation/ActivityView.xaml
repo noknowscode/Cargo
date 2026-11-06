@@ -82,7 +82,7 @@
                 <ColumnDefinition Width="Auto" />
               </Grid.ColumnDefinitions>
               <StackPanel Spacing="{StaticResource Space025}" VerticalAlignment="Center">
-                <TextBlock Text="{x:Bind About.Title}" Style="{StaticResource LabelMedium}" Foreground="{ThemeResource OnSurfaceBrush}" TextWrapping="Wrap" />
+                <TextBlock Text="{x:Bind About.Title}" Style="{StaticResource TypeMedium13}" Foreground="{ThemeResource OnSurfaceBrush}" TextWrapping="Wrap" />
                 <TextBlock Style="{StaticResource SubtitleText}" TextWrapping="Wrap">
                   <Run Text="{x:Bind About.Sub}" /><Run Text="{x:Bind local:NeedsYouPanel.Separator(About.When), Mode=OneWay}" /><Run Text="{x:Bind About.When, Mode=OneWay}"
                        Foreground="{x:Bind local:NeedsYouPanel.WhenInk(About.IsLate), Mode=OneWay}" />

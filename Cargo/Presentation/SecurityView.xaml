@@ -43,7 +43,7 @@
                 <!-- xaml-lint: allow card - the current-tab highlight inside the segmented strip; 44 px tall below 1000 -->
                 <Border Background="{x:Bind local:SecurityView.TabGround(IsCurrent)}" CornerRadius="{StaticResource Radius200CornerRadius}" Padding="{StaticResource Inset14x7}"
                         MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}">
-                  <TextBlock Text="{x:Bind Label}" Style="{StaticResource LabelMedium}"
+                  <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium13}"
                              Foreground="{x:Bind local:Paint.CurrentInk(IsCurrent)}" VerticalAlignment="Center" />
                 </Border>
               </Button>
@@ -119,7 +119,7 @@
               <!-- xaml-lint: allow card - a status pill, not a card; half-height radius (99 draws an oval on Skia) -->
               <Border Background="{ThemeResource SurfaceVariantBrush}" CornerRadius="{StaticResource Radius200CornerRadius}" Padding="{StaticResource Inset8x3}"
                       HorizontalAlignment="Right">
-                <TextBlock Text="Cleared" Style="{StaticResource LabelExtraSmall}"
+                <TextBlock Text="Cleared" Style="{StaticResource TypeMedium11}"
                            Foreground="{ThemeResource PrimaryBrush}" />
               </Border>
             </Grid>
@@ -151,7 +151,7 @@
               <!-- xaml-lint: allow card - a status pill, not a card; half-height radius (99 draws an oval on Skia) -->
               <Border Background="{ThemeResource SurfaceVariantBrush}" CornerRadius="{StaticResource Radius200CornerRadius}" Padding="{StaticResource Inset8x3}"
                       HorizontalAlignment="Right">
-                <TextBlock Text="Hold" Style="{StaticResource LabelExtraSmall}"
+                <TextBlock Text="Hold" Style="{StaticResource TypeMedium11}"
                            Foreground="{ThemeResource OrangeInkBrush}" />
               </Border>
             </Grid>
@@ -235,12 +235,12 @@
                     </Grid.ColumnDefinitions>
                     <!-- xaml-lint: allow card - avatar swatch -->
                     <Border Width="46" Height="46" CornerRadius="{StaticResource Radius300CornerRadius}" Background="{x:Bind local:Paint.Tone(Avatar)}">
-                      <TextBlock Text="{x:Bind Initials}" Style="{StaticResource TitleSmall}"
+                      <TextBlock Text="{x:Bind Initials}" Style="{StaticResource TypeStrong14}"
                                  Foreground="{ThemeResource SurfaceBrush}"
                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <StackPanel Grid.Column="1" Spacing="{StaticResource Space025}">
-                      <TextBlock Text="{x:Bind Name}" Style="{StaticResource TitleSmall}" />
+                      <TextBlock Text="{x:Bind Name}" Style="{StaticResource TypeStrong14}" />
                       <TextBlock Text="{x:Bind Role}" Style="{StaticResource CaptionText}" />
                       <TextBlock Text="{x:Bind Credential}" Style="{StaticResource TypeMonoMedium11}"
                                  Foreground="{ThemeResource PrimaryBrush}" Margin="{StaticResource Space050TopThickness}" />
@@ -354,7 +354,7 @@
                   Margin="{utu:Responsive Narrowest={StaticResource Space200TopThickness}, Normal={StaticResource Space200LeftThickness}}">
         <utu:CardContentControl Style="{StaticResource PanelCard}" Padding="{StaticResource Space250Thickness}" BorderBrush="{ThemeResource OrangeBrush}">
           <StackPanel Spacing="{StaticResource Space075}">
-            <TextBlock Text="⚠ Weight variance" Style="{StaticResource TitleSmall}"
+            <TextBlock Text="⚠ Weight variance" Style="{StaticResource TypeStrong14}"
                        Foreground="{ThemeResource OrangeInkBrush}" />
             <TextBlock Style="{StaticResource BodyText}" TextWrapping="Wrap" LineHeight="19"
                        Text="Declared 24,120 kg · measured 25,920 kg (+1.8 t, +7.5%). Exceeds the 5% tolerance — physical inspection scheduled before customs release." />

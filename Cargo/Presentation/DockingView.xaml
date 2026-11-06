@@ -118,7 +118,7 @@
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space100}" HorizontalAlignment="Center">
             <shapes:Path Data="M4 17l5-5 4 4 7-8M15 8h5v5" Stroke="{ThemeResource OnSurfaceInverseBrush}" StrokeThickness="2"
                          Width="{StaticResource IconSizeSmall}" Height="{StaticResource IconSizeSmall}" Stretch="Uniform" VerticalAlignment="Center" />
-            <TextBlock Text="Optimize traffic" Style="{StaticResource LabelMedium}"
+            <TextBlock Text="Optimize traffic" Style="{StaticResource TypeMedium13}"
                        Foreground="{ThemeResource OnSurfaceInverseBrush}" />
           </StackPanel>
         </Button>
@@ -218,7 +218,7 @@
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Spacing="{StaticResource Space050}">
-              <TextBlock Text="{x:Bind ViewModel.SelectedName, Mode=OneWay}" Style="{StaticResource TitleLarge}" TextTrimming="CharacterEllipsis" />
+              <TextBlock Text="{x:Bind ViewModel.SelectedName, Mode=OneWay}" Style="{StaticResource TypeStrong18}" TextTrimming="CharacterEllipsis" />
               <TextBlock Text="{x:Bind ViewModel.SelectedStatus, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
             </StackPanel>
             <Button Grid.Column="1" Style="{StaticResource CloseButton}" Content="×" Command="{x:Bind ViewModel.ClearSelectionCommand, Mode=OneWay}"
@@ -271,7 +271,7 @@
                     <StackPanel Spacing="{StaticResource Space025}" HorizontalAlignment="Center">
                       <TextBlock Text="{x:Bind Number}" Style="{StaticResource TypeMonoMedium13}" Foreground="{ThemeResource OnSurfaceBrush}"
                                  HorizontalAlignment="Center" />
-                      <TextBlock Text="{x:Bind Caption, Mode=OneWay}" Style="{StaticResource LabelExtraSmall}"
+                      <TextBlock Text="{x:Bind Caption, Mode=OneWay}" Style="{StaticResource TypeMedium11}"
                                  Foreground="{x:Bind local:DockingView.ChoiceInk(Fits), Mode=OneWay}"
                                  HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
                     </StackPanel>

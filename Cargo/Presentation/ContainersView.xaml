@@ -42,7 +42,7 @@
               <!-- xaml-lint: allow card - a filter pill, not a card; half-height radius (99 draws an oval on Skia) -->
               <Border Background="{x:Bind local:ContainersView.ChipGround(IsCurrent)}" BorderBrush="{x:Bind local:ContainersView.ChipEdge(IsCurrent)}" BorderThickness="1"
                       CornerRadius="{StaticResource RadiusFullCornerRadius}" Padding="{StaticResource Inset12x7}" VerticalAlignment="Center">
-                <TextBlock Text="{x:Bind Label}" Style="{StaticResource LabelSmall}"
+                <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium12}"
                            Foreground="{x:Bind local:ContainersView.ChipInk(IsCurrent)}" />
               </Border>
             </Button>
@@ -153,7 +153,7 @@
                         <shapes:Path Data="{x:Bind local:Paint.Icon(IconData)}" Stroke="{x:Bind local:ContainersView.StepIconInk(State)}" StrokeThickness="1.8"
                                      Width="15" Height="15" Stretch="Uniform" />
                       </Border>
-                      <TextBlock Text="{x:Bind Label}" Style="{StaticResource LabelExtraSmall}"
+                      <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium11}"
                                  Foreground="{x:Bind local:ContainersView.StepInk(State)}" HorizontalAlignment="Center" />
                     </StackPanel>
                     <Rectangle Grid.Column="1" Height="1.5" Fill="{x:Bind local:ContainersView.StepLine(State, IsLast)}" Margin="4,0,4,20"
@@ -187,7 +187,7 @@
               <shapes:Path Data="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3M3 12h18"
                            Stroke="{ThemeResource OnSurfaceInverseBrush}" StrokeThickness="2" Width="{StaticResource IconSizeSmall}" Height="{StaticResource IconSizeSmall}"
                            Stretch="Uniform" VerticalAlignment="Center" />
-              <TextBlock Text="Scan container" Style="{StaticResource LabelMedium}"
+              <TextBlock Text="Scan container" Style="{StaticResource TypeMedium13}"
                          Foreground="{ThemeResource OnSurfaceInverseBrush}" />
             </StackPanel>
           </Button>

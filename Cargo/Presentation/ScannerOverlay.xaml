@@ -118,7 +118,7 @@
                   <Border Background="{x:Bind local:ScannerOverlay.PresetGround(IsCurrent)}" BorderBrush="{ThemeResource OutlineVariantBrush}"
                           BorderThickness="1" CornerRadius="{StaticResource Radius200CornerRadius}" Padding="{StaticResource Inset12x7}"
                           MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}">
-                    <TextBlock Text="{x:Bind Label}" Style="{StaticResource LabelSmall}" VerticalAlignment="Center"
+                    <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium12}" VerticalAlignment="Center"
                                Foreground="{ThemeResource OnSurfaceBrush}" />
                   </Border>
                 </Button>
@@ -138,7 +138,7 @@
                 <shapes:Path Data="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"
                              Stroke="{x:Bind local:ScannerOverlay.XrayInk(ViewModel.IsXray), Mode=OneWay}" StrokeThickness="2"
                              Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" />
-                <TextBlock Text="X-ray" Style="{StaticResource LabelSmall}"
+                <TextBlock Text="X-ray" Style="{StaticResource TypeMedium12}"
                            Foreground="{x:Bind local:ScannerOverlay.XrayInk(ViewModel.IsXray), Mode=OneWay}" />
               </StackPanel>
             </Border>
@@ -178,7 +178,7 @@
                      Foreground="{ThemeResource PrimaryBrush}" />
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space125}">
             <Ellipse Width="10" Height="10" Fill="{x:Bind local:ScannerOverlay.Tone(ViewModel.VerdictTone), Mode=OneWay}" VerticalAlignment="Center" />
-            <TextBlock Text="{x:Bind ViewModel.Verdict, Mode=OneWay}" Style="{StaticResource TitleLarge}"
+            <TextBlock Text="{x:Bind ViewModel.Verdict, Mode=OneWay}" Style="{StaticResource TypeStrong18}"
                        Foreground="{ThemeResource OnSurfaceBrush}" />
           </StackPanel>
           <TextBlock Text="{x:Bind ViewModel.VerdictNote, Mode=OneWay}" Style="{StaticResource SubtitleText}"

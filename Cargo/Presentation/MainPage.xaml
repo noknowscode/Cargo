@@ -63,10 +63,10 @@
               <Grid>
                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space075}" VerticalAlignment="Center"
                             Margin="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource Space075HorizontalThickness}, Normal={StaticResource Space150HorizontalThickness}}">
-                  <TextBlock Text="{x:Bind Label}" Style="{StaticResource TitleSmall}"
+                  <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeStrong14}"
                              FontSize="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource LabelMediumFontSize}, Normal={StaticResource LabelLargeFontSize}}"
                              Visibility="{x:Bind IsCurrent, Mode=OneWay}" />
-                  <TextBlock Text="{x:Bind Label}" Style="{StaticResource LabelLarge}"
+                  <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium14}"
                              FontSize="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource LabelMediumFontSize}, Normal={StaticResource LabelLargeFontSize}}"
                              Visibility="{x:Bind local:Paint.Unless(IsCurrent), Mode=OneWay}" />
                   <Ellipse Width="6" Height="6" Fill="{ThemeResource ErrorBrush}" VerticalAlignment="Top"
@@ -183,7 +183,7 @@
                                      StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                       </Grid>
                     </Viewbox>
-                    <TextBlock Text="{x:Bind Label}" Style="{StaticResource LabelLarge}" Foreground="{x:Bind local:MainPage.LayerInk(IsCurrent), Mode=OneWay}"
+                    <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium14}" Foreground="{x:Bind local:MainPage.LayerInk(IsCurrent), Mode=OneWay}"
                                Visibility="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest=Collapsed, Narrow=Visible}" />
                   </StackPanel>
                 </Button>
@@ -217,7 +217,7 @@
                              Visibility="{x:Bind ViewModel.State.Stage.Expanded, Mode=OneWay}" />
               </Grid>
             </Viewbox>
-            <TextBlock Text="{x:Bind ViewModel.Harbour.ToggleLabel, Mode=OneWay}" Style="{StaticResource LabelMedium}"
+            <TextBlock Text="{x:Bind ViewModel.Harbour.ToggleLabel, Mode=OneWay}" Style="{StaticResource TypeMedium13}"
                        VerticalAlignment="Center" />
           </StackPanel>
         </Button>

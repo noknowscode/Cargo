@@ -74,7 +74,7 @@
         <StackPanel Spacing="{StaticResource Space150}">
           <Grid>
             <StackPanel Spacing="{StaticResource Space050}">
-              <TextBlock Text="{x:Bind ViewModel.SlotTitle, Mode=OneWay}" Style="{StaticResource TitleLarge}" />
+              <TextBlock Text="{x:Bind ViewModel.SlotTitle, Mode=OneWay}" Style="{StaticResource TypeStrong18}" />
               <TextBlock Text="{x:Bind ViewModel.SlotSubtitle, Mode=OneWay}" Style="{StaticResource CaptionText}" />
             </StackPanel>
             <Button Style="{StaticResource CloseButton}" Content="×" Command="{x:Bind ViewModel.CloseStackCommand, Mode=OneWay}"
