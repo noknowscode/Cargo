@@ -133,7 +133,7 @@
           <SolidColorBrush x:Key="TideFillTopBrush" Color="{StaticResource WaterColor}" Opacity="0.3" />
           <SolidColorBrush x:Key="TideFillBottomBrush" Color="{StaticResource WaterColor}" Opacity="0.04" />
           <!-- Toolkit cards: the panels are static, so pointer-over keeps the surface (a hover tint reads as clickable) -->
-          <StaticResource x:Key="CardContentBackgroundPointerOver" ResourceKey="SurfaceBrush" />
+          <SolidColorBrush x:Key="CardContentBackgroundPointerOver" Color="{ThemeResource SurfaceColor}" />
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Default">
@@ -211,7 +211,7 @@
           </LinearGradientBrush>
           <SolidColorBrush x:Key="TideFillTopBrush" Color="{StaticResource WaterColor}" Opacity="0.3" />
           <SolidColorBrush x:Key="TideFillBottomBrush" Color="{StaticResource WaterColor}" Opacity="0.04" />
-          <StaticResource x:Key="CardContentBackgroundPointerOver" ResourceKey="SurfaceBrush" />
+          <SolidColorBrush x:Key="CardContentBackgroundPointerOver" Color="{ThemeResource SurfaceColor}" />
         </ResourceDictionary>
       </ResourceDictionary.ThemeDictionaries>
 
