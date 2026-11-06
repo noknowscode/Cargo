@@ -91,6 +91,49 @@ Reason: the guide asks for absolute URLs; whether relative paths may be used ins
 (uno-private#2444).
 Tradeoff: until the move, the gallery card's links are dead; the files themselves are in `.studiolive/`.
 
+## Made for the theme pass (2026-11-05)
+
+### D-C10 · The design's palette is the Simple theme's palette · proposed
+Decision: `Styles/ColorPaletteOverride.xaml` sets every role in Light and Default from the design's token table, and
+the app uses the role brushes: Ink -> OnSurface (SurfaceInverse for ink grounds), Paper -> Background, Surface ->
+Surface, SurfaceSunk -> SurfaceVariant, TextMuted -> OnSurfaceVariant, Accent -> Primary, AlertInk -> Error, Alert at
+12% -> ErrorContainer, the 18% and 8% ink hairlines -> Outline and OutlineVariant. Near-twins fold into the role:
+TextFaint and TextMuted (OnSurfaceVariant), SurfaceSunkAlt and SurfaceSunk (SurfaceVariant), PaperWarm and Paper,
+AccentDark as text (Primary), Alert marks and Restricted (Error), the shadow ring (OnSurface).
+Reason: Uno Platform Studio's Themes tab edits the palette; a mirrored key would ignore it.
+Tradeoff: Light secondary text loses the 0.3 step between muted and faint; Dark faint text gets lighter (#8C969B ->
+#A1ABB0); alert marks are AlertInk's tone; the emphasis accent text is the accent itself.
+
+### D-C11 · Ink buttons keep their own template; tonal and accent buttons are the theme's · proposed
+Decision: GhostButton and QueueSecondaryButton are based on `FilledTonalButtonStyle`, PrimaryActionButton,
+QueuePrimaryButton and AccentButton on `FilledButtonStyle`; their hover and press are the theme's state colours. The
+ink button (PrimaryButton), BareButton and NavTabButton keep their own small templates.
+Reason: the theme has no inverse filled button (its filled template's hover keys are the Primary variants), no
+chromeless hit target and no tab with a hover line.
+Tradeoff: the tonal and accent buttons no longer fade on hover.
+
+### D-C12 · The scanner's stage is the Dark theme · proposed
+Decision: the scanner panel sets `RequestedTheme="Dark"` and uses the roles; code asks `Tokens` for the Dark theme.
+Reason: the stage is dark in both themes, which is what the Dark palette is; invariant on-dark tokens would ignore a
+palette change.
+Tradeoff: the stage's accent is the Dark Primary (#6CB4E4, was the water blue #5598C4).
+
+### D-C13 · Spacing, radii and sizes snap to the theme's scale · proposed
+Decision: DefaultSpacing 8 and DefaultCornerRadius 4; spacing 14 -> 12, 18 -> 16, 28 -> 24; the control group radius
+10 -> 8 and the card radius 18 -> 16; icons 18 and 14 -> 16; buttons take the theme button's 12 px inset. Chip insets
+whose axes differ by more than a step, page frames and one top-corner radius stay in `Themes/Layout.xaml`.
+Reason: a density, spacing or radius change on the theme reaches every screen.
+Tradeoff: 2 px shifts in gaps and radii; buttons are a few px taller where no MinHeight set them.
+
+### D-C14 · Role text styles on the semantic styles; colourless type from the same keys · proposed
+Decision: Styles/TypographyOverride.xaml (FontOverrideSource) sets the design's ramp on the semantic styles over
+DefaultFontFamily Archivo, with Bricolage Grotesque for Display and HeadlineSmall and MonoFontFamily for figures. The
+role text styles (BodyText, CaptionText, PanelHeadingText...) are based on the semantic styles with NoWrap; the
+colourless Type* styles set only the ramp's family, size and weight keys.
+Reason: Simple's semantic text styles also set OnSurfaceBrush, wrapping and trimming, which turned labels inside
+accent buttons dark and wrapped single-line captions.
+Tradeoff: text in buttons and chips does not use a semantic Style object, only its keys.
+
 ## Still open (owner questions, unchanged)
 
 - Should dragging the waiting arrival off her reserved berth settle the decision, or need a confirm on the new berth?

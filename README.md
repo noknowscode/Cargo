@@ -49,7 +49,8 @@ service and logger. They never start the Uno runtime, so the models hold states 
 ## Architecture
 
 - **Uno.Sdk 7.0.0-dev.115** (Uno 7 dev build, SkiaSharp 4), single project, Skia renderer,
-  `SimpleTheme` + Uno Toolkit, Light and Dark. Hot Design and the App MCP are off in Debug while this dev SDK's
+  the Simple theme (`SimpleToolkitTheme`) + Uno Toolkit, Light and Dark, with the design's palette in
+  `Styles/ColorPaletteOverride.xaml` and its type scale in `Styles/TypographyOverride.xaml`. Hot Design and the App MCP are off in Debug while this dev SDK's
   clients still reference `Uno.UI.Lottie` (see `Cargo.csproj`).
 - **MVVM (`CommunityToolkit.Mvvm`)**, not MVUX. Every figure in this app is an in-memory
   constant; there is no async or reactive data flow for feeds to model. What the app
@@ -73,7 +74,8 @@ service and logger. They never start the Uno runtime, so the models hold states 
 - **Layers.** `Domain/` is the port: its data, the berth rules, the clock arithmetic and the store with its parts; it
   holds no UI type, which is why the unit tests can drive it and every view model. `Presentation/` holds the view models,
   the views and the app's `DispatcherClock`; `Controls/` the canvas scenes and the geometry helpers (`Geo`);
-  `Themes/` the XAML resources and their code side (`Tokens` for the palette, `Motion` for the reduced-motion choice).
+  `Styles/` the theme's palette and type-scale overrides; `Themes/` the app's styles, layout values and icons and their
+  code side (`Tokens` for the palette in code, `Motion` for the reduced-motion choice).
 - **Navigation** is Uno Navigation. The route tree (`App.xaml.cs` `RegisterRoutes`) is
   Shell > Main > one view-less route per section, and Security's tabs nest under `security`.
   `MainPage` declares the sections as `x:Load` panes in its Visibility region; the header
@@ -86,18 +88,30 @@ service and logger. They never start the Uno runtime, so the models hold states 
   the width it is given and the page never scrolls sideways; below 1000 every control is a 44 px target.
   `Controls/FlowPanel.cs` wraps figures, legends, chips and button rows; `TileGridPanel` takes responsive
   column widths.
-- **Design tokens** live in `Themes/Tokens.xaml` (colour, type) and `Themes/Layout.xaml` (the spacing
-  scale, insets, radii and the sizes that recur); `Themes/Tokens.cs` resolves colours for code so no
-  colour literal appears outside that one file. Pages take gaps, insets and radii from Layout.xaml; the
-  literals left are zeros, circles and pills (half their height) and one-off sizes that place art.
+- **The look comes from Uno.Themes.** The palette is one file, `Styles/ColorPaletteOverride.xaml`, read by the theme
+  (`SimpleToolkitTheme.Colors` > `ThemeColors.OverrideSource` in App.xaml): every role in Light and Default (Dark)
+  from the design's token table, and the file Uno Platform Studio's Themes tab edits. Pages and code use the role
+  brushes the theme generates: `OnSurfaceBrush` for ink, `OnSurfaceVariantBrush` for secondary text,
+  `BackgroundBrush` for the page, `SurfaceBrush` for panels, `SurfaceVariantBrush` for sunk grounds and tonal
+  buttons, `SurfaceInverseBrush` with `OnSurfaceInverseBrush` for the ink buttons and chips, `PrimaryBrush` with
+  `OnPrimaryBrush` for the accent, `ErrorBrush` and `ErrorContainerBrush` for needs-you, `OutlineBrush` and
+  `OutlineVariantBrush` for rules and edges. Colours no role covers (data series, statuses, the maps and the 3D
+  harbour, cargo classes, liveries) are App.xaml's own, in its Light and Default dictionaries: the only hex besides
+  the palette. Text is on the theme's type scale: `Styles/TypographyOverride.xaml` sets the design's ramp once (the
+  size and weight of every semantic style, `DisplayLarge` ... `CaptionSmall`) over `DefaultFontFamily` (Archivo;
+  font manifests map weights to the static faces). The role text styles are based on the semantic styles; the
+  colourless `Type*` styles (labels that take their button's colour) are built from the same keys. Spacing, radii and control sizes are the theme's `Space*`, `Radius*CornerRadius`, `ControlHeight*` and
+  `IconSize*` tokens from `DefaultSpacing` 8 and `DefaultCornerRadius` 4; `Themes/Layout.xaml` keeps what no token
+  says (chip insets, page frames, the swatch). Secondary and accent buttons are the theme's tonal and filled
+  buttons. `Themes/Tokens.cs` resolves the same roles for code, so no colour literal appears in C#.
 - **Themes.** Light is the design's palette; Dark is the same desk at night (a blue-black
   page, cool off-white ink, the three blues re-spaced, status inks re-picked, every text colour
-  at 4.5:1 or better). Every themed colour and brush sits in Light and Dark theme dictionaries
-  and the XAML takes them through `{ThemeResource}`. Code asks `Themes/Tokens.cs`, which resolves
-  for the window's theme, recolours every brush it handed out when the theme changes, and raises
-  `ThemeChanged` so canvas scenes that keep colours (blends, gradients, Skia paints) redraw
-  (`Controls/Live.RebuildOnTheme`). Paint stays invariant: cargo classes, container liveries,
-  white paint, the 3D model's paint and the dark scanner stage. The account menu (the avatar)
+  at 4.5:1 or better). The XAML takes every brush through `{ThemeResource}`. Code asks `Themes/Tokens.cs`, which
+  resolves for the window's theme, recolours every brush it handed out when the theme or the palette changes, and
+  raises `ThemeChanged` so canvas scenes that keep colours (blends, gradients, Skia paints) redraw
+  (`Controls/Live.RebuildOnTheme`); the tide chart takes its brushes from its default style (`Themes/Generic.xaml`).
+  Paint stays invariant: cargo classes, container liveries, white paint and the 3D model's paint. The scanner's
+  stage is the Dark theme in both themes (`RequestedTheme="Dark"` on its panel). The account menu (the avatar)
   offers System, Light and Dark; System is the default and follows the device, and
   Uno.Extensions' theme service applies and saves the choice.
 - **The harbour** (`Controls/Harbour/`) is a true-scale 3D scene on `SKCanvasElement`
