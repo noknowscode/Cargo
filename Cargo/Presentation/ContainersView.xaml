@@ -39,9 +39,10 @@
             <Button Style="{StaticResource BareButton}" Command="{x:Bind Apply}" CommandParameter="{x:Bind Label}"
                     MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource ControlHeightMediumLarge}, Normal=0}"
                     AutomationProperties.Name="{x:Bind AccessibleName}">
-              <!-- xaml-lint: allow card - a filter pill, not a card; half-height radius (99 draws an oval on Skia) -->
+              <!-- xaml-lint: allow card - a filter pill, not a card. Radius400 (16) is the token nearest half its height: Skia clamps a
+                   corner's x and y radii separately, so RadiusFull would draw an oval, not a capsule -->
               <Border Background="{x:Bind local:ContainersView.ChipGround(IsCurrent)}" BorderBrush="{x:Bind local:ContainersView.ChipEdge(IsCurrent)}" BorderThickness="1"
-                      CornerRadius="{StaticResource RadiusFullCornerRadius}" Padding="{StaticResource Inset12x7}" VerticalAlignment="Center">
+                      CornerRadius="{StaticResource Radius400CornerRadius}" Padding="{StaticResource Inset12x7}" VerticalAlignment="Center">
                 <TextBlock Text="{x:Bind Label}" Style="{StaticResource TypeMedium12}"
                            Foreground="{x:Bind local:ContainersView.ChipInk(IsCurrent)}" />
               </Border>

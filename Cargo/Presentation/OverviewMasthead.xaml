@@ -121,7 +121,7 @@
             <ColumnDefinition Width="Auto" />
           </Grid.ColumnDefinitions>
           <ProgressBar controls:Slide.Value="{x:Bind ViewModel.ShiftProgress, Mode=OneWay}" Maximum="1" VerticalAlignment="Center"
-                       Height="3" MinHeight="3" CornerRadius="{StaticResource RadiusFullCornerRadius}"
+                       Height="3" MinHeight="3" CornerRadius="{StaticResource Radius050CornerRadius}"
                        Foreground="{ThemeResource PrimaryBrush}" Background="{ThemeResource OutlineVariantBrush}"
                        AutomationProperties.Name="Shift progress" />
           <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.OperatorUntil}" Style="{StaticResource TypeMono11}"

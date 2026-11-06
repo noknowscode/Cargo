@@ -251,8 +251,8 @@
         <StackPanel Spacing="{StaticResource Space200}">
           <Grid>
             <TextBlock Text="Voyage" Style="{StaticResource TitleText}" VerticalAlignment="Center" />
-            <!-- xaml-lint: allow card - status pill; half-height radius (99 draws an oval on Skia) -->
-            <Border Background="{x:Bind local:VesselsView.SecurityGround(ViewModel.IsCleared), Mode=OneWay}" CornerRadius="{StaticResource RadiusFullCornerRadius}" Padding="{StaticResource Inset10x4}"
+            <!-- xaml-lint: allow card - status pill. Radius300 (12) is the token nearest half its height (RadiusFull draws an oval on Skia) -->
+            <Border Background="{x:Bind local:VesselsView.SecurityGround(ViewModel.IsCleared), Mode=OneWay}" CornerRadius="{StaticResource Radius300CornerRadius}" Padding="{StaticResource Inset10x4}"
                     HorizontalAlignment="Right">
               <TextBlock Text="{x:Bind ViewModel.Security, Mode=OneWay}" Style="{StaticResource TypeMedium11}" Foreground="{x:Bind local:VesselsView.SecurityInk(ViewModel.IsCleared), Mode=OneWay}" />
             </Border>
