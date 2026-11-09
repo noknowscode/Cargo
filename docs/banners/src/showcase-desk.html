@@ -1,0 +1,20 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>showcase-desk</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* House style: phone, desktop window, phone on a harbour-mist backdrop (HarbourSeaFar into PrimaryContainer) */
+  .stage { background:
+      radial-gradient(70% 60% at 50% 38%, rgba(251,251,250,.95) 0%, rgba(251,251,250,0) 70%),
+      linear-gradient(180deg, #E4ECEF 0%, #D3E2E8 62%, #C6D9E1 100%); }
+  .floor { position: absolute; left: 8%; right: 8%; bottom: 22px; height: 60px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(15,74,110,.18), rgba(15,74,110,0)); filter: blur(6px); }
+  .win { left: 250px; top: 50px; width: 700px; --bar: 22px; }
+  .p1 { left: 66px; top: 166px; width: 212px; height: 440px; --bezel: 8px; --r: 34px; }
+  .p2 { left: 922px; top: 166px; width: 212px; height: 440px; --bezel: 8px; --r: 34px; }
+</style></head>
+<body><div class="stage grain">
+  <div class="floor"></div>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><b></b></div><img src="cap/light-desk-overview@2x.png"></div>
+  <div class="device p1"><div class="screen"><img src="cap/dark-phone-berths@2x.png"></div></div>
+  <div class="device p2"><div class="screen"><img src="cap/light-phone-cargo@2x.png"></div></div>
+</div></body></html>

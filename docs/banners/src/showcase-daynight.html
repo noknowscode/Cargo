@@ -1,0 +1,16 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>showcase-daynight</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* Two desktop windows, Light in front and Dark behind, on a dusk gradient: harbour mist into Navy into the night
+     Background. */
+  .stage { background:
+      radial-gradient(55% 80% at 78% 30%, rgba(28,110,158,.38) 0%, rgba(28,110,158,0) 70%),
+      linear-gradient(118deg, #E3ECEF 0%, #CFDFE6 30%, #4F7F9E 56%, #0F4A6E 72%, #0F1315 100%); }
+  .w-dark { left: 440px; top: 34px; width: 700px; --bar: 20px; }
+  .w-light { left: 60px; top: 140px; width: 700px; --bar: 20px; }
+</style></head>
+<body><div class="stage grain">
+  <div class="win night w-dark"><div class="bar"><i></i><i></i><i></i><b></b></div><img src="cap/dark-desk-overview@2x.png"></div>
+  <div class="win w-light"><div class="bar"><i></i><i></i><i></i><b></b></div><img src="cap/light-desk-berths@2x.png"></div>
+</div></body></html>

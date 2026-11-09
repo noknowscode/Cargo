@@ -1,0 +1,24 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>focus-cargo</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* Cargo (Light): the container explorer's cargo classes at 1:1, nine boxes in three rows: standard 40 ft, high cube,
+     20 ft, reefer, tank and hazmat, each with its route and status. The grid is laid back from its bottom edge (which
+     stays at 1:1, so nothing is enlarged) and turned a few degrees; its page ground (Background #F3F3F1) is the centre
+     of the backdrop and falls off into harbour mist (HarbourSeaFar #C9DDE4, PrimaryContainer #E0EAEF). */
+  .stage { background:
+      radial-gradient(62% 72% at 50% 50%, #F3F3F1 0%, #F3F3F1 38%, rgba(243,243,241,0) 78%),
+      linear-gradient(160deg, #E0EAEF 0%, #D7E5EA 50%, #C9DDE4 100%); }
+  .glow { position: absolute; left: 200px; right: 200px; top: 420px; height: 200px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(28,110,158,.16), rgba(28,110,158,0)); filter: blur(24px); }
+  .grid { position: absolute; left: 100px; top: 42px; width: 1000px; height: 524px; transform-origin: 50% 100%;
+    transform: perspective(1700px) rotateX(20deg) rotateZ(-4deg);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%),
+                        linear-gradient(180deg, transparent 0%, #000 3%, #000 92%, transparent 100%);
+    -webkit-mask-composite: source-in; mask-composite: intersect; }
+  .grid img { width: 100%; height: 100%; }
+</style></head>
+<body><div class="stage grain">
+  <div class="glow"></div>
+  <div class="grid"><img src="cap/light-desk-containers@2x.png"></div>
+</div></body></html>

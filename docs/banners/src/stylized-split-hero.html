@@ -1,0 +1,36 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>stylized-split-hero</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* Hero (1920 x 1080) of stylized-split. One Overview, one moment, both themes: the Light capture and the Dark capture taken seconds apart in one session,
+     cut on one diagonal that runs through the backdrop and the window alike. */
+  .layer { position: absolute; inset: 0; }
+  .day { background:
+      radial-gradient(70% 80% at 25% 30%, #F3F6F6 0%, rgba(243,246,246,0) 70%),
+      linear-gradient(180deg, #E4ECEF 0%, #CFDFE6 100%); }
+  .layer.dusk { background:
+      radial-gradient(70% 80% at 80% 70%, rgba(15,74,110,.65) 0%, rgba(15,74,110,0) 70%),
+      linear-gradient(180deg, #151B1E 0%, #0F1315 100%);
+    clip-path: polygon(var(--x1) 0, 100% 0, 100% 100%, var(--x2) 100%); }
+  .stage { --x1: 977px; --x2: 1290px; }
+  .win { left: 128px; top: 131px; width: 1664px; --bar: 38px; border-radius: 18px; }
+  .win .bar { padding: 0 18px; gap: 9px; } .win .bar i { width: 12px; height: 12px; } .win .bar b { height: 18px; border-radius: 9px; }
+  .win .view { height: 780px; overflow: hidden; }
+  .seam { position: absolute; inset: 0; pointer-events: none; }
+</style></head>
+<body><div class="stage">
+  <div class="layer day grain">
+    <div class="win"><div class="bar"><i></i><i></i><i></i><b></b></div><div class="view"><img src="cap/light-desk-overview-split@2x.png"></div></div>
+  </div>
+  <div class="layer dusk grain" style="--grain:.05">
+    <div class="win night"><div class="bar"><i></i><i></i><i></i><b></b></div><div class="view"><img src="cap/dark-desk-overview-split@2x.png"></div></div>
+  </div>
+  <svg class="seam" width="1920" height="1080" viewBox="0 0 1920 1080">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6CB4E4" stop-opacity="0"/><stop offset=".18" stop-color="#6CB4E4" stop-opacity=".9"/>
+      <stop offset=".82" stop-color="#6CB4E4" stop-opacity=".9"/><stop offset="1" stop-color="#6CB4E4" stop-opacity="0"/></linearGradient>
+      <filter id="b" x="-50%" y="-10%" width="200%" height="120%"><feGaussianBlur stdDeviation="6"/></filter></defs>
+    <line x1="977" y1="0" x2="1290" y2="1080" stroke="url(#g)" stroke-width="9" filter="url(#b)" opacity=".55"/>
+    <line x1="977" y1="0" x2="1290" y2="1080" stroke="url(#g)" stroke-width="1.8"/>
+  </svg>
+</div></body></html>

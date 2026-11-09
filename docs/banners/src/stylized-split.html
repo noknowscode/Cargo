@@ -1,0 +1,35 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>stylized-split</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* One Overview, one moment, both themes: the Light capture and the Dark capture taken seconds apart in one session,
+     cut on one diagonal that runs through the backdrop and the window alike. */
+  .layer { position: absolute; inset: 0; }
+  .day { background:
+      radial-gradient(70% 80% at 25% 30%, #F3F6F6 0%, rgba(243,246,246,0) 70%),
+      linear-gradient(180deg, #E4ECEF 0%, #CFDFE6 100%); }
+  .layer.dusk { background:
+      radial-gradient(70% 80% at 80% 70%, rgba(15,74,110,.65) 0%, rgba(15,74,110,0) 70%),
+      linear-gradient(180deg, #151B1E 0%, #0F1315 100%);
+    clip-path: polygon(var(--x1) 0, 100% 0, 100% 100%, var(--x2) 100%); }
+  .stage { --x1: 617px; --x2: 800px; }
+  .win { left: 80px; top: 59px; width: 1040px; --bar: 24px; }
+  .win .view { height: 488px; overflow: hidden; }
+  .seam { position: absolute; inset: 0; pointer-events: none; }
+</style></head>
+<body><div class="stage">
+  <div class="layer day grain">
+    <div class="win"><div class="bar"><i></i><i></i><i></i><b></b></div><div class="view"><img src="cap/light-desk-overview-split@2x.png"></div></div>
+  </div>
+  <div class="layer dusk grain" style="--grain:.05">
+    <div class="win night"><div class="bar"><i></i><i></i><i></i><b></b></div><div class="view"><img src="cap/dark-desk-overview-split@2x.png"></div></div>
+  </div>
+  <svg class="seam" width="1200" height="630" viewBox="0 0 1200 630">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6CB4E4" stop-opacity="0"/><stop offset=".18" stop-color="#6CB4E4" stop-opacity=".9"/>
+      <stop offset=".82" stop-color="#6CB4E4" stop-opacity=".9"/><stop offset="1" stop-color="#6CB4E4" stop-opacity="0"/></linearGradient>
+      <filter id="b" x="-50%" y="-10%" width="200%" height="120%"><feGaussianBlur stdDeviation="4"/></filter></defs>
+    <line x1="617" y1="0" x2="800" y2="630" stroke="url(#g)" stroke-width="6" filter="url(#b)" opacity=".55"/>
+    <line x1="617" y1="0" x2="800" y2="630" stroke="url(#g)" stroke-width="1.2"/>
+  </svg>
+</div></body></html>
