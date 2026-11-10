@@ -15,6 +15,7 @@ All in `finals/`: every banner at 1x (1200 × 630) and 2x (2400 × 1260), and tw
 | Banner | Family | What it shows | Source captures (route · theme · viewport · DPR) |
 |---|---|---|---|
 | `showcase-desk` | showcase | Desktop window with the Overview (Light) between a Berths phone (Dark) and a Cargo phone (Light), on harbour mist | `overview` · Light · 1440×900 · 3 (FA2) ; `berths` · Dark · 390×844 · 3 (PD) ; `cargo` · Light · 390×844 · 3 (FB) |
+| `showcase-desktop` | showcase | The Overview (Light) alone in a desktop window, on harbour mist; the gallery card, since Cargo is a desktop app (added 2026-11-10) | `overview` · Light · 1440×900 · 3 (FA2), the same capture as `showcase-desk` |
 | `showcase-phones` | showcase | Three phones: Security (Light), Overview (Dark, centre, raised), Fleet & waterways (Light), on sea-mid blue | `security`, `fleet` · Light · 390×844 · 3 (PL) ; `overview` · Dark · 390×844 · 3 (POD) |
 | `showcase-daynight` | showcase | Berths (Light) in front of the Overview (Dark), on a dusk gradient from harbour mist to night | `berths` · Light · 1440×900 · 3 (L) ; `overview` · Dark · 1440×900 · 3 (FA) |
 | `focus-harbour` (+ hero) | focused | The SkiaSharp 3D harbour at night, Overview with the stage expanded: Baltic Crown departing B06, Nordic Star on her dashed approach to B07; laid back 10°, edges falling into the night Background | `overview` (Expand) · Dark · 1440×900 · 3 (D), crop 875×438 CSS px |

@@ -25,6 +25,17 @@
       }
     },
     {
+      "name": "showcase-desktop",
+      "family": "showcase",
+      "title": "Desktop",
+      "description": "The Overview (Light) alone in a desktop window, on harbour mist: Cargo is a desktop app.",
+      "pick": false,
+      "files": {
+        "1x": "finals/showcase-desktop@1x.png",
+        "2x": "finals/showcase-desktop@2x.png"
+      }
+    },
+    {
       "name": "showcase-daynight",
       "family": "showcase",
       "title": "Day and night",
@@ -129,6 +140,7 @@
   "notes": [
     "The app's clock keeps running: screens side by side can differ by a minute.",
     "The mosaic repeats sections: five sections fill eighteen devices.",
-    "Every frame showing the Cargo filter pills was recaptured after the oval-pill fix (5568b29)."
+    "Every frame showing the Cargo filter pills was recaptured after the oval-pill fix (5568b29).",
+    "showcase-desktop (added 2026-11-10 for the gallery card) reuses showcase-desk's Overview capture in a window of its own."
   ]
 }

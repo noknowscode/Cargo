@@ -1,0 +1,17 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>showcase-desktop</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* Desktop only: Cargo is a desktop app, so its window stands alone on the harbour-mist backdrop of showcase-desk
+     (HarbourSeaFar into PrimaryContainer). The 2880x1800 capture is shown at 1720 px wide at 2x: downscaled only. */
+  .stage { background:
+      radial-gradient(70% 60% at 50% 38%, rgba(251,251,250,.95) 0%, rgba(251,251,250,0) 70%),
+      linear-gradient(180deg, #E4ECEF 0%, #D3E2E8 62%, #C6D9E1 100%); }
+  .floor { position: absolute; left: 14%; right: 14%; bottom: 18px; height: 56px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(15,74,110,.20), rgba(15,74,110,0)); filter: blur(6px); }
+  .win { left: 170px; top: 38px; width: 860px; --bar: 22px; }
+</style></head>
+<body><div class="stage grain">
+  <div class="floor"></div>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><b></b></div><img src="cap/light-desk-overview@2x.png"></div>
+</div></body></html>
