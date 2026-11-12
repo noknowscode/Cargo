@@ -219,8 +219,8 @@ The review: uno-lab `docs/production-readiness/CODE-REVIEW-ROUND2-2026-11-02.md`
 ## Phase A
 - **Liveline vendored** into `Liveline/` (copied from noknowscode/uno-lab at `1289007`, then moved to Uno 7 and
   SkiaSharp 4 in separate commits). A fresh clone builds with nothing next to it.
-- **Uno.Sdk 7.0.0-dev.115** (SkiaSharp 4.151.1). Android host on `CreateHost()`; Hot Design and App MCP off in
-  Debug (`NO_UNO_STUDIO`) until the dev SDK drops `Uno.UI.Lottie`. SkiaSharp 4 paths through `SKPathBuilder`.
+- **Uno.Sdk 7.0.5** (Uno Platform 7.0, SkiaSharp 4.151.1). Android host on `CreateHost()`; Hot Design and App MCP
+  on in Debug (the dev SDK's `Uno.UI.Lottie` crash is gone). SkiaSharp 4 paths through `SKPathBuilder`.
 - **Five heads**, with `-p:CargoTargetFrameworks=<tfm>` for single-head builds (Liveline follows it). WinAppSDK:
   x64/ARM64, `WindowsSdkPackageVersion` 10.0.19041.87, packaged.
 - **Per head:** window sizing only on desktop/WinAppSDK; wheel zoom compiled out on Android/iOS (pinch remains);
@@ -368,6 +368,6 @@ cd C:\Users\Platform006\Cargo\Cargo
 dotnet build -f net10.0-desktop -p:CargoTargetFrameworks=net10.0-desktop
 $env:APP_NO_HOTDESIGN='1'; .\bin\Debug\net10.0-desktop\Cargo.exe
 ```
-With the App MCP (off while `NO_UNO_STUDIO` is defined): `uno_app_start`, wait for the first frame before resizing
+With the App MCP: `uno_app_start`, wait for the first frame before resizing
 (a resize during startup once killed the app). `taskkill /IM Cargo.exe /F` first; the running app locks `Cargo.exe`
 and `Liveline.dll`.
