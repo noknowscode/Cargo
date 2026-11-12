@@ -48,7 +48,7 @@ service and logger. They never start the Uno runtime, so the models hold states 
 
 ## Architecture
 
-- **Uno.Sdk 7.0.0-dev.115** (Uno 7 dev build, SkiaSharp 4), single project, Skia renderer,
+- **Uno.Sdk 7.0.5** (Uno Platform 7.0, SkiaSharp 4), single project, Skia renderer,
   the Simple theme (`SimpleToolkitTheme`) + Uno Toolkit, Light and Dark, with the design's palette in
   `Styles/ColorPaletteOverride.xaml` and its type scale in `Styles/TypographyOverride.xaml`. Hot Design and the App MCP are off in Debug while this dev SDK's
   clients still reference `Uno.UI.Lottie` (see `Cargo.csproj`).
