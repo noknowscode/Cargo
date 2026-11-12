@@ -50,8 +50,7 @@ service and logger. They never start the Uno runtime, so the models hold states 
 
 - **Uno.Sdk 7.0.5** (Uno Platform 7.0, SkiaSharp 4), single project, Skia renderer,
   the Simple theme (`SimpleToolkitTheme`) + Uno Toolkit, Light and Dark, with the design's palette in
-  `Styles/ColorPaletteOverride.xaml` and its type scale in `Styles/TypographyOverride.xaml`. Hot Design and the App MCP are off in Debug while this dev SDK's
-  clients still reference `Uno.UI.Lottie` (see `Cargo.csproj`).
+  `Styles/ColorPaletteOverride.xaml` and its type scale in `Styles/TypographyOverride.xaml`. Hot Design and the App MCP run in Debug.
 - **MVVM (`CommunityToolkit.Mvvm`)**, not MVUX. Every figure in this app is an in-memory
   constant; there is no async or reactive data flow for feeds to model. What the app
   actually has is a lot of imperative selection state — which berth is hovered, which bay
@@ -209,7 +208,7 @@ headless run can photograph them:
 
 | Variable | Effect |
 |---|---|
-| `APP_NO_HOTDESIGN=1` | Skips `UseStudio()`, which otherwise blocks window creation with no DevServer (compiled out anyway while `NO_UNO_STUDIO` is defined) |
+| `APP_NO_HOTDESIGN=1` | Skips `UseStudio()`, which otherwise blocks window creation with no DevServer (and is compiled out when `NO_UNO_STUDIO` is defined) |
 | `CARGO_THEME` | `light`, `dark` or `system`, set through the theme service as the account menu does (so it is saved) |
 | `CARGO_WINDOW` | Opens the window at a size, e.g. `390x844` (desktop head) |
 | `CARGO_START_SECTION` | Opens straight onto a section (`overview`, `berths`, `cargo`, `fleet`, `security`) |
