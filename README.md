@@ -29,8 +29,8 @@ dotnet run   --project Cargo/Cargo.csproj -f net10.0-desktop -p:CargoTargetFrame
 `CargoTargetFrameworks` narrows the build to one head, so a machine without the Android, iOS or
 wasm-tools workloads can still restore it; leave it out to restore every head.
 
-Five heads: `net10.0-desktop` (Skia on Windows, macOS and Linux), `net10.0-windows10.0.19041`
-(WinAppSDK, x64 or ARM64), `net10.0-browserwasm`, `net10.0-android` and `net10.0-ios`. Desktop,
+Four heads: `net10.0-desktop` (Skia on Windows, macOS and Linux), `net10.0-browserwasm`,
+`net10.0-android` and `net10.0-ios`. Desktop,
 WebAssembly and Android build with 0 warnings on Linux; the Windows and iOS heads build on their own
 OS, in the development repository's CI. Warnings fail the build (`Directory.Build.props`).
 
