@@ -60,19 +60,6 @@ jobs:
           name: cargo-desktop-${{ matrix.rid }}
           path: publish/${{ matrix.rid }}
 
-  windows:
-    name: Windows (WinAppSDK build check)
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Build the WinAppSDK head (x64, unsigned)
-        # The Skia desktop job above covers Windows too, through Win32. This one proves the native WinUI head compiles;
-        # SKCanvasElement needs x64 or ARM64 there, never AnyCPU.
-        run: dotnet build ${{ env.PROJECT }} -f net10.0-windows10.0.19041 -c Release -p:Platform=x64 -p:CargoTargetFrameworks=net10.0-windows10.0.19041
-
   wasm:
     name: WebAssembly
     runs-on: ubuntu-latest

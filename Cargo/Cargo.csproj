@@ -1,10 +1,10 @@
 <Project Sdk="Uno.Sdk">
   <PropertyGroup>
     <!--
-      Uno.Sdk skips the heads the build OS can't build (iOS on Linux, Windows off Windows). Plain net10.0 is not a head:
+      Uno.Sdk skips the heads the build OS can't build (iOS on Linux). Plain net10.0 is not a head:
       Cargo.Tests references it for the domain and view-model logic, and it never starts the Uno runtime.
     -->
-    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-windows10.0.19041;net10.0-browserwasm;net10.0-desktop;net10.0</TargetFrameworks>
+    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-browserwasm;net10.0-desktop;net10.0</TargetFrameworks>
     <!--
       App-only override for single-head builds (CI, RID-specific publish): -p:CargoTargetFrameworks=net10.0-desktop.
       Liveline follows it, so a single-head build restores no other head (and needs no other workload). The tests
@@ -41,17 +41,6 @@
       Mvvm;
       SkiaRenderer;
     </UnoFeatures>
-  </PropertyGroup>
-
-  <!--
-    WinAppSDK: SKCanvasElement (the harbour, the timeline lanes, the ship glyphs, Liveline) needs an x64 or ARM64
-    build, never AnyCPU. Uno 7's WinUI libraries are built against WinRT.Runtime 2.3.1; the SDK's default projection
-    for 19041 (Microsoft.Windows.SDK.NET.Ref 10.0.19041.57) carries 2.2.0 and fails with CS1705, so pin one that matches.
-  -->
-  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <Platforms>x64;ARM64</Platforms>
-    <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'AnyCPU'">x64</Platform>
-    <WindowsSdkPackageVersion>10.0.19041.87</WindowsSdkPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

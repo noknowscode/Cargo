@@ -26,9 +26,9 @@ dotnet test  Cargo.Tests/Cargo.Tests.csproj -p:CargoTargetFrameworks=net10.0
 `CargoTargetFrameworks` narrows the build to one head, so a machine without the Android, iOS or
 wasm-tools workloads can still restore it; leave it out to restore every head.
 
-Five heads: `net10.0-desktop` (Skia on Windows, macOS and Linux), `net10.0-windows10.0.19041`
-(WinAppSDK, x64 or ARM64), `net10.0-browserwasm`, `net10.0-android` and `net10.0-ios`. Desktop,
-WebAssembly and Android build with 0 warnings on Linux; the Windows and iOS heads build on their own
+Four heads: `net10.0-desktop` (Skia on Windows, macOS and Linux), `net10.0-browserwasm`,
+`net10.0-android` and `net10.0-ios`. Desktop,
+WebAssembly and Android build with 0 warnings on Linux; the iOS head builds on its own
 OS, in CI (`.github/workflows/ci.yml`). Warnings fail the build (`Directory.Build.props`).
 
 `Cargo.Tests` (NUnit, 276 tests) covers the logic with no UI in it. The domain: the berth rules, the reasons a berth
