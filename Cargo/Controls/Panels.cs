@@ -2,12 +2,31 @@ using Windows.Foundation;
 
 namespace Cargo.Controls;
 
-/// <summary>Auto-filling tile grid: as many equal columns as fit at <see cref="MinTileWidth"/>.</summary>
+/// <summary>
+/// Auto-filling tile grid: as many equal columns as fit at <see cref="MinTileWidth"/>. Both properties are
+/// dependency properties, so a page can give them {utu:Responsive} values.
+/// </summary>
 public sealed partial class TileGridPanel : Panel
 {
-    public double MinTileWidth { get; set; } = 240;
+    public static readonly DependencyProperty MinTileWidthProperty = DependencyProperty.Register(
+        nameof(MinTileWidth), typeof(double), typeof(TileGridPanel),
+        new PropertyMetadata(240d, (d, _) => ((TileGridPanel)d).InvalidateMeasure()));
 
-    public double Gap { get; set; } = 14;
+    public double MinTileWidth
+    {
+        get => (double)GetValue(MinTileWidthProperty);
+        set => SetValue(MinTileWidthProperty, value);
+    }
+
+    public static readonly DependencyProperty GapProperty = DependencyProperty.Register(
+        nameof(Gap), typeof(double), typeof(TileGridPanel),
+        new PropertyMetadata(14d, (d, _) => ((TileGridPanel)d).InvalidateMeasure()));
+
+    public double Gap
+    {
+        get => (double)GetValue(GapProperty);
+        set => SetValue(GapProperty, value);
+    }
 
     private double _cellWidth;
     private int _columns = 1;
@@ -16,7 +35,7 @@ public sealed partial class TileGridPanel : Panel
     protected override Size MeasureOverride(Size availableSize)
     {
         var width = double.IsInfinity(availableSize.Width) ? MinTileWidth : availableSize.Width;
-        _columns = Math.Max(1, (int)Math.Floor((width + Gap) / (MinTileWidth + Gap)));
+        _columns = LayoutMath.TileColumns(width, MinTileWidth, Gap);
         _cellWidth = (width - Gap * (_columns - 1)) / _columns;
 
         _rowHeights.Clear();

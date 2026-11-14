@@ -1,0 +1,27 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>stylized-stack</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* The five sections as one isometric stack: Security, Waterways, Cargo, Berths and Overview on top, each a real
+     1440 x 900 capture. Navy into night, with a Primary glow under the stack. */
+  .stage { background:
+      radial-gradient(45% 60% at 56% 56%, rgba(28,110,158,.55) 0%, rgba(28,110,158,0) 72%),
+      linear-gradient(160deg, #13394F 0%, #0F2A3A 40%, #0F1315 100%); --grain: .05; }
+  .iso { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d;
+    transform: translate(var(--tx, 0px), var(--ty, 118px)) rotateX(54deg) rotateZ(-36deg); }
+  .sheet { position: absolute; width: 512px; height: 320px; left: -256px; top: -160px; border-radius: 10px; overflow: hidden;
+    transform: translateZ(calc(var(--i) * 72px));
+    box-shadow: 0 0 0 1px rgba(255,255,255,.10), 0 30px 50px -10px rgba(0,0,0,.55); }
+  .sheet img { width: 100%; height: 100%; }
+  .sheet::after { content: ''; position: absolute; inset: 0; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,0) 40%); }
+</style></head>
+<body><div class="stage grain">
+  <div class="iso">
+    <div class="sheet" style="--i:0"><img src="cap/dark-desk-security@2x.png"></div>
+    <div class="sheet" style="--i:1"><img src="cap/dark-desk-waterways@2x.png"></div>
+    <div class="sheet" style="--i:2"><img src="cap/light-desk-cargo@2x.png"></div>
+    <div class="sheet" style="--i:3"><img src="cap/light-desk-berths@2x.png"></div>
+    <div class="sheet" style="--i:4"><img src="cap/dark-desk-overview@2x.png"></div>
+  </div>
+</div></body></html>

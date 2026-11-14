@@ -8,9 +8,11 @@ namespace Cargo.Controls;
 /// ItemsControl or Panel that holds them, and bind <see cref="SelectedIndex"/>; -1 fades it out
 /// in place. Uno Toolkit's segmented TabBar style ships only with the Cupertino theme, so the
 /// layer switcher and the Chart/Table toggle share this instead.
+/// A childless Grid rather than a Border: it draws the same pill (Background, CornerRadius), and
+/// WinUI seals Border, so a Border subclass only compiles on Uno.
 /// </summary>
 // xaml-lint: allow builtin - utu:TabBar SegmentedStyle is absent from the Simple and Material themes (Toolkit 9.1.3, checked 2026-09-30); WCT 8 Segmented would be a new package (open question in HANDOFF)
-public sealed partial class SegmentIndicator : Border
+public sealed partial class SegmentIndicator : Grid
 {
     private readonly TranslateTransform _shift = new();
     private Storyboard? _board;

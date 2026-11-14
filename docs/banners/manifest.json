@@ -1,0 +1,146 @@
+{
+  "id": "cargo",
+  "displayName": "Cargo (Westhaven Port Authority)",
+  "banners": [
+    {
+      "name": "showcase-phones",
+      "family": "showcase",
+      "title": "Three phones",
+      "description": "Security (Light), Overview (Dark, centre, raised) and Fleet & waterways (Light) on sea-mid blue.",
+      "pick": false,
+      "files": {
+        "1x": "finals/showcase-phones@1x.png",
+        "2x": "finals/showcase-phones@2x.png"
+      }
+    },
+    {
+      "name": "showcase-desk",
+      "family": "showcase",
+      "title": "Desk and phones",
+      "description": "Overview (Light) in a desktop window between a Dark Berths phone and a Light Cargo phone, on harbour mist.",
+      "pick": false,
+      "files": {
+        "1x": "finals/showcase-desk@1x.png",
+        "2x": "finals/showcase-desk@2x.png"
+      }
+    },
+    {
+      "name": "showcase-desktop",
+      "family": "showcase",
+      "title": "Desktop",
+      "description": "The Overview (Light) alone in a desktop window, on harbour mist: Cargo is a desktop app.",
+      "pick": false,
+      "files": {
+        "1x": "finals/showcase-desktop@1x.png",
+        "2x": "finals/showcase-desktop@2x.png"
+      }
+    },
+    {
+      "name": "showcase-daynight",
+      "family": "showcase",
+      "title": "Day and night",
+      "description": "Berths (Light) in front of the Overview (Dark), on a gradient from harbour mist to night.",
+      "pick": false,
+      "files": {
+        "1x": "finals/showcase-daynight@1x.png",
+        "2x": "finals/showcase-daynight@2x.png"
+      }
+    },
+    {
+      "name": "focus-harbour",
+      "family": "focused",
+      "title": "The harbour at night",
+      "description": "The Skia harbour at night: Baltic Crown leaving B06, Nordic Star on her dashed approach to B07.",
+      "pick": true,
+      "files": {
+        "1x": "finals/focus-harbour@1x.png",
+        "2x": "finals/focus-harbour@2x.png",
+        "hero": "finals/focus-harbour-hero.png"
+      }
+    },
+    {
+      "name": "focus-river",
+      "family": "focused",
+      "title": "Alder River",
+      "description": "The live Alder River map from km 80 to km 0: vessels, both locks and the gauges.",
+      "pick": false,
+      "files": {
+        "1x": "finals/focus-river@1x.png",
+        "2x": "finals/focus-river@2x.png"
+      }
+    },
+    {
+      "name": "focus-timeline",
+      "family": "focused",
+      "title": "Today at North Quay",
+      "description": "The vessel, tide and moves timeline turned toward the viewer, the Needs-you card blurred behind.",
+      "pick": false,
+      "files": {
+        "1x": "finals/focus-timeline@1x.png",
+        "2x": "finals/focus-timeline@2x.png"
+      }
+    },
+    {
+      "name": "focus-cargo",
+      "family": "focused",
+      "title": "Cargo classes",
+      "description": "Nine containers (standard, high cube, reefer, tank, hazmat) with their routes and statuses.",
+      "pick": false,
+      "files": {
+        "1x": "finals/focus-cargo@1x.png",
+        "2x": "finals/focus-cargo@2x.png"
+      }
+    },
+    {
+      "name": "stylized-split",
+      "family": "stylized",
+      "title": "Light and Dark split",
+      "description": "One Overview in Light and Dark, cut on a single diagonal through window and backdrop.",
+      "pick": true,
+      "files": {
+        "1x": "finals/stylized-split@1x.png",
+        "2x": "finals/stylized-split@2x.png",
+        "hero": "finals/stylized-split-hero.png"
+      }
+    },
+    {
+      "name": "stylized-stack",
+      "family": "stylized",
+      "title": "Section stack",
+      "description": "An isometric stack of the five sections, Overview on top.",
+      "pick": false,
+      "files": {
+        "1x": "finals/stylized-stack@1x.png",
+        "2x": "finals/stylized-stack@2x.png"
+      }
+    },
+    {
+      "name": "stylized-mosaic",
+      "family": "stylized",
+      "title": "Device wall",
+      "description": "Every section at phone width, Light and Dark alternating, as a tilted wall of devices.",
+      "pick": false,
+      "files": {
+        "1x": "finals/stylized-mosaic@1x.png",
+        "2x": "finals/stylized-mosaic@2x.png"
+      }
+    },
+    {
+      "name": "focus-harbour-titled",
+      "family": "titled",
+      "title": "Harbour, titled",
+      "description": "The harbour banner with the Westhaven Port Authority wordmark (optional).",
+      "pick": false,
+      "files": {
+        "1x": "finals/focus-harbour-titled@1x.png",
+        "2x": "finals/focus-harbour-titled@2x.png"
+      }
+    }
+  ],
+  "notes": [
+    "The app's clock keeps running: screens side by side can differ by a minute.",
+    "The mosaic repeats sections: five sections fill eighteen devices.",
+    "Every frame showing the Cargo filter pills was recaptured after the oval-pill fix (5568b29).",
+    "showcase-desktop (added 2026-11-10 for the gallery card) reuses showcase-desk's Overview capture in a window of its own."
+  ]
+}

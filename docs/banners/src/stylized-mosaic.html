@@ -1,0 +1,51 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>stylized-mosaic</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* Every section at phone width, Light and Dark alternating, as a staggered wall of devices on one tilted plane:
+     the harbour Overview sits at the centre. Navy into night backdrop with a Primary glow. */
+  .stage { background:
+      radial-gradient(50% 60% at 50% 50%, rgba(28,110,158,.45) 0%, rgba(28,110,158,0) 75%),
+      linear-gradient(160deg, #123247 0%, #0F2433 45%, #0F1315 100%); --grain: .05; }
+  .wall { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d;
+    transform: perspective(2000px) rotateX(16deg) rotateZ(-14deg); }
+  .col { position: absolute; top: 0; display: flex; flex-direction: column; gap: 22px; }
+  .col .device { position: relative; width: 176px; height: 375px; --bezel: 7px; --r: 28px; }
+  .fade { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(75% 85% at 50% 50%, rgba(15,19,21,0) 55%, rgba(15,19,21,.55) 100%); }
+</style></head>
+<body><div class="stage grain on-night">
+  <div class="wall">
+    <div class="col" style="left:-610px; top:-560px">
+      <div class="device"><div class="screen"><img src="cap/dark-phone-security@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/light-phone-cargo@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/dark-phone-waterways@2x.png"></div></div>
+    </div>
+    <div class="col" style="left:-410px; top:-380px">
+      <div class="device"><div class="screen"><img src="cap/light-phone-waterways@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/dark-phone-berths@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/light-phone-security@2x.png"></div></div>
+    </div>
+    <div class="col" style="left:-210px; top:-560px">
+      <div class="device"><div class="screen"><img src="cap/light-phone-berths@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/dark-phone-overview@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/light-phone-cargo@2x.png"></div></div>
+    </div>
+    <div class="col" style="left:-10px; top:-470px">
+      <div class="device"><div class="screen"><img src="cap/dark-phone-cargo@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/light-phone-overview@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/dark-phone-security@2x.png"></div></div>
+    </div>
+    <div class="col" style="left:190px; top:-620px">
+      <div class="device"><div class="screen"><img src="cap/light-phone-security@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/dark-phone-waterways@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/light-phone-berths@2x.png"></div></div>
+    </div>
+    <div class="col" style="left:390px; top:-430px">
+      <div class="device"><div class="screen"><img src="cap/dark-phone-berths@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/light-phone-waterways@2x.png"></div></div>
+      <div class="device"><div class="screen"><img src="cap/dark-phone-cargo@2x.png"></div></div>
+    </div>
+  </div>
+  <div class="fade"></div>
+</div></body></html>

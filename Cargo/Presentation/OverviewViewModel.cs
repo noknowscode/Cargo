@@ -10,18 +10,18 @@ public sealed partial class OverviewViewModel : ObservableObject
     {
         State = state;
 
-        // The router builds models off the UI thread; the rows carry brushes and images,
-        // which must be created on it.
+        // The router builds models off the UI thread; the sub-models are bound to the views and follow the store's
+        // events there, so they are made on it.
         dispatcher.TryEnqueue(() =>
         {
             Timeline = new TimelineViewModel(state);
             NextSix = new NextSixHoursViewModel(state, Timeline.Events);
-            Activity = new ActivityViewModel(state);
+            NeedsYou = new NeedsYouPanelViewModel(state);
+            Activity = new ActivityViewModel(state, NeedsYou.ActCommand);
             Refresh();
-            state.Ticked += (_, _) => Refresh();
-            state.PropertyChanged += (_, e) =>
+            state.NeedsYou.PropertyChanged += (_, e) =>
             {
-                if (e.PropertyName == nameof(PortState.NeedsYouCount))
+                if (e.PropertyName == nameof(NeedsYouQueue.Count))
                 {
                     OnPropertyChanged(nameof(NeedsYouText));
                     OnPropertyChanged(nameof(NeedsYouLink));
@@ -34,21 +34,25 @@ public sealed partial class OverviewViewModel : ObservableObject
 
     /// <summary>"Today at North Quay": the shared-axis lanes, the tide lane and the hourly table.</summary>
     [ObservableProperty]
-    private TimelineViewModel? _timeline;
+    public partial TimelineViewModel? Timeline { get; set; }
 
-    public string Subtitle => $"{PortData.Today} · Montreal Port Authority · the harbour as it is right now.";
+    public string Subtitle => $"{PortData.Today} · Westhaven Port Authority · the harbour as it is right now.";
+
+    /// <summary>The Needs-you queue: what waits on the dispatcher, each row with its action.</summary>
+    [ObservableProperty]
+    public partial NeedsYouPanelViewModel? NeedsYou { get; set; }
 
     /// <summary>The shift log, with the entries an open decision is about marked.</summary>
     [ObservableProperty]
-    private ActivityViewModel? _activity;
+    public partial ActivityViewModel? Activity { get; set; }
 
     /// <summary>Next 6 h: the movements around NOW, ships to scale.</summary>
     [ObservableProperty]
-    private NextSixHoursViewModel? _nextSix;
+    public partial NextSixHoursViewModel? NextSix { get; set; }
 
     /// <summary>Hours since midnight on the shift clock, for the charts' now markers.</summary>
     [ObservableProperty]
-    private double _nowHours;
+    public partial double NowHours { get; set; }
 
     /// <summary>The operator on shift, for the masthead's ID card.</summary>
     public DutyOperator Operator => PortData.Operator;
@@ -62,16 +66,22 @@ public sealed partial class OverviewViewModel : ObservableObject
 
     public string OperatorSummary => $"{Operator.Role} {Operator.Name}, {Operator.Badge}, on shift {Operator.ClockedInText} to {Operator.ShiftEndText}";
 
-    /// <summary>The masthead's needs-you figure, as text for the figure's TextBlock.</summary>
-    public string NeedsYouText => State.NeedsYouCount.ToString();
+    /// <summary>The masthead's figures: the vessels alongside and inbound.</summary>
+    public string Alongside => PortData.Alongside.ToString();
 
-    public string NeedsYouLink => $"{State.NeedsYouCount} need you, show the queue";
+    public string Inbound => PortData.Inbound.ToString();
+
+    /// <summary>The masthead's needs-you figure, as text for the figure's TextBlock.</summary>
+    public string NeedsYouText => State.NeedsYou.Count.ToString();
+
+    public string NeedsYouLink => $"{State.NeedsYou.Count} need you, show the queue";
 
     /// <summary>How much of the shift has passed, 0 to 1.</summary>
     [ObservableProperty]
-    private double _shiftProgress;
+    public partial double ShiftProgress { get; set; }
 
-    private void Refresh()
+    /// <summary>The charts' now markers, the timeline and Next 6 h; the page runs this each tick while it is shown.</summary>
+    public void Refresh()
     {
         NowHours = State.NowHours;
         ShiftProgress = Math.Clamp((NowHours - Operator.ClockedIn) / (Operator.ShiftEnd - Operator.ClockedIn), 0, 1);

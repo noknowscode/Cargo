@@ -1,14 +1,9 @@
-global using System;
-global using System.Collections.Generic;
 global using System.Collections.ObjectModel;
-global using System.Linq;
-global using System.Threading.Tasks;
 global using CommunityToolkit.Mvvm.ComponentModel;
 global using CommunityToolkit.Mvvm.Input;
-global using Microsoft.UI.Xaml;
-global using Microsoft.UI.Xaml.Controls;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using Cargo.Domain;
 global using Cargo.Presentation;
+global using Cargo.Themes;

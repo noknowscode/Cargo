@@ -6,7 +6,7 @@
              xmlns:shapes="using:Microsoft.UI.Xaml.Shapes"
              xmlns:utu="using:Uno.Toolkit.UI">
 
-  <Grid Style="{StaticResource PageFrame}">
+  <Grid Style="{StaticResource PageFrame}" Padding="{utu:Responsive Narrowest={StaticResource PagePaddingPhone}, Narrow={StaticResource PagePaddingTablet}, Normal={StaticResource PagePadding}}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
@@ -15,63 +15,83 @@
     </Grid.RowDefinitions>
 
     <!-- ── Masthead ─────────────────────────────────────────────── -->
-    <Grid Style="{StaticResource Masthead}">
+    <!-- The figures sit beside the title from 1280 and wrap under it below -->
+    <Grid Style="{StaticResource Masthead}" RowSpacing="{utu:Responsive Narrowest={StaticResource Space12}, Wide=0}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
-      <StackPanel VerticalAlignment="Bottom" Spacing="8">
+      <StackPanel VerticalAlignment="Bottom" Spacing="{StaticResource Space8}">
         <TextBlock Text="Fleet &amp; waterways" Style="{StaticResource PageTitleText}" />
-        <StackPanel Orientation="Horizontal" Spacing="7">
-          <Ellipse Width="6" Height="6" Fill="{StaticResource AlertInvariantBrush}" VerticalAlignment="Center" />
-          <TextBlock Text="Live AIS · Port of Montreal to the Alder River · 120 km" Style="{StaticResource PageSubtitleText}" />
-        </StackPanel>
+        <Grid ColumnSpacing="{StaticResource Space8}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Ellipse Width="6" Height="6" Fill="{ThemeResource AlertBrush}" VerticalAlignment="Top" Margin="{StaticResource GapTop6}" />
+          <TextBlock Grid.Column="1" Text="Live AIS · Port of Westhaven to the Alder River · 120 km" Style="{StaticResource PageSubtitleText}" TextWrapping="Wrap" />
+        </Grid>
       </StackPanel>
 
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="26" VerticalAlignment="Bottom">
-        <StackPanel Orientation="Horizontal" Spacing="8">
+      <controls:FlowPanel AutomationProperties.Name="Waterways figures" Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" VerticalAlignment="Bottom"
+                          Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
           <TextBlock Text="{x:Bind ViewModel.UnderwayCount, Mode=OneWay}" Style="{StaticResource MetricText}" />
           <TextBlock Text="underway" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <TextBlock Text="{x:Bind ViewModel.LateCount, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{StaticResource OrangeInkInvariantBrush}" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+          <TextBlock Text="{x:Bind ViewModel.LateCount, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{ThemeResource OrangeInkBrush}" />
           <TextBlock Text="running late" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
           <TextBlock Text="{x:Bind ViewModel.LockCount, Mode=OneWay}" Style="{StaticResource MetricText}" />
           <TextBlock Text="lockings booked" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <TextBlock Text="{x:Bind ViewModel.NoticeTotal, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{StaticResource AlertInvariantBrush}" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+          <TextBlock Text="{x:Bind ViewModel.NoticeTotal, Mode=OneWay}" Style="{StaticResource MetricText}" Foreground="{ThemeResource AlertInkBrush}" />
           <TextBlock Text="notices" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-      </StackPanel>
+      </controls:FlowPanel>
     </Grid>
 
-    <!-- ── Row 1: the river + underway ─────────────────────────── -->
-    <Grid Grid.Row="1" ColumnSpacing="40">
+    <!-- ── Row 1: the river + underway (beside it from 1000 px, under it below) ── -->
+    <Grid Grid.Row="1">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="300" />
+        <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
-      <Border Style="{StaticResource RuledPanel}" Padding="0,18,0,14">
-        <StackPanel Spacing="12">
-          <Grid ColumnSpacing="18">
+      <Border Style="{StaticResource RuledPanel}">
+        <StackPanel Spacing="{StaticResource Space12}">
+          <Grid ColumnSpacing="{StaticResource Space18}">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*" />
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <TextBlock Text="Alder River" Style="{StaticResource CardTitleText}" VerticalAlignment="Center" />
-            <ItemsControl Grid.Column="1" ItemsSource="{x:Bind ViewModel.Legend, Mode=OneWay}" VerticalAlignment="Center">
+            <ItemsControl AutomationProperties.Name="River map legend" ItemsSource="{x:Bind ViewModel.Legend, Mode=OneWay}" VerticalAlignment="Center" IsTabStop="False"
+                          Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
+                          Margin="{utu:Responsive Narrowest={StaticResource GapTop8}, Normal='0'}">
               <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="14" /></ItemsPanelTemplate>
+                <ItemsPanelTemplate><controls:FlowPanel Spacing="{StaticResource Space14}" RowSpacing="{StaticResource Space4}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:LegendItem">
-                  <StackPanel Orientation="Horizontal" Spacing="6">
-                    <Ellipse Width="7" Height="7" Fill="{x:Bind Swatch}" VerticalAlignment="Center" />
+                  <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space6}">
+                    <Ellipse Width="7" Height="7" Fill="{x:Bind local:Paint.Swatch(Swatch, Strength)}" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Bind Label}" Style="{StaticResource CaptionText}" />
                   </StackPanel>
                 </DataTemplate>
@@ -79,30 +99,33 @@
             </ItemsControl>
           </Grid>
           <!-- xaml-lint: allow card - the river chart's ground, not a card -->
-          <Border CornerRadius="{StaticResource RadiusPanel}" Background="{StaticResource LandInvariantBrush}">
-            <ContentControl x:Name="RiverHost" HorizontalContentAlignment="Stretch" />
+          <Border CornerRadius="{StaticResource RadiusPanel}" Background="{ThemeResource LandBrush}">
+            <ContentControl x:Name="RiverHost" HorizontalContentAlignment="Stretch" IsTabStop="False" />
           </Border>
         </StackPanel>
       </Border>
 
-      <Border Grid.Column="1" Style="{StaticResource RuledPanel}" Padding="0,18,0,14">
-        <StackPanel Spacing="14">
+      <Border Style="{StaticResource RuledPanel}"
+              Grid.Row="{utu:Responsive Narrowest=1, Normal=0}" Grid.Column="{utu:Responsive Narrowest=0, Normal=1}"
+              Width="{utu:Responsive Narrowest=NaN, Normal=300}"
+              Margin="{utu:Responsive Narrowest='0,28,0,0', Normal='40,0,0,0'}">
+        <StackPanel Spacing="{StaticResource Space14}">
           <Grid>
             <TextBlock Text="Underway" Style="{StaticResource PanelTitleText}" />
             <TextBlock Text="{x:Bind ViewModel.FleetCount, Mode=OneWay}" Style="{StaticResource CaptionText}"
                        HorizontalAlignment="Right" VerticalAlignment="Center" />
           </Grid>
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Fleet, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="River fleet" ItemsSource="{x:Bind ViewModel.Fleet, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><StackPanel Spacing="2" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space2}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:FleetRow">
                 <Button Style="{StaticResource RowButton}" Command="{x:Bind Select}" CommandParameter="{x:Bind Id}"
                         AutomationProperties.Name="{x:Bind Name}">
                   <!-- xaml-lint: allow card - the selected-row highlight, not a card -->
-                  <Border Background="{x:Bind Background}" CornerRadius="{StaticResource RadiusControl}" Padding="10,8">
-                    <Grid ColumnSpacing="10" RowSpacing="3">
+                  <Border Background="{x:Bind local:FleetView.RowGround(IsCurrent)}" CornerRadius="{StaticResource RadiusControl}" Padding="{StaticResource Inset10x8}">
+                    <Grid ColumnSpacing="{StaticResource Space10}" RowSpacing="{StaticResource Space4}">
                       <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -111,11 +134,11 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                       </Grid.RowDefinitions>
-                      <StackPanel Orientation="Horizontal" Spacing="7">
-                        <Ellipse Width="6" Height="6" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
+                      <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+                        <Ellipse Width="6" Height="6" Fill="{x:Bind local:Paint.LateFill(IsLate)}" VerticalAlignment="Center" />
                         <TextBlock Text="{x:Bind Name}" Style="{StaticResource BodyStrongText}" TextTrimming="CharacterEllipsis" />
                       </StackPanel>
-                      <TextBlock Grid.Column="1" Text="{x:Bind Slip}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind SlipInk}" />
+                      <TextBlock Grid.Column="1" Text="{x:Bind Slip}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind local:Paint.LateInk(IsLate)}" />
                       <TextBlock Grid.Row="1" Text="{x:Bind Detail}" Style="{StaticResource CaptionText}"
                                  TextTrimming="CharacterEllipsis" />
                       <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind Eta}" Style="{StaticResource CaptionText}"
@@ -130,42 +153,38 @@
       </Border>
     </Grid>
 
-    <!-- ── Row 2: lockings, gauges, notices, crew ───────────────── -->
-    <Grid Grid.Row="2" ColumnSpacing="40">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="300" />
-      </Grid.ColumnDefinitions>
+    <!-- ── Row 2: lockings, gauges, notices, crew: four across from 1280, two by two from 600 (920 px wide), one
+         column below -->
+    <controls:TileGridPanel Grid.Row="2" Gap="{utu:Responsive Narrowest=28, Normal=40}"
+                            MinTileWidth="{utu:Responsive Narrowest=280, Narrow=400, Wide=260}">
 
-      <Border Style="{StaticResource RuledPanel}" Padding="0,18,0,14">
-        <StackPanel Spacing="14">
-          <StackPanel Spacing="3">
+      <Border Style="{StaticResource RuledPanel}">
+        <StackPanel Spacing="{StaticResource Space14}">
+          <StackPanel Spacing="{StaticResource Space4}">
             <TextBlock Text="Lockings today" Style="{StaticResource CardTitleText}" />
             <TextBlock Text="{x:Bind ViewModel.BookedLabel, Mode=OneWay}" Style="{StaticResource CaptionText}" />
           </StackPanel>
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Lockings, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="Lockings today" ItemsSource="{x:Bind ViewModel.Lockings, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><StackPanel Spacing="10" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space10}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:LockingRow">
-                <Grid ColumnSpacing="10">
+                <Grid ColumnSpacing="{StaticResource Space10}">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="42" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                   </Grid.ColumnDefinitions>
                   <TextBlock Text="{x:Bind Time}" Style="{StaticResource TypeMonoMedium12}"
-                             Foreground="{StaticResource TextMutedInvariantBrush}" VerticalAlignment="Center" />
+                             Foreground="{ThemeResource TextMutedBrush}" VerticalAlignment="Center" />
                   <TextBlock Grid.Column="1" Style="{StaticResource BodyText}" VerticalAlignment="Center"
                              TextTrimming="CharacterEllipsis">
                     <Run Text="{x:Bind Lock}" FontFamily="{StaticResource BodyStrongFont}" /><Run Text=" · " /><Run Text="{x:Bind Vessel}" />
                   </TextBlock>
-                  <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6">
-                    <Ellipse Width="6" Height="6" Fill="{x:Bind Tone}" VerticalAlignment="Center" />
-                    <TextBlock Text="{x:Bind State}" Style="{StaticResource StatusText}" Foreground="{x:Bind Ink}" />
+                  <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{StaticResource Space6}">
+                    <Ellipse Width="6" Height="6" Fill="{x:Bind local:Paint.StatusFill(Standing)}" VerticalAlignment="Center" />
+                    <TextBlock Text="{x:Bind State}" Style="{StaticResource StatusText}" Foreground="{x:Bind local:Paint.StatusInk(Standing)}" />
                   </StackPanel>
                 </Grid>
               </DataTemplate>
@@ -174,35 +193,35 @@
         </StackPanel>
       </Border>
 
-      <Border Grid.Column="1" Style="{StaticResource RuledPanel}" Padding="0,18,0,14">
-        <StackPanel Spacing="14">
-          <StackPanel Spacing="3">
+      <Border Style="{StaticResource RuledPanel}">
+        <StackPanel Spacing="{StaticResource Space14}">
+          <StackPanel Spacing="{StaticResource Space4}">
             <TextBlock Text="Water levels" Style="{StaticResource CardTitleText}" />
             <TextBlock Text="Gauges · last 24 h" Style="{StaticResource CaptionText}" />
           </StackPanel>
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Gauges, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="Water levels" ItemsSource="{x:Bind ViewModel.Gauges, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><StackPanel Spacing="12" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space12}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:GaugeRow">
-                <Grid ColumnSpacing="10">
+                <Grid ColumnSpacing="{StaticResource Space10}">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="80" />
                     <ColumnDefinition Width="64" />
                   </Grid.ColumnDefinitions>
-                  <StackPanel Spacing="1" VerticalAlignment="Center">
+                  <StackPanel Spacing="{StaticResource Space2}" VerticalAlignment="Center">
                     <TextBlock Text="{x:Bind Name}" Style="{StaticResource BodyStrongText}" />
                     <TextBlock Text="{x:Bind Chainage}" Style="{StaticResource CaptionText}" />
                   </StackPanel>
                   <!-- Water level: the river's colour over a fade to the baseline -->
                   <Grid Grid.Column="1" Width="80" Height="22" VerticalAlignment="Center">
-                    <shapes:Path Data="{x:Bind SparkArea}" Fill="{StaticResource WaterFadeInvariantBrush}" />
-                    <shapes:Path Data="{x:Bind Spark}" Stroke="{StaticResource WaterLineInvariantBrush}" StrokeThickness="1.6"
+                    <shapes:Path Data="{x:Bind local:Paint.Polygon(SparkArea)}" Fill="{ThemeResource WaterFadeBrush}" />
+                    <shapes:Path Data="{x:Bind local:Paint.Polyline(Spark)}" Stroke="{ThemeResource WaterLineBrush}" StrokeThickness="1.6"
                                  StrokeLineJoin="Round" />
                   </Grid>
-                  <TextBlock Grid.Column="2" Text="{x:Bind Level}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind Ink}" VerticalAlignment="Center" TextAlignment="Right" />
+                  <TextBlock Grid.Column="2" Text="{x:Bind Level}" Style="{StaticResource TypeMonoMedium12}" Foreground="{x:Bind local:Paint.TextInk(Tone)}" VerticalAlignment="Center" TextAlignment="Right" />
                 </Grid>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -210,25 +229,25 @@
         </StackPanel>
       </Border>
 
-      <Border Grid.Column="2" Style="{StaticResource RuledPanel}" Padding="0,18,0,14">
-        <StackPanel Spacing="14">
-          <StackPanel Spacing="3">
+      <Border Style="{StaticResource RuledPanel}">
+        <StackPanel Spacing="{StaticResource Space14}">
+          <StackPanel Spacing="{StaticResource Space4}">
             <TextBlock Text="Notices to skippers" Style="{StaticResource CardTitleText}" />
             <TextBlock Text="{x:Bind ViewModel.NoticeCount, Mode=OneWay}" Style="{StaticResource CaptionText}" />
           </StackPanel>
-          <ItemsControl ItemsSource="{x:Bind ViewModel.Notices, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="Notices to skippers" ItemsSource="{x:Bind ViewModel.Notices, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><StackPanel Spacing="12" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space12}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:NoticeRow">
-                <Grid ColumnSpacing="9">
+                <Grid ColumnSpacing="{StaticResource Space10}">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                   </Grid.ColumnDefinitions>
-                  <Ellipse Width="6" Height="6" Fill="{x:Bind Tone}" VerticalAlignment="Top" Margin="0,6,0,0" />
-                  <StackPanel Grid.Column="1" Spacing="2">
+                  <Ellipse Width="6" Height="6" Fill="{x:Bind local:Paint.Tone(Tone)}" VerticalAlignment="Top" Margin="{StaticResource GapTop6}" />
+                  <StackPanel Grid.Column="1" Spacing="{StaticResource Space2}">
                     <TextBlock Text="{x:Bind Title}" Style="{StaticResource BodyStrongText}" TextWrapping="Wrap" />
                     <TextBlock Text="{x:Bind Detail}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" LineHeight="17" />
                   </StackPanel>
@@ -240,76 +259,79 @@
       </Border>
 
       <!-- Crew channel for the vessel selected under Underway -->
-      <Border Grid.Column="3" Style="{StaticResource RuledPanel}" Padding="0,18,0,14">
-        <StackPanel Spacing="12">
-          <Grid ColumnSpacing="10">
+      <Border Style="{StaticResource RuledPanel}">
+        <StackPanel Spacing="{StaticResource Space12}">
+          <Grid ColumnSpacing="{StaticResource Space10}">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*" />
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <StackPanel Spacing="3">
+            <StackPanel Spacing="{StaticResource Space4}">
               <TextBlock Text="{x:Bind ViewModel.CrewHeading, Mode=OneWay}" Style="{StaticResource CardTitleText}"
                          TextTrimming="CharacterEllipsis" />
               <TextBlock Text="{x:Bind ViewModel.CrewSubtitle, Mode=OneWay}" Style="{StaticResource CaptionText}"
                          TextWrapping="Wrap" />
             </StackPanel>
-            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Top" Margin="0,3,0,0">
-              <Ellipse Width="6" Height="6" Fill="{x:Bind ViewModel.SlipTone, Mode=OneWay}" VerticalAlignment="Center" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource Space6}" VerticalAlignment="Top" Margin="{StaticResource GapTop4}">
+              <Ellipse Width="6" Height="6" Fill="{x:Bind local:Paint.LateFill(ViewModel.IsLate), Mode=OneWay}" VerticalAlignment="Center" />
               <TextBlock Text="{x:Bind ViewModel.SlipLabel, Mode=OneWay}" Style="{StaticResource StatusText}"
-                         Foreground="{x:Bind ViewModel.SlipInk, Mode=OneWay}" />
+                         Foreground="{x:Bind local:Paint.LateInk(ViewModel.IsLate), Mode=OneWay}" />
             </StackPanel>
           </Grid>
 
-          <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{x:Bind ViewModel.Thread, Mode=OneWay}">
+          <TextBlock Text="{x:Bind ViewModel.ThreadEmptyText, Mode=OneWay}" Style="{StaticResource CaptionText}" TextWrapping="Wrap"
+                     Visibility="{x:Bind ViewModel.ThreadEmpty, Mode=OneWay}" />
+          <ScrollViewer x:Name="ThreadScroll" AutomationProperties.Name="{x:Bind ViewModel.CrewHeading, Mode=OneWay}" MaxHeight="220" VerticalScrollBarVisibility="Auto">
+            <ItemsControl IsTabStop="False" ItemsSource="{x:Bind ViewModel.Thread, Mode=OneWay}">
               <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate><StackPanel Spacing="8" /></ItemsPanelTemplate>
+                <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space8}" /></ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="local:ChatBubble">
-                  <StackPanel HorizontalAlignment="{x:Bind Align}" Spacing="3">
+                  <StackPanel HorizontalAlignment="{x:Bind local:FleetView.BubbleSide(FromCrew)}" Spacing="{StaticResource Space4}">
                     <!-- xaml-lint: allow card - a chat bubble, not a card -->
-                    <Border Background="{x:Bind Background}" CornerRadius="{StaticResource RadiusPanel}" Padding="11,8" MaxWidth="240">
-                      <TextBlock Text="{x:Bind Text}" Style="{StaticResource BodyText}" Foreground="{x:Bind Foreground}"
+                    <Border Background="{x:Bind local:FleetView.BubbleGround(FromCrew)}" CornerRadius="{StaticResource RadiusPanel}" Padding="11,8" MaxWidth="240">
+                      <TextBlock Text="{x:Bind Text}" Style="{StaticResource BodyText}" Foreground="{x:Bind local:FleetView.BubbleInk(FromCrew)}"
                                  TextWrapping="Wrap" LineHeight="18" />
                     </Border>
                     <TextBlock Text="{x:Bind Meta}" Style="{StaticResource TypeMono11}"
-                               Foreground="{StaticResource TextMutedInvariantBrush}" HorizontalAlignment="{x:Bind Align}" />
+                               Foreground="{ThemeResource TextMutedBrush}" HorizontalAlignment="{x:Bind local:FleetView.BubbleSide(FromCrew)}" />
                   </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
           </ScrollViewer>
 
-          <ItemsControl ItemsSource="{x:Bind ViewModel.QuickMessages, Mode=OneWay}">
+          <ItemsControl IsTabStop="False" AutomationProperties.Name="Quick messages" ItemsSource="{x:Bind ViewModel.QuickMessages, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate><StackPanel Spacing="6" /></ItemsPanelTemplate>
+              <ItemsPanelTemplate><StackPanel Spacing="{StaticResource Space6}" /></ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="local:QuickMessage">
-                <Button Style="{StaticResource GhostButton}" Command="{x:Bind Send}" CommandParameter="{x:Bind Text}"
-                        Content="{x:Bind Label}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                        Padding="12,8" CornerRadius="{StaticResource RadiusControl}" />
+                <Button Style="{StaticResource GhostButton}" Command="{x:Bind Send}" CommandParameter="{x:Bind Id}"
+                        Content="{x:Bind Label}" AutomationProperties.Name="{x:Bind AccessibleName}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                        MinHeight="{utu:Responsive Layout={StaticResource DefaultResponsiveLayout}, Narrowest={StaticResource TouchTarget}, Normal=0}"
+                        Padding="{StaticResource Inset12x8}" CornerRadius="{StaticResource RadiusControl}" />
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
-          <Grid ColumnSpacing="8">
+          <Grid ColumnSpacing="{StaticResource Space8}">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*" />
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <!-- Enter sends: CommandExtensions runs the command on Enter for a TextBox -->
             <TextBox PlaceholderText="Message the crew…" CornerRadius="{StaticResource RadiusControl}"
-                     Padding="12,9" AutomationProperties.Name="Message the crew"
-                     Text="{x:Bind ViewModel.State.ChatDraft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Padding="12,9" AutomationProperties.Name="Message the crew" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}"
+                     Text="{x:Bind ViewModel.State.Chat.Draft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      utu:CommandExtensions.Command="{x:Bind ViewModel.SendDraftCommand, Mode=OneWay}" />
-            <Button Grid.Column="1" Style="{StaticResource PrimaryButton}" Content="Send" Command="{x:Bind ViewModel.SendDraftCommand, Mode=OneWay}"
-                    CornerRadius="{StaticResource RadiusControl}" />
+            <Button AutomationProperties.Name="Send message" Grid.Column="1" Style="{StaticResource PrimaryButton}" Content="Send" Command="{x:Bind ViewModel.SendDraftCommand, Mode=OneWay}"
+                    CornerRadius="{StaticResource RadiusControl}" MinHeight="{utu:Responsive Narrowest={StaticResource TouchTarget}, Normal=0}" />
           </Grid>
         </StackPanel>
       </Border>
-    </Grid>
+    </controls:TileGridPanel>
 
     <!-- ── Sea & weather and the night's tide ─────────────────────── -->
     <local:SeaWeatherPanel Grid.Row="3" DataContext="{x:Bind ViewModel.State}" />

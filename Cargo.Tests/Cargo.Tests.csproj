@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <!--
+      UNOB0025: the tests reference the app's plain net10.0 build, which has no Uno runtime host by design. They test
+      the domain and the pure maths (berth rules, the shift timeline, the container filters, bay views, harbour
+      geometry) and never start the Uno runtime, so nothing here may construct a XAML object or a DispatcherTimer.
+    -->
+    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);UNOB0025</MSBuildWarningsAsMessages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cargo\Cargo.csproj" />
+  </ItemGroup>
+
+</Project>

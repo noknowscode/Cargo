@@ -1,4 +1,7 @@
+using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Input;
 using Windows.Foundation;
+using Windows.System;
 
 namespace Cargo.Controls;
 
@@ -10,7 +13,8 @@ namespace Cargo.Controls;
 /// <remarks>
 /// The bay grid is derived from where the deck actually sits inside the hull sprite
 /// (<see cref="Sprites.Hull"/>), so the columns land on the containers the artwork shows
-/// rather than on a rectangle guessed alongside it.
+/// rather than on a rectangle guessed alongside it. The profile takes keyboard focus: the arrow keys open the
+/// next or previous bay (Home and End the first and last), the same selection a click on a bay makes.
 /// </remarks>
 public sealed partial class VesselProfile : SceneHost
 {
@@ -40,8 +44,15 @@ public sealed partial class VesselProfile : SceneHost
     public VesselProfile(PortState state) : base(SceneW, SceneH)
     {
         _state = state;
+
+        // The keyboard's way to the bays a pointer clicks; the bay panels beside the profile follow the selection
+        IsTabStop = true;
+        UseSystemFocusVisuals = true;
+        KeyDown += OnKeyDown;
+
         Build();
         this.RebuildWhenVisible(state, Build);
+        this.RebuildOnTheme(Build);
         this.RepaintWhenVisible(state, RefreshBayHover);
     }
 
@@ -88,8 +99,11 @@ public sealed partial class VesselProfile : SceneHost
         var bayWidth = (deckRight - deckLeft) / Math.Max(1, bays);
         var deckHeight = deckBottom - deckTop;
 
-        var boundary = Math.Min(bays - 1, (int)Math.Floor(bays * vessel.UnloadPercent / 100d));
-        var selected = _state.SelectedBay is { } bay && bay < bays ? bay : boundary;
+        var boundary = BayView.Boundary(vessel);
+        var selected = BayView.Open(vessel, _state.SelectedBay);
+        AutomationProperties.SetName(this,
+            $"{vessel.Name}, bay plan: {BayView.Summary(vessel, selected)}, bay {selected + 1} of {bays}. " +
+            "Left and right arrows open the previous or next bay; Home and End the first and last.");
 
         _bayWidth = bayWidth;
         _deckLeft = deckLeft;
@@ -117,15 +131,16 @@ public sealed partial class VesselProfile : SceneHost
             hit.PointerEntered += (_, _) => _state.HoveredBay = index;
             hit.PointerExited += (_, _) => _state.HoveredBay = null;
             hit.PointerPressed += (_, _) => _state.SelectedBay = index;
+            AutomationProperties.SetName(hit, $"Bay {i + 1:00} of {bays}" + (i == selected ? ", open" : string.Empty));
             Scene.Place(hit);
 
             var pill = Draw.Rect(x + bayWidth / 2 - 14, pillTop, 28, 18,
-                i == selected ? Tokens.Brush("AccentInvariantBrush") : Tokens.Brush("InkColor", 0.55), 6);
+                i == selected ? Tokens.Brush("AccentBrush") : Tokens.Brush("InkColor", 0.55), 6);
             pill.PointerPressed += (_, _) => _state.SelectedBay = index;
             Scene.Place(pill);
 
             Scene.Place(Draw.Text((i + 1).ToString("D2"), x + bayWidth / 2 - 14, pillTop + 2, 11,
-                Tokens.Brush("SurfaceInvariantBrush"), "MonoMediumFont", TextAlignment.Center, 28));
+                Tokens.Brush("SurfaceBrush"), "MonoMediumFont", TextAlignment.Center, 28));
         }
 
         _bayHighlight.Width = bayWidth;
@@ -139,11 +154,31 @@ public sealed partial class VesselProfile : SceneHost
         {
             var lineX = deckLeft + Math.Round(bays * vessel.UnloadPercent / 100d) * bayWidth;
             Scene.Place(Draw.Rule(lineX, deckTop - 16, lineX, deckBottom + 2,
-                Tokens.Brush("SeaGreenInvariantBrush"), 1.5, dash: Draw.Dash(4, 4)));
+                Tokens.Brush("SeaGreenBrush"), 1.5, dash: Draw.Dash(4, 4)));
             Scene.Place(Draw.Text("Discharged", lineX - 70, deckTop - 48, 12,
-                Tokens.Brush("SeaGreenInvariantBrush"), "BodyFont", TextAlignment.Center, 140));
+                Tokens.Brush("SeaGreenInkBrush"), "BodyFont", TextAlignment.Center, 140));
             Scene.Place(Draw.Text($"{vessel.UnloadPercent}%", lineX - 70, deckTop - 36, 18,
-                Tokens.Brush("SeaGreenInvariantBrush"), "BodyStrongFont", TextAlignment.Center, 140));
+                Tokens.Brush("SeaGreenInkBrush"), "BodyStrongFont", TextAlignment.Center, 140));
+        }
+    }
+
+    // xaml-lint: allow codebehind - keyboard selection on a code-built scene; the bay columns are not focusable elements
+    private void OnKeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        var vessel = _state.SelectedVessel;
+        int? bay = e.Key switch
+        {
+            VirtualKey.Left => BayView.Step(vessel, _state.SelectedBay, -1),
+            VirtualKey.Right => BayView.Step(vessel, _state.SelectedBay, 1),
+            VirtualKey.Home => 0,
+            VirtualKey.End => vessel.Bays - 1,
+            _ => null
+        };
+
+        if (bay is { } open)
+        {
+            _state.SelectedBay = open;
+            e.Handled = true;
         }
     }
 
@@ -161,20 +196,20 @@ public sealed partial class VesselProfile : SceneHost
     private void DrawDimensions(Vessel vessel, double bowX, double sternX, double waterline)
     {
         const double y = 262;
-        var faint = Tokens.Brush("TextFaintInvariantBrush");
+        var faint = Tokens.Brush("TextFaintBrush");
         var mid = (bowX + sternX) / 2;
 
         Scene.Place(Draw.Rule(bowX, y, sternX, y, faint, 1, dash: Draw.Dash(3, 3)));
         Scene.Place(Draw.Rule(bowX, y - 6, bowX, y + 6, faint));
         Scene.Place(Draw.Rule(sternX, y - 6, sternX, y + 6, faint));
 
-        Scene.Place(Draw.Rect(mid - 29, y - 9, 58, 18, Tokens.Brush("PaperInvariantBrush")));
-        Scene.Place(Draw.Text($"{vessel.Length} m", mid - 29, y - 8, 11, Tokens.Brush("InkInvariantBrush"),
+        Scene.Place(Draw.Rect(mid - 29, y - 9, 58, 18, Tokens.Brush("PaperBrush")));
+        Scene.Place(Draw.Text($"{vessel.Length} m", mid - 29, y - 8, 11, Tokens.Brush("InkBrush"),
             "MonoMediumFont", TextAlignment.Center, 58));
 
         var draftX = sternX - 40;
         Scene.Place(Draw.Rule(draftX, waterline, draftX, 286, faint, 1, dash: Draw.Dash(3, 3)));
-        Scene.Place(Draw.Label($"↕ {vessel.Draft} m draft", draftX - 8, 272, 11, Tokens.Brush("InkInvariantBrush"),
+        Scene.Place(Draw.Label($"↕ {vessel.Draft} m draft", draftX - 8, 272, 11, Tokens.Brush("InkBrush"),
             "MonoMediumFont", TextAlignment.Right, 160));
     }
 }

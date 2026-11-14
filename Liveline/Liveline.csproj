@@ -1,0 +1,20 @@
+<Project Sdk="Uno.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-browserwasm;net10.0-desktop;net10.0</TargetFrameworks>
+    <!-- Follows Cargo's single-head override (see Cargo.csproj), so a single-head build restores only that head here too.
+         Plain net10.0 matches Cargo's, which Cargo.Tests references. -->
+    <TargetFrameworks Condition="'$(CargoTargetFrameworks)' != ''">$(CargoTargetFrameworks)</TargetFrameworks>
+    <UnoSingleProject>true</UnoSingleProject>
+    <OutputType>Library</OutputType>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Liveline</RootNamespace>
+
+    <!-- Uno 7: the renderer is the app's choice; a library that draws on SKCanvasElement names Skia (UNOB0030). -->
+    <UnoFeatures>
+      Skia;
+    </UnoFeatures>
+  </PropertyGroup>
+
+</Project>

@@ -11,5 +11,5 @@ public sealed partial class CargoFlowPanels : UserControl
     public PortState? ViewModel => DataContext as PortState;
 
     /// <summary>The moves so far this hour.</summary>
-    public static string Moves(double now) => PortState.MovesAt(now).ToString();
+    public static string Moves(double now) => ShiftTimeline.MovesAt(now).ToString();
 }

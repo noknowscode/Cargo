@@ -21,11 +21,15 @@ public sealed partial class ContainerScanner : Panel
     private readonly Canvas _canvas = new();
 
     private PortState? _state;
+    private ScannerCamera? _camera;
     private Point _dragOrigin;
     private double _dragRx;
     private double _dragRy;
     private bool _dragging;
     private bool _renderQueued;
+
+    // The box's pitch and yaw in radians, read from the camera once per render for every corner's projection
+    private double _rx, _ry;
 
     public ContainerScanner()
     {
@@ -52,7 +56,6 @@ public sealed partial class ContainerScanner : Panel
             if (_state is not null)
             {
                 _state.StructureChanged -= OnChanged;
-                _state.PropertyChanged -= OnPropertyChanged;
             }
 
             _state = value;
@@ -60,7 +63,28 @@ public sealed partial class ContainerScanner : Panel
             if (_state is not null)
             {
                 _state.StructureChanged += OnChanged;
-                _state.PropertyChanged += OnPropertyChanged;
+            }
+
+            Render();
+        }
+    }
+
+    /// <summary>How the box is seen: X-ray, rotation (dragging turns it) and zoom.</summary>
+    public ScannerCamera? Camera
+    {
+        get => _camera;
+        set
+        {
+            if (_camera is not null)
+            {
+                _camera.PropertyChanged -= OnPropertyChanged;
+            }
+
+            _camera = value;
+
+            if (_camera is not null)
+            {
+                _camera.PropertyChanged += OnPropertyChanged;
             }
 
             Render();
@@ -71,8 +95,8 @@ public sealed partial class ContainerScanner : Panel
 
     private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(PortState.ScanRotationX) or nameof(PortState.ScanRotationY)
-            or nameof(PortState.ScanZoom) or nameof(PortState.Xray))
+        if (e.PropertyName is nameof(ScannerCamera.RotationX) or nameof(ScannerCamera.RotationY)
+            or nameof(ScannerCamera.Zoom) or nameof(ScannerCamera.Xray))
         {
             QueueRender();
         }
@@ -115,9 +139,7 @@ public sealed partial class ContainerScanner : Panel
 
     private Point Project(double x, double y, double z, double centreX, double centreY, double zoom)
     {
-        var state = _state!;
-        var ry = state.ScanRotationY * Math.PI / 180;
-        var rx = state.ScanRotationX * Math.PI / 180;
+        var (rx, ry) = (_rx, _ry);
 
         // Yaw about the vertical, then pitch towards the viewer
         var x1 = x * Math.Cos(ry) + z * Math.Sin(ry);
@@ -131,9 +153,7 @@ public sealed partial class ContainerScanner : Panel
 
     private double DepthOf(double x, double y, double z)
     {
-        var state = _state!;
-        var ry = state.ScanRotationY * Math.PI / 180;
-        var rx = state.ScanRotationX * Math.PI / 180;
+        var (rx, ry) = (_rx, _ry);
 
         var z1 = -x * Math.Sin(ry) + z * Math.Cos(ry);
         return y * Math.Sin(rx) + z1 * Math.Cos(rx);
@@ -145,15 +165,19 @@ public sealed partial class ContainerScanner : Panel
     {
         _canvas.Children.Clear();
 
-        if (_state is null || ActualWidth <= 0 || ActualHeight <= 0)
+        if (_state is null || _camera is null || ActualWidth <= 0 || ActualHeight <= 0)
         {
             return;
         }
 
-        var container = _state.SelectedContainer;
-        var tint = Tokens.Color(container.TintToken);
-        var xray = _state.Xray;
-        var zoom = _state.ScanZoom;
+        var container = _state.Scanner.SelectedContainer;
+        // The box's paint on a stage that is dark in both themes: the daylight value, whatever the theme
+        var tint = Tokens.Paint(container.TintToken);
+        var xray = _camera.Xray;
+        (_rx, _ry) = (_camera.RotationX * Math.PI / 180, _camera.RotationY * Math.PI / 180);
+        // The box is 520 units long, drawn at full size on the design's stage (760 x 440 or more); a smaller stage (a
+        // laptop's, or the phone sheet's) shrinks it to fit rather than cropping it
+        var zoom = _camera.Zoom * Math.Min(1, Math.Min(ActualWidth / 760, ActualHeight / 440));
 
         var cx = ActualWidth / 2;
         var cy = ActualHeight / 2;
@@ -173,7 +197,7 @@ public sealed partial class ContainerScanner : Panel
             (new[] { -hx, hx, hx, -hx }, new[] { hy, hy, hy, hy }, new[] { hz, hz, -hz, -hz }, Tokens.Shade(tint, -70))
         };
 
-        var edge = xray ? Tokens.Brush("AccentBrightColor", 0.75) : Tokens.Brush("InkColor", 0.35);
+        var edge = xray ? Tokens.Brush("AccentBrightColor", 0.75) : Tokens.Brush("InkDeepColor", 0.35);
 
         var ordered = faces
             .Select(face => (Face: face, Depth: Enumerable.Range(0, 4)
@@ -214,10 +238,10 @@ public sealed partial class ContainerScanner : Panel
             .Select((item, i) =>
             {
                 var seed = i * 37 + container.Id.Length;
-                var width = 60 + Math.Round(Geo.H(seed) * 50);
-                var height = 90 + Math.Round(Geo.H(seed + 3) * 90);
+                var width = 60 + Math.Round(Noise.H(seed) * 50);
+                var height = 90 + Math.Round(Noise.H(seed + 3) * 90);
                 var x = -hx + 14 + i * Math.Floor(490.0 / manifest.Count);
-                var z = -60 + Math.Round(Geo.H(seed + 7) * 120);
+                var z = -60 + Math.Round(Noise.H(seed + 7) * 120);
                 return (Item: item, X: x, W: width, H: height, Z: z);
             })
             .OrderBy(b => DepthOf(b.X + b.W / 2, hy - b.H / 2, b.Z))
@@ -258,7 +282,7 @@ public sealed partial class ContainerScanner : Panel
                 Text = block.Item.Name.Split(" · ")[0],
                 FontFamily = (FontFamily)Application.Current.Resources["MonoMediumFont"],
                 FontSize = 9,
-                Foreground = Tokens.Brush("SurfaceInvariantBrush")
+                Foreground = Tokens.Brush("TextOnDarkStrongBrush")
             };
             var anchor = Project(block.X + 4, hy - 6, front, cx, cy, zoom);
             Canvas.SetLeft(label, anchor.X);
@@ -289,27 +313,27 @@ public sealed partial class ContainerScanner : Panel
 
     private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
     {
-        if (_state is null)
+        if (_camera is null)
         {
             return;
         }
 
         _dragging = true;
         _dragOrigin = e.GetCurrentPoint(this).Position;
-        _dragRx = _state.ScanRotationX;
-        _dragRy = _state.ScanRotationY;
+        _dragRx = _camera.RotationX;
+        _dragRy = _camera.RotationY;
         CapturePointer(e.Pointer);
     }
 
     private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
     {
-        if (!_dragging || _state is null)
+        if (!_dragging || _camera is null)
         {
             return;
         }
 
         var point = e.GetCurrentPoint(this).Position;
-        _state.ScanRotationY = _dragRy + (point.X - _dragOrigin.X) * 0.4;
-        _state.ScanRotationX = Math.Clamp(_dragRx - (point.Y - _dragOrigin.Y) * 0.4, -90, 90);
+        _camera.RotationY = _dragRy + (point.X - _dragOrigin.X) * 0.4;
+        _camera.RotationX = Math.Clamp(_dragRx - (point.Y - _dragOrigin.Y) * 0.4, -90, 90);
     }
 }

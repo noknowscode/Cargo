@@ -1,11 +1,6 @@
-using Cargo.Controls;
 using Liveline.Models;
-using SkiaSharp;
 
 namespace Cargo.Presentation;
-
-/// <summary>One movement on the shared axis: an arrival above the vessels baseline, a departure below.</summary>
-public sealed partial record TimelineEvent(string Id, string Name, double Hour, bool Arrival);
 
 /// <summary>Everything the lanes canvas draws, snapshotted on the clock tick.</summary>
 public sealed record TimelineFrame(
@@ -15,6 +10,13 @@ public sealed record TimelineFrame(
     IReadOnlyList<(double Hour, double In, double Out)> Cargo,
     (double Hour, double Value) MovesPeak);
 
+/// <summary>
+/// The tide lane's two marks: high water (its time, level and label) and the level now. The view draws them as
+/// Liveline markers in the theme's colours.
+/// </summary>
+public sealed record TideMarks(DateTimeOffset HighWater, double HighWaterLevel, string HighWaterLabel,
+    DateTimeOffset Now, double NowLevel, string NowLabel);
+
 /// <summary>One hour of the table view: the non-visual alternative to the chart.</summary>
 public sealed partial class TimelineRow : ObservableObject
 {
@@ -23,12 +25,12 @@ public sealed partial class TimelineRow : ObservableObject
     public required string Vessels { get; init; }
     public required string Tide { get; init; }
 
-    [ObservableProperty] private string _moves = string.Empty;
-    [ObservableProperty] private string _in = string.Empty;
-    [ObservableProperty] private string _out = string.Empty;
-    [ObservableProperty] private string _net = string.Empty;
-    [ObservableProperty] private bool _isNow;
-    [ObservableProperty] private bool _isFuture;
+    [ObservableProperty] public partial string Moves { get; set; } = string.Empty;
+    [ObservableProperty] public partial string In { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Out { get; set; } = string.Empty;
+    [ObservableProperty] public partial string Net { get; set; } = string.Empty;
+    [ObservableProperty] public partial bool IsNow { get; set; }
+    [ObservableProperty] public partial bool IsFuture { get; set; }
 }
 
 /// <summary>
@@ -39,8 +41,8 @@ public sealed partial class TimelineRow : ObservableObject
 /// </summary>
 public sealed partial class TimelineViewModel : ObservableObject
 {
-    /// <summary>The axis: Wednesday 06:00 to Thursday 06:00, in hours on the app clock.</summary>
-    public const double Start = 6, End = 30;
+    /// <summary>The axis: Wednesday 06:00 to Thursday 06:00, in hours on the app clock (<see cref="ShiftTimeline"/>).</summary>
+    public const double Start = ShiftTimeline.Start, End = ShiftTimeline.End;
 
     /// <summary>The tide lane's samples: every 15 minutes, fixed, so only the solid/forecast split moves.</summary>
     private const double TideStep = .25;
@@ -51,10 +53,13 @@ public sealed partial class TimelineViewModel : ObservableObject
     private readonly PortState _state;
     private readonly LivelinePoint[] _tide;
 
+    // Where NOW splits the tide samples; the lane's two series are new arrays only when it moves (every 15 min)
+    private int _tideSplit = -1;
+
     public TimelineViewModel(PortState state)
     {
         _state = state;
-        Events = BuildEvents();
+        Events = ShiftTimeline.Events();
         _tide = Enumerable.Range(0, (int)((End - Start) / TideStep) + 1)
             .Select(i => Start + i * TideStep)
             .Select(h => new LivelinePoint(At(h), Math.Round(PortData.TideAt(h), 2)))
@@ -67,16 +72,15 @@ public sealed partial class TimelineViewModel : ObservableObject
 
         ShowChart();
         Refresh();
-        LoadFonts();
     }
 
     // ── Chart / Table ───────────────────────────────────────────────────
 
-    [ObservableProperty] private Visibility _chartVisibility;
-    [ObservableProperty] private Visibility _tableVisibility;
-    [ObservableProperty] private int _viewIndex;
-    [ObservableProperty] private Brush? _chartLabel;
-    [ObservableProperty] private Brush? _tableLabel;
+    /// <summary>The Table view is up (the chart's non-visual alternative); otherwise the Chart.</summary>
+    [ObservableProperty] public partial bool IsTable { get; set; }
+
+    /// <summary>The segmented toggle's indicator: 0 Chart, 1 Table.</summary>
+    [ObservableProperty] public partial int ViewIndex { get; set; }
 
     [RelayCommand]
     private void ShowChart() => SetView(table: false);
@@ -87,27 +91,7 @@ public sealed partial class TimelineViewModel : ObservableObject
     private void SetView(bool table)
     {
         ViewIndex = table ? 1 : 0;
-        ChartVisibility = table ? Visibility.Collapsed : Visibility.Visible;
-        TableVisibility = table ? Visibility.Visible : Visibility.Collapsed;
-        ChartLabel = Tokens.Brush(table ? "InkInvariantBrush" : "PaperInvariantBrush");
-        TableLabel = Tokens.Brush(table ? "PaperInvariantBrush" : "InkInvariantBrush");
-    }
-
-    // ── Tide lane typefaces ─────────────────────────────────────────────
-
-    private SKTypeface? _mono;
-
-    /// <summary>The tide lane's label face (the "now" level); the HW label takes the mono face.</summary>
-    [ObservableProperty] private SKTypeface? _tideTypeface;
-
-    /// <summary>Liveline eases toward each push; under reduced motion it snaps.</summary>
-    [ObservableProperty] private double _tideLerp = .04;
-
-    private async void LoadFonts()
-    {
-        TideTypeface = await CanvasFonts.Load(CanvasFonts.BodyMedium);
-        _mono = await CanvasFonts.Load(CanvasFonts.Mono);
-        Refresh();
+        IsTable = table;
     }
 
     public IReadOnlyList<TimelineEvent> Events { get; }
@@ -117,28 +101,29 @@ public sealed partial class TimelineViewModel : ObservableObject
     public DateTimeOffset WindowStart => At(Start);
     public DateTimeOffset WindowEnd => At(End);
 
-    [ObservableProperty] private TimelineFrame? _frame;
+    [ObservableProperty] public partial TimelineFrame? Frame { get; set; }
 
     // Summary column
-    [ObservableProperty] private string _vesselsValue = string.Empty;
-    [ObservableProperty] private string _vesselsSub = string.Empty;
-    [ObservableProperty] private string _tideValue = string.Empty;
-    [ObservableProperty] private string _tideSub = string.Empty;
-    [ObservableProperty] private string _movesValue = string.Empty;
-    [ObservableProperty] private string _movesPeak = string.Empty;
-    [ObservableProperty] private string _cargoValue = string.Empty;
-    [ObservableProperty] private string _cargoSub = string.Empty;
-    [ObservableProperty] private string _cargoSince = string.Empty;
-    [ObservableProperty] private string _movesTotal = string.Empty;
+    [ObservableProperty] public partial string VesselsValue { get; set; } = string.Empty;
+    [ObservableProperty] public partial string VesselsSub { get; set; } = string.Empty;
+    [ObservableProperty] public partial string TideValue { get; set; } = string.Empty;
+    [ObservableProperty] public partial string TideSub { get; set; } = string.Empty;
+    [ObservableProperty] public partial string MovesValue { get; set; } = string.Empty;
+    [ObservableProperty] public partial string MovesPeak { get; set; } = string.Empty;
+    [ObservableProperty] public partial string CargoValue { get; set; } = string.Empty;
+    [ObservableProperty] public partial string CargoSub { get; set; } = string.Empty;
+    [ObservableProperty] public partial string CargoSince { get; set; } = string.Empty;
+    [ObservableProperty] public partial string MovesTotal { get; set; } = string.Empty;
 
     // Tide lane (Liveline)
-    [ObservableProperty] private DateTimeOffset _nowTime;
-    [ObservableProperty] private IList<LivelinePoint>? _tidePast;
-    [ObservableProperty] private IList<LivelinePoint>? _tideAhead;
-    [ObservableProperty] private IList<LivelineMarker>? _tideMarkers;
+    [ObservableProperty] public partial DateTimeOffset NowTime { get; set; }
+    [ObservableProperty] public partial IList<LivelinePoint>? TidePast { get; set; }
+    [ObservableProperty] public partial IList<LivelinePoint>? TideAhead { get; set; }
+    /// <summary>High water and the level now, for the lane's markers.</summary>
+    [ObservableProperty] public partial TideMarks? Tide { get; set; }
 
     /// <summary>The chart's spoken summary (its automation name); the table is the full alternative.</summary>
-    [ObservableProperty] private string _summary = string.Empty;
+    [ObservableProperty] public partial string Summary { get; set; } = string.Empty;
 
     public static DateTimeOffset At(double hours) => Day.AddHours(hours);
 
@@ -149,29 +134,29 @@ public sealed partial class TimelineViewModel : ObservableObject
 
         // Vessels: done, the one departing, the rest to come
         var done = Events.Count(e => e.Hour <= now);
-        var departing = PortData.Vessels.Count(v => v.Status == "Departing");
+        var departing = PortData.Vessels.Count(v => v.Status == VesselStatus.Departing);
         VesselsValue = $"{done} of {Events.Count} done";
         VesselsSub = $"{departing} departing · {Events.Count - done - departing} to come";
 
         // Tide: the level now, which way it is going, the next high water
         var level = PortData.TideAt(now);
         var rising = PortData.TideAt(now + .05) > level;
-        var highWater = NextHighWater(now);
+        var highWater = ShiftTimeline.NextHighWater(now);
         TideValue = $"{level:0.0} m";
-        TideSub = $"{(rising ? "rising" : "falling")} · HW {PortState.Format(highWater)}";
+        TideSub = $"{(rising ? "rising" : "falling")} · HW {ShiftClock.Format(highWater)}";
 
         // Moves: per hour, 06:00 to now, its total and peak
         var moves = new List<(double, double)>();
         for (var h = (int)Start; h <= hour; h++)
         {
-            moves.Add((h, PortData.Volume[Math.Min(h, 24)]));
+            moves.Add((h, ShiftTimeline.Volume(h)));
         }
 
-        moves.Add((now, PortData.Volume[Math.Min(hour, 24)]));
-        var peak = System.Linq.Enumerable.MaxBy(moves.Take(moves.Count - 1), m => m.Item2);
-        var total = Enumerable.Range((int)Start, hour - (int)Start).Sum(h => PortData.Volume[Math.Min(h, 24)]) + PortState.MovesAt(now);
+        moves.Add((now, ShiftTimeline.Volume(hour)));
+        var peak = ShiftTimeline.MovesPeak(now);
+        var total = ShiftTimeline.MovesToday(now);
         MovesValue = $"{total:N0} today";
-        MovesPeak = $"peak {peak.Item2:0} / h at {PortState.Format(peak.Item1)}";
+        MovesPeak = $"peak {peak.Value:0} / h at {ShiftClock.Format(peak.Hour)}";
         MovesTotal = $"Totals {total:N0} moves";
 
         // Cargo: in and out per hour to now, and the net now
@@ -184,106 +169,45 @@ public sealed partial class TimelineViewModel : ObservableObject
         var cargoIn = PortData.CargoIn[Math.Min(hour, 24)];
         var cargoOut = PortData.CargoOut[Math.Min(hour, 24)];
         cargo.Add((now, cargoIn, cargoOut));
-        var net = cargoIn - cargoOut;
+        var net = ShiftTimeline.NetCargo(hour);
         CargoValue = $"Net {(net < 0 ? "−" : "+")}{Math.Abs(net):0} / h";
         CargoSub = $"{cargoIn:0} in · {cargoOut:0} out per hour";
-        var since = Enumerable.Range((int)Start, hour - (int)Start + 1).Reverse()
-            .TakeWhile(h => PortData.CargoOut[Math.Min(h, 24)] > PortData.CargoIn[Math.Min(h, 24)])
-            .DefaultIfEmpty(hour).Min();
-        CargoSince = net < 0 ? $"out ahead since {PortState.Format(since)}" : "in ahead now";
+        CargoSince = net < 0 ? $"out ahead since {ShiftClock.Format(ShiftTimeline.OutAheadSince(now))}" : "in ahead now";
 
         Frame = new TimelineFrame(now, Events, moves, cargo, peak);
 
         // Tide lane: the same samples every tick; only the split at NOW moves
-        TideLerp = Motion.Reduced ? 1 : .04;
         var split = Array.FindLastIndex(_tide, p => p.Time <= At(now)) + 1;
         NowTime = At(now);
-        TidePast = _tide[..split];
-        TideAhead = _tide[split..];
-        TideMarkers = new[]
+        if (split != _tideSplit)
         {
-            new LivelineMarker(At(highWater), Math.Round(PortData.TideAt(highWater), 1))
-            {
-                Label = $"HW {PortState.Format(highWater)} · {PortData.TideAt(highWater):0.0} m",
-                LabelTypeface = _mono,
-                Fill = Tokens.Color("SurfaceColor"),
-                Stroke = Tokens.Color("WaterColor"),
-                LabelColor = Tokens.Color("TextMutedColor"),
-                LabelPlacement = MarkerLabelPlacement.Above,
-            },
-            new LivelineMarker(At(now), level)
-            {
-                Label = $"{level:0.0} m",
-                Fill = Tokens.Color("NavyColor"),
-                Stroke = Tokens.Color("SurfaceColor"),
-                StrokeThickness = 2,
-                LabelColor = Tokens.Color("InkColor"),
-            },
-        };
+            _tideSplit = split;
+            TidePast = _tide[..split];
+            TideAhead = _tide[split..];
+        }
+        Tide = new TideMarks(At(highWater), Math.Round(PortData.TideAt(highWater), 1),
+            $"HW {ShiftClock.Format(highWater)} · {PortData.TideAt(highWater):0.0} m", At(now), level, $"{level:0.0} m");
 
         foreach (var row in Rows)
         {
             UpdateRow(row, now);
         }
 
-        Summary = $"Today at North Quay, 06:00 to Thursday 06:00. Now {PortState.Format(now)}. " +
+        Summary = $"Today at North Quay, 06:00 to Thursday 06:00. Now {ShiftClock.Format(now)}. " +
                   $"Vessels {VesselsValue}, {VesselsSub}. Tide {TideValue}, {TideSub}. " +
                   $"Moves {MovesValue}, {MovesPeak}. Cargo {CargoValue}, {CargoSub}.";
-    }
-
-    /// <summary>The next high water at or after <paramref name="now"/>: the tide peaks every 12.4 h from 23:10.</summary>
-    private static double NextHighWater(double now)
-    {
-        var k = Math.Ceiling((now - FirstHighWater) / TidePeriod);
-        return FirstHighWater + Math.Max(0, k) * TidePeriod;
-    }
-
-    /// <summary>The tide table's high water (23:10) and its period, matching <see cref="PortData.TideAt"/>.</summary>
-    private const double FirstHighWater = 23.17, TidePeriod = 12.4;
-
-    /// <summary>
-    /// The day's movements inside the window: the log (Meridian Sky, Elbe Trader) and the
-    /// vessels' own arrival and departure times, one entry per vessel and direction.
-    /// </summary>
-    private static IReadOnlyList<TimelineEvent> BuildEvents()
-    {
-        var events = new List<TimelineEvent>();
-
-        void Add(string name, double hour, bool arrival)
-        {
-            if (hour >= Start && hour <= End && !events.Any(e => e.Name == name && e.Arrival == arrival))
-            {
-                var id = PortData.Vessels.FirstOrDefault(v => v.Name == name)?.Id ?? name.ToLowerInvariant().Replace(' ', '-');
-                events.Add(new TimelineEvent(id, name, hour, arrival));
-            }
-        }
-
-        foreach (var vessel in PortData.Vessels)
-        {
-            Add(vessel.Name, PortState.ClockHours(vessel.Eta), arrival: true);
-            Add(vessel.Name, PortState.ClockHours(vessel.Etd), arrival: false);
-        }
-
-        foreach (var (name, hour, arrival) in PortData.Movements)
-        {
-            Add(name.Replace(" dep.", string.Empty), hour, arrival);
-        }
-
-        return events.OrderBy(e => e.Hour).ToArray();
     }
 
     private TimelineRow BuildRow(int hour)
     {
         var inHour = Events.Where(e => e.Hour >= hour && e.Hour < hour + 1).ToArray();
         var level = PortData.TideAt(hour + .5);
-        // The tide turns at known times: high water from 23:10 every 12.4 h, low water half a period off
-        bool TurnsIn(double first) => Enumerable.Range(-2, 5).Select(k => first + k * TidePeriod).Any(t => t >= hour && t < hour + 1);
-        var turn = TurnsIn(FirstHighWater) ? "HW " : TurnsIn(FirstHighWater + TidePeriod / 2) ? "LW " : string.Empty;
+        var turn = ShiftTimeline.TideTurn(hour);
         return new TimelineRow
         {
             Hour = hour,
-            Time = hour == 24 ? "Thu 00:00" : PortState.Format(hour),
-            Vessels = string.Join(", ", inHour.Select(e => $"{e.Name} {(e.Arrival ? "arrives" : "departs")} {PortState.Format(e.Hour)}")),
+            Time = hour == 24 ? "Thu 00:00" : ShiftClock.Format(hour),
+            Vessels = string.Join(", ", inHour.Select(e => $"{e.Name} {(e.Arrival ? "arrives" : "departs")} {ShiftClock.Format(e.Hour)}")),
             Tide = $"{turn}{level:0.0}"
         };
     }

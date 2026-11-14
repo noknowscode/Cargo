@@ -2,16 +2,19 @@ using Microsoft.UI.Xaml.Shapes;
 
 namespace Cargo.Controls;
 
-/// <summary>A donut of weighted slices (<see cref="Draw.Donut"/>), redrawn when the slices change.</summary>
+/// <summary>A donut of weighted slices (<see cref="Draw.Donut"/>), each a palette key, redrawn when the slices change.</summary>
 public sealed partial class DonutChart : ContentControl
 {
+    /// <summary>A picture of the composition beside its legend: read, not operated, so not a tab stop.</summary>
+    public DonutChart() => IsTabStop = false;
+
     public static readonly DependencyProperty SlicesProperty = DependencyProperty.Register(
-        nameof(Slices), typeof(IReadOnlyList<(double Weight, Brush Fill)>), typeof(DonutChart),
+        nameof(Slices), typeof(IReadOnlyList<(double Weight, string Tone)>), typeof(DonutChart),
         new PropertyMetadata(null, (d, _) => ((DonutChart)d).Redraw()));
 
-    public IReadOnlyList<(double Weight, Brush Fill)>? Slices
+    public IReadOnlyList<(double Weight, string Tone)>? Slices
     {
-        get => (IReadOnlyList<(double Weight, Brush Fill)>?)GetValue(SlicesProperty);
+        get => (IReadOnlyList<(double Weight, string Tone)>?)GetValue(SlicesProperty);
         set => SetValue(SlicesProperty, value);
     }
 
@@ -19,25 +22,29 @@ public sealed partial class DonutChart : ContentControl
 
     public double Thickness { get; set; } = 16;
 
-    private void Redraw() => Content = Slices is { Count: > 0 } slices ? Draw.Donut(slices, Radius, Thickness) : null;
+    private void Redraw() => Content = Slices is { Count: > 0 } slices
+        ? Draw.Donut(slices.Select(s => (s.Weight, (Brush)Tokens.Brush(s.Tone))).ToArray(), Radius, Thickness)
+        : null;
 }
 
-/// <summary>A rounded bar split into proportional blocks, one per slice.</summary>
+/// <summary>A rounded bar split into proportional blocks, one per slice (a palette key).</summary>
 // xaml-lint: allow builtin - a stacked bar of several cargo classes; ProgressBar holds one value
 public sealed partial class CompositionBar : ContentControl
 {
     public static readonly DependencyProperty SlicesProperty = DependencyProperty.Register(
-        nameof(Slices), typeof(IReadOnlyList<(double Weight, Brush Fill)>), typeof(CompositionBar),
+        nameof(Slices), typeof(IReadOnlyList<(double Weight, string Tone)>), typeof(CompositionBar),
         new PropertyMetadata(null, (d, _) => ((CompositionBar)d).Redraw()));
 
     public CompositionBar()
     {
+        // Read, not operated: not a tab stop
+        IsTabStop = false;
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
     }
 
-    public IReadOnlyList<(double Weight, Brush Fill)>? Slices
+    public IReadOnlyList<(double Weight, string Tone)>? Slices
     {
-        get => (IReadOnlyList<(double Weight, Brush Fill)>?)GetValue(SlicesProperty);
+        get => (IReadOnlyList<(double Weight, string Tone)>?)GetValue(SlicesProperty);
         set => SetValue(SlicesProperty, value);
     }
 
@@ -47,10 +54,10 @@ public sealed partial class CompositionBar : ContentControl
     private void Redraw()
     {
         var panel = new Grid { ColumnSpacing = 2 };
-        foreach (var (weight, fill) in Slices ?? [])
+        foreach (var (weight, tone) in Slices ?? [])
         {
             panel.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(weight, GridUnitType.Star) });
-            var block = new Rectangle { Fill = fill };
+            var block = new Rectangle { Fill = Tokens.Brush(tone) };
             Grid.SetColumn(block, panel.ColumnDefinitions.Count - 1);
             panel.Children.Add(block);
         }
@@ -86,8 +93,8 @@ public sealed partial class TickBar : StackPanel
         set => SetValue(PercentProperty, value);
     }
 
-    /// <summary>Token for the lit ticks, e.g. "SeaGreenInvariantBrush".</summary>
-    public string LitToken { get; set; } = "AccentInvariantBrush";
+    /// <summary>Token for the lit ticks, e.g. "SeaGreenBrush".</summary>
+    public string LitToken { get; set; } = "AccentBrush";
 
     public int Count { get; set; } = 30;
 

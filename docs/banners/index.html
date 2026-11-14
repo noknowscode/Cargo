@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cargo banners</title>
+<style>
+  :root { --bg: #F3F3F1; --surface: #FBFBFA; --ink: #121617; --muted: #5E6569; --line: rgba(18,22,23,.10); --accent: #1C6E9E; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0F1315; --surface: #181D20; --ink: #E6EAEC; --muted: #A1ABB0; --line: rgba(230,234,236,.10); --accent: #6CB4E4; } }
+  :root[data-theme="dark"] { --bg: #0F1315; --surface: #181D20; --ink: #E6EAEC; --muted: #A1ABB0; --line: rgba(230,234,236,.10); --accent: #6CB4E4; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Inter, system-ui, sans-serif; }
+  main { max-width: 1320px; margin: 0 auto; padding: 40px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); margin: 0 0 32px; max-width: 70ch; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin: 36px 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: 20px; }
+  figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  figure img { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 630; background: var(--line); }
+  figure.hero img { aspect-ratio: 16 / 9; }
+  figcaption { padding: 12px 14px 14px; }
+  figcaption b { display: block; font-size: 15px; }
+  figcaption span { display: block; color: var(--muted); font-size: 13px; }
+  figcaption a { color: var(--accent); font-size: 13px; text-decoration: none; margin-right: 12px; }
+</style></head>
+<body><main>
+  <h1>Cargo · Westhaven Port Authority banners</h1>
+  <p class="lede">Gallery banners for the Cargo sample (Westhaven Dispatch), composed from real WebAssembly captures of the app at 2x and 3x. Every final is 1200 × 630 at 1x and 2400 × 1260 at 2x; the two strongest also come as a 1920 × 1080 hero. Sources and capture details are in README.md.</p>
+  <div id="sections"></div>
+</main>
+<script>
+  const F = [
+    ['showcase', 'showcase-desk', 'Desktop window (Overview, Light) between a Dark Berths phone and a Light Cargo phone on harbour mist.'],
+    ['showcase', 'showcase-phones', 'Three phones: Security (Light), Overview (Dark, centre) and Fleet & waterways (Light) on sea-mid blue.'],
+    ['showcase', 'showcase-daynight', 'Berths in Light in front of the Overview in Dark, on a dusk gradient from harbour mist to night.'],
+    ['focused', 'focus-harbour', 'The 3D harbour at night: Baltic Crown departing B06, Nordic Star on her dashed approach to B07.'],
+    ['focused', 'focus-timeline', 'Overview’s “Today at North Quay” timeline (vessels, tide, crane moves on the NOW line), Needs you out of focus behind.'],
+    ['focused', 'focus-river', 'Macro crop of the live Alder River map, km 80 to km 0: locks, gauges and vessels, lifted off the night.'],
+    ['focused', 'focus-cargo', 'The cargo classes at 1:1: nine containers (standard, high cube, reefer, tank, hazmat) with route and status, laid back on the page ground.'],
+    ['stylized', 'stylized-split', 'One Overview at one moment, Light and Dark, cut on a single diagonal through window and backdrop.'],
+    ['stylized', 'stylized-stack', 'Isometric stack of the five sections: Security, Waterways, Cargo, Berths and the Overview on top.'],
+    ['stylized', 'stylized-mosaic', 'Every section at phone width, Light and Dark alternating, as a tilted wall of devices.'],
+  ];
+  const H = [
+    ['focus-harbour-hero', 'Hero 1920 × 1080 of focus-harbour.'],
+    ['stylized-split-hero', 'Hero 1920 × 1080 of stylized-split.'],
+  ];
+  const root = document.getElementById('sections');
+  const card = (src, name, family, text, links, hero) => `<figure class="${hero ? 'hero' : ''}"><img src="${src}" alt="${name}" loading="lazy"><figcaption><b>${name}</b><span>${family}</span><span>${text}</span>${links}</figcaption></figure>`;
+  for (const fam of ['showcase', 'focused', 'stylized']) {
+    const items = F.filter(f => f[0] === fam).map(([f, n, t]) => card(`finals/${n}@1x.png`, n, f, t,
+      `<a href="finals/${n}@1x.png">1x</a><a href="finals/${n}@2x.png">2x</a>`));
+    root.insertAdjacentHTML('beforeend', `<h2>${fam}</h2><div class="grid">${items.join('')}</div>`);
+  }
+  root.insertAdjacentHTML('beforeend', `<h2>hero</h2><div class="grid">${H.map(([n, t]) => card(`finals/${n}.png`, n, 'hero', t, `<a href="finals/${n}.png">1920 × 1080</a>`, true)).join('')}</div>`);
+  root.insertAdjacentHTML('beforeend', `<h2>optional · titled</h2><div class="grid">${card('finals/focus-harbour-titled@1x.png', 'focus-harbour-titled', 'focused, titled (optional)', 'focus-harbour with the display name “Westhaven Port Authority” in Bricolage Grotesque SemiBold, the app’s display face.', '<a href="finals/focus-harbour-titled@1x.png">1x</a><a href="finals/focus-harbour-titled@2x.png">2x</a>')}</div>`);
+</script>
+</body></html>

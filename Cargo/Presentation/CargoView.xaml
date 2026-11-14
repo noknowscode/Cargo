@@ -1,10 +1,12 @@
 <Page x:Class="Cargo.Presentation.CargoView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:Cargo.Presentation">
+             xmlns:local="using:Cargo.Presentation"
+             xmlns:utu="using:Uno.Toolkit.UI"
+             xmlns:controls="using:Cargo.Controls">
 
   <!-- The boxes and where they stand: find a container, then see it in the yard -->
-  <Grid Style="{StaticResource PageFrame}">
+  <Grid Style="{StaticResource PageFrame}" Padding="{utu:Responsive Narrowest={StaticResource PagePaddingPhone}, Narrow={StaticResource PagePaddingTablet}, Normal={StaticResource PagePadding}}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
@@ -12,35 +14,41 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <Grid Style="{StaticResource Masthead}">
+    <!-- The figures sit beside the title from 1280 and wrap under it below -->
+    <Grid Style="{StaticResource Masthead}" RowSpacing="{utu:Responsive Narrowest={StaticResource Space12}, Wide=0}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
-      <StackPanel VerticalAlignment="Bottom" Spacing="8">
+      <StackPanel VerticalAlignment="Bottom" Spacing="{StaticResource Space8}">
         <TextBlock Text="Cargo" Style="{StaticResource PageTitleText}" />
-        <TextBlock Text="Containers on the terminal · yard blocks A to D, reefer, inspection and bonded" Style="{StaticResource PageSubtitleText}" />
+        <TextBlock Text="Containers on the terminal · yard blocks A to D, reefer, inspection and bonded" Style="{StaticResource PageSubtitleText}" TextWrapping="Wrap" />
       </StackPanel>
 
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="26" VerticalAlignment="Bottom">
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <TextBlock Text="4,812" Style="{StaticResource MetricText}" />
+      <controls:FlowPanel AutomationProperties.Name="Cargo figures" Spacing="{StaticResource Space28}" RowSpacing="{StaticResource Space4}" VerticalAlignment="Bottom"
+                          Grid.Row="{utu:Responsive Narrowest=1, Wide=0}" Grid.Column="{utu:Responsive Narrowest=0, Wide=1}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+          <TextBlock Text="{x:Bind ViewModel.OnSite}" Style="{StaticResource MetricText}" />
           <TextBlock Text="on site" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
           <TextBlock Text="{x:Bind ViewModel.Occupancy, Mode=OneWay}" Style="{StaticResource MetricText}" />
           <TextBlock Text="yard occupied" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
           <TextBlock Text="{x:Bind ViewModel.Moves, Mode=OneWay}" Style="{StaticResource MetricText}" />
           <TextBlock Text="moves today" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <TextBlock Text="1" Style="{StaticResource MetricText}" Foreground="{StaticResource OrangeInkInvariantBrush}" />
-          <TextBlock Text="hold" Style="{StaticResource MetricLabelText}" />
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space8}">
+          <TextBlock Text="{x:Bind ViewModel.Holds}" Style="{StaticResource MetricText}" Foreground="{ThemeResource OrangeInkBrush}" />
+          <TextBlock Text="{x:Bind ViewModel.HoldsLabel}" Style="{StaticResource MetricLabelText}" />
         </StackPanel>
-      </StackPanel>
+      </controls:FlowPanel>
     </Grid>
 
     <Border Grid.Row="1" Style="{StaticResource SectionRule}">

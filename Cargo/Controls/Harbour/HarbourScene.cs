@@ -19,12 +19,12 @@ public sealed class HarbourScene : SKCanvasElement
     private static readonly TimeSpan IdleFrame = TimeSpan.FromMilliseconds(66);
 
 #if DEBUG
-    private static readonly bool DebugOrbit = Environment.GetEnvironmentVariable("CARGO_ORBIT") == "1";
+    private static readonly bool DebugOrbit = DebugHooks.Hook("CARGO_ORBIT") == "1";
 #endif
 
     private readonly HarbourPalette _palette = new();
     private readonly HarbourCamera _camera = new();
-    private readonly HarbourWorld _world;
+    private HarbourWorld _world;
     private readonly HarbourRenderer _renderer;
     private readonly DispatcherTimer _timer = new() { Interval = IdleFrame };
     private readonly DateTimeOffset _started = DateTimeOffset.Now;
@@ -55,6 +55,16 @@ public sealed class HarbourScene : SKCanvasElement
         _timer.Tick += (_, _) => Tick();
         Loaded += (_, _) => LoadTypeface();
 
+        // The faces carry colours baked from the palette, so a theme change rebuilds the model (the same
+        // seeded layout, so every vessel and tag stays where it was) and records the still scene again
+        this.RebuildOnTheme(() =>
+        {
+            _palette.Reload();
+            _world = new HarbourWorld(_palette);
+            _renderer.SetWorld(_world);
+            RefreshStill();
+        });
+
         // The stage collapses on pages without a harbour; a hidden scene should not draw 30 frames a second
         this.TrackShown(shown =>
         {
@@ -83,7 +93,10 @@ public sealed class HarbourScene : SKCanvasElement
         surface.PointerReleased += OnPointerReleased;
         surface.PointerCanceled += OnPointerReleased;
         surface.PointerExited += OnPointerExited;
+#if !ANDROID && !IOS
+        // A mouse wheel exists only where there is a mouse; touch heads zoom with the pinch below.
         surface.PointerWheelChanged += OnPointerWheelChanged;
+#endif
     }
 
     /// <summary>Raised on the UI thread whenever the camera moves, so overlays can follow.</summary>
@@ -291,7 +304,7 @@ public sealed class HarbourScene : SKCanvasElement
 
     protected override void RenderOverride(SKCanvas canvas, Size area)
     {
-        var frame = new HarbourFrameState(_selectedVessel, _state?.HoveredVessel, _state?.HoveredBerth, _layer, Animate,
+        var frame = new HarbourFrameState(_selectedVessel, _state?.Stage.HoveredVessel, _state?.Stage.HoveredBerth, _layer, Animate,
             _needsVessel, _needs, Creep: Animate && _state?.NeedsDecision == true);
         _renderer.Render(canvas, (float)area.Width, (float)area.Height, (DateTimeOffset.Now - _started).TotalSeconds, frame);
     }
@@ -385,6 +398,8 @@ public sealed class HarbourScene : SKCanvasElement
         SetHover(null, null);
     }
 
+#if !ANDROID && !IOS
+    // MouseWheelDelta is not implemented on Android and iOS (Uno0001)
     private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
     {
         var delta = e.GetCurrentPoint(_surface).Properties.MouseWheelDelta;
@@ -394,6 +409,7 @@ public sealed class HarbourScene : SKCanvasElement
         Moved();
         e.Handled = true;
     }
+#endif
 
     private void Hover(Point point)
     {
@@ -413,8 +429,8 @@ public sealed class HarbourScene : SKCanvasElement
             return;
         }
 
-        _state.HoveredVessel = vessel;
-        _state.HoveredBerth = berth;
+        _state.Stage.HoveredVessel = vessel;
+        _state.Stage.HoveredBerth = berth;
     }
 
     private string? HitVessel(Point point)

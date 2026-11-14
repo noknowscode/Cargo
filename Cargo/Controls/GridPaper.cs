@@ -17,7 +17,8 @@ public sealed partial class GridPaper : UserControl
     public GridPaper()
     {
         IsHitTestVisible = false;
-        _lines.Stroke = Tokens.Brush("InkColor", 0.045);
+        // The scanner stage is dark in both themes: its grid and wash use the invariant ink and the accent's paint
+        _lines.Stroke = Tokens.Brush("InkDeepColor", 0.045);
 
         var glow = new Rectangle
         {
@@ -28,7 +29,7 @@ public sealed partial class GridPaper : UserControl
                 RadiusY = 0.9,
                 GradientStops =
                 {
-                    new GradientStop { Offset = 0, Color = Tokens.Color("AccentColor") },
+                    new GradientStop { Offset = 0, Color = Tokens.Paint("AccentColor") },
                     new GradientStop { Offset = 1, Color = Windows.UI.Color.FromArgb(0, 0, 0, 0) }
                 }
             },
@@ -39,19 +40,24 @@ public sealed partial class GridPaper : UserControl
         SizeChanged += (_, e) => Rebuild(e.NewSize.Width, e.NewSize.Height);
     }
 
+    // One open figure per line. LineGeometry would read better, but Uno reports its points as not
+    // implemented on Android, iOS and WebAssembly (Uno0001); PathGeometry is implemented on every head.
     private void Rebuild(double width, double height)
     {
-        var grid = new GeometryGroup();
+        var grid = new PathGeometry();
         for (var x = Pitch; x < width; x += Pitch)
         {
-            grid.Children.Add(new LineGeometry { StartPoint = new(x, 0), EndPoint = new(x, height) });
+            grid.Figures.Add(Line(new(x, 0), new(x, height)));
         }
 
         for (var y = Pitch; y < height; y += Pitch)
         {
-            grid.Children.Add(new LineGeometry { StartPoint = new(0, y), EndPoint = new(width, y) });
+            grid.Figures.Add(Line(new(0, y), new(width, y)));
         }
 
         _lines.Data = grid;
     }
+
+    private static PathFigure Line(Windows.Foundation.Point from, Windows.Foundation.Point to) =>
+        new() { StartPoint = from, Segments = { new LineSegment { Point = to } } };
 }

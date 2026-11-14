@@ -23,12 +23,19 @@ public sealed partial class MainPage : Page
         {
             ScrollToStartOffset();
             WarmSections();
+            ShowCurrentTab();
         };
     }
 
     public MainViewModel? ViewModel => DataContext as MainViewModel;
 
-    // xaml-lint: allow codebehind - the harbour scene is a code-built control that takes the store directly
+    // The layer switcher's segments: paper on the ink indicator for the current layer
+
+    public static Brush LayerInk(bool current) => Tokens.Brush(current ? "PaperBrush" : "InkBrush");
+
+    public static Brush LayerIconInk(bool current) => Tokens.Brush(current ? "PaperBrush" : "TextMutedBrush");
+
+    // xaml-lint: allow codebehind - the harbour scene is a code-built control that takes its model once, with the store it draws
     private void Attach()
     {
         if (_attached || ViewModel is not { } vm)
@@ -37,7 +44,7 @@ public sealed partial class MainPage : Page
         }
 
         _attached = true;
-        Harbour.State = vm.State;
+        Harbour.ViewModel = vm.Harbour;
         SectionScroll.ViewChanged += OnSectionScrolled;
         // The harbour reaches up behind the masthead by its natural height (not while it folds)
         MastheadFrame.SizeChanged += (_, _) =>
@@ -48,22 +55,41 @@ public sealed partial class MainPage : Page
                 Harbour.OverlayHeight = MastheadFrame.ActualHeight;
             }
         };
-        // Each section opens at its top: one ScrollViewer hosts them all, and a carried offset opened
-        // Berths halfway down and brought Overview back scrolled under its full chrome
-        vm.State.PropertyChanged += (_, e) =>
+        // Each section opens at its top: one ScrollViewer hosts them all, and a carried offset would open
+        // Berths halfway down and bring Overview back scrolled under its full chrome
+        vm.State.Navigation.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(PortState.Section))
+            if (e.PropertyName == nameof(NavigationState.Section))
             {
                 _returning = false;
                 SectionScroll.ChangeView(null, 0, null, true);
+                ShowCurrentTab();
             }
         };
-        vm.State.ScrollToTopRequested += (_, _) =>
+        vm.State.Stage.ScrollToTopRequested += (_, _) =>
         {
             _returning = true;
             SectionScroll.ChangeView(null, 0, null, Motion.Reduced);
         };
         Bindings.Update();
+    }
+
+    /// <summary>
+    /// On a phone the section tabs scroll sideways under the wordmark: keep the one you are on in view. Elsewhere
+    /// every tab is already on screen and this does nothing.
+    /// </summary>
+    private void ShowCurrentTab()
+    {
+        if (ViewModel?.State is not { } state)
+        {
+            return;
+        }
+
+        var index = PortData.Sections.Select(s => s.Id).ToList().IndexOf(state.Navigation.Section);
+        if (SectionTabs.ContainerFromIndex(index) is UIElement tab)
+        {
+            tab.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = !Motion.Reduced });
+        }
     }
 
     /// <summary>
@@ -93,7 +119,7 @@ public sealed partial class MainPage : Page
     // xaml-lint: allow codebehind - the scroll offset drives page-chrome state; ViewChanged has no Command surface
     private void OnSectionScrolled(object? sender, ScrollViewerViewChangedEventArgs e)
     {
-        if (ViewModel?.State is not { Section: "overview" } state)
+        if (ViewModel?.State is not { Navigation.Section: "overview" } state)
         {
             return;
         }
@@ -102,19 +128,19 @@ public sealed partial class MainPage : Page
         if (y <= 4)
         {
             _returning = false;
-            state.OverviewCondensed = false;
+            state.Stage.OverviewCondensed = false;
         }
-        else if (y > 48 && !_returning && !state.OverviewCondensed && SectionScroll.ScrollableHeight > CondenseFrees + 48)
+        else if (y > 48 && !_returning && !state.Stage.OverviewCondensed && SectionScroll.ScrollableHeight > CondenseFrees + 48)
         {
-            state.OverviewCondensed = true;
+            state.Stage.OverviewCondensed = true;
             SnapToFirstSection(y);
         }
     }
 
     /// <summary>
     /// Builds the sections not yet shown, one per idle turn after the first frame. A section
-    /// costs the better part of a second to build, and paying that on the first click is what
-    /// made a first visit feel like a stall.
+    /// costs the better part of a second to build: paid on the first click, it makes a first
+    /// visit feel like a stall.
     /// </summary>
     // xaml-lint: allow codebehind - x:Load has no XAML trigger for "after startup, when idle"
     private void WarmSections()
@@ -147,7 +173,7 @@ public sealed partial class MainPage : Page
     [System.Diagnostics.Conditional("DEBUG")]
     private void ScrollToStartOffset()
     {
-        if (!double.TryParse(Environment.GetEnvironmentVariable("CARGO_SCROLL"), out var offset) || offset <= 0)
+        if (!double.TryParse(DebugHooks.Hook("CARGO_SCROLL"), out var offset) || offset <= 0)
         {
             return;
         }

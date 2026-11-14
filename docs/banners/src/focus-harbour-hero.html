@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>focus-harbour-hero</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* Hero (1920 x 1080) of focus-harbour. The 3D harbour at night (Dark, Overview with the stage expanded): Baltic Crown at B06 and Nordic Star
+     on her approach to B07, the dashed route between them. The scene is laid back a little and let go into the night Background, with a Navy
+     glow over the water. */
+  .stage { background:
+      radial-gradient(60% 55% at 64% 66%, rgba(15,74,110,.55) 0%, rgba(15,74,110,0) 70%),
+      radial-gradient(70% 50% at 35% 25%, rgba(34,47,56,.55) 0%, rgba(34,47,56,0) 70%),
+      #0F1315; --grain: .05; }
+  .plane { position: absolute; left: 0; top: 52px; width: 1920px; transform-origin: 50% 55%;
+    transform: perspective(2560px) rotateX(10deg);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 95%, transparent 100%),
+                        linear-gradient(180deg, transparent 0%, #000 13%, #000 87%, transparent 100%);
+    -webkit-mask-composite: source-in; mask-composite: intersect; }
+  .plane img { width: 100%; }
+</style></head>
+<body><div class="stage grain">
+  <div class="plane"><img src="cap/dark-desk-harbour@3x.png"></div>
+</div></body></html>

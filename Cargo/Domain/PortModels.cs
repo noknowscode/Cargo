@@ -53,7 +53,7 @@ public sealed record CargoMix(int Standard, int Reefer, int Hazard, int Oversize
     /// <summary>Picks a class for cell <paramref name="i"/> so a deck reads like a real stow plan.</summary>
     public CargoClass ClassAt(int i)
     {
-        var r = Geo.H(i) * 100;
+        var r = Noise.H(i) * 100;
         var acc = 0d;
         foreach (var (cls, pct) in Parts())
         {
@@ -68,15 +68,69 @@ public sealed record CargoMix(int Standard, int Reefer, int Hazard, int Oversize
     }
 }
 
+/// <summary>Where a vessel is in her call. Alongside (docked or departing) she keeps her berth; the rest can be moved.</summary>
+public enum VesselStatus
+{
+    Docked,
+    Arriving,
+    Departing,
+    AtAnchor
+}
+
+/// <summary>What a berth is doing when the shift starts.</summary>
+public enum BerthState
+{
+    Available,
+    Occupied,
+    Reserved,
+    Restricted
+}
+
+public static class StatusLabels
+{
+    /// <summary>"At anchor": the status as the screens write it.</summary>
+    public static string Label(this VesselStatus status) => status switch
+    {
+        VesselStatus.Docked => "Docked",
+        VesselStatus.Arriving => "Arriving",
+        VesselStatus.Departing => "Departing",
+        _ => "At anchor"
+    };
+
+    /// <summary>"Restricted": the berth state as the map writes it.</summary>
+    public static string Label(this BerthState state) => state switch
+    {
+        BerthState.Occupied => "Occupied",
+        BerthState.Reserved => "Reserved",
+        BerthState.Restricted => "Restricted",
+        _ => "Available"
+    };
+}
+
 public sealed record ClearanceCheck(string Mark, string Label, string Time, string Tone);
 
+/// <summary>
+/// A vessel's operations note: its lead (what a row has room for, "4 cranes working · est. completion 03:40") and
+/// what follows it, if anything.
+/// </summary>
+public sealed record VesselNote(string Lead, string? More = null)
+{
+    /// <summary>The whole note, as the vessel detail shows it.</summary>
+    public string Full => More is null ? $"{Lead}." : $"{Lead}. {More}";
+}
+
+/// <summary>
+/// A vessel in port. Her status lines are written from these fields as the plan stands (<c>VesselCopy</c>):
+/// <see cref="Anchorage"/> names where a vessel at anchor waits, <see cref="WaitingFor"/> the berth she
+/// waits for, and <see cref="PilotAboard"/> says an arrival has her pilot.
+/// </summary>
 public sealed partial record Vessel(
     string Id,
     string Name,
     string Operator,
     string Imo,
-    string Status,
-    string StatusLine,
+    VesselStatus Status,
+    string? Anchorage,
     string AccentToken,
     string? HomeBerth,
     string Eta,
@@ -90,10 +144,12 @@ public sealed partial record Vessel(
     int LoadPercent,
     CargoMix Mix,
     int Bays,
-    string OpsNote,
-    IReadOnlyList<ClearanceCheck> Checks);
+    VesselNote Note,
+    IReadOnlyList<ClearanceCheck> Checks,
+    string? WaitingFor = null,
+    bool PilotAboard = false);
 
-public sealed record BerthDef(string Number, string State, string? Occupant, double Depth);
+public sealed record BerthDef(string Number, BerthState State, string? Occupant, double Depth);
 
 public sealed record TimelineSegment(string Label, double Start, double End, string Kind);
 
@@ -122,6 +178,9 @@ public sealed partial record ContainerDef
 {
     /// <summary>The ISO 6346 number as it is painted on the box: owner, serial, check digit.</summary>
     public string DisplayId => $"{Id[..4]} {Id[4..10]} {Id[10..]}";
+
+    /// <summary>The box is held for inspection: Security's inspection record is hers.</summary>
+    public bool IsHeld => Security == "Hold";
 }
 
 public sealed record CargoItem(string Name, string TintToken, bool Flagged = false);
@@ -130,10 +189,8 @@ public sealed record CargoItem(string Name, string TintToken, bool Flagged = fal
 public sealed record DutyOperator(string Name, string ShortName, string Initials, string Role, string Badge,
     double ClockedIn, double ShiftEnd)
 {
-    public string ClockedInText => Clock(ClockedIn);
-    public string ShiftEndText => Clock(ShiftEnd);
-
-    private static string Clock(double hours) => TimeSpan.FromHours(hours % 24).ToString(@"hh\:mm");
+    public string ClockedInText => ShiftClock.Format(ClockedIn);
+    public string ShiftEndText => ShiftClock.Format(ShiftEnd);
 }
 
 public sealed record ChatLine(string Who, string Text, double Hour);
@@ -180,4 +237,4 @@ public sealed record InspectionLogDef(string Time, string Mark, string Text, str
 
 public sealed record ActivityDef(string Time, string Kind, string Title, string Detail);
 
-public sealed partial record NavSection(string Id, string Label, string Icon);
+public sealed partial record NavSection(string Id, string Label);

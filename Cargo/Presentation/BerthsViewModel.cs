@@ -10,8 +10,8 @@ public sealed partial class BerthsViewModel : ObservableObject
     {
         State = state;
 
-        // The router builds models off the UI thread; the sub-models build brushes and
-        // images as they start, so they are created on it.
+        // The router builds models off the UI thread; the sub-models are bound to the views and follow the store's
+        // events there, so they are made on it.
         dispatcher.TryEnqueue(() =>
         {
             NeedsYou = new NeedsYouViewModel(state);
@@ -27,31 +27,32 @@ public sealed partial class BerthsViewModel : ObservableObject
     public PortState State { get; }
 
     [ObservableProperty]
-    private NeedsYouViewModel? _needsYou;
+    public partial NeedsYouViewModel? NeedsYou { get; set; }
 
     [ObservableProperty]
-    private BerthStatusViewModel? _status;
+    public partial BerthStatusViewModel? Status { get; set; }
 
     [ObservableProperty]
-    private VesselDetailViewModel? _detail;
+    public partial VesselDetailViewModel? Detail { get; set; }
 
     [ObservableProperty]
-    private DockingViewModel? _plan;
+    public partial DockingViewModel? Plan { get; set; }
 
     [ObservableProperty]
-    private VesselsViewModel? _vessel;
+    public partial VesselsViewModel? Vessel { get; set; }
 
-    public string Alongside => PortData.Berths.Count(b => b.State == "occupied").ToString();
+    public string Alongside => PortData.Berths.Count(b => b.State == BerthState.Occupied).ToString();
 
-    public string Arriving => PortData.Vessels.Count(v => v.Status == "Arriving").ToString();
+    public string Arriving => PortData.Vessels.Count(v => v.Status == VesselStatus.Arriving).ToString();
 
-    public string AtAnchor => PortData.Vessels.Count(v => v.Status == "At anchor").ToString();
-
-    [ObservableProperty]
-    private string _conflicts = "0";
+    public string AtAnchor => PortData.Vessels.Count(v => v.Status == VesselStatus.AtAnchor).ToString();
 
     [ObservableProperty]
-    private Brush? _conflictInk;
+    public partial string Conflicts { get; set; } = "0";
+
+    /// <summary>Two vessels share a berth somewhere in the next 36 h: the figure reads in alert ink.</summary>
+    [ObservableProperty]
+    public partial bool HasConflicts { get; set; }
 
     /// <summary>The decision, status and detail panels; the page runs this only while it is shown.</summary>
     public void RefreshPanels()
@@ -67,6 +68,6 @@ public sealed partial class BerthsViewModel : ObservableObject
     {
         var count = State.Conflicts().Count;
         Conflicts = count.ToString();
-        ConflictInk = count > 0 ? Tokens.Brush("AlertInvariantBrush") : Tokens.Brush("InkInvariantBrush");
+        HasConflicts = count > 0;
     }
 }

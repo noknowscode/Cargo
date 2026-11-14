@@ -74,12 +74,12 @@ public sealed class BayView
         var featured = first ?? CargoClass.Empty;
         var prefix = vessel.Operator switch
         {
-            "MSC" => "MSCU",
-            "Hapag-Lloyd" => "HLCU",
-            "ONE" => "ONEU",
-            "Maersk" => "MAEU",
-            "CMA CGM" => "CMAU",
-            _ => "TGHU"
+            "Avren" => "AVRU",
+            "Ferrand-Lowe" => "FLWU",
+            "Tomoe" => "TMOU",
+            "Ravnby" => "RVBU",
+            "Morvane" => "MRVU",
+            _ => "SKWU"
         };
 
         var seed = bay * 17 + vessel.Length;
@@ -101,16 +101,28 @@ public sealed class BayView
             Cells = cells,
             Composition = composition,
             ContainerClass = featured,
-            ContainerId = $"{prefix} {(int)(Geo.H(seed) * 900000 + 100000)} {(int)(Geo.H(seed + 3) * 10)}",
+            ContainerId = $"{prefix} {(int)(Noise.H(seed) * 900000 + 100000)} {(int)(Noise.H(seed + 3) * 10)}",
             ContainerType = $"{typeName} · {isoCode}",
             Weight = featured == CargoClass.Empty
                 ? "3,940 kg"
-                : $"{14000 + (int)(Geo.H(seed + 7) * 14000):N0} kg",
+                : $"{14000 + (int)(Noise.H(seed + 7) * 14000):N0} kg",
             Status = remaining > 0 ? "Aboard" : "Ashore",
             NextMove = remaining > 0 ? typeName : "Bay complete",
             NextEta = remaining > 0 ? $"{21 + bay / 4:D2}:{bay * 13 % 60:D2}" : "—"
         };
     }
+
+    /// <summary>The bay at the discharge boundary: the one the cranes are working, open until another is picked.</summary>
+    public static int Boundary(Vessel vessel) =>
+        Math.Min(vessel.Bays - 1, (int)Math.Floor(vessel.Bays * vessel.UnloadPercent / 100d));
+
+    /// <summary>The bay the profile and the bay panels show: the one picked, else the boundary bay.</summary>
+    public static int Open(Vessel vessel, int? picked) =>
+        picked is { } bay && bay >= 0 && bay < vessel.Bays ? bay : Boundary(vessel);
+
+    /// <summary>The keyboard's step from the open bay, by <paramref name="delta"/>; it stops at the first and the last.</summary>
+    public static int Step(Vessel vessel, int? picked, int delta) =>
+        Math.Clamp(Open(vessel, picked) + delta, 0, vessel.Bays - 1);
 
     /// <summary>The hover/selection summary shown beside the profile heading.</summary>
     public static string Summary(Vessel vessel, int bay)

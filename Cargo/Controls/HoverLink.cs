@@ -6,7 +6,7 @@ namespace Cargo.Controls;
 /// Links an element to the thing it stands for elsewhere on screen: a mouse over it, or keyboard
 /// focus on it, runs <c>Command</c> with <c>Key</c>; leaving runs it with <c>"-Key"</c>. Rows,
 /// harbour tags and the needs-you bar use it to light each other through
-/// <see cref="PortState.HoverCommand"/>. Touch does not hover, so it is ignored.
+/// <see cref="StageState.HoverCommand"/>. Touch does not hover, so it is ignored.
 /// </summary>
 // xaml-lint: allow codebehind - an attached behavior: pointer-over and keyboard focus have no Command surface
 public static class HoverLink

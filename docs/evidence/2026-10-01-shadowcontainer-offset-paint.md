@@ -50,3 +50,30 @@ roughly x −10 to 317, about 50 px left of and narrower than the content.
 
 Measured once on Windows desktop, before and after; not reduced to a minimal page and not traced in Toolkit
 source. The cause (repaint on size change, not on an arrange-offset change) is inferred.
+
+## Reproduced on Uno 7 (2026-11-04)
+
+Uno.Sdk 7.0.0-dev.115 (Uno.WinUI 7.0.0-dev.2509, Uno.Toolkit.WinUI 11.0.0-dev.157, SkiaSharp 4.151.1), `net10.0-desktop`
+Debug, Linux X11 under Xvfb, Skia's CPU backend (`CARGO_X11_RENDERER=software`). The Toolkit fix the Windows note
+waited for is not in this Toolkit.
+
+Repro (in-app A/B, `Cargo/Presentation/MainPage.xaml`):
+
+1. Remove the wrapper `Grid` and put its four attributes on the `utu:ShadowContainer` itself:
+   `Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="{utu:Responsive Narrowest=Left, Wide=Center}"
+   Margin="{utu:Responsive Narrowest='16,0,0,60', Narrow='40,0,0,64', Wide={StaticResource GapBottom16}}"` plus the
+   `Visibility` binding.
+2. Build Debug, launch with `CARGO_WINDOW=1440x900` (Wide: the switcher centred on the HUD row).
+3. Resize the X window across the 1280 breakpoint: `xdotool windowsize <id> 1108 900`, then `1100 900`.
+4. Capture after 4 s and again after 7 s.
+
+Result: the segments are laid out at x = 44 (Left, 40 px margin) while the container's surface and shadow stay
+centred-width at the old offset, from x = 0 to about 317: "Traffic" sits outside its ground, in both captures. With
+the wrapper (the committed XAML), the same steps render the switcher whole at x = 40. Image:
+`2026-11-04-shadowcontainer-offset-paint.png` (left pair without the wrapper, 1440 then 1100; right pair with it).
+
+Narrower than the gotcha's wording: in the same run the other ShadowContainers whose position changes with the width
+repaint correctly: the Expand float and the camera menu (only their `{utu:Responsive}` margin changes, at 600, alignment
+fixed; 700 to 560 and back) and the duty ID card (its `Grid.RowSpan` changes at 1280). The trigger measured here is a
+change of the container's own `HorizontalAlignment` (Center to Left) with its size unchanged. Not reduced to a
+standalone page; not traced in Toolkit source.

@@ -1,0 +1,23 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>focus-harbour-titled</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* Optional titled variant of focus-harbour: the app's display name in its own display face (Bricolage Grotesque
+     SemiBold, the wordmark and greeting font), OnSurface on the night Background. The harbour drops to make room. */
+  .stage { background:
+      radial-gradient(60% 55% at 64% 72%, rgba(15,74,110,.55) 0%, rgba(15,74,110,0) 70%),
+      radial-gradient(70% 50% at 35% 35%, rgba(34,47,56,.50) 0%, rgba(34,47,56,0) 70%),
+      #0F1315; --grain: .05; }
+  .plane { position: absolute; left: 112px; top: 98px; width: 1060px; transform-origin: 50% 55%;
+    transform: perspective(1600px) rotateX(10deg);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 16%, #000 95%, transparent 100%),
+                        linear-gradient(180deg, transparent 0%, #000 22%, #000 84%, transparent 100%);
+    -webkit-mask-composite: source-in; mask-composite: intersect; }
+  .plane img { width: 100%; }
+  h1 { position: absolute; left: 72px; top: 56px; margin: 0; font: 600 44px/1.05 'Bricolage Grotesque', sans-serif;
+    letter-spacing: -0.015em; color: #E6EAEC; }
+</style></head>
+<body><div class="stage grain">
+  <div class="plane"><img src="cap/dark-desk-harbour@3x.png"></div>
+  <h1>Westhaven Port Authority</h1>
+</div></body></html>

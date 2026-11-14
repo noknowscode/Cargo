@@ -61,7 +61,7 @@ Answered 2026-09-30 (the user accepted the defaults):
   - `Decisions`: `ObservableCollection<Decision>` (Id, Kind {InspectionHold, GateId, LateOrders,
     BerthConfirm}, Title, Sub, LateText, ActionLabel, IsPrimary, Command, VesselId?). Rebuilt on
     structure change, *mutated in place* on tick (late minutes). `NeedsYouCount`.
-    Sources: inspection hold from `PortData.Containers`/security hold data ("CMAU 918204 4", due
+    Sources: inspection hold from `PortData.Containers`/security hold data ("MRVU 918204 1", due
     21:15); gate ID check from `PortData.Activity`/Vehicles (TRK 8834, since 20:41); late orders from
     `RiverFleet.SlipMinutes > 0` (2); berth confirm from `PendingDecision` (step 2).
   - `SectionNeedsYou(sectionId)` for the nav dots (Cargo: late orders; Security: hold + gate ID;
@@ -80,7 +80,8 @@ Answered 2026-09-30 (the user accepted the defaults):
   - `Segmented` behaviour for Chart/Table and the layer switcher: reuse the camera-pill technique
     (Berths step 5: Storyboard, `EaseSmooth`, re-target mid-slide). Generalise `HarbourView`'s
     `MovePill` into a small reusable helper only because three controls now need it.
-- **Liveline (external, `C:\Users\Platform006\Uno-Builds-net10\Liveline`, branch `liveline-window`):**
+- **Liveline (external, `C:\Users\Platform006\Uno-Builds-net10\Liveline`, branch `liveline-window`;
+  since 2026-11-01 a copy lives in this repository under `Liveline/`, on Uno.Sdk 7):**
   - Bump Uno.Sdk 6.5.36 → **6.7.30** (Cargo's pin, latest stable verified 2026-09-30); add
     `net10.0-android;net10.0-ios` (Cargo targets them; today Liveline is desktop + wasm only).
   - New properties: `WindowStart`/`WindowEnd` (x by time, not by index); `Forecast`
@@ -98,7 +99,8 @@ Answered 2026-09-30 (the user accepted the defaults):
 - **Theme (app-wide):** `Themes/Tokens.xaml` swaps teal for the design palette [X §1 Colours]:
   new keys `AccentBrush` family (`#1C6E9E`, dark `#155A82`, hover `#185F88`), `NavyBrush`
   (`#0F4A6E`), `WaterBrush` (`#5598C4`), `AlertBrush`/`AlertInkBrush` (`#C9553B`/`#B04A32`),
-  ground/surface/hairlines per [X §1]. All stay `*Invariant` (light-only app; TOKENTHEME lint).
+  ground/surface/hairlines per [X §1]. All stay `*Invariant` (light-only app; TOKENTHEME lint). Since the Dark theme (2026-11-02) they live in Light and Dark
+  theme dictionaries and are named `*Brush`.
   Status mapping changes: **reserved/arriving → accent blue** (harbour polygon, route, legend, key);
   **needs-you → alert** (Berths bar ground becomes the alert tint; amber retires from "needs you").
   Teal keys are removed once no reference remains (grep gate).
@@ -131,10 +133,12 @@ Answered 2026-09-30 (the user accepted the defaults):
   Masthead (greeting, date, figures, duty card) → HarbourView (restyled HUD: camera dropdown, layer
   segmented, Key flyout, scale+zoom group, Expand; tags: light + dark-for-pending) → Timeline panel
   (head, toggle, legend, lanes or table) → Aside (Needs you section, divider, Next 6 h) → Activity.
-- **Responsive:** `{utu:Responsive}` with an Overview `ResponsiveLayout` (Normal 1040, Wide 1280):
-  ≥1280 as designed; 1040–1279 aside drops below the timeline (both span 12), Activity stays two
-  columns; <1040 Activity one column, masthead figures wrap under the greeting, duty card hidden
-  into the account menu. Timeline plot width scales; px/h derives from the plot width, never fixed.
+- **Responsive:** `{utu:Responsive}` on the app's `DefaultResponsiveLayout` (App.xaml: 600/1000/1280/1600;
+  this spec first used Normal 1040, Wide 1280): ≥1280 as designed; 1000–1279 the timeline and aside share
+  the row 7 + 5; <1000 the aside drops below the timeline, Activity is one column and the masthead
+  figures wrap under the greeting; <600 the duty card moves into the account menu and the lane figures sit
+  above the chart, two by two, with the plot from x 0. Timeline plot width scales; px/h derives from the
+  plot width, never fixed.
 - **Other sections:** inherit palette, header and type; no layout redesign beyond what the palette
   and type migration forces.
 
@@ -225,5 +229,5 @@ Answered 2026-09-30 (the user accepted the defaults):
 - **Tide "now" marker:** the design places it at Nordic Star's arrival (21:40, "1.8 m as Nordic Star
   arrives"). Pin it to the next arrival, or to NOW?
 - **Liveline upstream:** push the `liveline-window` branch and open a PR to Uno-Builds-net10, or keep
-  it local until Cargo ships?
+  it local until Cargo ships? (Resolved 2026-11-01: Liveline is vendored into this repository.)
 - **Pending uno-audit commit** (7 files): commit before step 1?

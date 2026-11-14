@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>showcase-phones</title>
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* Three phones, Light / Dark / Light, on a sea-mid backdrop (SeaMid #B9CDDB, SeaFlat #BFD3E0, Navy) */
+  .stage { background:
+      radial-gradient(60% 75% at 50% 45%, #D3E1E8 0%, rgba(211,225,232,0) 72%),
+      linear-gradient(160deg, #C9D9E2 0%, #B9CDDB 55%, #A9C2D2 100%); }
+  .floor { position: absolute; left: 18%; right: 18%; bottom: 14px; height: 50px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(15,74,110,.22), rgba(15,74,110,0)); filter: blur(8px); }
+  .d { --bezel: 9px; --r: 38px; }
+  .pl { left: 197px; top: 84px; width: 240px; height: 498px; }   /* 222 x 480 screen */
+  .pc { left: 465px; top: 34px; width: 270px; height: 563px; }   /* 252 x 545 screen */
+  .pr { left: 763px; top: 84px; width: 240px; height: 498px; }
+</style></head>
+<body><div class="stage grain">
+  <div class="floor"></div>
+  <div class="device d pl"><div class="screen"><img src="cap/light-phone-security@2x.png"></div></div>
+  <div class="device d pr"><div class="screen"><img src="cap/light-phone-waterways@2x.png"></div></div>
+  <div class="device d pc on-night-shadow"><div class="screen"><img src="cap/dark-phone-overview@2x.png"></div></div>
+</div></body></html>
