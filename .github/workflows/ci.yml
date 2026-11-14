@@ -68,8 +68,11 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Install wasm-tools
-        run: dotnet workload install wasm-tools
+      # The runner image's newest SDK is .NET 11, so plain wasm-tools installs the
+      # .NET 11 toolchain. The net10.0-browserwasm head needs wasm-tools-net10;
+      # without it the publish stops at UNOWA0001.
+      - name: Install wasm-tools workloads
+        run: dotnet workload install wasm-tools wasm-tools-net10
       - name: Publish
         run: dotnet publish ${{ env.PROJECT }} -f net10.0-browserwasm -c Release -p:CargoTargetFrameworks=net10.0-browserwasm -o publish/wasm
       - uses: actions/upload-artifact@v4
