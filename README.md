@@ -30,13 +30,13 @@ dotnet build Cargo/Cargo.csproj -f net10.0-desktop
 dotnet run   --project Cargo/Cargo.csproj -f net10.0-desktop
 ```
 
-Verified building and running for `net10.0-desktop` on Uno.Sdk 7.0.5. `net10.0-browserwasm` and `net10.0-android`
-were verified on 6.7.30, before the upgrade.
+On Uno.Sdk 7.0.22: verified building and running for `net10.0-desktop`, and building for `net10.0-browserwasm`.
+`net10.0-android` was last verified on 6.7.30.
 iOS is in the target list but needs a paired Mac to build.
 
 ## Architecture
 
-- **Uno.Sdk 7.0.5** (stable), single project, Skia renderer, `SimpleTheme` + Uno Toolkit.
+- **Uno.Sdk 7.0.22** (stable), single project, Skia renderer, `SimpleTheme` + Uno Toolkit.
 - **MVVM (`CommunityToolkit.Mvvm`)**, not MVUX. Every figure in this app is an in-memory
   constant; there is no async or reactive data flow for feeds to model. What the app
   actually has is a lot of imperative selection state — which berth is hovered, which bay
