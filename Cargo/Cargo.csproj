@@ -34,9 +34,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- The Overview tide lane. Liveline lives in uno-lab; clone noknowscode/uno-lab next to this
-         repository. Both pin Uno.Sdk 6.7.30 in global.json. -->
-    <ProjectReference Include="..\..\uno-lab\Liveline\src\Liveline\Liveline.csproj" />
+    <!-- The Overview tide lane. Liveline lives in the liveline/ folder of uno-lab; clone noknowscode/uno-lab
+         next to this repository. -->
+    <ProjectReference Include="..\..\uno-lab\liveline\Liveline\Liveline.csproj" />
   </ItemGroup>
 
 </Project>

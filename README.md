@@ -17,7 +17,8 @@ sits under the same harbour stage: full height on Overview, a 210 px strip every
 
 ## Running it
 
-The tide lane uses the Liveline chart control from [noknowscode/uno-lab](https://github.com/noknowscode/uno-lab).
+The tide lane uses the Liveline chart control, the `liveline/Liveline` library in
+[noknowscode/uno-lab](https://github.com/noknowscode/uno-lab).
 Clone it next to this repository first:
 
 ```
@@ -29,12 +30,13 @@ dotnet build Cargo/Cargo.csproj -f net10.0-desktop
 dotnet run   --project Cargo/Cargo.csproj -f net10.0-desktop
 ```
 
-Verified building for `net10.0-desktop`, `net10.0-browserwasm` and `net10.0-android`.
+Verified building and running for `net10.0-desktop` on Uno.Sdk 7.0.5. `net10.0-browserwasm` and `net10.0-android`
+were verified on 6.7.30, before the upgrade.
 iOS is in the target list but needs a paired Mac to build.
 
 ## Architecture
 
-- **Uno.Sdk 6.7.30** (stable), single project, Skia renderer, `SimpleTheme` + Uno Toolkit.
+- **Uno.Sdk 7.0.5** (stable), single project, Skia renderer, `SimpleTheme` + Uno Toolkit.
 - **MVVM (`CommunityToolkit.Mvvm`)**, not MVUX. Every figure in this app is an in-memory
   constant; there is no async or reactive data flow for feeds to model. What the app
   actually has is a lot of imperative selection state — which berth is hovered, which bay
